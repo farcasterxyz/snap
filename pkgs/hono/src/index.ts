@@ -1,4 +1,5 @@
 import type { Hono } from "hono";
+import { cors } from "hono/cors";
 import {
   parseRequest,
   sendResponse,
@@ -55,6 +56,8 @@ export function registerSnapHandler(
   const fallbackText =
     options.fallbackText ??
     "This is a Farcaster Snap server. See https://snap.farcaster.xyz for more info.";
+
+  app.use(path, cors({ origin: "*" }));
 
   app.get(path, async (c) => {
     const accept = c.req.header("Accept");
