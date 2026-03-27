@@ -1,0 +1,38 @@
+{
+  "name": "@farcaster/snap",
+  "version": "1.0.0",
+  "description": "Farcaster Snaps 🫰",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants.d.ts",
+      "import": "./dist/constants.js",
+      "default": "./dist/constants.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias --resolve-full-paths --resolve-full-extension .js",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@farcaster/hub-nodejs": "^0.15.10",
+    "@farcaster/jfs": "^0.2.2",
+    "viem": "^2.21.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}

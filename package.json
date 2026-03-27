@@ -1,0 +1,5 @@
+{
+  "name": "snap",
+  "private": true,
+  "packageManager": "pnpm@9.15.4"
+}

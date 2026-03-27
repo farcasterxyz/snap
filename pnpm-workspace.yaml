@@ -1,0 +1,5 @@
+packages:
+  - "pkgs/emulator"
+  - "pkgs/snap"
+  - "pkgs/hono"
+  - "pkgs/ui-elements"

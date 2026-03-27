@@ -1,0 +1,15 @@
+**/.next
+**/.vercel
+**/node_modules/
+**/.pnpm-store/
+**/dist/
+
+.env*
+!.env.example
+
+**/.DS_Store
+**/*.tsbuildinfo
+
+**/.claude/settings.local.json
+**/.cursor/hooks/state
+**/static-analysis.datadog.yml

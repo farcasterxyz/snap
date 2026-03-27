@@ -1,0 +1,27 @@
+{
+  "name": "@farcaster/snap-emulator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "predev": "pnpm --filter @farcaster/snap run build",
+    "dev": "next dev -p 3000 --webpack",
+    "prebuild": "pnpm --filter @farcaster/snap run build",
+    "build": "next build",
+    "start": "next start -p 3000"
+  },
+  "dependencies": {
+    "@farcaster/snap": "workspace:*",
+    "@farcaster/snap-ui-elements": "workspace:*",
+    "@json-render/core": "^0.15.0",
+    "@json-render/react": "^0.15.0",
+    "next": "^16.2.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "typescript": "^5.9.3"
+  }
+}
