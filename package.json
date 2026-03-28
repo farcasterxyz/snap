@@ -4,13 +4,18 @@
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
-    "test": "turbo test",
-    "typecheck": "turbo typecheck",
+    "changeset:prepublish": "pnpm --filter './pkgs/*' build",
+    "changeset:publish": "pnpm changeset:prepublish && changeset publish",
+    "changeset:version": "pnpm install --lockfile-only && changeset version && pnpm typecheck",
     "clean": "pnpm run -r --parallel clean",
-    "preinstall": "npx only-allow pnpm"
+    "dev": "turbo dev",
+    "preinstall": "npx only-allow pnpm",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.8",
     "only-allow": "^1.2.1",
     "turbo": "^2.4.4"
   }
