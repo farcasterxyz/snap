@@ -187,11 +187,10 @@ importers:
         version: 5.9.3
 
   pkgs/hono:
-    dependencies:
+    devDependencies:
       '@farcaster/snap':
         specifier: workspace:*
         version: link:../snap
-    devDependencies:
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0

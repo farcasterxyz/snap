@@ -2,6 +2,11 @@
   "name": "@farcaster/snap",
   "version": "1.0.0",
   "description": "Farcaster Snaps 🫰",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/farcasterxyz/snap.git",
+    "directory": "pkgs/snap"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,6 +21,10 @@
       "import": "./dist/constants.js",
       "default": "./dist/constants.js"
     }
+  },
+  "files": ["dist", "src"],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc && tsc-alias --resolve-full-paths --resolve-full-extension .js",

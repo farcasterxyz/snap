@@ -2,22 +2,37 @@
   "name": "@farcaster/snap-hono",
   "version": "1.0.0",
   "description": "Hono integration for Farcaster Snap servers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/farcasterxyz/snap.git",
+    "directory": "pkgs/hono"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "src"],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
   },
   "license": "MIT",
-  "dependencies": {
-    "@farcaster/snap": "workspace:*"
-  },
   "peerDependencies": {
+    "@farcaster/snap": "^1.0.0",
     "hono": ">=4.0.0"
   },
   "devDependencies": {
+    "@farcaster/snap": "workspace:*",
     "@types/node": "^25.5.0",
     "hono": "^4.0.0",
     "typescript": "^5.4.0"
