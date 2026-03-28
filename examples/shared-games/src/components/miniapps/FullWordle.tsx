@@ -107,9 +107,9 @@ export default function FullWordle() {
     { word: string; colors: TileColor[] }[]
   >([]);
   const [soloCurrentGuess, setSoloCurrentGuess] = useState("");
-  const [soloKeyColors, setSoloKeyColors] = useState<
-    Record<string, TileColor>
-  >({});
+  const [soloKeyColors, setSoloKeyColors] = useState<Record<string, TileColor>>(
+    {},
+  );
 
   const handleKeyPress = useCallback(
     (key: string) => {
@@ -171,7 +171,7 @@ export default function FullWordle() {
       soloCurrentGuess,
       soloGuesses.length,
       soloKeyColors,
-    ]
+    ],
   );
 
   const getKeyColor = (key: string): string => {
@@ -290,7 +290,7 @@ export default function FullWordle() {
                       <Tile key={i} letter="" color="empty" />
                     ))}
                   </div>
-                )
+                ),
               )}
             </>
           ) : (
@@ -311,9 +311,7 @@ export default function FullWordle() {
                     <motion.div
                       key={i}
                       animate={
-                        soloCurrentGuess[i]
-                          ? { scale: [1, 1.1, 1] }
-                          : undefined
+                        soloCurrentGuess[i] ? { scale: [1, 1.1, 1] } : undefined
                       }
                       transition={{ duration: 0.1 }}
                     >
@@ -328,7 +326,7 @@ export default function FullWordle() {
 
               {/* Empty rows (solo) */}
               {Array.from({
-                length: Math.max(0, soloEmptyCount - 1),
+                length: Math.max(0, soloEmptyCount),
               }).map((_, rowIdx) => (
                 <div key={`solo-empty-${rowIdx}`} className="flex gap-1.5">
                   {Array.from({ length: 5 }).map((_, i) => (
