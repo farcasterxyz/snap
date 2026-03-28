@@ -68,7 +68,7 @@ describe("parseRequest", () => {
           timestamp: Math.floor(Date.now() / 1000) - 400,
         }),
       }),
-      { bypassSignatureVerification: true, maxSkewSeconds: 300 },
+      { bypassSignatureVerification: true },
     );
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.error.type).toBe("replay");

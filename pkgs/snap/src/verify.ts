@@ -1,4 +1,9 @@
-import { decode, verify as jfsVerify } from "@farcaster/jfs";
+import {
+  compact,
+  decode,
+  verify as jfsVerify,
+  type JsonFarcasterSignature,
+} from "@farcaster/jfs";
 import { hexToBytes, type Hex } from "viem";
 import {
   DEFAULT_SNAP_HUB_HTTP_BASE_URL,
@@ -8,7 +13,7 @@ import {
 export async function verifyJFSRequestBody<TPayload>(
   requestBody: string,
   options: {
-    debug?: boolean;
+    hubHttpBaseUrl?: string;
   } = {},
 ): Promise<
   | {
@@ -20,16 +25,15 @@ export async function verifyJFSRequestBody<TPayload>(
       data: TPayload;
     }
 > {
-  const log = (...args: unknown[]) => {
-    if (options.debug) {
-      // eslint-disable-next-line no-console -- opt-in via options.debug
-      console.log("[verifyJFS]", "verifyJFSRequestBody:", ...args);
-    }
-  };
+  const normalized = jfsRequestBodyJsonToCompact(requestBody);
+  if (!normalized.ok) {
+    return { valid: false, error: normalized.error };
+  }
+  const compactJfs = normalized.compact;
 
+  let decoded: ReturnType<typeof decode<TPayload>>;
   try {
-    log("step: verifying JFS request body");
-    await jfsVerify({ data: requestBody, strict: true, keyTypes: ["app_key"] });
+    decoded = decode<TPayload>(compactJfs);
   } catch (error) {
     return {
       valid: false,
@@ -37,12 +41,19 @@ export async function verifyJFSRequestBody<TPayload>(
     };
   }
 
-  log("step: decoding JFS request body");
-  const { header, payload } = decode<TPayload>(requestBody);
+  try {
+    await jfsVerify({ data: compactJfs, strict: true, keyTypes: ["app_key"] });
+  } catch (error) {
+    return {
+      valid: false,
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
+  }
 
-  log("step: getting active Ed25519 signer keys from hub");
+  const { header, payload } = decoded;
+
   const keys = await getActiveEd25519SignerKeysFromHubHttp(
-    DEFAULT_SNAP_HUB_HTTP_BASE_URL,
+    options.hubHttpBaseUrl ?? DEFAULT_SNAP_HUB_HTTP_BASE_URL,
     header.fid,
   );
   if (!keys.ok) {
@@ -54,7 +65,6 @@ export async function verifyJFSRequestBody<TPayload>(
 
   let headerKeyBytes: Uint8Array;
   try {
-    log("step: converting JFS header key to bytes");
     headerKeyBytes = hexToBytes(header.key as Hex);
   } catch {
     return {
@@ -64,14 +74,12 @@ export async function verifyJFSRequestBody<TPayload>(
   }
 
   if (headerKeyBytes.length !== 32) {
-    log("step: JFS header key must be 32 bytes");
     return {
       valid: false,
       error: new Error("JFS app_key public key must be 32 bytes"),
     };
   }
 
-  log("step: checking if JFS header key is in the active hub signer list");
   const matched = keys.signers.some((k) =>
     bytesEqual(k.publicKey, headerKeyBytes),
   );
@@ -88,6 +96,58 @@ export async function verifyJFSRequestBody<TPayload>(
     valid: true,
     data: payload,
   };
+}
+
+/**
+ * Snap POST bodies use JSON: `{ "header", "payload", "signature" }` (base64url segments).
+ * This is turned into the JFS compact string (`header.payload.signature`) for crypto verification.
+ */
+function jfsRequestBodyJsonToCompact(
+  raw: string,
+): { ok: true; compact: string } | { ok: false; error: Error } {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return { ok: false, error: new Error("request body is empty") };
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch {
+    return {
+      ok: false,
+      error: new Error("request body is not valid JSON"),
+    };
+  }
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return {
+      ok: false,
+      error: new Error("request body must be a JSON object"),
+    };
+  }
+  const o = parsed as Record<string, unknown>;
+  const header = o.header;
+  const payload = o.payload;
+  const signature = o.signature;
+  if (
+    typeof header !== "string" ||
+    typeof payload !== "string" ||
+    typeof signature !== "string"
+  ) {
+    return {
+      ok: false,
+      error: new Error(
+        "request body must include string header, payload, and signature",
+      ),
+    };
+  }
+  if (!header.trim() || !payload.trim() || !signature.trim()) {
+    return {
+      ok: false,
+      error: new Error("header, payload, and signature must be non-empty"),
+    };
+  }
+  const jfs: JsonFarcasterSignature = { header, payload, signature };
+  return { ok: true, compact: compact(jfs) };
 }
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {

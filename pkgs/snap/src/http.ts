@@ -37,13 +37,8 @@ export type ParseRequestError =
 
 export type ParseRequestOptions = {
   /**
-   * Max age / future skew for `timestamp` (unix seconds), inclusive.
-   * @default {@link DEFAULT_SNAP_POST_MAX_SKEW_SECONDS}
-   */
-  maxSkewSeconds?: number;
-  /**
    * When true, accept plain JSON POST bodies without JFS verification (local dev only).
-   * When false (default), the raw POST body must be a JFS compact string verified via
+   * When false (default), the body must be JSON `{ header, payload, signature }` verified via
    * {@link verifyJFSRequestBody}.
    */
   bypassSignatureVerification?: boolean;
@@ -67,8 +62,8 @@ function normalizeToRoot(payload: unknown): unknown {
 /**
  * Parse and validate Farcaster snap requests:
  * - `GET` is allowed for first-page loads and returns `{ type: "get" }`.
- * - `POST`: by default the body is a JFS compact string verified with {@link verifyJFSRequestBody};
- *   with `bypassSignatureVerification`, accepts plain JSON (development only).
+ * - `POST`: by default the body is JSON JFS (`header` / `payload` / `signature`) verified with
+ *   {@link verifyJFSRequestBody}; with `bypassSignatureVerification`, accepts plain action JSON (dev only).
  */
 export async function parseRequest(
   request: Request,
@@ -92,64 +87,67 @@ export async function parseRequest(
   }
 
   const text = await request.text();
-  const maxSkew = options.maxSkewSeconds ?? DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
+  const maxSkew = DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
   const nowSec = Math.floor(Date.now() / 1000);
 
-  if (!options.bypassSignatureVerification) {
-    const jfs = await verifyJFSRequestBody(text);
-    if (!jfs.valid) {
+  const finishPostJson = (json: unknown): ParseRequestResult => {
+    const parsed = postRequestBodySchema.safeParse(json);
+    if (!parsed.success) {
+      return {
+        ok: false,
+        error: { type: "validation", issues: parsed.error.issues },
+      };
+    }
+    const body = parsed.data;
+    if (Math.abs(nowSec - body.timestamp) > maxSkew) {
       return {
         ok: false,
         error: {
-          type: "signature",
-          message: jfs.error.message,
+          type: "replay",
+          message: `timestamp outside allowed skew of ${maxSkew}s`,
         },
       };
     }
-  }
-
-  let json: unknown;
-  try {
-    json = JSON.parse(text);
-  } catch {
     return {
-      ok: false,
-      error: {
-        type: "invalid_json",
-        message: "request body is not valid JSON",
+      ok: true,
+      action: {
+        type: "post",
+        fid: body.fid,
+        inputs: body.inputs,
+        buttonIndex: body.button_index,
+        timestamp: body.timestamp,
       },
     };
-  }
-
-  const parsed = postRequestBodySchema.safeParse(json);
-  if (!parsed.success) {
-    return {
-      ok: false,
-      error: { type: "validation", issues: parsed.error.issues },
-    };
-  }
-
-  const body = parsed.data;
-  if (Math.abs(nowSec - body.timestamp) > maxSkew) {
-    return {
-      ok: false,
-      error: {
-        type: "replay",
-        message: `timestamp outside allowed skew of ${maxSkew}s`,
-      },
-    };
-  }
-
-  return {
-    ok: true,
-    action: {
-      type: "post",
-      fid: body.fid,
-      inputs: body.inputs,
-      buttonIndex: body.button_index,
-      timestamp: body.timestamp,
-    },
   };
+
+  if (options.bypassSignatureVerification) {
+    let json: unknown;
+    try {
+      json = JSON.parse(text.trim());
+    } catch {
+      return {
+        ok: false,
+        error: {
+          type: "invalid_json",
+          message: "request body is not valid JSON",
+        },
+      };
+    }
+    return finishPostJson(json);
+  }
+
+  const jfs = await verifyJFSRequestBody(text);
+  if (!jfs.valid) {
+    return {
+      ok: false,
+      error: {
+        type: "signature",
+        message: jfs.error.message,
+      },
+    };
+  }
+
+  return finishPostJson(jfs.data);
 }
 
 export type SendResponseOptions = ResponseInit & {

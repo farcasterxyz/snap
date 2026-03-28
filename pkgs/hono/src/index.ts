@@ -24,12 +24,6 @@ export type SnapHandlerOptions = {
   bypassSignatureVerification?: boolean;
 
   /**
-   * Max age / future skew for POST `timestamp` (unix seconds).
-   * @default 300
-   */
-  maxSkewSeconds?: number;
-
-  /**
    * Text shown on GET requests from browsers / non-snap clients.
    * @default "This is a Farcaster Snap server."
    */
@@ -77,9 +71,6 @@ export function registerSnapHandler(
     const parseOpts: ParseRequestOptions = {
       ...(options.bypassSignatureVerification !== undefined
         ? { bypassSignatureVerification: options.bypassSignatureVerification }
-        : {}),
-      ...(options.maxSkewSeconds !== undefined
-        ? { maxSkewSeconds: options.maxSkewSeconds }
         : {}),
     };
 

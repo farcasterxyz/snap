@@ -2,14 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { verifyJFSRequestBody } from "./verify";
 
 const validRequestBody = `{
-  "header": "eyJmaWQiOjIsInR5cGUiOiJhcHBfa2V5Iiwia2V5IjoiMHhiODVkZmMxMjg1ZGVlOTNiNDdhMTFhMzQ3NjczN2M1NmQxOGM2MTc1Y2U3MTA0MDhjNjNlOWNlNGYzNjNlMDhmIn0",
-  "payload": "eyJhY3Rpb24iOiJtaW50IiwiY29udHJhY3RJZCI6IjB4YWJjIiwidGltZXN0YW1wIjoiMTc3NDU2ODc3NSJ9",
-  "signature": "U3OILmid-c3S2tRARviHu67sbPGLSyGuMMvgCyXjuwa5LCKxxPLN6oaBCzKH-rJqGSShCS8NAXnBiNDikwvFBg"
+  "header":"eyJmaWQiOjI2MTMxOSwidHlwZSI6ImFwcF9rZXkiLCJrZXkiOiIweGY0ZGQyNjczYTUzMjEwYzQ3ZGYzZjFmNTk0NjZlZTdhMTM3ZmQxOGQ5NTVjMmU2OGExMmQwOTE2MGE2NmMyMTUifQ",
+  "payload":"eyJmaWQiOjI2MTMxOSwiaW5wdXRzIjp7ImRpc3BsYXkiOiJJU08gKFVUQykifSwiYnV0dG9uX2luZGV4IjowLCJ0aW1lc3RhbXAiOjE3NzQ2OTMyMTN9",
+  "signature":"6eqXmzkoNDx8bSdEPdZ4NKKEyU9FfF3ENIpUnMGZ1XZwbbGtlGFB-I0e0IyuOzEmBDc04wPCuCCyxMg58pM3Cw"
 }`;
 
-/** Matches JFS header `key` (Ed25519 public key, 32 bytes hex without 0x in hub JSON field). */
+/** Matches JFS header `key` (Ed25519 public key, 32 bytes hex without `0x` in hub JSON field). */
 const HUB_SIGNER_KEY_HEX =
-  "b85dfc1285dee93b47a11a3476737c56d18c6175ce710408c63e9ce4f363e08f";
+  "f4dd2673a53210c47df3f1f59466ee7a137fd18d955c2e68a12d09160a66c215";
 
 describe("verifyJFSRequestBody", () => {
   beforeEach(() => {
@@ -29,7 +29,7 @@ describe("verifyJFSRequestBody", () => {
                   blockTimestamp: 0,
                   transactionHash: "0x" + "02".repeat(32),
                   logIndex: 0,
-                  fid: 2,
+                  fid: 261319,
                   signerEventBody: {
                     key: `0x${HUB_SIGNER_KEY_HEX}`,
                     keyType: 1,
@@ -52,20 +52,15 @@ describe("verifyJFSRequestBody", () => {
     vi.unstubAllGlobals();
   });
 
-  it("accepts JFS compact form and verifies JFS + hub signer list", async () => {
-    const { header, payload, signature } = JSON.parse(validRequestBody) as {
-      header: string;
-      payload: string;
-      signature: string;
-    };
-    const compact = `${header}.${payload}.${signature}`;
-    const result = await verifyJFSRequestBody(compact);
+  it("accepts JSON JFS body and verifies crypto + hub signer list", async () => {
+    const result = await verifyJFSRequestBody(validRequestBody);
     expect(result.valid).toBe(true);
     if (result.valid) {
       expect(result.data).toEqual({
-        action: "mint",
-        contractId: "0xabc",
-        timestamp: "1774568775",
+        fid: 261319,
+        inputs: { display: "ISO (UTC)" },
+        button_index: 0,
+        timestamp: 1774693213,
       });
     }
   });
