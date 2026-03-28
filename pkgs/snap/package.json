@@ -19,7 +19,9 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias --resolve-full-paths --resolve-full-extension .js",
-    "test": "vitest run"
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "license": "MIT",
   "dependencies": {

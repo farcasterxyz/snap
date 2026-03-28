@@ -31,6 +31,8 @@ pnpm --filter @farcaster/snap-emulator dev
 # Opens at `http://localhost:3000`.
 ```
 
+The emulator lives under [`apps/emulator`](./apps/emulator). Hono examples are under [`examples/`](./examples/README.md); the deployable starter is [`template/`](./template/README.md).
+
 ### @farcaster/snap-hono
 
 Convenience methods for running a Snap server using [Hono](https://hono.dev)
@@ -41,10 +43,20 @@ Shared catalog of UI element types and schemas that Snap JSON may reference. Bui
 
 ## 🛠️ Development
 
-This repo uses [pnpm](https://pnpm.io/) workspaces. Install dependencies once from the root:
+This repo uses [pnpm](https://pnpm.io/) workspaces and [Turborepo](https://turbo.build/). Install dependencies once from the root:
 
 ```bash
 pnpm install
 ```
 
+Common tasks:
+
+```bash
+pnpm build       # turbo build — all packages (snap + hono + emulator + examples)
+pnpm test        # turbo test — Vitest in @farcaster/snap
+pnpm typecheck   # turbo typecheck
+```
+
 (Use a recent Node; `corepack enable` then `corepack prepare pnpm@9.15.4 --activate` if you need to pin the same pnpm as [package.json](./package.json).)
+
+`turbo dev` builds workspace dependencies first (`^build`). Example: `pnpm exec turbo dev --filter=@farcaster/snap-emulator`.

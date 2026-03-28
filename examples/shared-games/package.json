@@ -5,7 +5,7 @@
   "scripts": {
     "predev": "pnpm --filter @farcaster/snap run build",
     "dev": "tsx watch src/server.ts",
-    "build": "pnpm --filter @farcaster/snap run build",
+    "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

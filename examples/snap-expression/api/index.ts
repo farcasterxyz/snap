@@ -14,7 +14,8 @@ const app = new Hono();
 
 // Seeded distribution: 847 votes spread across four buckets (0–25, 25–50, 50–75, 75–100)
 const CEO_SEED = [182, 389, 178, 98] as const;
-const CEO_BUCKET_COLORS = ["#3B82F6", "#8B5CF6", "#F59E0B", "#EF4444"] as const;
+/** Bar chart colors must use the snap theme palette (not raw hex). */
+const CEO_BUCKET_COLORS = ["blue", "purple", "amber", "red"] as const;
 const CEO_BUCKETS = [
   { label: "Very peaceful", min: 0, max: 25 },
   { label: "Leaning peace", min: 25, max: 50 },

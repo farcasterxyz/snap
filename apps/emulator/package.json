@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "pnpm --filter @farcaster/snap run build",
-    "dev": "next dev -p 3000 --webpack",
-    "prebuild": "pnpm --filter @farcaster/snap run build",
     "build": "next build",
-    "start": "next start -p 3000"
+    "clean": "rm -rf .next",
+    "dev": "next dev -p 3000 --webpack",
+    "start": "next start -p 3000",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@farcaster/snap": "workspace:*",

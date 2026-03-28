@@ -5,8 +5,8 @@
   "scripts": {
     "predev": "pnpm --filter @farcaster/snap run build",
     "dev": "tsx watch src/server.ts",
-    "build": "pnpm --filter @farcaster/snap run build",
-    "typecheck": "pnpm --filter @farcaster/snap run build && tsc --noEmit"
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^1.0.0",
