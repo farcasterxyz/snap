@@ -147,7 +147,14 @@ function jfsRequestBodyJsonToCompact(
     };
   }
   const jfs: JsonFarcasterSignature = { header, payload, signature };
-  return { ok: true, compact: compact(jfs) };
+  try {
+    return { ok: true, compact: compact(jfs) };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
+  }
 }
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
