@@ -4,7 +4,7 @@
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "predev": "pnpm --filter @farcaster/snap run build",
-    "dev": "tsx watch src/server.ts",
+    "dev": "SKIP_JFS_VERIFICATION=true tsx watch src/server.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
   },

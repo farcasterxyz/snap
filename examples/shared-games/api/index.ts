@@ -2,7 +2,10 @@ import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import type { SnapAction, SnapResponse } from "@farcaster/snap";
-import { POST_GRID_TAP_KEY, DEFAULT_THEME_ACCENT } from "@farcaster/snap/constants";
+import {
+  POST_GRID_TAP_KEY,
+  DEFAULT_THEME_ACCENT,
+} from "@farcaster/snap/constants";
 
 const SPEC_VERSION = "1.0" as const;
 
@@ -24,11 +27,6 @@ type GameView =
   | "prediction";
 
 type TileColor = "green" | "yellow" | "gray";
-
-function bypassSignatureVerification(): boolean {
-  const v = process.env.BYPASS_SIGNATURE_VERIFICATION?.trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
-}
 
 function snapBaseUrlFromRequest(request: Request): string {
   const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim();
@@ -330,14 +328,14 @@ function buildHomePage(args: {
         view === "wordle"
           ? "Wordle"
           : view === "canvas"
-            ? "Canvas"
-            : view === "story"
-              ? "Story"
-              : view === "estimate"
-                ? "Estimate"
-                : view === "prediction"
-                  ? "Predict"
-                  : "";
+          ? "Canvas"
+          : view === "story"
+          ? "Story"
+          : view === "estimate"
+          ? "Estimate"
+          : view === "prediction"
+          ? "Predict"
+          : "";
       cells.push({
         row,
         col,
@@ -554,7 +552,9 @@ function buildStoryPage(args: {
   const top = getTopProposal();
   const captionBase =
     top && top.votes > 0
-      ? `Top candidate: "${top.line.length > 70 ? top.line.slice(0, 67) + "..." : top.line}" (${top.votes} votes)`
+      ? `Top candidate: "${
+          top.line.length > 70 ? top.line.slice(0, 67) + "..." : top.line
+        }" (${top.votes} votes)`
       : "Propose the next line to steer the story.";
 
   const caption = args.feedback ?? captionBase;
@@ -753,180 +753,165 @@ function viewFromHomeSelection(sel: {
 
 const app = new Hono();
 
-registerSnapHandler(
-  app,
-  async ({ action, request }) => {
-    const url = new URL(request.url);
-    const viewParam = url.searchParams.get("view");
-    const view: GameView =
-      viewParam === "wordle" ||
-      viewParam === "canvas" ||
-      viewParam === "story" ||
-      viewParam === "estimate" ||
-      viewParam === "prediction"
-        ? viewParam
-        : "home";
-    const reset = url.searchParams.get("reset") === "1";
-    const snapBaseUrl = snapBaseUrlFromRequest(request);
+registerSnapHandler(app, async ({ action, request }) => {
+  const url = new URL(request.url);
+  const viewParam = url.searchParams.get("view");
+  const view: GameView =
+    viewParam === "wordle" ||
+    viewParam === "canvas" ||
+    viewParam === "story" ||
+    viewParam === "estimate" ||
+    viewParam === "prediction"
+      ? viewParam
+      : "home";
+  const reset = url.searchParams.get("reset") === "1";
+  const snapBaseUrl = snapBaseUrlFromRequest(request);
 
-    if (view === "home") {
-      let selection: { row: number; col: number } | undefined;
-      if (isSnapPostAction(action)) {
-        selection = getGridTap(action);
-      }
-      if (isSnapPostAction(action) && selection) {
-        return pageForView(viewFromHomeSelection(selection), {
-          snapBaseUrl,
-        });
-      }
-      return buildHomePage({ snapBaseUrl, selection });
+  if (view === "home") {
+    let selection: { row: number; col: number } | undefined;
+    if (isSnapPostAction(action)) {
+      selection = getGridTap(action);
     }
-
-    if (view === "wordle") {
-      let feedback: string | undefined;
-      if (reset) {
-        resetWordle();
-        feedback = "Wordle reset. Crowd board cleared.";
-      } else if (isSnapPostAction(action)) {
-        const raw = action.inputs.guess;
-        const guess = typeof raw === "string" ? raw.toUpperCase() : "";
-        const sanitized = guess.replace(/[^A-Z]/g, "").slice(0, 5);
-        if (sanitized.length !== 5) {
-          feedback = "Enter exactly 5 letters (A-Z).";
-        } else {
-          wordle.guessesByFid.set(action.fid, sanitized);
-          wordle.timeline.push({ guess: sanitized, at: action.timestamp });
-          wordle.timeline = wordle.timeline.slice(-6);
-        }
-      }
-      return buildWordlePage({ snapBaseUrl, feedback });
+    if (isSnapPostAction(action) && selection) {
+      return pageForView(viewFromHomeSelection(selection), {
+        snapBaseUrl,
+      });
     }
+    return buildHomePage({ snapBaseUrl, selection });
+  }
 
-    if (view === "canvas") {
-      let feedback: string | undefined;
-      if (reset) {
-        resetCanvas();
-        feedback = "Canvas cleared.";
-      } else if (isSnapPostAction(action)) {
-        const colorRaw = action.inputs.paint_color;
-        const selected = typeof colorRaw === "string" ? colorRaw : undefined;
-        const tap = getGridTap(action);
-
-        if (!tap) {
-          feedback = "Tap a pixel tile first, then press Paint.";
-        } else if (!selected) {
-          feedback = "Pick a paint color first.";
-        } else {
-          const paintHex =
-            PAINT_COLOR_TO_HEX[selected as keyof typeof PAINT_COLOR_TO_HEX];
-          const key = tap.row * CANVAS_COLS + tap.col;
-          if (
-            tap.row < 0 ||
-            tap.row >= CANVAS_ROWS ||
-            tap.col < 0 ||
-            tap.col >= CANVAS_COLS
-          ) {
-            feedback = "That pixel is out of bounds.";
-          } else if (paintHex === undefined) {
-            feedback = "Pick a valid paint color.";
-          } else if (paintHex === null) {
-            canvas.pixels.delete(key);
-          } else {
-            canvas.pixels.set(key, paintHex);
-          }
-        }
-      }
-      return buildCanvasPage({ snapBaseUrl, feedback });
-    }
-
-    if (view === "story") {
-      let feedback: string | undefined;
-      if (reset) {
-        resetStory();
-        feedback = "Story reset.";
-      } else if (isSnapPostAction(action)) {
-        const raw = action.inputs.proposal_line;
-        const proposed =
-          typeof raw === "string" ? normalizeWhitespace(raw) : "";
-        if (!proposed || proposed.length < 3) {
-          feedback = "Propose a line (at least 3 characters).";
-        } else if (proposed.length > 80) {
-          feedback = "Keep the line under 80 characters.";
-        } else {
-          const prev = story.votesByFid.get(action.fid);
-          if (prev) {
-            const prevCount = story.proposals.get(prev) ?? 0;
-            if (prevCount <= 1) story.proposals.delete(prev);
-            else story.proposals.set(prev, prevCount - 1);
-          }
-          story.votesByFid.set(action.fid, proposed);
-          story.proposals.set(
-            proposed,
-            (story.proposals.get(proposed) ?? 0) + 1,
-          );
-
-          const top = getTopProposal();
-          if (top && top.votes >= story.voteLockThreshold) {
-            story.lines = [
-              ...story.lines,
-              { text: top.line, author: "@shared" },
-            ];
-            story.proposals.clear();
-            story.votesByFid.clear();
-            feedback =
-              "Locked in! A new story line is now part of the chapter.";
-          }
-        }
-      }
-      return buildStoryPage({ snapBaseUrl, feedback });
-    }
-
-    if (view === "estimate") {
-      let feedback: string | undefined;
-      if (reset) {
-        resetEstimate();
-        feedback = "Estimates cleared.";
-      } else if (isSnapPostAction(action)) {
-        const raw = action.inputs.estimate_guess;
-        const guessNum = typeof raw === "number" ? raw : Number(raw);
-        if (!Number.isFinite(guessNum)) {
-          feedback = "Estimate must be a number.";
-        } else if (guessNum < estimate.min || guessNum > estimate.max) {
-          feedback = "Estimate out of bounds.";
-        } else {
-          const aligned = guessNum - (guessNum % estimate.step);
-          if (aligned !== guessNum) {
-            feedback = "Estimate must align with the slider step.";
-          } else {
-            estimate.guessesByFid.set(action.fid, guessNum);
-          }
-        }
-      }
-      return buildEstimatePage({ snapBaseUrl, feedback });
-    }
-
-    // prediction
+  if (view === "wordle") {
     let feedback: string | undefined;
     if (reset) {
-      resetPrediction();
-      feedback = "Prediction reset.";
+      resetWordle();
+      feedback = "Wordle reset. Crowd board cleared.";
     } else if (isSnapPostAction(action)) {
-      const raw = action.inputs.prediction_vote;
-      const vote = typeof raw === "string" ? raw : "";
-      const nextVote =
-        vote === "Yes" ? "yes" : vote === "No" ? "no" : undefined;
-      if (!nextVote) {
-        feedback = "Pick Yes or No first.";
+      const raw = action.inputs.guess;
+      const guess = typeof raw === "string" ? raw.toUpperCase() : "";
+      const sanitized = guess.replace(/[^A-Z]/g, "").slice(0, 5);
+      if (sanitized.length !== 5) {
+        feedback = "Enter exactly 5 letters (A-Z).";
       } else {
-        prediction.votesByFid.set(action.fid, nextVote);
+        wordle.guessesByFid.set(action.fid, sanitized);
+        wordle.timeline.push({ guess: sanitized, at: action.timestamp });
+        wordle.timeline = wordle.timeline.slice(-6);
       }
     }
-    return buildPredictionPage({ snapBaseUrl, feedback });
-  },
-  {
-    bypassSignatureVerification: bypassSignatureVerification(),
-  },
-);
+    return buildWordlePage({ snapBaseUrl, feedback });
+  }
+
+  if (view === "canvas") {
+    let feedback: string | undefined;
+    if (reset) {
+      resetCanvas();
+      feedback = "Canvas cleared.";
+    } else if (isSnapPostAction(action)) {
+      const colorRaw = action.inputs.paint_color;
+      const selected = typeof colorRaw === "string" ? colorRaw : undefined;
+      const tap = getGridTap(action);
+
+      if (!tap) {
+        feedback = "Tap a pixel tile first, then press Paint.";
+      } else if (!selected) {
+        feedback = "Pick a paint color first.";
+      } else {
+        const paintHex =
+          PAINT_COLOR_TO_HEX[selected as keyof typeof PAINT_COLOR_TO_HEX];
+        const key = tap.row * CANVAS_COLS + tap.col;
+        if (
+          tap.row < 0 ||
+          tap.row >= CANVAS_ROWS ||
+          tap.col < 0 ||
+          tap.col >= CANVAS_COLS
+        ) {
+          feedback = "That pixel is out of bounds.";
+        } else if (paintHex === undefined) {
+          feedback = "Pick a valid paint color.";
+        } else if (paintHex === null) {
+          canvas.pixels.delete(key);
+        } else {
+          canvas.pixels.set(key, paintHex);
+        }
+      }
+    }
+    return buildCanvasPage({ snapBaseUrl, feedback });
+  }
+
+  if (view === "story") {
+    let feedback: string | undefined;
+    if (reset) {
+      resetStory();
+      feedback = "Story reset.";
+    } else if (isSnapPostAction(action)) {
+      const raw = action.inputs.proposal_line;
+      const proposed = typeof raw === "string" ? normalizeWhitespace(raw) : "";
+      if (!proposed || proposed.length < 3) {
+        feedback = "Propose a line (at least 3 characters).";
+      } else if (proposed.length > 80) {
+        feedback = "Keep the line under 80 characters.";
+      } else {
+        const prev = story.votesByFid.get(action.fid);
+        if (prev) {
+          const prevCount = story.proposals.get(prev) ?? 0;
+          if (prevCount <= 1) story.proposals.delete(prev);
+          else story.proposals.set(prev, prevCount - 1);
+        }
+        story.votesByFid.set(action.fid, proposed);
+        story.proposals.set(proposed, (story.proposals.get(proposed) ?? 0) + 1);
+
+        const top = getTopProposal();
+        if (top && top.votes >= story.voteLockThreshold) {
+          story.lines = [...story.lines, { text: top.line, author: "@shared" }];
+          story.proposals.clear();
+          story.votesByFid.clear();
+          feedback = "Locked in! A new story line is now part of the chapter.";
+        }
+      }
+    }
+    return buildStoryPage({ snapBaseUrl, feedback });
+  }
+
+  if (view === "estimate") {
+    let feedback: string | undefined;
+    if (reset) {
+      resetEstimate();
+      feedback = "Estimates cleared.";
+    } else if (isSnapPostAction(action)) {
+      const raw = action.inputs.estimate_guess;
+      const guessNum = typeof raw === "number" ? raw : Number(raw);
+      if (!Number.isFinite(guessNum)) {
+        feedback = "Estimate must be a number.";
+      } else if (guessNum < estimate.min || guessNum > estimate.max) {
+        feedback = "Estimate out of bounds.";
+      } else {
+        const aligned = guessNum - (guessNum % estimate.step);
+        if (aligned !== guessNum) {
+          feedback = "Estimate must align with the slider step.";
+        } else {
+          estimate.guessesByFid.set(action.fid, guessNum);
+        }
+      }
+    }
+    return buildEstimatePage({ snapBaseUrl, feedback });
+  }
+
+  // prediction
+  let feedback: string | undefined;
+  if (reset) {
+    resetPrediction();
+    feedback = "Prediction reset.";
+  } else if (isSnapPostAction(action)) {
+    const raw = action.inputs.prediction_vote;
+    const vote = typeof raw === "string" ? raw : "";
+    const nextVote = vote === "Yes" ? "yes" : vote === "No" ? "no" : undefined;
+    if (!nextVote) {
+      feedback = "Pick Yes or No first.";
+    } else {
+      prediction.votesByFid.set(action.fid, nextVote);
+    }
+  }
+  return buildPredictionPage({ snapBaseUrl, feedback });
+});
 
 export default app;
 

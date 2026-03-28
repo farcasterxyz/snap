@@ -8,8 +8,6 @@ import {
   type SnapFunction,
 } from "@farcaster/snap";
 
-export type { SnapContext, SnapFunction } from "@farcaster/snap";
-
 export type SnapHandlerOptions = {
   /**
    * Route path to register GET and POST handlers on.
@@ -18,10 +16,10 @@ export type SnapHandlerOptions = {
   path?: string;
 
   /**
-   * When true, skip JFS verification and accept plain JSON POST bodies.
-   * Useful for local development. Default false.
+   * When true, skip JFS verification of JSON POST bodies.
+   * When omitted, default to {@link envSkipJFSVerification}.
    */
-  bypassSignatureVerification?: boolean;
+  skipJFSVerification?: boolean;
 
   /**
    * Text shown on GET requests from browsers / non-snap clients.
@@ -34,7 +32,7 @@ export type SnapHandlerOptions = {
  * Register GET and POST snap handlers on `app` at `options.path` (default `/`).
  *
  * - GET  → calls `snapFn({ action: { type: "get" }, request })` and returns the response.
- * - POST → parses the request, verifies the JFS body via {@link verifyJFSRequestBody},
+ * - POST → parses the request, verifies the JFS body via {@link verifyJFSRequestBody} (unless `skipJFSVerification` is true),
  *          calls `snapFn({ action, request })`, and returns the response.
  *
  * All parsing, schema validation, signature verification, and error responses
@@ -68,15 +66,14 @@ export function registerSnapHandler(
 
   app.post(path, async (c) => {
     const raw = c.req.raw;
-    const parseOpts: ParseRequestOptions = {
-      ...(options.bypassSignatureVerification !== undefined
-        ? { bypassSignatureVerification: options.bypassSignatureVerification }
-        : {}),
-    };
+    const skipJFSVerification =
+      options.skipJFSVerification !== undefined
+        ? options.skipJFSVerification
+        : envSkipJFSVerification();
 
-    const parsed = await parseRequest(raw, parseOpts);
+    const parsed = await parseRequest(raw, { skipJFSVerification });
 
-    if (!parsed.ok) {
+    if (!parsed.success) {
       const err = parsed.error;
       switch (err.type) {
         case "method_not_allowed":
@@ -112,5 +109,11 @@ function clientWantsSnapResponse(accept: string | undefined): boolean {
     const media = part.trim().split(";")[0]?.trim().toLowerCase();
     if (media === want) return true;
   }
+  return false;
+}
+
+function envSkipJFSVerification(): boolean {
+  const v = process.env.SKIP_JFS_VERIFICATION?.trim().toLowerCase();
+  if (v === "1" || v === "true" || v === "yes") return true;
   return false;
 }

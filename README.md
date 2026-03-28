@@ -24,7 +24,7 @@ A local snap emulator where you paste a snap URL and interact with it.
 
 This emulator does **not** sign its payload with real private keys, so emulated snaps must bypass signature verification in order to work.
 
-An emulator with full signing is available inside the Farcaster web app.
+An emulator with JFS signing is available inside the Farcaster web app.
 
 ```bash
 pnpm --filter @farcaster/snap-emulator dev

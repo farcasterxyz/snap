@@ -38,7 +38,7 @@ type LogPairResponse = {
   networkError?: boolean;
   /** From `Content-Type` when a `Response` was received; omitted for network failures. */
   contentType?: string | null;
-  /** Authoritative proxy → snap request from `/api/snap` (real signature, POST body, final URL). */
+  /** Authoritative proxy → snap request from `/api/snap` (JFS-shaped JSON POST: header/payload/signature, final URL). */
   resolvedOutboundToSnap?: OutboundSnapRequestLog;
 };
 
@@ -257,8 +257,8 @@ function splitEmulatorDebugForLog(parsed: unknown): {
     d.upstreamSnapMethod === "POST"
       ? "POST"
       : d.upstreamSnapMethod === "GET"
-        ? "GET"
-        : null;
+      ? "GET"
+      : null;
   const { _emulatorDebug: _, ...rest } = o;
   if (!method || !url || !headers) {
     return { bodyForLog: rest };
@@ -1016,8 +1016,9 @@ export default function EmulatorPage() {
                               type="button"
                               onClick={() => {
                                 void (async () => {
-                                  const ok =
-                                    await copyToClipboard(outboundToSnapText);
+                                  const ok = await copyToClipboard(
+                                    outboundToSnapText,
+                                  );
                                   if (!ok) return;
                                   flashCopied(outboundPartKey);
                                 })();
@@ -1116,8 +1117,9 @@ export default function EmulatorPage() {
                             type="button"
                             onClick={() => {
                               void (async () => {
-                                const ok =
-                                  await copyToClipboard(emulatorHeadersText);
+                                const ok = await copyToClipboard(
+                                  emulatorHeadersText,
+                                );
                                 if (!ok) return;
                                 flashCopied(emulatorHeadersPartKey);
                               })();

@@ -24,11 +24,6 @@ function snapBaseUrlFromRequest(request: Request): string {
   return `http://localhost:${process.env.PORT ?? "3015"}`.replace(/\/$/, "");
 }
 
-function bypassSignatureVerification(): boolean {
-  const v = process.env.BYPASS_SIGNATURE_VERIFICATION?.trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
-}
-
 function pageIndexFromQuery(raw: string | null): number {
   if (!raw) return 0;
   const n = Number.parseInt(raw, 10);
@@ -219,17 +214,11 @@ function buildSnapRoot(pageIndex: number, snapBaseUrl: string): SnapResponse {
 
 const app = new Hono();
 
-registerSnapHandler(
-  app,
-  async ({ request }) => {
-    const url = new URL(request.url);
-    const pageIndex = pageIndexFromQuery(url.searchParams.get("page"));
-    const snapBaseUrl = snapBaseUrlFromRequest(request);
-    return buildSnapRoot(pageIndex, snapBaseUrl);
-  },
-  {
-    bypassSignatureVerification: bypassSignatureVerification(),
-  },
-);
+registerSnapHandler(app, async ({ request }) => {
+  const url = new URL(request.url);
+  const pageIndex = pageIndexFromQuery(url.searchParams.get("page"));
+  const snapBaseUrl = snapBaseUrlFromRequest(request);
+  return buildSnapRoot(pageIndex, snapBaseUrl);
+});
 
 export default app;

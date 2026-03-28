@@ -1,5 +1,6 @@
+import { encodePayload } from "@farcaster/jfs";
 import { NextRequest, NextResponse } from "next/server";
-import type { SnapPostRequestBody } from "@farcaster/snap";
+import type { SnapPayload } from "@farcaster/snap";
 import {
   coerceUpstreamUrlToMatchCurrentSnap,
   parseSnapPayload,
@@ -18,7 +19,9 @@ async function readUpstreamJson(upstream: Response): Promise<unknown> {
   } catch {
     const sample = trimmed.length > 200 ? `${trimmed.slice(0, 200)}…` : trimmed;
     throw new Error(
-      `Snap response is not JSON (${upstream.headers.get("content-type") ?? "unknown type"}). Body: ${sample}`,
+      `Snap response is not JSON (${
+        upstream.headers.get("content-type") ?? "unknown type"
+      }). Body: ${sample}`,
     );
   }
 }
@@ -153,14 +156,19 @@ export async function POST(request: NextRequest) {
 
   const userFid = normalizeUserFid(body.fid);
   const timestamp = Math.floor(Date.now() / 1000);
-  const wireBody: SnapPostRequestBody = {
+  const payload: SnapPayload = {
     fid: userFid,
-    inputs: (body.inputs ?? {}) as SnapPostRequestBody["inputs"],
+    inputs: (body.inputs ?? {}) as SnapPayload["inputs"],
     button_index: body.buttonIndex ?? 0,
     timestamp,
   };
 
-  const postBody = JSON.stringify(wireBody);
+  const jfsEnvelope = {
+    header: "dev",
+    payload: encodePayload(payload),
+    signature: "dev",
+  };
+  const postBody = JSON.stringify(jfsEnvelope);
   const contentType = "application/json; charset=utf-8";
 
   try {

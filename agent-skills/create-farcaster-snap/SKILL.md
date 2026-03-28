@@ -89,7 +89,7 @@ When the user wants a **live** snap (not just JSON), use the workspace package *
 - Local dev: **`pnpm --filter snap-template dev`** runs **`src/server.ts`** (default port **3003**).
 - **Vercel / edge:** **`template/src/index.ts`** wires the same Hono app via `hono/vercel` (`handle`) for `GET`/`POST` exports — match whatever your host expects (see **`template/README.md`**).
 - Set **`SNAP_PUBLIC_BASE_URL`** to your deployment origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly.
-- For local POST testing, set **`BYPASS_SIGNATURE_VERIFICATION=1`**.
+- For local POST testing, set **`SKIP_JFS_VERIFICATION=1`**.
 
 Deploy (e.g. host.neynar.app): follow **`template/README.md`** — use the **`hono`** framework for this template, not Vite.
 

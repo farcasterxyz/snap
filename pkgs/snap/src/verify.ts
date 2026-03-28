@@ -1,8 +1,8 @@
 import {
   compact,
   decode,
+  decodePayload as jfsDecodePayload,
   verify as jfsVerify,
-  type JsonFarcasterSignature,
 } from "@farcaster/jfs";
 import { hexToBytes, type Hex } from "viem";
 import {
@@ -11,7 +11,11 @@ import {
 } from "./hubs";
 
 export async function verifyJFSRequestBody<TPayload>(
-  requestBody: string,
+  requestBody: {
+    header: string;
+    payload: string;
+    signature: string;
+  },
   options: {
     hubHttpBaseUrl?: string;
   } = {},
@@ -25,11 +29,19 @@ export async function verifyJFSRequestBody<TPayload>(
       data: TPayload;
     }
 > {
-  const normalized = jfsRequestBodyJsonToCompact(requestBody);
-  if (!normalized.ok) {
-    return { valid: false, error: normalized.error };
+  let compactJfs: string;
+  try {
+    compactJfs = compact({
+      header: requestBody.header,
+      payload: requestBody.payload,
+      signature: requestBody.signature,
+    });
+  } catch (error) {
+    return {
+      valid: false,
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
   }
-  const compactJfs = normalized.compact;
 
   let decoded: ReturnType<typeof decode<TPayload>>;
   try {
@@ -98,63 +110,8 @@ export async function verifyJFSRequestBody<TPayload>(
   };
 }
 
-/**
- * Snap POST bodies use JSON: `{ "header", "payload", "signature" }` (base64url segments).
- * This is turned into the JFS compact string (`header.payload.signature`) for crypto verification.
- */
-function jfsRequestBodyJsonToCompact(
-  raw: string,
-): { ok: true; compact: string } | { ok: false; error: Error } {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return { ok: false, error: new Error("request body is empty") };
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(trimmed);
-  } catch {
-    return {
-      ok: false,
-      error: new Error("request body is not valid JSON"),
-    };
-  }
-  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
-    return {
-      ok: false,
-      error: new Error("request body must be a JSON object"),
-    };
-  }
-  const o = parsed as Record<string, unknown>;
-  const header = o.header;
-  const payload = o.payload;
-  const signature = o.signature;
-  if (
-    typeof header !== "string" ||
-    typeof payload !== "string" ||
-    typeof signature !== "string"
-  ) {
-    return {
-      ok: false,
-      error: new Error(
-        "request body must include string header, payload, and signature",
-      ),
-    };
-  }
-  if (!header.trim() || !payload.trim() || !signature.trim()) {
-    return {
-      ok: false,
-      error: new Error("header, payload, and signature must be non-empty"),
-    };
-  }
-  const jfs: JsonFarcasterSignature = { header, payload, signature };
-  try {
-    return { ok: true, compact: compact(jfs) };
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error(String(error)),
-    };
-  }
+export function decodePayload<TPayload>(payload: string): TPayload {
+  return jfsDecodePayload<TPayload>(payload);
 }
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {

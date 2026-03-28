@@ -50,10 +50,10 @@ registerSnapHandler(
           position <= 25
             ? "very peaceful"
             : position <= 50
-              ? "leaning peaceful"
-              : position <= 75
-                ? "leaning wartime"
-                : "full wartime";
+            ? "leaning peaceful"
+            : position <= 75
+            ? "leaning wartime"
+            : "full wartime";
 
         return {
           version: "1.0",
@@ -68,7 +68,9 @@ registerSnapHandler(
                 {
                   type: "text",
                   style: "body",
-                  content: `${peacePct}% lean peacetime · ${100 - peacePct}% lean wartime · ${total} votes`,
+                  content: `${peacePct}% lean peacetime · ${
+                    100 - peacePct
+                  }% lean wartime · ${total} votes`,
                 },
                 {
                   type: "text",
@@ -132,7 +134,6 @@ registerSnapHandler(
   },
   {
     path: "/ceo-spectrum",
-    bypassSignatureVerification: bypassSignatureVerification(),
   },
 );
 
@@ -169,7 +170,9 @@ registerSnapHandler(
       if (!isNaN(amount) && amount > 0) {
         const currentValue = amount * PREMIUM;
         const returnPct = Math.round((PREMIUM - 1) * 100);
-        const body = `$${fmtNum(amount)} invested at NAV → $${fmtNum(currentValue)} today (+${returnPct.toLocaleString()}%)`;
+        const body = `$${fmtNum(amount)} invested at NAV → $${fmtNum(
+          currentValue,
+        )} today (+${returnPct.toLocaleString()}%)`;
 
         return {
           version: "1.0",
@@ -196,7 +199,9 @@ registerSnapHandler(
                 {
                   type: "text",
                   style: "caption",
-                  content: `$650M fund at $5.4B market cap — investors paying ${PREMIUM.toFixed(1)}x NAV for pre-IPO access`,
+                  content: `$650M fund at $5.4B market cap — investors paying ${PREMIUM.toFixed(
+                    1,
+                  )}x NAV for pre-IPO access`,
                 },
               ],
             },
@@ -224,7 +229,9 @@ registerSnapHandler(
             {
               type: "text",
               style: "body",
-              content: `NAV $${NAV_PER_SHARE} · Market $${CURRENT_PRICE} · ${PREMIUM.toFixed(1)}x premium`,
+              content: `NAV $${NAV_PER_SHARE} · Market $${CURRENT_PRICE} · ${PREMIUM.toFixed(
+                1,
+              )}x premium`,
             },
             {
               type: "list",
@@ -255,7 +262,6 @@ registerSnapHandler(
   },
   {
     path: "/vcx-explorer",
-    bypassSignatureVerification: bypassSignatureVerification(),
   },
 );
 
@@ -269,11 +275,6 @@ function snapBaseUrl(): string {
     process.env.SNAP_PUBLIC_BASE_URL ??
     `http://localhost:${process.env.PORT ?? "3013"}`;
   return raw.replace(/\/$/, "");
-}
-
-function bypassSignatureVerification(): boolean {
-  const v = process.env.BYPASS_SIGNATURE_VERIFICATION?.trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
 }
 
 function fmtNum(n: number): string {

@@ -23,6 +23,9 @@ importers:
 
   apps/emulator:
     dependencies:
+      '@farcaster/jfs':
+        specifier: 0.2.2
+        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
       '@farcaster/snap':
         specifier: workspace:*
         version: link:../../pkgs/snap
@@ -35,6 +38,9 @@ importers:
       '@json-render/react':
         specifier: ^0.15.0
         version: 0.15.0(react@19.2.4)(zod@4.3.6)
+      '@noble/curves':
+        specifier: 2.0.1
+        version: 2.0.1
       next:
         specifier: ^16.2.0
         version: 16.2.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -44,6 +50,9 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      viem:
+        specifier: ^2.21.0
+        version: 2.47.6(typescript@5.9.3)(zod@4.3.6)
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -192,6 +201,9 @@ importers:
         specifier: workspace:*
         version: link:../snap
     devDependencies:
+      '@farcaster/jfs':
+        specifier: ^0.2.2
+        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
@@ -201,6 +213,9 @@ importers:
       typescript:
         specifier: ^5.4.0
         version: 5.9.3
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@25.5.0)(lightningcss@1.32.0)
 
   pkgs/snap:
     dependencies:

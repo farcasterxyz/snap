@@ -10,39 +10,33 @@ const clickCountByFid = new Map<number, number>();
 
 const app = new Hono();
 
-registerSnapHandler(
-  app,
-  async ({ action, request }) => {
-    const snapBaseUrl = snapBaseUrlFromRequest(request);
+registerSnapHandler(app, async ({ action, request }) => {
+  const snapBaseUrl = snapBaseUrlFromRequest(request);
 
-    if (action.type === "get") {
-      return snapRoot(
-        0,
-        snapBaseUrl,
-        "State is keyed by fid. Press Increment or Reset, then Submit.",
-      );
-    }
+  if (action.type === "get") {
+    return snapRoot(
+      0,
+      snapBaseUrl,
+      "State is keyed by fid. Press Increment or Reset, then Submit.",
+    );
+  }
 
-    const current = clickCountByFid.get(action.fid) ?? 0;
-    const rawChoice = action.inputs[BUTTON_GROUP_NAME];
-    const choice = typeof rawChoice === "string" ? rawChoice : undefined;
+  const current = clickCountByFid.get(action.fid) ?? 0;
+  const rawChoice = action.inputs[BUTTON_GROUP_NAME];
+  const choice = typeof rawChoice === "string" ? rawChoice : undefined;
 
-    let next = current;
-    if (choice === OPT_RESET) next = 0;
-    else if (choice === OPT_INCREMENT) next = current + 1;
-    clickCountByFid.set(action.fid, next);
+  let next = current;
+  if (choice === OPT_RESET) next = 0;
+  else if (choice === OPT_INCREMENT) next = current + 1;
+  clickCountByFid.set(action.fid, next);
 
-    const caption =
-      choice === undefined
-        ? "No action selected. Pick Increment or Reset, then Submit."
-        : `Applied: ${choice}`;
+  const caption =
+    choice === undefined
+      ? "No action selected. Pick Increment or Reset, then Submit."
+      : `Applied: ${choice}`;
 
-    return snapRoot(next, snapBaseUrl, caption);
-  },
-  {
-    bypassSignatureVerification: bypassSignatureVerification(),
-  },
-);
+  return snapRoot(next, snapBaseUrl, caption);
+});
 
 export default app;
 
@@ -90,9 +84,4 @@ function snapBaseUrlFromRequest(request: Request): string {
 
   if (host) return `${proto}://${host}`.replace(/\/$/, "");
   return "http://localhost:3003";
-}
-
-function bypassSignatureVerification(): boolean {
-  const v = process.env.BYPASS_SIGNATURE_VERIFICATION?.trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
 }

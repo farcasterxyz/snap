@@ -16,12 +16,12 @@ export {
 export {
   rootSchema,
   firstPageRootSchema,
-  postRequestBodySchema,
+  payloadSchema,
   type SnapAction,
   type SnapContext,
   type SnapResponse,
   type SnapFunction,
-  type SnapPostRequestBody,
+  type SnapPayload,
 } from "./schemas";
 export {
   parseRequest,

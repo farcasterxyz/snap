@@ -4,7 +4,7 @@
   "description": "Shared Games — collaborative games in the Farcaster feed",
   "scripts": {
     "predev": "pnpm --filter @farcaster/snap run build",
-    "dev": "tsx watch src/server.ts",
+    "dev": "SKIP_JFS_VERIFICATION=true tsx watch src/server.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
   },

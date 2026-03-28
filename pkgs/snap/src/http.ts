@@ -1,14 +1,14 @@
 import { MEDIA_TYPE, SPEC_VERSION } from "./constants";
-import { verifyJFSRequestBody } from "./verify";
+import { decodePayload, verifyJFSRequestBody } from "./verify";
 import {
-  postRequestBodySchema,
+  payloadSchema,
   rootSchema,
   type SnapAction,
   type SnapResponse,
   type SnapPage,
 } from "./schemas";
 import { validatePage } from "./validator";
-import type { z } from "zod";
+import { z } from "zod";
 
 /** Default replay window per SPEC.md § Replay Protection (5 minutes). */
 const DEFAULT_SNAP_POST_MAX_SKEW_SECONDS = 300 as const;
@@ -37,16 +37,16 @@ export type ParseRequestError =
 
 export type ParseRequestOptions = {
   /**
-   * When true, accept plain JSON POST bodies without JFS verification (local dev only).
+   * When true, skip JFS verification of JSON POST bodies.
    * When false (default), the body must be JSON `{ header, payload, signature }` verified via
    * {@link verifyJFSRequestBody}.
    */
-  bypassSignatureVerification?: boolean;
+  skipJFSVerification?: boolean;
 };
 
 export type ParseRequestResult =
-  | { ok: true; action: SnapAction }
-  | { ok: false; error: ParseRequestError };
+  | { success: true; action: SnapAction }
+  | { success: false; error: ParseRequestError };
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return v !== null && typeof v === "object" && !Array.isArray(v);
@@ -59,11 +59,17 @@ function normalizeToRoot(payload: unknown): unknown {
   return { version: SPEC_VERSION, page: payload };
 }
 
+const requestBodySchema = z.object({
+  header: z.string(),
+  payload: z.string(),
+  signature: z.string(),
+});
+
 /**
  * Parse and validate Farcaster snap requests:
  * - `GET` is allowed for first-page loads and returns `{ type: "get" }`.
  * - `POST`: by default the body is JSON JFS (`header` / `payload` / `signature`) verified with
- *   {@link verifyJFSRequestBody}; with `bypassSignatureVerification`, accepts plain action JSON (dev only).
+ *   {@link verifyJFSRequestBody}; with `skipJFSVerification`, accepts plain action JSON (dev only).
  */
 export async function parseRequest(
   request: Request,
@@ -71,7 +77,7 @@ export async function parseRequest(
 ): Promise<ParseRequestResult> {
   if (!["GET", "POST"].includes(request.method)) {
     return {
-      ok: false,
+      success: false,
       error: {
         type: "method_not_allowed",
         message: `expected POST, received ${request.method}`,
@@ -81,73 +87,77 @@ export async function parseRequest(
 
   if (request.method === "GET") {
     return {
-      ok: true,
+      success: true,
       action: { type: "get" },
     };
   }
 
-  const text = await request.text();
   const maxSkew = DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
   const nowSec = Math.floor(Date.now() / 1000);
 
-  const finishPostJson = (json: unknown): ParseRequestResult => {
-    const parsed = postRequestBodySchema.safeParse(json);
-    if (!parsed.success) {
-      return {
-        ok: false,
-        error: { type: "validation", issues: parsed.error.issues },
-      };
-    }
-    const body = parsed.data;
-    if (Math.abs(nowSec - body.timestamp) > maxSkew) {
-      return {
-        ok: false,
-        error: {
-          type: "replay",
-          message: `timestamp outside allowed skew of ${maxSkew}s`,
-        },
-      };
-    }
-    return {
-      ok: true,
-      action: {
-        type: "post",
-        fid: body.fid,
-        inputs: body.inputs,
-        buttonIndex: body.button_index,
-        timestamp: body.timestamp,
-      },
-    };
-  };
+  const text = await request.text();
 
-  if (options.bypassSignatureVerification) {
-    let json: unknown;
-    try {
-      json = JSON.parse(text.trim());
-    } catch {
-      return {
-        ok: false,
-        error: {
-          type: "invalid_json",
-          message: "request body is not valid JSON",
-        },
-      };
-    }
-    return finishPostJson(json);
-  }
-
-  const jfs = await verifyJFSRequestBody(text);
-  if (!jfs.valid) {
+  let jsonBody: unknown;
+  try {
+    jsonBody = JSON.parse(text);
+  } catch {
     return {
-      ok: false,
+      success: false,
       error: {
-        type: "signature",
-        message: jfs.error.message,
+        type: "invalid_json",
+        message: "request body is not valid JSON",
       },
     };
   }
 
-  return finishPostJson(jfs.data);
+  const parsed = requestBodySchema.safeParse(jsonBody);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: { type: "invalid_json", message: parsed.error.message },
+    };
+  }
+
+  if (!options.skipJFSVerification) {
+    const jfs = await verifyJFSRequestBody(parsed.data);
+    if (!jfs.valid) {
+      return {
+        success: false,
+        error: { type: "signature", message: jfs.error.message },
+      };
+    }
+  }
+
+  const payloadParsed = payloadSchema.safeParse(
+    decodePayload(parsed.data.payload),
+  );
+  if (!payloadParsed.success) {
+    return {
+      success: false,
+      error: { type: "validation", issues: payloadParsed.error.issues },
+    };
+  }
+
+  const body = payloadParsed.data;
+  if (Math.abs(nowSec - body.timestamp) > maxSkew) {
+    return {
+      success: false,
+      error: {
+        type: "replay",
+        message: `timestamp outside allowed skew of ${maxSkew}s`,
+      },
+    };
+  }
+  return {
+    success: true,
+    action: {
+      type: "post",
+      fid: body.fid,
+      inputs: body.inputs,
+      buttonIndex: body.button_index,
+      timestamp: body.timestamp,
+    },
+  };
 }
 
 export type SendResponseOptions = ResponseInit & {

@@ -1,48 +1,55 @@
 import { describe, expect, it } from "vitest";
-import { parseRequest, sendResponse } from "@farcaster/snap";
+import { parseRequest, sendResponse, type SnapPayload } from "../src/index";
 import {
   DEFAULT_BUTTON_LAYOUT,
   DEFAULT_THEME_ACCENT,
   MEDIA_TYPE,
 } from "../src/constants";
+import { decodePayload, encodePayload } from "@farcaster/jfs";
 
 describe("parseRequest", () => {
   function postBody(overrides: Record<string, unknown> = {}) {
-    return {
+    const payload: SnapPayload = {
       fid: 42,
       inputs: { guess: "HELLO" },
       button_index: 0,
       timestamp: Math.floor(Date.now() / 1000),
       ...overrides,
     };
+    return {
+      header: "dev",
+      payload: encodePayload(payload),
+      signature: "dev",
+    };
   }
 
   it("accepts GET as a first-page action", async () => {
     const res = await parseRequest(
       new Request("https://example.com/snap", { method: "GET" }),
-      { bypassSignatureVerification: true },
+      { skipJFSVerification: true },
     );
-    expect(res).toEqual({ ok: true, action: { type: "get" } });
+    expect(res).toEqual({ success: true, action: { type: "get" } });
   });
 
-  it("accepts plain JSON POST when bypassSignatureVerification is true", async () => {
+  it("accepts plain JSON POST when skipJFSVerification is true", async () => {
     const body = postBody();
+    const payload = decodePayload<SnapPayload>(body.payload);
     const res = await parseRequest(
       new Request("https://example.com/snap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }),
-      { bypassSignatureVerification: true },
+      { skipJFSVerification: true },
     );
     expect(res).toEqual({
-      ok: true,
+      success: true,
       action: {
         type: "post",
         fid: 42,
         inputs: { guess: "HELLO" },
         buttonIndex: 0,
-        timestamp: body.timestamp,
+        timestamp: payload.timestamp,
       },
     });
   });
@@ -53,25 +60,26 @@ describe("parseRequest", () => {
         method: "POST",
         body: "not-json",
       }),
-      { bypassSignatureVerification: true },
+      { skipJFSVerification: true },
     );
-    expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.error.type).toBe("invalid_json");
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error.type).toBe("invalid_json");
   });
 
   it("fails replay when timestamp is stale (bypass)", async () => {
     const res = await parseRequest(
       new Request("https://example.com/snap", {
         method: "POST",
-        body: JSON.stringify({
-          ...postBody(),
-          timestamp: Math.floor(Date.now() / 1000) - 400,
-        }),
+        body: JSON.stringify(
+          postBody({
+            timestamp: Math.floor(Date.now() / 1000) - 400,
+          }),
+        ),
       }),
-      { bypassSignatureVerification: true },
+      { skipJFSVerification: true },
     );
-    expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.error.type).toBe("replay");
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error.type).toBe("replay");
   });
 
   it("fails JFS verification when body is not valid JFS (no bypass)", async () => {
@@ -80,10 +88,10 @@ describe("parseRequest", () => {
         method: "POST",
         body: JSON.stringify(postBody()),
       }),
-      { bypassSignatureVerification: false },
+      { skipJFSVerification: false },
     );
-    expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.error.type).toBe("signature");
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error.type).toBe("signature");
   });
 });
 

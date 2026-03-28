@@ -4,19 +4,25 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:workspace-deps": "pnpm --filter @farcaster/snap --filter @farcaster/snap-ui-elements run build",
     "clean": "rm -rf .next",
+    "prebuild": "pnpm run build:workspace-deps",
+    "predev": "pnpm run build:workspace-deps",
     "dev": "next dev -p 3000 --webpack",
     "start": "next start -p 3000",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@farcaster/jfs": "0.2.2",
     "@farcaster/snap": "workspace:*",
     "@farcaster/snap-ui-elements": "workspace:*",
     "@json-render/core": "^0.15.0",
     "@json-render/react": "^0.15.0",
+    "@noble/curves": "2.0.1",
     "next": "^16.2.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "viem": "^2.21.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

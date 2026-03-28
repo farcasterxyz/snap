@@ -8,53 +8,47 @@ const OPT_LOCAL = "Local";
 
 const app = new Hono();
 
-registerSnapHandler(
-  app,
-  async ({ action }) => {
-    const pref =
-      action.type === "post" &&
-      typeof action.inputs[BUTTON_GROUP_NAME] === "string"
-        ? (action.inputs[BUTTON_GROUP_NAME] as string)
-        : undefined;
-    const body = timeBody(pref);
-    return {
-      version: "1.0",
-      page: {
-        theme: { accent: "blue" },
-        button_layout: "stack",
-        elements: {
-          type: "stack" as const,
-          children: [
-            { type: "text", style: "title", content: "Server time" },
-            { type: "text", style: "body", content: body },
-            {
-              type: "button_group",
-              name: BUTTON_GROUP_NAME,
-              options: [OPT_ISO, OPT_LOCAL],
-              style: "row",
-            },
-            {
-              type: "text",
-              style: "caption",
-              content:
-                "Choose format, then refresh. Time is from this server when it responds.",
-            },
-          ],
-        },
-        buttons: [
+registerSnapHandler(app, async ({ action }) => {
+  const pref =
+    action.type === "post" &&
+    typeof action.inputs[BUTTON_GROUP_NAME] === "string"
+      ? (action.inputs[BUTTON_GROUP_NAME] as string)
+      : undefined;
+  const body = timeBody(pref);
+  return {
+    version: "1.0",
+    page: {
+      theme: { accent: "blue" },
+      button_layout: "stack",
+      elements: {
+        type: "stack" as const,
+        children: [
+          { type: "text", style: "title", content: "Server time" },
+          { type: "text", style: "body", content: body },
           {
-            label: "Refresh",
-            action: "post",
-            target: `${snapBaseUrl()}/`,
+            type: "button_group",
+            name: BUTTON_GROUP_NAME,
+            options: [OPT_ISO, OPT_LOCAL],
+            style: "row",
+          },
+          {
+            type: "text",
+            style: "caption",
+            content:
+              "Choose format, then refresh. Time is from this server when it responds.",
           },
         ],
       },
-    };
-  },
-  {
-    bypassSignatureVerification: bypassSignatureVerification(),
-  },
-);
+      buttons: [
+        {
+          label: "Refresh",
+          action: "post",
+          target: `${snapBaseUrl()}/`,
+        },
+      ],
+    },
+  };
+});
 
 export default app;
 
@@ -67,11 +61,6 @@ function snapBaseUrl(): string {
     process.env.SNAP_PUBLIC_BASE_URL ??
     `http://localhost:${process.env.PORT ?? "3014"}`;
   return raw.replace(/\/$/, "");
-}
-
-function bypassSignatureVerification(): boolean {
-  const v = process.env.BYPASS_SIGNATURE_VERIFICATION?.trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
 }
 
 function timeBody(pref: string | undefined): string {

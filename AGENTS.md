@@ -18,7 +18,7 @@
 - The `pkgs/ui-elements` workspace package (`@farcaster/snap-ui-elements`) defines the json-render catalog; the emulator depends on it to render snaps.
 - Local dev ports: emulator on 3000, `snap-template` on 3003; example apps under `examples/` use ports 3010 and higher with a distinct port per app.
 - For snap HTTP GET, send `Accept: application/json+farcaster-snap`; example servers typically expose JSON on `/snap`, not on bare `/`.
-- For local POST in `snap-template`, set `BYPASS_SIGNATURE_VERIFICATION=1` to skip hub signature verification (also accepts `true`/`yes`).
+- Local `registerSnapHandler` skips JFS when `NODE_ENV` is not `production` (unsigned JSON POSTs, including from `apps/emulator`). Set `SKIP_JFS_VERIFICATION=no` to require JFS anyway, or `=yes` / `=1` to force bypass in production (dev-only).
 - When using `FARCASTER_HUB_URL`, include the port (e.g. `https://rho.farcaster.xyz:3381`).
 - Set `SNAP_PUBLIC_BASE_URL` to the canonical HTTPS origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly.
 - Snap hub verification uses the Hubble **HTTP** API only (no gRPC client). Hub URL helpers accept `http`/`https` with an explicit port or bare `host:port`; `grpc:`/`grpcs:` are invalid.

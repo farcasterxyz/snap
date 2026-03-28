@@ -233,14 +233,18 @@ const gridElementSchema = z
       if (c.row < 0 || c.row >= rows) {
         ctx.addIssue({
           code: "custom",
-          message: `grid cell row ${c.row} is out of bounds (expected 0 to ${rows - 1})`,
+          message: `grid cell row ${c.row} is out of bounds (expected 0 to ${
+            rows - 1
+          })`,
           path: [...base, "row"],
         });
       }
       if (c.col < 0 || c.col >= cols) {
         ctx.addIssue({
           code: "custom",
-          message: `grid cell col ${c.col} is out of bounds (expected 0 to ${cols - 1})`,
+          message: `grid cell col ${c.col} is out of bounds (expected 0 to ${
+            cols - 1
+          })`,
           path: [...base, "col"],
         });
       }
@@ -538,7 +542,7 @@ const postInputValueSchema = z.union([
     .strict(),
 ]);
 
-export const postRequestBodySchema = z
+export const payloadSchema = z
   .object({
     fid: z.number().int().nonnegative(),
     inputs: z.record(z.string(), postInputValueSchema).default({}),
@@ -550,13 +554,13 @@ export const postRequestBodySchema = z
 
 export type SnapResponse = z.infer<typeof rootSchema>;
 export type SnapPage = SnapResponse["page"];
-export type SnapPostRequestBody = z.infer<typeof postRequestBodySchema>;
+export type SnapPayload = z.infer<typeof payloadSchema>;
 
-const snapPostActionSchema = postRequestBodySchema
+const snapPostActionSchema = payloadSchema
   .omit({ button_index: true })
   .extend({
     type: z.literal("post"),
-    buttonIndex: postRequestBodySchema.shape.button_index,
+    buttonIndex: payloadSchema.shape.button_index,
   })
   .strict();
 

@@ -53,7 +53,7 @@ describe("verifyJFSRequestBody", () => {
   });
 
   it("accepts JSON JFS body and verifies crypto + hub signer list", async () => {
-    const result = await verifyJFSRequestBody(validRequestBody);
+    const result = await verifyJFSRequestBody(JSON.parse(validRequestBody));
     expect(result.valid).toBe(true);
     if (result.valid) {
       expect(result.data).toEqual({
