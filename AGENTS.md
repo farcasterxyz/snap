@@ -22,7 +22,7 @@
 - When using `FARCASTER_HUB_URL`, include the port (e.g. `https://rho.farcaster.xyz:3381`).
 - Set `SNAP_PUBLIC_BASE_URL` to the canonical HTTPS origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly.
 - Snap hub verification uses the Hubble **HTTP** API only (no gRPC client). Hub URL helpers accept `http`/`https` with an explicit port or bare `host:port`; `grpc:`/`grpcs:` are invalid.
-- In `pkgs/emulator`, **link** buttons first GET `/api/snap?url=…` for the resolved target; if the response is valid snap JSON, the emulator replaces the preview and syncs the Snap URL field, otherwise it opens the link in a new tab.
-- For `pkgs/emulator` local dev on Next.js 16+, use `next dev -p 3000 --webpack` when forcing the Webpack dev server (supported flag). Do not use undocumented flags such as `--no-turbopack`.
+- In `apps/emulator`, **link** buttons first GET `/api/snap?url=…` for the resolved target; if the response is valid snap JSON, the emulator replaces the preview and syncs the Snap URL field, otherwise it opens the link in a new tab.
+- For `apps/emulator` local dev on Next.js 16+, use `next dev -p 3000 --webpack` when forcing the Webpack dev server (supported flag). Do not use undocumented flags such as `--no-turbopack`.
 - Snap POST authentication now relies on JFS request-body verification (`verifyJFSRequestBody`) as the single verification path; legacy header/signing verification flows were removed.
 - `pkgs/snap` currently uses a post-build ESM import rewrite (`tsc-alias --resolve-full-paths --resolve-full-extension .js`) so Node ESM consumers (like Vite config/plugin runtime) can resolve `dist/*` imports. Revisit later: migrate to a pure NodeNext + explicit `.js` source-import strategy.
