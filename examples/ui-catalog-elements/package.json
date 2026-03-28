@@ -1,0 +1,23 @@
+{
+  "name": "ui-catalog-elements",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "predev": "pnpm --filter @farcaster/snap run build",
+    "dev": "tsx watch src/server.ts",
+    "build": "pnpm --filter @farcaster/snap run build",
+    "typecheck": "pnpm --filter @farcaster/snap run build && tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.0.0",
+    "hono": "^4.0.0",
+    "@farcaster/snap": "workspace:*",
+    "@farcaster/snap-hono": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^24.5.2"
+  }
+}

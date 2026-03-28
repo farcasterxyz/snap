@@ -1,0 +1,5 @@
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "installCommand": "npm install",
+  "buildCommand": "npm run build"
+}
