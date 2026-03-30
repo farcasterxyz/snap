@@ -37,7 +37,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@farcaster/jfs": "^0.2.2",
+    "@farcaster/jfs": "^0.3.0",
     "viem": "^2.21.0",
     "zod": "^4.3.6"
   },

@@ -226,8 +226,8 @@ importers:
   pkgs/snap:
     dependencies:
       '@farcaster/jfs':
-        specifier: ^0.2.2
-        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+        specifier: ^0.3.0
+        version: 0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
       viem:
         specifier: ^2.21.0
         version: 2.47.6(typescript@5.9.3)(zod@4.3.6)
@@ -532,6 +532,12 @@ packages:
     resolution: {integrity: sha512-haxFYT7f0xBqAmugJGk7NR1WXOKRuOcQpHnspngwkODY2R8AUXakL4VxHcXLEGgY6wgfaN+oAOwR3k082uYgUw==}
     peerDependencies:
       '@noble/curves': 2.x
+      typescript: '>= 5.8.3'
+      viem: 2.x
+
+  '@farcaster/jfs@0.3.0':
+    resolution: {integrity: sha512-UN/yLETO2iuhr/fdOGsZ9vnjvsAtD0ELd8lBJ5bQDmj9N8uowYE3fMQLQfjFEL/6X/nB7blTRRsBVV3wsQ61yQ==}
+    peerDependencies:
       typescript: '>= 5.8.3'
       viem: 2.x
 
@@ -2283,6 +2289,12 @@ snapshots:
       - zod
 
   '@farcaster/jfs@0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))':
+    dependencies:
+      '@noble/curves': 2.0.1
+      typescript: 5.9.3
+      viem: 2.47.6(typescript@5.9.3)(zod@4.3.6)
+
+  '@farcaster/jfs@0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))':
     dependencies:
       '@noble/curves': 2.0.1
       typescript: 5.9.3

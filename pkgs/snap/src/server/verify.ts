@@ -1,4 +1,10 @@
-import * as jfs from "@farcaster/jfs"; // must be imported like this to avoid ERR_REQUIRE_ESM error
+import {
+  compact,
+  decode,
+  decodePayload as jfsDecodePayload,
+  encodePayload as jfsEncodePayload,
+  verify,
+} from "@farcaster/jfs";
 import { hexToBytes, type Hex } from "viem";
 import {
   DEFAULT_SNAP_HUB_HTTP_BASE_URL,
@@ -26,7 +32,7 @@ export async function verifyJFSRequestBody<TPayload>(
 > {
   let compactJfs: string;
   try {
-    compactJfs = jfs.compact({
+    compactJfs = compact({
       header: requestBody.header,
       payload: requestBody.payload,
       signature: requestBody.signature,
@@ -38,9 +44,9 @@ export async function verifyJFSRequestBody<TPayload>(
     };
   }
 
-  let decoded: ReturnType<typeof jfs.decode<TPayload>>;
+  let decoded: ReturnType<typeof decode<TPayload>>;
   try {
-    decoded = jfs.decode<TPayload>(compactJfs);
+    decoded = decode<TPayload>(compactJfs);
   } catch (error) {
     return {
       valid: false,
@@ -49,7 +55,7 @@ export async function verifyJFSRequestBody<TPayload>(
   }
 
   try {
-    await jfs.verify({ data: compactJfs, strict: true, keyTypes: ["app_key"] });
+    await verify({ data: compactJfs, strict: true, keyTypes: ["app_key"] });
   } catch (error) {
     return {
       valid: false,
@@ -106,11 +112,11 @@ export async function verifyJFSRequestBody<TPayload>(
 }
 
 export function decodePayload<TPayload>(payload: string): TPayload {
-  return jfs.decodePayload<TPayload>(payload);
+  return jfsDecodePayload<TPayload>(payload);
 }
 
 export function encodePayload<TPayload>(payload: TPayload): string {
-  return jfs.encodePayload(payload);
+  return jfsEncodePayload(payload);
 }
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
