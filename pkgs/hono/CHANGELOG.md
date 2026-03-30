@@ -1,5 +1,11 @@
 # @farcaster/snap-hono
 
+## 1.1.2
+
+### Patch Changes
+
+- [`94a09ac`](https://github.com/farcasterxyz/snap/commit/94a09ac79803ae090f9ae64bc142d17f5dd5768f) Thanks [@lyoshenka](https://github.com/lyoshenka)! - remove hub-nodejs dep so we can deploy to vercel
+
 ## 1.1.1
 
 ### Patch Changes
