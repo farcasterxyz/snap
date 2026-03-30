@@ -27,8 +27,8 @@ importers:
   apps/emulator:
     dependencies:
       '@farcaster/jfs':
-        specifier: 0.2.2
-        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+        specifier: 0.3.0
+        version: 0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
       '@farcaster/snap':
         specifier: workspace:*
         version: link:../../pkgs/snap
@@ -205,8 +205,8 @@ importers:
         version: link:../snap
     devDependencies:
       '@farcaster/jfs':
-        specifier: ^0.2.2
-        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+        specifier: ^0.3.0
+        version: 0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
@@ -2656,7 +2656,7 @@ snapshots:
 
   '@scure/bip32@1.7.0':
     dependencies:
-      '@noble/curves': 1.9.7
+      '@noble/curves': 1.9.1
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
 
