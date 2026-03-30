@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.2.2
+
+### Patch Changes
+
+- [`d32b8a8`](https://github.com/farcasterxyz/snap/commit/d32b8a82e406c7ad7ceaafb66cb372865c6c3052) Thanks [@lyoshenka](https://github.com/lyoshenka)! - allegedly fix ESM error for real
+
 ## 1.2.1
 
 ### Patch Changes
