@@ -1,5 +1,11 @@
 # @farcaster/snap-hono
 
+## 1.1.1
+
+### Patch Changes
+
+- [`6efe7dc`](https://github.com/farcasterxyz/snap/commit/6efe7dc241c068c1120aa6a9262125fb16a315ae) Thanks [@lyoshenka](https://github.com/lyoshenka)! - fix hono missing.js extension
+
 ## 1.1.0
 
 ### Minor Changes

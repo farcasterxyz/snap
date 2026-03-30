@@ -12,7 +12,7 @@
     "@hono/node-server": "^1.0.0",
     "hono": "^4.0.0",
     "@farcaster/snap": "^1.2.0",
-    "@farcaster/snap-hono": "^1.1.0"
+    "@farcaster/snap-hono": "^1.1.1"
   },
   "devDependencies": {
     "tsx": "^4.0.0",
