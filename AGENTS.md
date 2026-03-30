@@ -11,6 +11,7 @@
 - The primary “create a snap from a prompt” agent skill lives at `agent-skills/create-farcaster-snap/SKILL.md` on GitHub: https://github.com/farcasterxyz/snap/blob/main/agent-skills/create-farcaster-snap/SKILL.md (do not use the old `create-program.md` name).
 - Prefer minimal public APIs: do not re-export types or helpers from adapter packages unless explicitly required; only export symbols that are externally consumed.
 - Prefer explicit, predictable APIs over hidden convenience "magic" in wrappers; ergonomics should not obscure routing or behavior.
+- `parseRequest` and related helpers use a `success` discriminant (`success: true` / `success: false`), not `ok`, when reporting parse outcomes; keep tests and callers aligned with that shape.
 
 ## Learned Workspace Facts
 
@@ -25,4 +26,4 @@
 - In `apps/emulator`, **link** buttons first GET `/api/snap?url=…` for the resolved target; if the response is valid snap JSON, the emulator replaces the preview and syncs the Snap URL field, otherwise it opens the link in a new tab.
 - For `apps/emulator` local dev on Next.js 16+, use `next dev -p 3000 --webpack` when forcing the Webpack dev server (supported flag). Do not use undocumented flags such as `--no-turbopack`.
 - Snap POST authentication now relies on JFS request-body verification (`verifyJFSRequestBody`) as the single verification path; legacy header/signing verification flows were removed.
-- `pkgs/snap` currently uses a post-build ESM import rewrite (`tsc-alias --resolve-full-paths --resolve-full-extension .js`) so Node ESM consumers (like Vite config/plugin runtime) can resolve `dist/*` imports. Revisit later: migrate to a pure NodeNext + explicit `.js` source-import strategy.
+- `pkgs/snap` uses a post-build ESM import rewrite (`tsc-alias --resolve-full-paths --resolve-full-extension .js`) so Node ESM consumers can resolve `dist/*` imports (revisit: NodeNext + explicit `.js` sources). Turbo wires `dependsOn: ["^build"]` on `test`, `typecheck`, and `dev` so workspace packages build before dependents; `apps/emulator` runs `build:workspace-deps` in `predev` and `prebuild` for `@farcaster/snap` and `@farcaster/snap-ui-elements`.
