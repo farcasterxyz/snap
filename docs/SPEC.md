@@ -22,11 +22,11 @@ Example interaction:
 
 The snap media type is `application/json+farcaster-snap`.
 
-- A client MAY include `application/json+farcaster-snap` in `Accept` to indicate snap support.
+- When making an HTTP request, a client MAY include `application/json+farcaster-snap` in the `Accept` HTTP header to indicate snap support.
 - If `application/json+farcaster-snap` is the highest-priority acceptable type, the server MAY return a snap response.
 - If the server returns a snap response, it MUST set `Content-Type: application/json+farcaster-snap`.
-- If the request does not indicate snap support, the server SHOULD return a normal HTTP response (for example, a fallback or guidance).
-- Even when snap is requested, the server MAY return a different content type.
+- If the request does not indicate snap support, the server MUST NOT return a snap response. Instead it SHOULD return a normal HTTP response (for example, a fallback or guidance).
+- Even when a snap is requested, the server MAY return a different content type (for example, if there was an internal error).
 
 If the response `Content-Type` is `application/json+farcaster-snap`, the client MUST render it as a snap.
 
@@ -120,7 +120,6 @@ A valid snap page must pass these checks:
 - Text lengths within limits per element type
 - Grid dimensions within limits (max 64 cols x 8 rows)
 - Version field matches a supported version
-
 
 ### URL Validation (at publish time)
 
