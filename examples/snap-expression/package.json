@@ -3,7 +3,6 @@
   "private": true,
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "predev": "pnpm --filter @farcaster/snap run build",
     "dev": "SKIP_JFS_VERIFICATION=true tsx watch src/server.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
@@ -11,8 +10,8 @@
   "dependencies": {
     "@hono/node-server": "^1.0.0",
     "hono": "^4.0.0",
-    "@farcaster/snap": "workspace:*",
-    "@farcaster/snap-hono": "workspace:*"
+    "@farcaster/snap": "^1.2.0",
+    "@farcaster/snap-hono": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
