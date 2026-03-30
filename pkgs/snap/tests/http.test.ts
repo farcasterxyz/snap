@@ -31,7 +31,7 @@ describe("parseRequest", () => {
     expect(res).toEqual({ success: true, action: { type: "get" } });
   });
 
-  it("accepts plain JSON POST when skipJFSVerification is true", async () => {
+  it("accepts JFS-shaped POST even when skipJFSVerification is true", async () => {
     const body = postBody();
     const payload = decodePayload<SnapPayload>(body.payload);
     const res = await parseRequest(
@@ -52,6 +52,25 @@ describe("parseRequest", () => {
         timestamp: payload.timestamp,
       },
     });
+  });
+
+  it("does not accept bare JSON POST payload even when skipJFSVerification is true", async () => {
+    const payload: SnapPayload = {
+      fid: 42,
+      inputs: { guess: "HELLO" },
+      button_index: 0,
+      timestamp: Math.floor(Date.now() / 1000),
+    };
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error.type).toBe("invalid_json");
   });
 
   it("fails when bypass JSON is invalid", async () => {

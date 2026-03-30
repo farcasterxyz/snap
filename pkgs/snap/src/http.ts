@@ -37,9 +37,7 @@ export type ParseRequestError =
 
 export type ParseRequestOptions = {
   /**
-   * When true, skip JFS verification of JSON POST bodies.
-   * When false (default), the body must be JSON `{ header, payload, signature }` verified via
-   * {@link verifyJFSRequestBody}.
+   * When true, skip {@link verifyJFSRequestBody} (signature checks).
    */
   skipJFSVerification?: boolean;
 };
@@ -68,8 +66,7 @@ const requestBodySchema = z.object({
 /**
  * Parse and validate Farcaster snap requests:
  * - `GET` is allowed for first-page loads and returns `{ type: "get" }`.
- * - `POST`: by default the body is JSON JFS (`header` / `payload` / `signature`) verified with
- *   {@link verifyJFSRequestBody}; with `skipJFSVerification`, accepts plain action JSON (dev only).
+ * - `POST`: the body must be JSON in JFS form (`header` / `payload` / `signature`) even if JFS verification is skipped.
  */
 export async function parseRequest(
   request: Request,

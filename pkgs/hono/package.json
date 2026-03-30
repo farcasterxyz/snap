@@ -39,6 +39,7 @@
     "hono": ">=4.0.0"
   },
   "devDependencies": {
+    "@farcaster/jfs": "^0.2.2",
     "@types/node": "^25.5.0",
     "hono": "^4.0.0",
     "typescript": "^5.4.0",

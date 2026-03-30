@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
 import { registerSnapHandler } from "../src/index";
+import { encodePayload } from "@farcaster/jfs";
 import {
   MEDIA_TYPE,
   DEFAULT_THEME_ACCENT,
   type SnapFunction,
+  type SnapPayload,
 } from "@farcaster/snap";
 
 const SNAP_CONTENT_TYPE = `${MEDIA_TYPE}; charset=utf-8`;
@@ -21,12 +23,17 @@ const minimalSnapFn: SnapFunction = async () => ({
   },
 });
 
-function postBody() {
-  return JSON.stringify({
+function jfsPostBody() {
+  const payload: SnapPayload = {
     fid: 1,
     inputs: {},
     button_index: 0,
     timestamp: Math.floor(Date.now() / 1000),
+  };
+  return JSON.stringify({
+    header: "dev",
+    payload: encodePayload(payload),
+    signature: "dev",
   });
 }
 
@@ -67,11 +74,32 @@ describe("registerSnapHandler content type", () => {
     const res = await app.request("/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: postBody(),
+      body: jfsPostBody(),
     });
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe(SNAP_CONTENT_TYPE);
+  });
+
+  it("POST with bare JSON body returns 400 when skipping JFS verification", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+    });
+
+    const res = await app.request("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fid: 1,
+        inputs: {},
+        button_index: 0,
+        timestamp: Math.floor(Date.now() / 1000),
+      }),
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.headers.get("Content-Type")).toMatch(/^application\/json/);
   });
 
   it("POST with invalid body returns application/json (not snap type)", async () => {

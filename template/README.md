@@ -17,14 +17,14 @@ Then set dependencies in `package.json` to published versions of `@farcaster/sna
 
 - Hono app with `@farcaster/snap-hono` (`registerSnapHandler`) for GET/POST handling and validation
 - Vercel entrypoint at `api/index.ts`
-- `registerSnapHandler` uses JFS verification in production (`NODE_ENV=production`); locally it accepts the same unsigned JSON body the emulator sends (override with `SKIP_JFS_VERIFICATION=no` to force JFS, or `=yes` to force bypass)
+- `registerSnapHandler` verifies JFS signatures in production (`NODE_ENV=production`); locally it skips verification for the same JFS-shaped dev envelope the emulator sends (override with `SKIP_JFS_VERIFICATION=no` to require verification, or `=yes` to force bypass)
 - Vercel deployment via `vercel.json`
 
 ## Endpoints
 
 - `GET /` without `Accept: application/json+farcaster-snap` returns a short plain-text hint for browsers
 - `GET /` with the snap Accept header returns the first page (counter demo starting at 0)
-- `POST /` accepts a snap interaction payload (unsigned JSON in non-production; JFS in production) and returns the next page
+- `POST /` accepts a JFS-shaped snap interaction payload (signature verified in production only by default) and returns the next page
 - Response pages are kept within current spec limits (max 5 elements, text length constraints)
 
 ## Local development
