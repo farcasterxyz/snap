@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
 import { registerSnapHandler } from "../src/index";
 import { buildSnapAlternateLinkHeader } from "../src/payloadToResponse";
-import { encodePayload } from "@farcaster/jfs";
+import { encodePayload } from "@farcaster/snap/server";
 import {
   MEDIA_TYPE,
   DEFAULT_THEME_ACCENT,

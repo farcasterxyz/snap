@@ -1,4 +1,4 @@
-import { encodePayload } from "@farcaster/jfs";
+import * as jfs from "@farcaster/jfs";
 import { NextRequest, NextResponse } from "next/server";
 import type { SnapPayload } from "@farcaster/snap";
 import {
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
 
   const jfsEnvelope = {
     header: "dev",
-    payload: encodePayload(payload),
+    payload: jfs.encodePayload(payload),
     signature: "dev",
   };
   const postBody = JSON.stringify(jfsEnvelope);
