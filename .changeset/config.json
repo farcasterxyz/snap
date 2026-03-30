@@ -9,6 +9,13 @@
   "commit": false,
   "fixed": [],
   "linked": [],
-  "ignore": [],
+  "ignore": [
+    "current-time",
+    "shared-games",
+    "snap-expression",
+    "snap-template",
+    "two-snaps",
+    "ui-catalog-elements"
+  ],
   "updateInternalDependencies": "patch"
 }
