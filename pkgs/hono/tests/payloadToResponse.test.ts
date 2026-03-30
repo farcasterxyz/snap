@@ -21,6 +21,7 @@ describe("payloadToResponse", () => {
     const r = payloadToResponse(minimalRoot);
     expect(r.status).toBe(200);
     expect(r.headers.get("Content-Type")).toBe(`${MEDIA_TYPE}; charset=utf-8`);
+    expect(r.headers.get("Vary")).toBe("Accept");
   });
 
   it("returns 400 with issues on invalid payload", async () => {

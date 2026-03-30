@@ -5,4 +5,4 @@ const port = Number(process.env.SNAP_ONE_PORT ?? "3016");
 
 serve({ fetch: app.fetch, port });
 
-console.log(`Snap one — http://localhost:${port}/ (Accept: application/json+farcaster-snap)`);
+console.log(`Snap one — http://localhost:${port}/`);

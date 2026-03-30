@@ -22,7 +22,7 @@ Then set dependencies in `package.json` to published versions of `@farcaster/sna
 
 ## Endpoints
 
-- `GET /` without `Accept: application/json+farcaster-snap` returns a short plain-text hint for browsers
+- `GET /` without `Accept: application/vnd.farcaster.snap+json` returns a short plain-text hint for browsers
 - `GET /` with the snap Accept header returns the first page (counter demo starting at 0)
 - `POST /` accepts a JFS-shaped snap interaction payload (signature verified in production only by default) and returns the next page
 - Response pages are kept within current spec limits (max 5 elements, text length constraints)

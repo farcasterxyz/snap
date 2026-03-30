@@ -2,7 +2,7 @@ export const POST_GRID_TAP_KEY = "grid_tap" as const;
 
 export const SPEC_VERSION = "1.0" as const;
 
-export const MEDIA_TYPE = "application/json+farcaster-snap" as const;
+export const MEDIA_TYPE = "application/vnd.farcaster.snap+json" as const;
 
 export const LIMITS = {
   maxElementsPerPage: 5,

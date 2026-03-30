@@ -7,7 +7,7 @@ import {
 
 /**
  * Validate a snap root object, then return a JSON Response for the client.
- * Sets `Content-Type: application/json+farcaster-snap`.
+ * Sets `Content-Type: application/vnd.farcaster.snap+json` and `Vary: Accept`.
  *
  * On validation failure returns JSON `{ "error": "...", "issues": [...] }` with status 400.
  */
@@ -33,6 +33,7 @@ export function payloadToResponse(payload: SnapResponse): Response {
     status: 200,
     headers: {
       "Content-Type": `${MEDIA_TYPE}; charset=utf-8`,
+      Vary: "Accept",
     },
   });
 }

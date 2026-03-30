@@ -13,13 +13,14 @@
 - **Adapter package surface (`@farcaster/snap-hono` and similar):** Export only the integration entrypoints consumers need (for example `registerSnapHandler` and its options types). Do **not** re-export internal helpers from `src/index.ts` (for example `payloadToResponse`) even if they are useful for tests—tests may import implementation files directly within the same package; external callers should use the supported API or compose `@farcaster/snap` primitives themselves.
 - Prefer explicit, predictable APIs over hidden convenience "magic" in wrappers; ergonomics should not obscure routing or behavior.
 - `parseRequest` (from `@farcaster/snap/server`) and related helpers use a `success` discriminant (`success: true` / `success: false`), not `ok`, when reporting parse outcomes; keep tests and callers aligned with that shape.
+- **Changesets:** Never create or edit `.changeset/*.md` files. Release notes and version bumps use the Changesets CLI only; maintainers run `pnpm exec changeset` from the repo root when they want a changeset.
 
 ## Learned Workspace Facts
 
 - Use pnpm for package management in this repository; do not use npm.
 - The `pkgs/ui-elements` workspace package (`@farcaster/snap-ui-elements`) defines the json-render catalog; the emulator depends on it to render snaps.
 - Local dev ports: emulator on 3000, `snap-template` on 3003; example apps under `examples/` use ports 3010 and higher with a distinct port per app.
-- For snap HTTP GET, send `Accept: application/json+farcaster-snap`; example servers typically expose JSON on `/snap`, not on bare `/`.
+- For snap HTTP GET, send `Accept: application/vnd.farcaster.snap+json`; example servers typically expose JSON on `/snap`, not on bare `/`.
 - Local `registerSnapHandler` skips JFS **signature** verification when `NODE_ENV` is not `production`, but POST bodies must still be JFS-shaped JSON (`header` / `payload` / `signature`), including from `apps/emulator`. Set `SKIP_JFS_VERIFICATION=no` to require verification anyway, or `=yes` / `=1` to force bypass in production (dev-only).
 - When using `FARCASTER_HUB_URL`, include the port (e.g. `https://rho.farcaster.xyz:3381`).
 - Set `SNAP_PUBLIC_BASE_URL` to the canonical HTTPS origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly.

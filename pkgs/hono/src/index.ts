@@ -50,7 +50,7 @@ export function registerSnapHandler(
   app.get(path, async (c) => {
     const accept = c.req.header("Accept");
     if (!clientWantsSnapResponse(accept)) {
-      return c.text(fallbackText, 200);
+      return c.text(fallbackText, 200, { Vary: "Accept" });
     }
 
     const response = await snapFn({

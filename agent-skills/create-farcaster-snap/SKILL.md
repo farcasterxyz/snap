@@ -71,7 +71,7 @@ Design guidance:
 
 ## Step 3: Validate
 
-Run the dev server and explore the snap using `curl -sS -H 'Accept: application/json+farcaster-snap' <localhost:port>`
+Run the dev server and explore the snap using `curl -sS -H 'Accept: application/vnd.farcaster.snap+json' <localhost:port>`
 
 ## Step 4: Fix and repeat
 
@@ -96,7 +96,7 @@ Deploy (e.g. host.neynar.app): follow **`template/README.md`** — use the **`ho
 After deploy, sanity-check with:
 
 ```bash
-curl -sS -H 'Accept: application/json+farcaster-snap' 'https://<your-deployment-origin>/'
+curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://<your-deployment-origin>/'
 ```
 
-You should get valid JSON with content type `application/json+farcaster-snap`.
+You should get valid JSON with content type `application/vnd.farcaster.snap+json`.
