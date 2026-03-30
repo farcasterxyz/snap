@@ -10,5 +10,6 @@
   "fixed": [],
   "linked": [],
   "ignore": [],
-  "updateInternalDependencies": "patch"
+  "updateInternalDependencies": "patch",
+  "bumpVersionsWithWorkspaceProtocolOnly": true
 }
