@@ -6,6 +6,7 @@ export {
   DEFAULT_THEME_ACCENT,
   DEFAULT_LIST_STYLE,
   DEFAULT_SLIDER_STEP,
+  TEXT_STYLE,
   PALETTE_COLOR,
   PALETTE_COLOR_VALUES,
   PALETTE_LIGHT_HEX,
@@ -19,6 +20,8 @@ export {
   type SnapAction,
   type SnapContext,
   type SnapResponse,
+  type SnapPage,
+  type Element,
   type SnapFunction,
   type SnapPayload,
 } from "./schemas";

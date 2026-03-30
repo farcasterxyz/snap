@@ -54,10 +54,28 @@ describe("registerSnapHandler content type", () => {
     expect(res.headers.get("Vary")).toBe("Accept");
   });
 
-  it("GET without snap Accept header returns plain text", async () => {
+  it("GET without snap Accept header returns HTML with Open Graph tags", async () => {
     const app = new Hono();
     registerSnapHandler(app, minimalSnapFn, {
       skipJFSVerification: true,
+    });
+
+    const res = await app.request("http://localhost/", { method: "GET" });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toMatch(/^text\/html/);
+    expect(res.headers.get("Vary")).toBe("Accept");
+    const html = await res.text();
+    expect(html).toContain('property="og:title"');
+    expect(html).toContain('property="og:image"');
+    expect(html).toContain("http://localhost/~/og-image");
+  });
+
+  it("GET without snap Accept and og: false returns plain text", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+      og: false,
     });
 
     const res = await app.request("/", { method: "GET" });
@@ -65,6 +83,46 @@ describe("registerSnapHandler content type", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toMatch(/^text\/plain/);
     expect(res.headers.get("Vary")).toBe("Accept");
+  });
+
+  it("GET /~/og-image returns PNG", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+    });
+
+    const res = await app.request("http://localhost/~/og-image", {
+      method: "GET",
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("image/png");
+    expect(res.headers.get("ETag")).toMatch(/^"[a-f0-9]+"$/);
+    const buf = new Uint8Array(await res.arrayBuffer());
+    expect(buf.length).toBeGreaterThan(100);
+    expect(buf[0]).toBe(0x89);
+    expect(buf[1]).toBe(0x50);
+    expect(buf[2]).toBe(0x4e);
+    expect(buf[3]).toBe(0x47);
+  });
+
+  it("GET /~/og-image returns 304 when If-None-Match matches ETag", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+    });
+
+    const first = await app.request("http://localhost/~/og-image", {
+      method: "GET",
+    });
+    const etag = first.headers.get("ETag");
+    expect(etag).toBeTruthy();
+
+    const second = await app.request("http://localhost/~/og-image", {
+      method: "GET",
+      headers: { "If-None-Match": etag! },
+    });
+    expect(second.status).toBe(304);
   });
 
   it("POST success returns snap content type", async () => {
