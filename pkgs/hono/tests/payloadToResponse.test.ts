@@ -25,13 +25,15 @@ describe("payloadToResponse", () => {
     expect(r.status).toBe(200);
     expect(r.headers.get("Content-Type")).toBe(`${MEDIA_TYPE}; charset=utf-8`);
     expect(r.headers.get("Vary")).toBe("Accept");
-    expect(r.headers.get("Link")).toBe(buildSnapAlternateLinkHeader("/"));
+    expect(r.headers.get("Link")).toBe(
+      buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
+    );
   });
 
   it("uses explicit resourcePath in Link when set", () => {
     const r = payloadToResponse(minimalRoot, { resourcePath: "/my-snap" });
     expect(r.headers.get("Link")).toBe(
-      buildSnapAlternateLinkHeader("/my-snap"),
+      buildSnapAlternateLinkHeader("/my-snap", [MEDIA_TYPE, "text/html"]),
     );
   });
 

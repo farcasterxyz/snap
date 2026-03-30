@@ -10,10 +10,15 @@ type PayloadToResponseOptions = {
   mediaTypes: string[];
 };
 
+const DEFAULT_LINK_MEDIA_TYPES = [MEDIA_TYPE, "text/html"] as const;
+
 export function payloadToResponse(
   payload: SnapResponse,
-  options: PayloadToResponseOptions,
+  options: Partial<PayloadToResponseOptions> = {},
 ): Response {
+  const resourcePath = options.resourcePath ?? "/";
+  const mediaTypes = options.mediaTypes ?? [...DEFAULT_LINK_MEDIA_TYPES];
+
   const validation = validatePage(payload);
   if (!validation.valid) {
     return new Response(
@@ -34,7 +39,7 @@ export function payloadToResponse(
   return new Response(JSON.stringify(finalized), {
     status: 200,
     headers: {
-      ...snapHeaders(MEDIA_TYPE, options.resourcePath, options.mediaTypes),
+      ...snapHeaders(resourcePath, MEDIA_TYPE, mediaTypes),
     },
   });
 }
@@ -51,7 +56,7 @@ export function snapHeaders(
   };
 }
 
-function buildSnapAlternateLinkHeader(
+export function buildSnapAlternateLinkHeader(
   resourcePath: string,
   mediaTypes: string[],
 ): string {
