@@ -2,6 +2,10 @@
 
 Spec and tooling for interactive snaps on [Farcaster](https://farcaster.xyz).
 
+> [!NOTE]
+> This spec is in beta and may change rapidly in the near term.
+
+
 ## 🚀 Quickstart
 
 Agent command/skill docs live in [agent-skills/README.md](./agent-skills/README.md).
