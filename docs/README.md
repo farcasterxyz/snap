@@ -1,6 +1,6 @@
 # Spec and Validation
 
-This directory contains the Farcaster Snap specification. Runtime validation and HTTP helpers live in the [`@farcaster/snap`](https://github.com/farcasterxyz/snap/tree/main/pkgs/snap) package (`pkgs/snap`).
+This directory contains the Farcaster Snap specification. Runtime validation lives in the [`@farcaster/snap`](https://github.com/farcasterxyz/snap/tree/main/pkgs/snap) package (`pkgs/snap`); Hono-oriented HTTP wiring (`registerSnapHandler`) is in [`@farcaster/snap-hono`](https://github.com/farcasterxyz/snap/tree/main/pkgs/hono).
 
 ## Specification
 
@@ -17,4 +17,4 @@ pnpm --filter @farcaster/snap test
 
 ## Auth
 
-See `auth.md` for request signing and hub verification. Implementation code is exported from `@farcaster/snap` (for example `verifyJFSRequestBody`).
+See `auth.md` for request signing and hub verification. Implementation code is exported from `@farcaster/snap/server` (for example `verifyJFSRequestBody`, `parseRequest`); the main `@farcaster/snap` entry stays free of `@farcaster/hub-nodejs` for browser-safe imports.

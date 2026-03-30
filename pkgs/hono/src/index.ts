@@ -1,12 +1,8 @@
 import type { Hono } from "hono";
 import { cors } from "hono/cors";
-import {
-  parseRequest,
-  sendResponse,
-  MEDIA_TYPE,
-  type ParseRequestOptions,
-  type SnapFunction,
-} from "@farcaster/snap";
+import { MEDIA_TYPE, type SnapFunction } from "@farcaster/snap";
+import { parseRequest } from "@farcaster/snap/server";
+import { payloadToResponse } from "./payloadToResponse";
 
 export type SnapHandlerOptions = {
   /**
@@ -61,7 +57,7 @@ export function registerSnapHandler(
       action: { type: "get" },
       request: c.req.raw,
     });
-    return sendResponse(response);
+    return payloadToResponse(response);
   });
 
   app.post(path, async (c) => {
@@ -98,7 +94,7 @@ export function registerSnapHandler(
 
     const response = await snapFn({ action: parsed.action, request: raw });
 
-    return sendResponse(response);
+    return payloadToResponse(response);
   });
 }
 

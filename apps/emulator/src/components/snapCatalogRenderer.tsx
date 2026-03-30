@@ -6,8 +6,11 @@ import {
   useStateStore,
   useStateValue,
 } from "@json-render/react";
-import { POST_GRID_TAP_KEY, PALETTE_LIGHT_HEX } from "@farcaster/snap/constants";
-import type { PaletteColor } from "@farcaster/snap/constants";
+import {
+  POST_GRID_TAP_KEY,
+  PALETTE_LIGHT_HEX,
+  type PaletteColor,
+} from "@farcaster/snap";
 import { snapJsonRenderCatalog } from "@farcaster/snap-ui-elements";
 
 /** Resolve a palette color name to its light-mode hex value. */
@@ -41,10 +44,10 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
       style === "title"
         ? 22
         : style === "label"
-          ? 13
-          : style === "caption"
-            ? 12
-            : 16;
+        ? 13
+        : style === "caption"
+        ? 12
+        : 16;
     const fontWeight = style === "title" || style === "label" ? 700 : 400;
     const color = style === "caption" ? "#6b7280" : "#111827";
     return (

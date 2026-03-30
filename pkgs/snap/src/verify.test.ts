@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { verifyJFSRequestBody } from "./verify";
+import { verifyJFSRequestBody } from "./server/verify";
 
 const validRequestBody = `{
   "header":"eyJmaWQiOjI2MTMxOSwidHlwZSI6ImFwcF9rZXkiLCJrZXkiOiIweGY0ZGQyNjczYTUzMjEwYzQ3ZGYzZjFmNTk0NjZlZTdhMTM3ZmQxOGQ5NTVjMmU2OGExMmQwOTE2MGE2NmMyMTUifQ",

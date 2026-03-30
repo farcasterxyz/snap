@@ -14,7 +14,7 @@ See [snap.farcaster.xyz](https://snap.farcaster.xyz) for more info.
 
 ### @farcaster/snap
 
-Core library for Snap servers: Zod schemas and types for snap JSON, validation of pages and POST bodies, HTTP helpers (`parseRequest`, `sendResponse`), and JFS verification for signed POST requests (`verifyJFSRequestBody`).
+Core library for Snap servers: Zod schemas and types for snap JSON, validation of pages and POST bodies, and JFS verification for signed POST requests (`verifyJFSRequestBody`).
 
 The human-readable spec lives under [docs/](./docs); see [docs/README.md](./docs/README.md) for how it relates to the code.
 

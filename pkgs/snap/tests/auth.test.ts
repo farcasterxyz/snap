@@ -1,6 +1,6 @@
 import { encodeAbiParameters } from "viem";
 import { describe, expect, it } from "vitest";
-import { getActiveEd25519SignerKeysFromHubHttp } from "../src/hubs";
+import { getActiveEd25519SignerKeysFromHubHttp } from "../src/server/hubs";
 
 /** Ed25519 delegate key type in hub JSON (`SignerEventBody.keyType`). */
 const ED25519_KEY_TYPE = 1;

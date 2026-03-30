@@ -1,13 +1,5 @@
-import { MEDIA_TYPE, SPEC_VERSION } from "./constants";
+import { payloadSchema, type SnapAction } from "../schemas";
 import { decodePayload, verifyJFSRequestBody } from "./verify";
-import {
-  payloadSchema,
-  rootSchema,
-  type SnapAction,
-  type SnapResponse,
-  type SnapPage,
-} from "./schemas";
-import { validatePage } from "./validator";
 import { z } from "zod";
 
 /** Default replay window per SPEC.md § Replay Protection (5 minutes). */
@@ -45,17 +37,6 @@ export type ParseRequestOptions = {
 export type ParseRequestResult =
   | { success: true; action: SnapAction }
   | { success: false; error: ParseRequestError };
-
-function isRecord(v: unknown): v is Record<string, unknown> {
-  return v !== null && typeof v === "object" && !Array.isArray(v);
-}
-
-function normalizeToRoot(payload: unknown): unknown {
-  if (isRecord(payload) && "version" in payload && "page" in payload) {
-    return payload;
-  }
-  return { version: SPEC_VERSION, page: payload };
-}
 
 const requestBodySchema = z.object({
   header: z.string(),
@@ -155,63 +136,4 @@ export async function parseRequest(
       timestamp: body.timestamp,
     },
   };
-}
-
-export type SendResponseOptions = ResponseInit & {
-  /** When false, invalid pages return 500 instead of 400. Default true. */
-  clientErrorOnInvalid?: boolean;
-};
-
-/**
- * Validate a snap root or bare `page` object, then return a JSON Response for the client.
- * Sets `Content-Type: application/json+farcaster-snap`.
- *
- * On validation failure returns JSON `{ "error": "...", "issues": [...] }` with status 400 or 500.
- */
-export function sendResponse(
-  payload: SnapResponse | SnapPage,
-  init?: SendResponseOptions,
-): Response {
-  const rootUnknown = normalizeToRoot(payload);
-  const validation = validatePage(rootUnknown);
-  const clientError = init?.clientErrorOnInvalid !== false;
-  const status = init?.status;
-
-  if (!validation.valid) {
-    const errStatus = clientError ? 400 : 500;
-    return new Response(
-      JSON.stringify({
-        error: clientError
-          ? "invalid snap page"
-          : "server produced an invalid snap page",
-        issues: validation.issues,
-      }),
-      {
-        status: status ?? errStatus,
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          ...normalizeHeaders(init?.headers),
-        },
-      },
-    );
-  }
-
-  const finalized = rootSchema.parse(rootUnknown);
-  const headers = new Headers(init?.headers);
-  headers.set("Content-Type", `${MEDIA_TYPE}; charset=utf-8`);
-
-  return new Response(JSON.stringify(finalized), {
-    ...init,
-    status: status ?? init?.status ?? 200,
-    headers,
-  });
-}
-
-function normalizeHeaders(h: HeadersInit | undefined): Record<string, string> {
-  if (h === undefined) return {};
-  const out: Record<string, string> = {};
-  new Headers(h).forEach((value, key) => {
-    out[key] = value;
-  });
-  return out;
 }

@@ -51,7 +51,7 @@ Use these code sources of truth while building:
 
 - Runtime + type exports: `pkgs/snap/src/index.ts`
 - Zod schemas and constraints: `pkgs/snap/src/schemas.ts`
-- Canonical constants (media type, version, limits): `pkgs/snap/src/constants.ts`
+- Canonical constants (media type, palette, limits): `pkgs/snap/src/constants.ts`
 
 **Hard rules (enforced by schema/validator):**
 

@@ -304,7 +304,9 @@ export async function getActiveEd25519SignerKeysFromHubHttp(
   options?: FetchSignerKeysFromHubHttpOptions,
 ): Promise<FetchSignerKeysResult> {
   const base = stripHubHttpBaseUrlTrailingSlash(httpBaseUrl);
-  const url = `${base}/v1/onChainSignersByFid?fid=${encodeURIComponent(String(fid))}`;
+  const url = `${base}/v1/onChainSignersByFid?fid=${encodeURIComponent(
+    String(fid),
+  )}`;
   const fetchImpl = options?.fetchFn ?? globalThis.fetch;
   if (typeof fetchImpl !== "function") {
     return {

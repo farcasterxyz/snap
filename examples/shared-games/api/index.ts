@@ -1,11 +1,12 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import type { SnapAction, SnapResponse } from "@farcaster/snap";
 import {
   POST_GRID_TAP_KEY,
   DEFAULT_THEME_ACCENT,
-} from "@farcaster/snap/constants";
+  type SnapAction,
+  type SnapResponse,
+} from "@farcaster/snap";
 
 const SPEC_VERSION = "1.0" as const;
 
