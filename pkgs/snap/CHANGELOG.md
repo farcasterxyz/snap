@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.2.1
+
+### Patch Changes
+
+- [`43f9852`](https://github.com/farcasterxyz/snap/commit/43f9852033afc434a4924ab5ba17e5044228efbe) Thanks [@lyoshenka](https://github.com/lyoshenka)! - fix ESM loading bug
+
 ## 1.2.0
 
 ### Minor Changes
