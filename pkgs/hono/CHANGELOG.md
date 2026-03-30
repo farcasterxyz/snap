@@ -1,5 +1,16 @@
 # @farcaster/snap-hono
 
+## 1.1.0
+
+### Minor Changes
+
+- [`b81112e`](https://github.com/farcasterxyz/snap/commit/b81112efeb0e30a04a0b988ba214524b48990992) Thanks [@lyoshenka](https://github.com/lyoshenka)! - change content-type header to be more standard, move node-dependent packages into separate export
+
+### Patch Changes
+
+- Updated dependencies [[`b81112e`](https://github.com/farcasterxyz/snap/commit/b81112efeb0e30a04a0b988ba214524b48990992)]:
+  - @farcaster/snap@1.2.0
+
 ## 1.0.2
 
 ### Patch Changes
