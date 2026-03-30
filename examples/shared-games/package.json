@@ -1,6 +1,6 @@
 {
   "name": "shared-games",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shared Games — collaborative games in the Farcaster feed",
   "scripts": {
     "predev": "pnpm --filter @farcaster/snap run build",
