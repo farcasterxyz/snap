@@ -1,0 +1,299 @@
+# Elements
+
+Every snap page body is a tree whose root is a `stack`. The client renders child elements in order, top to bottom. The client controls sizing, spacing, fonts, and padding -- snaps do not specify pixel dimensions, margins, or CSS.
+
+## Page Root: `stack`
+
+`page.elements` must be a `stack` node: a vertical list of child elements.
+
+- `page.elements.type` MUST be `"stack"`
+- `page.elements.children` is an array of elements (min 1, max 5)
+- Max 1 media element (`image`, `video`, or `grid`) per page
+
+```json
+{
+  "type": "stack",
+  "children": [
+    { "type": "text", "style": "title", "content": "Hello" }
+  ]
+}
+```
+
+## `text`
+
+Renders text content in a predefined style.
+
+```json
+{ "type": "text", "style": "title", "content": "Rate these movies" }
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `style` | Yes | `"title"` (max 80 chars), `"body"` (max 160 chars), `"caption"` (max 100 chars), `"label"` (max 40 chars) |
+| `content` | Yes | The text string |
+| `align` | No | `"left"` (default), `"center"`, `"right"` |
+
+## `image`
+
+Renders an image from a URL.
+
+```json
+{ "type": "image", "url": "https://example.com/photo.jpg", "aspect": "16:9" }
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `url` | Yes | HTTPS image URL. Supports jpg, png, gif, webp. GIFs autoplay and loop |
+| `aspect` | Yes | `"1:1"`, `"16:9"`, `"4:3"`, `"3:4"`, `"9:16"` |
+| `alt` | No | Alt text for accessibility |
+
+## `video`
+
+Renders a short video clip. Autoplays muted. Tap to unmute. Subsequent taps play/pause.
+
+```json
+{
+  "type": "video",
+  "url": "https://example.com/clip.mp4",
+  "aspect": "16:9"
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `url` | Yes | HTTPS video URL. Supports mp4, webm |
+| `aspect` | Yes | `"1:1"`, `"16:9"`, `"9:16"` |
+| `alt` | No | Alt text for accessibility |
+
+## `divider`
+
+A horizontal line to visually separate content sections.
+
+```json
+{ "type": "divider" }
+```
+
+No additional properties.
+
+## `spacer`
+
+Vertical breathing room. The client determines actual height.
+
+```json
+{ "type": "spacer", "size": "medium" }
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `size` | No | `"small"`, `"medium"` (default), `"large"` |
+
+## `progress`
+
+A horizontal progress bar.
+
+```json
+{ "type": "progress", "value": 72, "max": 100, "label": "72% Yes" }
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `value` | Yes | Number, current value |
+| `max` | Yes | Number, maximum value |
+| `label` | No | Text label displayed alongside. Max 60 chars |
+| `color` | No | `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"gray"` |
+
+## `list`
+
+An ordered or unordered list of items.
+
+```json
+{
+  "type": "list",
+  "style": "ordered",
+  "items": [
+    { "content": "@dwr.eth", "trailing": "8/10 (80%)" },
+    { "content": "@jessepollak", "trailing": "7/10 (70%)" }
+  ]
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `style` | No | `"ordered"` (default), `"unordered"`, `"plain"` |
+| `items` | Yes | Array of list items. Max 4 items |
+| `items[].content` | Yes | Item text. Max 100 chars |
+| `items[].trailing` | No | Right-aligned text. Max 40 chars |
+
+## `grid`
+
+A rows-by-columns grid of cells. Each cell has a background color and optional text content. For game boards, pixel canvases, and tile-based UIs.
+
+```json
+{
+  "type": "grid",
+  "cols": 5,
+  "rows": 6,
+  "cells": [
+    { "row": 0, "col": 0, "color": "#22C55E", "content": "C" },
+    { "row": 0, "col": 1, "color": "#6B7280", "content": "R" }
+  ]
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `cols` | Yes | Number of columns. Min 2, max 64 |
+| `rows` | Yes | Number of rows. Min 2, max 8 |
+| `cells` | Yes | Array of cell definitions. Only non-empty cells need to be specified |
+| `cells[].row` | Yes | Row index (0-based) |
+| `cells[].col` | Yes | Column index (0-based) |
+| `cells[].color` | No | 6-digit hex color (`#RRGGBB`) for background. Omit for transparent |
+| `cells[].content` | No | Text content to display in the cell |
+| `cellSize` | No | `"auto"` (default, fills available width), `"square"` (cells are square) |
+| `gap` | No | `"none"`, `"small"` (default), `"medium"` |
+| `interactive` | No | If `true`, cells with no entry in `cells` array are tappable. Tap coordinates are included in the next POST |
+
+## `text_input`
+
+A single-line text input field.
+
+```json
+{
+  "type": "text_input",
+  "name": "guess",
+  "placeholder": "Type 5-letter word...",
+  "maxLength": 5
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `name` | Yes | Field identifier, included in POST data |
+| `placeholder` | No | Placeholder text. Max 60 chars |
+| `maxLength` | No | Max input length. Max 280 chars |
+
+## `slider`
+
+A horizontal slider for numeric input.
+
+```json
+{
+  "type": "slider",
+  "name": "estimate",
+  "min": 0,
+  "max": 100,
+  "step": 1,
+  "label": "Your estimate"
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `name` | Yes | Field identifier, included in POST data |
+| `min` | Yes | Minimum value (number) |
+| `max` | Yes | Maximum value (number) |
+| `step` | No | Step increment. Default: 1 |
+| `value` | No | Initial value. Default: midpoint |
+| `label` | No | Label text. Max 60 chars |
+| `minLabel` | No | Label at left end. Max 20 chars |
+| `maxLabel` | No | Label at right end. Max 20 chars |
+
+## `button_group`
+
+A set of tappable options. User selects one.
+
+```json
+{
+  "type": "button_group",
+  "name": "vote",
+  "options": ["Tabs", "Spaces"],
+  "style": "row"
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `name` | Yes | Field identifier, included in POST data |
+| `options` | Yes | Array of option strings. Min 2, max 4. Each max 40 chars |
+| `style` | No | `"row"` (side by side, default for 2-3), `"stack"` (vertical, default for 4+), `"grid"` (2-col grid) |
+
+## `toggle`
+
+A single on/off toggle.
+
+```json
+{
+  "type": "toggle",
+  "name": "notifications",
+  "label": "Enable reminders",
+  "value": false
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `name` | Yes | Field identifier, included in POST data |
+| `label` | Yes | Label text. Max 60 chars |
+| `value` | No | Initial state. Default: `false` |
+
+## `bar_chart`
+
+A vertical bar chart for displaying labeled values. For poll results, rankings, and distributions.
+
+```json
+{
+  "type": "bar_chart",
+  "bars": [
+    { "label": "Anthropic", "value": 21 },
+    { "label": "Databricks", "value": 18 },
+    { "label": "OpenAI", "value": 10, "color": "teal" }
+  ],
+  "max": 100
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `bars` | Yes | Array of bar objects. Min 1, max 6 |
+| `bars[].label` | Yes | Bar label text. Max 40 chars |
+| `bars[].value` | Yes | Numeric value (>= 0) |
+| `bars[].color` | No | Palette name (e.g. `"green"`, `"red"`). Overrides chart `color` |
+| `max` | No | Scale maximum. If omitted, derived from largest bar value |
+| `color` | No | Default bar color: `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"blue"`, `"gray"` |
+
+## `group`
+
+Arranges child elements horizontally in a row. For displaying related stats, inputs, or content side by side.
+
+```json
+{
+  "type": "group",
+  "layout": "row",
+  "children": [
+    { "type": "text", "style": "title", "content": "42" },
+    { "type": "text", "style": "caption", "content": "score" }
+  ]
+}
+```
+
+| Property | Required | Values |
+| --- | --- | --- |
+| `layout` | Yes | `"row"` (horizontal arrangement) |
+| `children` | Yes | Array of child elements. Min 2, max 3 |
+
+### Group Rules
+
+- A group counts as 1 element toward the page max of 5
+- No media elements inside groups (`image`, `video`, `grid` are not allowed)
+- No nesting: groups cannot contain other groups
+- Children are rendered with equal width, side by side
+- Any non-media element is valid as a child: `text`, `progress`, `list`, `slider`, `button_group`, `toggle`, `text_input`, `divider`, `spacer`, `bar_chart`
+
+## First Page Requirements
+
+The first page returned from the snap URL is rendered as the feed card. In addition to normal page rules, the first page MUST include:
+
+- At least one `text` element with `style: "title"` or `style: "body"`
+- At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR at least one media element (`image`, `video`, or `grid`)
+
+This ensures the feed card always has readable content plus engagement or visual context.

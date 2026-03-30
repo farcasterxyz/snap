@@ -201,9 +201,9 @@ export function SnapRenderer({
       style={{
         width: "100%",
         maxWidth: 420,
-        border: "1px solid #d1d5db",
+        border: "1px solid var(--border)",
         borderRadius: 14,
-        background: "#ffffff",
+        background: "var(--snap-card-bg)",
         overflow: "hidden",
         position: "relative",
       }}
@@ -215,13 +215,14 @@ export function SnapRenderer({
           style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(255,255,255,0.7)",
+            background: "var(--snap-card-bg, rgba(255,255,255,0.7))",
+            opacity: 0.85,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             zIndex: 10,
             fontSize: 14,
-            color: "#4b5563",
+            color: "var(--text-muted)",
           }}
         >
           Loading...
