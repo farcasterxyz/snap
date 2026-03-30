@@ -5,13 +5,15 @@ import {
   validatePage,
 } from "@farcaster/snap";
 
-/**
- * Validate a snap root object, then return a JSON Response for the client.
- * Sets `Content-Type: application/vnd.farcaster.snap+json` and `Vary: Accept`.
- *
- * On validation failure returns JSON `{ "error": "...", "issues": [...] }` with status 400.
- */
-export function payloadToResponse(payload: SnapResponse): Response {
+type PayloadToResponseOptions = {
+  resourcePath: string;
+  mediaTypes: string[];
+};
+
+export function payloadToResponse(
+  payload: SnapResponse,
+  options: PayloadToResponseOptions,
+): Response {
   const validation = validatePage(payload);
   if (!validation.valid) {
     return new Response(
@@ -32,8 +34,29 @@ export function payloadToResponse(payload: SnapResponse): Response {
   return new Response(JSON.stringify(finalized), {
     status: 200,
     headers: {
-      "Content-Type": `${MEDIA_TYPE}; charset=utf-8`,
-      Vary: "Accept",
+      ...snapHeaders(MEDIA_TYPE, options.resourcePath, options.mediaTypes),
     },
   });
+}
+
+export function snapHeaders(
+  resourcePath: string,
+  currentMediaType: string,
+  availableMediaTypes: string[],
+) {
+  return {
+    "Content-Type": `${currentMediaType}; charset=utf-8`,
+    Vary: "Accept",
+    Link: buildSnapAlternateLinkHeader(resourcePath, availableMediaTypes),
+  };
+}
+
+function buildSnapAlternateLinkHeader(
+  resourcePath: string,
+  mediaTypes: string[],
+): string {
+  const p = resourcePath.startsWith("/") ? resourcePath : `/${resourcePath}`;
+  return mediaTypes
+    .map((mediaType) => `<${p}>; rel="alternate"; type="${mediaType}"`)
+    .join(", ");
 }

@@ -2,7 +2,7 @@ import type { Hono } from "hono";
 import { cors } from "hono/cors";
 import { MEDIA_TYPE, type SnapFunction } from "@farcaster/snap";
 import { parseRequest } from "@farcaster/snap/server";
-import { payloadToResponse } from "./payloadToResponse";
+import { payloadToResponse, snapHeaders } from "./payloadToResponse";
 
 export type SnapHandlerOptions = {
   /**
@@ -18,7 +18,7 @@ export type SnapHandlerOptions = {
   skipJFSVerification?: boolean;
 
   /**
-   * Text shown on GET requests from browsers / non-snap clients.
+   * Visible message in the HTML page served on GET when the client does not request snap JSON.
    * @default "This is a Farcaster Snap server."
    */
   fallbackText?: string;
@@ -43,21 +43,31 @@ export function registerSnapHandler(
   const path = options.path ?? "/";
   const fallbackText =
     options.fallbackText ??
-    "This is a Farcaster Snap server. See https://snap.farcaster.xyz for more info.";
+    "This is a Farcaster Snap server. See <a href='https://snap.farcaster.xyz'>snap.farcaster.xyz</a> for more info.";
 
   app.use(path, cors({ origin: "*" }));
 
   app.get(path, async (c) => {
+    const resourcePath = resourcePathFromRequest(c.req.url);
     const accept = c.req.header("Accept");
     if (!clientWantsSnapResponse(accept)) {
-      return c.text(fallbackText, 200, { Vary: "Accept" });
+      return new Response(fallbackHtmlDocument(fallbackText), {
+        status: 200,
+        headers: snapHeaders(resourcePath, "text/html", [
+          MEDIA_TYPE,
+          "text/html",
+        ]),
+      });
     }
 
     const response = await snapFn({
       action: { type: "get" },
       request: c.req.raw,
     });
-    return payloadToResponse(response);
+    return payloadToResponse(response, {
+      resourcePath,
+      mediaTypes: [MEDIA_TYPE, "text/html"],
+    });
   });
 
   app.post(path, async (c) => {
@@ -94,8 +104,40 @@ export function registerSnapHandler(
 
     const response = await snapFn({ action: parsed.action, request: raw });
 
-    return payloadToResponse(response);
+    return payloadToResponse(response, {
+      resourcePath: resourcePathFromRequest(raw.url),
+      mediaTypes: [MEDIA_TYPE, "text/html"],
+    });
   });
+}
+
+function resourcePathFromRequest(url: string): string {
+  const u = new URL(url);
+  return u.pathname + u.search;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function fallbackHtmlDocument(message: string): string {
+  const body = escapeHtml(message);
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farcaster Snap</title>
+</head>
+<body>
+<p>${body}</p>
+</body>
+</html>`;
 }
 
 function clientWantsSnapResponse(accept: string | undefined): boolean {
