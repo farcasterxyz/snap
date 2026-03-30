@@ -37,7 +37,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@farcaster/hub-nodejs": "^0.15.10",
     "@farcaster/jfs": "^0.2.2",
     "viem": "^2.21.0",
     "zod": "^4.3.6"

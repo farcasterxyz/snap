@@ -77,7 +77,7 @@ importers:
         version: 1.2.0(@noble/curves@2.0.1)(typescript@5.9.3)
       '@farcaster/snap-hono':
         specifier: ^1.1.0
-        version: 1.1.0(@noble/curves@2.0.1)(hono@4.12.9)(typescript@5.9.3)
+        version: 1.1.1(@noble/curves@2.0.1)(hono@4.12.9)(typescript@5.9.3)
       '@hono/node-server':
         specifier: ^1.0.0
         version: 1.19.11(hono@4.12.9)
@@ -225,9 +225,6 @@ importers:
 
   pkgs/snap:
     dependencies:
-      '@farcaster/hub-nodejs':
-        specifier: ^0.15.10
-        version: 0.15.10(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/jfs':
         specifier: ^0.2.2
         version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
@@ -540,6 +537,11 @@ packages:
 
   '@farcaster/snap-hono@1.1.0':
     resolution: {integrity: sha512-Rs8jjyrD2a0YV3R6DgqutKznzaiK5HrcKIXR6vwOYDyALemfUzYbTAp58dTPhQ1xj3qIYf8bLlxst6i+gQfsWg==}
+    peerDependencies:
+      hono: '>=4.0.0'
+
+  '@farcaster/snap-hono@1.1.1':
+    resolution: {integrity: sha512-Gz0jCu+ll1Ni1ucLCVETvEIdzj9xrLe+8OZWFCJjE9Zb9XMrNd8uuGew7orDJYNRs+MBUEhSS47IUnvzn+F4PQ==}
     peerDependencies:
       hono: '>=4.0.0'
 
@@ -2284,6 +2286,16 @@ snapshots:
       viem: 2.47.6(typescript@5.9.3)(zod@4.3.6)
 
   '@farcaster/snap-hono@1.1.0(@noble/curves@2.0.1)(hono@4.12.9)(typescript@5.9.3)':
+    dependencies:
+      '@farcaster/snap': 1.2.0(@noble/curves@2.0.1)(typescript@5.9.3)
+      hono: 4.12.9
+    transitivePeerDependencies:
+      - '@noble/curves'
+      - bufferutil
+      - typescript
+      - utf-8-validate
+
+  '@farcaster/snap-hono@1.1.1(@noble/curves@2.0.1)(hono@4.12.9)(typescript@5.9.3)':
     dependencies:
       '@farcaster/snap': 1.2.0(@noble/curves@2.0.1)(typescript@5.9.3)
       hono: 4.12.9

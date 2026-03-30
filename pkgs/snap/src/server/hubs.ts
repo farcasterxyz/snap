@@ -1,9 +1,45 @@
-import {
-  OnChainEventType,
-  SignerEventType,
-  type OnChainEvent,
-} from "@farcaster/hub-nodejs";
 import { decodeAbiParameters, type Hex } from "viem";
+
+// Protobuf enum values from @farcaster/hub-nodejs, inlined to avoid pulling
+// in the full gRPC stack (which is incompatible with Edge runtimes).
+const OnChainEventType = {
+  EVENT_TYPE_NONE: 0,
+  EVENT_TYPE_SIGNER: 1,
+  EVENT_TYPE_SIGNER_MIGRATED: 2,
+  EVENT_TYPE_ID_REGISTER: 3,
+  EVENT_TYPE_STORAGE_RENT: 4,
+  EVENT_TYPE_TIER_PURCHASE: 5,
+} as const;
+type OnChainEventType =
+  (typeof OnChainEventType)[keyof typeof OnChainEventType];
+
+const SignerEventType = {
+  NONE: 0,
+  ADD: 1,
+  REMOVE: 2,
+  ADMIN_RESET: 3,
+} as const;
+type SignerEventType = (typeof SignerEventType)[keyof typeof SignerEventType];
+
+type OnChainEvent = {
+  type: OnChainEventType;
+  chainId: number;
+  blockNumber: number;
+  blockHash: Uint8Array;
+  blockTimestamp: number;
+  transactionHash: Uint8Array;
+  logIndex: number;
+  fid: number;
+  txIndex?: number;
+  version?: number;
+  signerEventBody?: {
+    key: Uint8Array;
+    keyType: number;
+    eventType: SignerEventType;
+    metadata: Uint8Array;
+    metadataType?: number;
+  };
+};
 
 // ---------------------------------------------------------------------------
 // Hex (hub HTTP JSON decoders)
