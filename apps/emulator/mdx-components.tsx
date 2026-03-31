@@ -3,6 +3,7 @@ import CodeBlock from "@/components/CodeBlock";
 import InteractiveGrid from "@/components/docs/InteractiveGrid";
 import InteractiveButtonGroup from "@/components/docs/InteractiveButtonGroup";
 import SnapCard from "@/components/docs/SnapCard";
+import ConfettiDemo from "@/components/docs/ConfettiDemo";
 
 function slugify(text: string): string {
   return text
@@ -59,5 +60,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     InteractiveGrid,
     InteractiveButtonGroup,
     SnapCard,
+    ConfettiDemo,
   };
 }
