@@ -12,7 +12,8 @@
     "@farcaster/snap": "^1.2.2",
     "@farcaster/snap-hono": "^1.1.4",
     "@hono/node-server": "^1.0.0",
-    "hono": "^4.0.0"
+    "hono": "^4.0.0",
+    "zod": "^3.25.0 || ^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

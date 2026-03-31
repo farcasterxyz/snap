@@ -2,7 +2,7 @@
  * Zod prop shapes for each catalog component — mirrors spec/validator element fields
  * (length limits relaxed here; `@farcaster/snap` still gates authored snap JSON).
  */
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const textStyleZ = z.enum(["title", "body", "caption", "label"]);
 const textAlignZ = z.enum(["left", "center", "right"]).optional();

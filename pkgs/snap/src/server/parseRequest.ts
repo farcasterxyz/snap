@@ -1,6 +1,6 @@
 import { payloadSchema, type SnapAction } from "../schemas";
 import { decodePayload, verifyJFSRequestBody } from "./verify";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 /** Default replay window per SPEC.md § Replay Protection (5 minutes). */
 const DEFAULT_SNAP_POST_MAX_SKEW_SECONDS = 300 as const;

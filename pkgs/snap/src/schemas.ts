@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import {
   BAR_CHART_COLOR_VALUES,
   BUTTON_ACTION,

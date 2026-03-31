@@ -38,14 +38,17 @@
   "license": "MIT",
   "dependencies": {
     "@farcaster/jfs": "^0.3.0",
-    "viem": "^2.21.0",
-    "zod": "^4.3.6"
+    "viem": "^2.21.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "zod": "^4.0.0"
   }
 }
