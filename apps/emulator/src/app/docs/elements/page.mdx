@@ -46,6 +46,10 @@ Renders text content in a predefined style.
 
 Renders an image from a URL.
 
+<div className="element-preview">
+  <img src="https://picsum.photos/seed/snap-docs/640/360" alt="Sample landscape" style={{width: "100%", borderRadius: 10, display: "block", aspectRatio: "16/9", objectFit: "cover"}} />
+</div>
+
 ```json
 { "type": "image", "url": "https://example.com/photo.jpg", "aspect": "16:9" }
 ```
@@ -59,6 +63,12 @@ Renders an image from a URL.
 ## `video`
 
 Renders a short video clip. Autoplays muted. Tap to unmute. Subsequent taps play/pause.
+
+<div className="element-preview">
+  <div style={{width: "100%", aspectRatio: "16/9", borderRadius: 10, background: "var(--bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-faint)", fontSize: 13}}>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+  </div>
+</div>
 
 ```json
 {
@@ -79,9 +89,10 @@ Renders a short video clip. Autoplays muted. Tap to unmute. Subsequent taps play
 A horizontal line to visually separate content sections.
 
 <div className="element-preview">
-  <div style={{fontSize: 14}}>Content above</div>
-  <hr style={{border: "none", borderTop: "1px solid var(--border)", margin: "8px 0"}} />
-  <div style={{fontSize: 14}}>Content below</div>
+  <div style={{fontSize: 16, fontWeight: 700}}>Poll Results</div>
+  <div style={{fontSize: 14, color: "var(--text-muted)", marginTop: 2}}>42 votes</div>
+  <hr style={{border: "none", borderTop: "1px solid var(--border)", margin: "10px 0"}} />
+  <div style={{fontSize: 12, color: "var(--text-faint)"}}>Closes in 2 hours</div>
 </div>
 
 ```json
@@ -389,3 +400,140 @@ The first page returned from the snap URL is rendered as the feed card. In addit
 - At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR at least one media element (`image`, `video`, or `grid`)
 
 This ensures the feed card always has readable content plus engagement or visual context.
+
+### Example: Valid First Page
+
+```json
+{
+  "version": "1.0",
+  "page": {
+    "theme": { "accent": "purple" },
+    "button_layout": "stack",
+    "elements": {
+      "type": "stack",
+      "children": [
+        { "type": "text", "style": "title", "content": "Best sci-fi movies" },
+        {
+          "type": "button_group",
+          "name": "pick",
+          "options": ["Arrival", "Dune", "Interstellar"]
+        },
+        {
+          "type": "text",
+          "style": "caption",
+          "content": "Pick your favorite, then tap Vote"
+        }
+      ]
+    },
+    "buttons": [
+      { "label": "Vote", "action": "post", "target": "https://example.com/vote" }
+    ]
+  }
+}
+```
+
+This is valid because it has a `title` text element and an interactive element (`button_group`).
+
+## Common Validation Errors
+
+These examples show snap responses that **fail validation** and why.
+
+### No title or body text
+
+```json
+{
+  "version": "1.0",
+  "page": {
+    "elements": {
+      "type": "stack",
+      "children": [
+        { "type": "image", "url": "https://example.com/photo.jpg", "aspect": "16:9" }
+      ]
+    }
+  }
+}
+```
+
+**Fails:** First page must have at least one `text` element with style `"title"` or `"body"`. An image alone isn't enough.
+
+### No interactive or media element
+
+```json
+{
+  "version": "1.0",
+  "page": {
+    "elements": {
+      "type": "stack",
+      "children": [
+        { "type": "text", "style": "title", "content": "Hello" },
+        { "type": "text", "style": "body", "content": "Welcome to my snap" }
+      ]
+    }
+  }
+}
+```
+
+**Fails:** First page must have at least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) or media element (`image`, `video`, `grid`). Text-only pages are invalid.
+
+### Too many elements
+
+```json
+{
+  "version": "1.0",
+  "page": {
+    "elements": {
+      "type": "stack",
+      "children": [
+        { "type": "text", "style": "title", "content": "Title" },
+        { "type": "text", "style": "body", "content": "Body" },
+        { "type": "progress", "value": 50, "max": 100 },
+        { "type": "list", "items": [{ "content": "Item 1" }] },
+        { "type": "slider", "name": "val", "min": 0, "max": 100 },
+        { "type": "text", "style": "caption", "content": "Too many!" }
+      ]
+    }
+  }
+}
+```
+
+**Fails:** Max 5 elements per page. This has 6.
+
+### Two media elements
+
+```json
+{
+  "version": "1.0",
+  "page": {
+    "elements": {
+      "type": "stack",
+      "children": [
+        { "type": "text", "style": "title", "content": "Gallery" },
+        { "type": "image", "url": "https://example.com/a.jpg", "aspect": "16:9" },
+        { "type": "image", "url": "https://example.com/b.jpg", "aspect": "16:9" }
+      ]
+    }
+  }
+}
+```
+
+**Fails:** Max 1 media element (`image`, `video`, or `grid`) per page.
+
+### Hex accent (must be palette name)
+
+```json
+{
+  "version": "1.0",
+  "page": {
+    "theme": { "accent": "#8B5CF6" },
+    "elements": {
+      "type": "stack",
+      "children": [
+        { "type": "text", "style": "title", "content": "Hello" },
+        { "type": "toggle", "name": "ok", "label": "Agree" }
+      ]
+    }
+  }
+}
+```
+
+**Fails:** `accent` must be a palette name (`gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`), not a hex value. Use `"purple"` instead of `"#8B5CF6"`.
