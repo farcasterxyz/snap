@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
+import { snapPreviewPrimaryCssProperties } from "@/lib/snapPreviewPrimaryCss";
+import { useColorMode } from "@neynar/ui/color-mode";
 import { SnapCatalogView } from "./snapCatalogRenderer";
 import { snapPageToJsonRenderSpec } from "../lib/snapPageToJsonRenderSpec";
 
@@ -75,7 +77,9 @@ function ConfettiOverlay() {
             backgroundColor: p.color,
             borderRadius: p.shape === "circle" ? "50%" : 2,
             transform: `rotate(${p.rotation}deg)`,
-            animation: `confetti-fall-${p.id % 3} ${p.duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${p.delay}s forwards`,
+            animation: `confetti-fall-${p.id % 3} ${
+              p.duration
+            }s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${p.delay}s forwards`,
             opacity: 0,
           }}
         />
@@ -183,6 +187,20 @@ export function SnapRenderer({
 
   const pageKey = useMemo(() => JSON.stringify(snap.page), [snap.page]);
 
+  const { mode: appearance } = useColorMode();
+  const accentName = snap.page.theme?.accent;
+  const previewSurfaceStyle = useMemo(
+    () => ({
+      padding: 16,
+      display: "grid" as const,
+      gap: 12,
+      ...(accentName
+        ? snapPreviewPrimaryCssProperties(accentName, appearance)
+        : {}),
+    }),
+    [accentName, appearance],
+  );
+
   const hasConfetti = snap.page.effects?.includes("confetti") ?? false;
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -229,7 +247,7 @@ export function SnapRenderer({
         </div>
       )}
 
-      <div style={{ padding: 16, display: "grid", gap: 12 }}>
+      <div style={previewSurfaceStyle}>
         <SnapCatalogView
           key={pageKey}
           spec={spec}

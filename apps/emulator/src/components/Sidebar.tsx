@@ -2,16 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import {
-  PanelLeftClose,
-  PanelLeftOpen,
-  Sun,
-  Moon,
-  ExternalLink,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ColorModeToggle, useColorMode } from "@neynar/ui/color-mode";
+import { PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
 import FarcasterLogo from "./FarcasterLogo";
-import { useTheme } from "./ThemeProvider";
 
 type NavItem = { label: string; href: string; external?: boolean };
 type NavSection = { title: string; items: NavItem[] };
@@ -50,14 +44,37 @@ const NAV: NavSection[] = [
   },
   {
     title: "Tools",
-    items: [{ label: "Emulator", href: "https://farcaster.xyz/~/developers/snaps", external: true }],
+    items: [
+      {
+        label: "Emulator",
+        href: "https://farcaster.xyz/~/developers/snaps",
+        external: true,
+      },
+    ],
   },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { theme, toggle } = useTheme();
+  const { setPreference } = useColorMode();
   const [collapsed, setCollapsed] = useState(false);
+  const didMigrateLegacyTheme = useRef(false);
+
+  useEffect(() => {
+    if (didMigrateLegacyTheme.current || typeof document === "undefined") {
+      return;
+    }
+    didMigrateLegacyTheme.current = true;
+    if (document.cookie.includes("color-mode=")) {
+      localStorage.removeItem("docs-theme");
+      return;
+    }
+    const legacy = localStorage.getItem("docs-theme");
+    if (legacy === "light" || legacy === "dark") {
+      setPreference(legacy);
+      localStorage.removeItem("docs-theme");
+    }
+  }, [setPreference]);
 
   return (
     <nav className={`sidebar${collapsed ? " sidebar--collapsed" : ""}`}>
@@ -80,7 +97,11 @@ export default function Sidebar() {
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          {collapsed ? (
+            <PanelLeftOpen size={16} />
+          ) : (
+            <PanelLeftClose size={16} />
+          )}
         </button>
       </div>
 
@@ -100,13 +121,18 @@ export default function Sidebar() {
                       className="sidebar-link"
                     >
                       {item.label}
-                      <ExternalLink size={12} style={{ marginLeft: 4, opacity: 0.5 }} />
+                      <ExternalLink
+                        size={12}
+                        style={{ marginLeft: 4, opacity: 0.5 }}
+                      />
                     </a>
                   ) : (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`sidebar-link${pathname === item.href ? " active" : ""}`}
+                      className={`sidebar-link${
+                        pathname === item.href ? " active" : ""
+                      }`}
                     >
                       {item.label}
                     </Link>
@@ -117,14 +143,13 @@ export default function Sidebar() {
           </div>
 
           <div className="sidebar-footer">
-            <button
-              className="sidebar-icon-btn"
-              onClick={toggle}
-              title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-              aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-            >
-              {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
-            </button>
+            <ColorModeToggle
+              variant="ghost"
+              size="sm"
+              align="end"
+              className="h-7 w-7 p-0 text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              title="Theme: system, light, or dark"
+            />
           </div>
         </>
       )}

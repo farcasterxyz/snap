@@ -1,3 +1,9 @@
+/* @neynar/ui + Tailwind v4 (required for Neynar components in snap preview) */
+@import "@neynar/ui/styles";
+@import "@neynar/ui/themes/purple-dawn";
+
+@source "../**/*.{js,jsx,ts,tsx}";
+
 /* ── Theme variables ── */
 
 :root,
@@ -42,6 +48,8 @@
   color-scheme: light;
 }
 
+/* Neynar color mode uses `html.dark`; legacy docs-theme used data-theme */
+html.dark,
 [data-theme="dark"] {
   --bg-primary: #0f1117;
   --bg-surface: #181a20;
@@ -91,9 +99,8 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100dvh;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
 }

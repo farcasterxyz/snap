@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { ColorModeInitializer } from "@neynar/ui/color-mode";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
-import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Farcaster Snaps",
@@ -13,13 +13,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ColorModeInitializer />
+      </head>
       <body>
-        <ThemeProvider>
-          <div className="app-shell">
-            <Sidebar />
-            {children}
-          </div>
-        </ThemeProvider>
+        <div className="app-shell">
+          <Sidebar />
+          {children}
+        </div>
       </body>
     </html>
   );
