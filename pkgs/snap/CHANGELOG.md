@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.3.0
+
+### Minor Changes
+
+- [`6e82952`](https://github.com/farcasterxyz/snap/commit/6e82952a6e1074d99d887ef06955bd884250bb3c) Thanks [@lyoshenka](https://github.com/lyoshenka)! - make snap work with zod v3 or v4
+
 ## 1.2.2
 
 ### Patch Changes
