@@ -1,0 +1,22 @@
+{
+  "name": "element-showcase",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "SKIP_JFS_VERIFICATION=true tsx watch src/server.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@farcaster/snap": "^1.2.2",
+    "@farcaster/snap-hono": "^1.1.4",
+    "@hono/node-server": "^1.0.0",
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
