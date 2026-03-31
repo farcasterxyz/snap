@@ -68,7 +68,16 @@ Fix any errors or implementation mistakes. Re-run local validation until the sna
 
 Every run **ends with a deplyoment** (new project or new version). Do not stop after “the JSON looks right” or after local-only validation.
 
-Use **[Neynar Agent Deploy](https://host.neynar.app)** (full API and options: **[SKILL.md](https://host.neynar.app/SKILL.md)**): one `POST` with a **`.tar.gz`** of the app—no git or dashboard required.
+Fetch the deploy skill first:
+
+```bash
+curl -s https://host.neynar.app/SKILL.md
+```
+
+Use `framework=hono`. The Neynar deploy API sends the project to Vercel where
+Hono apps run on **Edge runtime** by default. This imposes constraints on what
+the bundled function can import (no Node.js built-ins, no native modules). Use
+one `POST` with a **`.tar.gz`** of the app—no git or dashboard required.
 
 **Stable `projectName`:** Choose a durable name (alphanumeric + hyphens, 2–100 chars) per snap or product so updates target the same live URL. Example: **`my-team-widget-snap`**.
 
@@ -139,3 +148,9 @@ Expect **HTTP 200** and valid snap JSON, content type **`application/vnd.farcast
 - **`https://<projectName>.host.neynar.app`** (and optionally the raw Vercel **`url`** if useful).
 - On **first** deploy only: the **`apiKey`** and that it must be saved for future updates.
 - Short note on what the snap does (elements, buttons, POST behavior).
+
+#### Important: `@noble/curves` peer dependency
+
+`@farcaster/jfs` declares `@noble/curves@2.x` as a peer dependency. If your
+lockfile resolves `1.x` instead, add `@noble/curves@^2.0.0` as a direct
+dependency in `package.json` before bundling.
