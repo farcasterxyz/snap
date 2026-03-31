@@ -326,6 +326,8 @@ export function renderSnapPage(
     ? esc(titleEl.content as string)
     : "Farcaster Snap";
 
+  const snapUrl = encodeURIComponent(snapOrigin + "/");
+
   // Render elements
   let elementsHtml = "";
   for (const el of page.elements.children) {
@@ -358,7 +360,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .modal-box svg{width:40px;height:35px;color:#8B5CF6;margin-bottom:16px}
 .modal-box h2{color:#FAFAFA;font-size:20px;margin-bottom:8px}
 .modal-box p{color:#A1A1AA;font-size:14px;line-height:1.5;margin-bottom:24px}
-.modal-box a{display:block;padding:12px;border-radius:10px;background:#8B5CF6;color:#fff;text-decoration:none;font-weight:600;font-size:15px;margin-bottom:12px}
+.modal-box a{display:block;padding:12px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;margin-bottom:12px}
+.mb-primary{background:#8B5CF6;color:#fff}
+.mb-secondary{background:#1A1A2E;color:#FAFAFA;border:1px solid #2D2D44}
 .modal-box a:hover{opacity:.85}
 .modal-box button{background:none;border:none;color:#A1A1AA;cursor:pointer;font-size:13px;font-family:inherit}
 </style>
@@ -376,7 +380,8 @@ ${buttonsHtml}
 ${FC_ICON}
 <h2>Open in Farcaster</h2>
 <p>Sign up or sign in to interact with this snap.</p>
-<a href="https://farcaster.xyz">Get Farcaster</a>
+<a href="https://farcaster.xyz" class="mb-primary">Join Farcaster</a>
+<a href="https://farcaster.xyz/~/developers/snaps?url=${snapUrl}" class="mb-secondary">Try on Farcaster</a>
 <button onclick="document.getElementById('m').style.display='none'">Dismiss</button>
 </div>
 </div>
