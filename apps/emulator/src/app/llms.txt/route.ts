@@ -30,7 +30,7 @@ export async function GET() {
       const content = readFileSync(join(DOCS_DIR, page.file), "utf-8");
       // Strip JSX/HTML blocks that won't help LLMs (like palette swatches)
       const cleaned = content
-        .replace(/<div className="palette-grid">[\s\S]*?<\/div>\n<\/div>/g, "[See color palette table on docs site]")
+        .replace(/<div className="palette-grid">[\s\S]*?<\/div>/g, "[See color palette table on docs site]")
         .trim();
       sections.push(`---\n\n## ${page.title}\n\n${cleaned}\n`);
     } catch {

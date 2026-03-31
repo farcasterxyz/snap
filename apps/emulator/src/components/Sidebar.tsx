@@ -77,6 +77,7 @@ export default function Sidebar() {
           className="sidebar-icon-btn"
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
         </button>
