@@ -19,14 +19,8 @@ export type SnapHandlerOptions = {
   skipJFSVerification?: boolean;
 
   /**
-   * Plain-text message for the browser fallback page. When set, overrides the
-   * default branded fallback with a simple `<p>` containing the escaped text.
-   */
-  fallbackText?: string;
-
-  /**
    * Raw HTML string for the browser fallback page. When set, takes precedence
-   * over both the default branded fallback and `fallbackText`.
+   * over the default branded fallback.
    */
   fallbackHtml?: string;
 };
@@ -55,26 +49,9 @@ export function registerSnapHandler(
     const resourcePath = resourcePathFromRequest(c.req.url);
     const accept = c.req.header("Accept");
     if (!clientWantsSnapResponse(accept)) {
-      let html: string;
-      if (options.fallbackHtml !== undefined) {
-        html = options.fallbackHtml;
-      } else if (options.fallbackText !== undefined) {
-        html = simpleFallbackHtml(options.fallbackText);
-      } else {
-        try {
-          const snap = await snapFn({
-            action: { type: "get" },
-            request: c.req.raw,
-          });
-          html = renderSnapPage(
-            snap,
-            snapOriginFromRequest(c.req.raw),
-          );
-        } catch {
-          html = brandedFallbackHtml(snapOriginFromRequest(c.req.raw));
-        }
-      }
-      return new Response(html, {
+      const fallbackHtml =
+        options.fallbackHtml ?? (await getFallbackHtml(c.req.raw, snapFn));
+      return new Response(fallbackHtml, {
         status: 200,
         headers: snapHeaders(resourcePath, "text/html", [
           MEDIA_TYPE,
@@ -87,6 +64,7 @@ export function registerSnapHandler(
       action: { type: "get" },
       request: c.req.raw,
     });
+
     return payloadToResponse(response, {
       resourcePath,
       mediaTypes: [MEDIA_TYPE, "text/html"],
@@ -139,28 +117,19 @@ function resourcePathFromRequest(url: string): string {
   return u.pathname + u.search;
 }
 
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function simpleFallbackHtml(message: string): string {
-  const body = escapeHtml(message);
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Farcaster Snap</title>
-</head>
-<body>
-<p>${body}</p>
-</body>
-</html>`;
+async function getFallbackHtml(
+  request: Request,
+  snapFn: SnapFunction,
+): Promise<string> {
+  try {
+    const snap = await snapFn({
+      action: { type: "get" },
+      request,
+    });
+    return renderSnapPage(snap, snapOriginFromRequest(request));
+  } catch {
+    return brandedFallbackHtml(snapOriginFromRequest(request));
+  }
 }
 
 const FARCASTER_ICON_SVG = `<svg aria-hidden="true" focusable="false" viewBox="0 0 520 457" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M519.801 0V61.6809H458.172V123.31H477.054V123.331H519.801V456.795H416.57L416.507 456.49L363.832 207.03C358.81 183.251 345.667 161.736 326.827 146.434C307.988 131.133 284.255 122.71 260.006 122.71H259.8C235.551 122.71 211.818 131.133 192.979 146.434C174.139 161.736 160.996 183.259 155.974 207.03L103.239 456.795H0V123.323H42.7471V123.31H61.6262V61.6809H0V0H519.801Z" fill="currentColor"/></svg>`;
