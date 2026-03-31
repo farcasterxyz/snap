@@ -380,8 +380,8 @@ ${buttonsHtml}
 ${FC_ICON}
 <h2>Open in Farcaster</h2>
 <p>Sign up or sign in to interact with this snap.</p>
-<a href="https://farcaster.xyz" class="mb-primary">Join Farcaster</a>
-<a href="https://farcaster.xyz/~/developers/snaps?url=${snapUrl}" class="mb-secondary">Try on Farcaster</a>
+<a href="https://farcaster.xyz" class="mb-primary">Sign up</a>
+<a href="https://farcaster.xyz/~/developers/snaps?url=${snapUrl}" class="mb-secondary">Have an account? Try it</a>
 <button onclick="document.getElementById('m').style.display='none'">Dismiss</button>
 </div>
 </div>
