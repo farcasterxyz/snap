@@ -4,58 +4,41 @@ argument-hint: <description of the snap to create>
 allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
 ---
 
-You are a Farcaster Snap generator. The user wants you to create valid Snap based on their prompt and deploy it to host.neynar.app
-
-**User's request:** $ARGUMENTS
-
----
-
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-03-27**. If that date is more than 7 days ago, fetch the latest version before proceeding:
+This skill was last updated on **2026-03-30**. If that date is more than 7 days ago, fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
-curl -s https://raw.githubusercontent.com/farcasterxyz/snap/main/agent-skills/create-farcaster-snap/SKILL.md
+curl -s https://raw.githubusercontent.com/farcasterxyz/snap/main/agent-skills/create-farcaster-snap/SKILL.md | tee /path/to/current/create-farcaster-snap/SKILL.md
 ```
 
 Use the fetched content as the skill for the rest of this session.
+
+---
+
+You are a Farcaster Snap generator. The user wants to create a working snap and deploy it on the internet.
+
+**Default outcome:** implement the snap using the **[snap template](https://github.com/farcasterxyz/snap/tree/main/template)**, validate locally, then **deploy to [host.neynar.app](https://host.neynar.app)** via Neynar Agent Deploy—or **push a new version** of an already-deployed project if an API key and stable **`projectName`** are available.
+
+As a last step, always use curl to check that the live app is working correctly.
+
+**User's request:** $ARGUMENTS
 
 ## Step 1: Read the spec (and element references)
 
 Read `docs/SPEC.md` first, then read every linked doc it references. Do not rely on memorized spec content.
 
-## Step 2: Generate JSON that matches the current page model
+## Step 2: Implement the snap (follow the template)
 
-The response body is a **root object** (often typed `SnapRoot` in code), not a bare `page`:
+Explore the [`template/` directory on GitHub](https://github.com/farcasterxyz/snap/tree/main/template).
 
-```json
-{
-  "version": "1.0",
-  "page": {
-    "theme": { "accent": "purple" },
-    "button_layout": "stack",
-    "elements": {
-      "type": "stack",
-      "children": [
-        /* elements; see docs/response.md */
-      ]
-    },
-    "buttons": [
-      /* buttons; see docs/response.md */
-    ]
-  }
-}
-```
+Read README.md and AGENTS.md there first, then follow the links therein to more content. Also skim it's @farcaster/snap\* dependencies.
 
-Use these code sources of truth while building:
-
-- Runtime + type exports: `pkgs/snap/src/index.ts`
-- Zod schemas and constraints: `pkgs/snap/src/schemas.ts`
-- Canonical constants (media type, palette, limits): `pkgs/snap/src/constants.ts`
+Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
-- Generate JSON that conforms to `docs/SPEC.md` for overall snap/page shape and behavior.
+- Conform to `docs/SPEC.md` for overall snap/page shape and behavior.
 - Put elements under the page `elements` tree (`page.elements.type` + `elements.children`) per the spec.
 - Ensure first page rules are satisfied (title/body text + interactive/media requirement).
 - Ensure button schemas/targets match `docs/response.md` URL/action rules.
@@ -69,34 +52,90 @@ Design guidance:
 - Use `"post"` buttons with absolute targets. In production, use HTTPS.
 - For local dev/emulator, HTTP is only valid on loopback (`localhost`, `127.0.0.1`, `[::1]`, `::1`).
 
-## Step 3: Validate
+## Step 3: Validate locally
 
-Run the dev server and explore the snap using `curl -sS -H 'Accept: application/vnd.farcaster.snap+json' <localhost:port>`
+Run the dev server and check the snap:
+
+```bash
+curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'http://localhost:<port>/'
+```
 
 ## Step 4: Fix and repeat
 
-Fix any errors or implementation mistakes you find. Re-run validation until the snap works.
+Fix any errors or implementation mistakes. Re-run local validation until the snap works.
 
-## Step 5: Output
+## Step 5: Deploy or update (always)
 
-Return the final JSON and a short explanation of the stack contents and buttons.
+Every run **ends with a deplyoment** (new project or new version). Do not stop after “the JSON looks right” or after local-only validation.
 
-## Step 6: Optional — implement in `template/` and deploy
+Use **[Neynar Agent Deploy](https://host.neynar.app)** (full API and options: **[SKILL.md](https://host.neynar.app/SKILL.md)**): one `POST` with a **`.tar.gz`** of the app—no git or dashboard required.
 
-When the user wants a **live** snap (not just JSON), use the workspace package **`snap-template`** (`template/`).
+**Stable `projectName`:** Choose a durable name (alphanumeric + hyphens, 2–100 chars) per snap or product so updates target the same live URL. Example: **`my-team-widget-snap`**.
 
-- Implement or change snap behavior in **`template/src/app.ts`** (Hono app, `registerSnapHandler` callback).
-- Local dev: **`pnpm --filter snap-template dev`** runs **`src/server.ts`** (default port **3003**).
-- **Vercel / edge:** **`template/src/index.ts`** wires the same Hono app via `hono/vercel` (`handle`) for `GET`/`POST` exports — match whatever your host expects (see **`template/README.md`**).
-- Set **`SNAP_PUBLIC_BASE_URL`** to your deployment origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly.
-- For local POST testing, set **`SKIP_JFS_VERIFICATION=1`**.
+First deploy (no API key yet): `POST` **without** `Authorization`. The response includes **`apiKey`** **exactly once**—save it (for example **`.agentdeploy`** in the project, gitignored, or a user-provided secret). Also record **`projectName`** and **`projectId`** if you need the management API.
 
-Deploy (e.g. host.neynar.app): follow **`template/README.md`** — use the **`hono`** framework for this template, not Vite.
+Subsequent deploys (update in place): Same **`projectName`** and tarball, with:
 
-After deploy, sanity-check with:
-
-```bash
-curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://<your-deployment-origin>/'
+```text
+Authorization: Bearer <apiKey>
 ```
 
-You should get valid JSON with content type `application/vnd.farcaster.snap+json`.
+Same multipart body as before (files, framework, env, optional `description`). This creates a **new version** on the same **`https://<projectName>.host.neynar.app`** project.
+
+If the user supplies an existing key and name, **update**; otherwise **create** and **tell them to store the new `apiKey`**.
+
+**Packaging**
+
+1. **Archive contents** — include whatever the project needs to install and build (see its **`README.md`** and file tree: typically **`package.json`**, lockfile, source dirs, config files). **Do not** upload **`node_modules`** .
+
+2. **Create the archive:**
+
+   ```bash
+   tar czf /tmp/site.tar.gz -C /path/to/project-or-staging \
+     --exclude=node_modules --exclude='.DS_Store' .
+   ```
+
+3. **Deploy request** — **`projectName`**, **`env`** as a JSON string (at least **`SNAP_PUBLIC_BASE_URL`** as below).
+
+   **First deploy** (no `Authorization`; response returns **`apiKey`** once). Use **`framework=auto`** below unless the template specifies a different Neynar **`framework`** value.
+
+   ```bash
+   curl -X POST https://api.host.neynar.app/v1/deploy \
+     -F "files=@/tmp/site.tar.gz" \
+     -F "projectName=my-snap" \
+     -F "framework=auto" \
+     -F 'env={"SNAP_PUBLIC_BASE_URL":"https://my-snap.host.neynar.app"}' \
+     -F "description=Short note for deploy history"
+   ```
+
+   **Update existing project** (same **`projectName`**, Bearer token from a prior deploy):
+
+   ```bash
+   curl -X POST https://api.host.neynar.app/v1/deploy \
+     -H "Authorization: Bearer <apiKey>" \
+     -F "files=@/tmp/site.tar.gz" \
+     -F "projectName=my-snap" \
+     -F "framework=auto" \
+     -F 'env={"SNAP_PUBLIC_BASE_URL":"https://my-snap.host.neynar.app"}' \
+     -F "description=Short note for deploy history"
+   ```
+
+4. **Canonical URL** — the response includes a **`url`** (often **`*.vercel.app`**). **`GET /v1/projects/:projectId`** with the Bearer token returns **`currentUrl`**, usually **`https://<projectName>.host.neynar.app`**. Use that origin when communicating the live snap to the user and when setting **`SNAP_PUBLIC_BASE_URL`** on later deploys.
+
+## Step 6: Verify production and report
+
+Sanity-check the **public** snap (retry if needed—see below):
+
+```bash
+curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://<projectName>.host.neynar.app/'
+```
+
+Expect **HTTP 200** and valid snap JSON, content type **`application/vnd.farcaster.snap+json`**.
+
+**Important:** Right after a deploy, **`https://<projectName>.host.neynar.app`** may return errors briefly while routing or the edge catches up—the **`*.vercel.app`** **`url`** in the response may already return **200**. **Wait a few seconds and retry** (or poll **`GET /v1/projects/:projectId/deploy/:deploymentId`** until **`deployStatus`** is **`ready`**). Do **not** treat immediate errors as a failed deploy.
+
+**Tell the user**
+
+- **`https://<projectName>.host.neynar.app`** (and optionally the raw Vercel **`url`** if useful).
+- On **first** deploy only: the **`apiKey`** and that it must be saved for future updates.
+- Short note on what the snap does (elements, buttons, POST behavior).
