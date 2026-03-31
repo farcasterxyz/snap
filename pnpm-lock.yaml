@@ -267,11 +267,11 @@ importers:
   template:
     dependencies:
       '@farcaster/snap':
-        specifier: ^1.2.0
-        version: 1.2.0(@noble/curves@2.0.1)(typescript@5.9.3)
+        specifier: ^1.2.2
+        version: 1.2.2(typescript@5.9.3)
       '@farcaster/snap-hono':
-        specifier: ^1.1.0
-        version: 1.1.0(@noble/curves@2.0.1)(hono@4.12.9)(typescript@5.9.3)
+        specifier: ^1.1.4
+        version: 1.1.4(hono@4.12.9)(typescript@5.9.3)
       '@hono/node-server':
         specifier: ^1.0.0
         version: 1.19.11(hono@4.12.9)
@@ -280,8 +280,8 @@ importers:
         version: 4.12.9
     devDependencies:
       '@types/node':
-        specifier: ^25.5.0
-        version: 25.5.0
+        specifier: ^24.5.2
+        version: 24.12.0
       tsx:
         specifier: ^4.0.0
         version: 4.21.0
