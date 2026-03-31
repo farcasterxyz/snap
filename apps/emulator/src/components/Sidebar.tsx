@@ -44,6 +44,7 @@ const NAV: NavSection[] = [
     title: "Guides",
     items: [
       { label: "Building a Snap", href: "/docs/building" },
+      { label: "Existing Website", href: "/docs/existing-site" },
       { label: "Authentication", href: "/docs/auth" },
     ],
   },

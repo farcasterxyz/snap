@@ -12,6 +12,7 @@ const PAGES = [
   { file: "effects/page.mdx", title: "Effects" },
   { file: "constraints/page.mdx", title: "Constraints" },
   { file: "building/page.mdx", title: "Building a Snap" },
+  { file: "existing-site/page.mdx", title: "Adding a Snap to an Existing Website" },
   { file: "auth/page.mdx", title: "Authentication" },
   { file: "examples/page.mdx", title: "Examples" },
 ];
