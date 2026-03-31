@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 
 const BUTTON_GROUP_NAME = "display" as const;
@@ -8,13 +7,14 @@ const OPT_LOCAL = "Local";
 
 const app = new Hono();
 
-registerSnapHandler(app, async ({ action }) => {
+registerSnapHandler(app, async ({ action, request }) => {
   const pref =
     action.type === "post" &&
     typeof action.inputs[BUTTON_GROUP_NAME] === "string"
       ? (action.inputs[BUTTON_GROUP_NAME] as string)
       : undefined;
   const body = timeBody(pref);
+  const base = snapBaseUrlFromRequest(request);
   return {
     version: "1.0",
     page: {
@@ -43,7 +43,7 @@ registerSnapHandler(app, async ({ action }) => {
         {
           label: "Refresh",
           action: "post",
-          target: `${snapBaseUrl()}/`,
+          target: `${base}/`,
         },
       ],
     },
@@ -52,15 +52,17 @@ registerSnapHandler(app, async ({ action }) => {
 
 export default app;
 
-export const runtime = "edge";
-export const GET = handle(app);
-export const POST = handle(app);
+function snapBaseUrlFromRequest(request: Request): string {
+  const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim();
+  if (fromEnv) return fromEnv.replace(/\/$/, "");
 
-function snapBaseUrl(): string {
-  const raw =
-    process.env.SNAP_PUBLIC_BASE_URL ??
-    `http://localhost:${process.env.PORT ?? "3014"}`;
-  return raw.replace(/\/$/, "");
+  const proto = request.headers.get("x-forwarded-proto")?.trim() || "https";
+  const host =
+    request.headers.get("x-forwarded-host")?.trim() ||
+    request.headers.get("host")?.trim();
+  if (host) return `${proto}://${host}`.replace(/\/$/, "");
+
+  return `http://localhost:${process.env.PORT ?? "3014"}`.replace(/\/$/, "");
 }
 
 function timeBody(pref: string | undefined): string {
