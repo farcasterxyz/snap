@@ -49,7 +49,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
         ? 12
         : 16;
     const fontWeight = style === "title" || style === "label" ? 700 : 400;
-    const color = style === "caption" ? "#6b7280" : "#111827";
+    const color = style === "caption" ? "var(--text-muted)" : "var(--text-primary)";
     return (
       <p
         style={{
@@ -78,7 +78,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
   },
 
   Divider: () => (
-    <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
+    <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: 0 }} />
   ),
 
   Spacer: ({ element: { props } }) => {
@@ -102,7 +102,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
     return (
       <div style={{ width: "100%" }}>
         {props.label != null ? (
-          <div style={{ fontSize: 12, color: "#4b5563", marginBottom: 4 }}>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>
             {String(props.label)}
           </div>
         ) : null}
@@ -111,7 +111,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
             height: 8,
             width: "100%",
             borderRadius: 999,
-            background: "#e5e7eb",
+            background: "var(--border)",
             overflow: "hidden",
           }}
         >
@@ -133,7 +133,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
           margin: 0,
           paddingLeft: 20,
           fontSize: 14,
-          color: "#111827",
+          color: "var(--text-primary)",
         }}
       >
         {items.map(
@@ -149,7 +149,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
             >
               <span>{String(item.content ?? "")}</span>
               {item.trailing != null ? (
-                <span style={{ color: "#6b7280", fontSize: 13 }}>
+                <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
                   {String(item.trailing)}
                 </span>
               ) : null}
@@ -215,7 +215,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
             }
             style={{
               background: cell?.color ?? "transparent",
-              border: selected ? `2px solid ${accent}` : "1px solid #e5e7eb",
+              border: selected ? `2px solid ${accent}` : "1px solid var(--border)",
               borderRadius: 4,
               minHeight: 28,
               display: "flex",
@@ -263,7 +263,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
         style={{
           width: "100%",
           padding: "10px 12px",
-          border: "1px solid #d1d5db",
+          border: "1px solid var(--input-border)",
           borderRadius: 10,
           fontSize: 14,
           boxSizing: "border-box",
@@ -344,9 +344,9 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
               style={{
                 padding: "10px 12px",
                 borderRadius: 10,
-                border: `1px solid ${isSelected ? accent : "#d1d5db"}`,
-                background: isSelected ? `${accent}20` : "#ffffff",
-                color: isSelected ? accent : "#111827",
+                border: `1px solid ${isSelected ? accent : "var(--input-border)"}`,
+                background: isSelected ? `${accent}20` : "var(--input-bg)",
+                color: isSelected ? accent : "var(--text-primary)",
                 fontWeight: 600,
                 cursor: "pointer",
               }}
@@ -382,7 +382,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
             gap: bars.length > 4 ? 4 : 8,
             height: barHeight,
             width: "100%",
-            borderBottom: "1px solid #e5e7eb",
+            borderBottom: "1px solid var(--border)",
             paddingBottom: 1,
           }}
         >
@@ -414,7 +414,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
                     style={{
                       fontSize: 11,
                       fontWeight: 600,
-                      color: "#4b5563",
+                      color: "var(--text-muted)",
                       marginBottom: 3,
                     }}
                   >
@@ -450,7 +450,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
                 flex: 1,
                 textAlign: "center",
                 fontSize: 11,
-                color: "#6b7280",
+                color: "var(--text-muted)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
@@ -491,7 +491,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
             padding: "10px 12px",
             borderRadius: 10,
             border: styleType === "primary" ? "none" : `1px solid ${accent}`,
-            background: styleType === "primary" ? accent : "#ffffff",
+            background: styleType === "primary" ? accent : "var(--input-bg)",
             color: styleType === "primary" ? "#ffffff" : accent,
             fontWeight: 600,
             fontSize: 14,
