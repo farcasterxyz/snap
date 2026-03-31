@@ -48,7 +48,7 @@ Design guidance:
 - Pick a coherent `theme.accent`.
 - Prefer `style: "title"` for the main heading, `body` for main copy, `caption` for metadata.
 - Keep strings within current text caps (title/body/caption/label/button/list, etc.).
-- Keep page height-safe: max 5 root elements, max 1 media element, max 4 buttons.
+- Keep page height-safe: max 5 root elements, max 1 media element, max 4 buttons. The validator enforces a **~500px feed card height limit**—combining many elements and buttons can push pages over. If validation fails with a height error, remove an element or reduce list/button counts and retry.
 - Use `"post"` buttons with absolute targets. In production, use HTTPS.
 - For local dev/emulator, HTTP is only valid on loopback (`localhost`, `127.0.0.1`, `[::1]`, `::1`).
 
@@ -133,7 +133,7 @@ If the user supplies an existing key and name, **update**; otherwise **create** 
 
 ## Step 6: Verify production and report
 
-Sanity-check the **public** snap (retry if needed—see below):
+Sanity-check the **public** snap with curl (retry if needed—see below):
 
 ```bash
 curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://<projectName>.host.neynar.app/'
@@ -143,9 +143,12 @@ Expect **HTTP 200** and valid snap JSON, content type **`application/vnd.farcast
 
 **Important:** Right after a deploy, **`https://<projectName>.host.neynar.app`** may return errors briefly while routing or the edge catches up—the **`*.vercel.app`** **`url`** in the response may already return **200**. **Wait a few seconds and retry** (or poll **`GET /v1/projects/:projectId/deploy/:deploymentId`** until **`deployStatus`** is **`ready`**). Do **not** treat immediate errors as a failed deploy.
 
+**Interactive testing:** Open **`https://farcaster.xyz/~/developers/snaps`** in a browser, enter the snap URL in the **Snap URL** field, and click **Load snap**. This emulator uses real JFS-signed POST requests, so buttons and inputs work exactly like they would in the feed. Use it to verify multi-page flows and POST interactions—curl only checks the GET (first page).
+
 **Tell the user**
 
 - **`https://<projectName>.host.neynar.app`** (and optionally the raw Vercel **`url`** if useful).
+- That they can test interactively at **`https://farcaster.xyz/~/developers/snaps`**.
 - On **first** deploy only: the **`apiKey`** and that it must be saved for future updates.
 - Short note on what the snap does (elements, buttons, POST behavior).
 
