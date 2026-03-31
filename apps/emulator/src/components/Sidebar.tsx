@@ -8,11 +8,12 @@ import {
   PanelLeftOpen,
   Sun,
   Moon,
+  ExternalLink,
 } from "lucide-react";
 import FarcasterLogo from "./FarcasterLogo";
 import { useTheme } from "./ThemeProvider";
 
-type NavItem = { label: string; href: string };
+type NavItem = { label: string; href: string; external?: boolean };
 type NavSection = { title: string; items: NavItem[] };
 
 const NAV: NavSection[] = [
@@ -48,7 +49,7 @@ const NAV: NavSection[] = [
   },
   {
     title: "Tools",
-    items: [{ label: "Emulator", href: "/emulator" }],
+    items: [{ label: "Emulator", href: "https://farcaster.xyz/~/developers/snaps", external: true }],
   },
 ];
 
@@ -87,15 +88,28 @@ export default function Sidebar() {
             {NAV.map((section) => (
               <div key={section.title} className="sidebar-section">
                 <div className="sidebar-section-title">{section.title}</div>
-                {section.items.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`sidebar-link${pathname === item.href ? " active" : ""}`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {section.items.map((item) =>
+                  item.external ? (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="sidebar-link"
+                    >
+                      {item.label}
+                      <ExternalLink size={12} style={{ marginLeft: 4, opacity: 0.5 }} />
+                    </a>
+                  ) : (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`sidebar-link${pathname === item.href ? " active" : ""}`}
+                    >
+                      {item.label}
+                    </Link>
+                  ),
+                )}
               </div>
             ))}
           </div>
