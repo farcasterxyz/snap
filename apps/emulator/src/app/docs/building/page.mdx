@@ -22,6 +22,7 @@ Then run it:
 ```
 
 The skill will:
+
 1. Read the full snap spec
 2. Generate valid snap JSON and server logic
 3. Validate the output against the schema
@@ -50,29 +51,33 @@ import { registerSnapHandler } from "@farcaster/snap-hono";
 
 const app = new Hono();
 
-registerSnapHandler(app, async ({ action, request }) => {
-  if (action.type === "get") {
-    return {
-      version: "1.0",
-      page: {
-        theme: { accent: "purple" },
-        elements: {
-          type: "stack",
-          children: [
-            { type: "text", style: "title", content: "My Snap" },
-            { type: "text", style: "body", content: "Hello world" },
-          ],
+registerSnapHandler(
+  app,
+  async ({ action, request }) => {
+    if (action.type === "get") {
+      return {
+        version: "1.0",
+        page: {
+          theme: { accent: "purple" },
+          elements: {
+            type: "stack",
+            children: [
+              { type: "text", style: "title", content: "My Snap" },
+              { type: "text", style: "body", content: "Hello world" },
+            ],
+          },
         },
-      },
-    };
-  }
+      };
+    }
 
-  // Handle POST interactions
-  const { fid, inputs, buttonIndex } = action;
-  // ... your logic here
-}, {
-  skipJfsVerification: process.env.SKIP_JFS_VERIFICATION === "1",
-});
+    // Handle POST interactions
+    const { fid, inputs, buttonIndex } = action;
+    // ... your logic here
+  },
+  {
+    skipJfsVerification: process.env.SKIP_JFS_VERIFICATION === "1",
+  },
+);
 ```
 
 Run locally:

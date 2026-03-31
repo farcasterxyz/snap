@@ -201,7 +201,7 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
       const gid = nextId("btnrow");
       elements[gid] = {
         type: "Group",
-        props: { layout: "row" },
+        props: { layout: layout === "grid" ? "grid" : "row" },
         children: buttonIds,
       };
       stackChildren.push(gid);

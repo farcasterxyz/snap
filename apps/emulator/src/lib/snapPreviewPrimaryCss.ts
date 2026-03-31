@@ -12,6 +12,29 @@ function pickForegroundForBg(hex: string): string {
   return yiq >= 180 ? "#0a0a0a" : "#ffffff";
 }
 
+/** Match `globals.css` `--snap-card-bg` so hover tints sit on the preview card. */
+const SNAP_CARD_BG: Record<"light" | "dark", string> = {
+  light: "#ffffff",
+  dark: "#23262f",
+};
+
+function snapActionPrimaryHover(
+  hex: string,
+  appearance: "light" | "dark",
+): string {
+  return appearance === "light"
+    ? `color-mix(in srgb, ${hex} 82%, #000000)`
+    : `color-mix(in srgb, ${hex} 78%, #ffffff)`;
+}
+
+function snapActionOutlineHover(
+  hex: string,
+  appearance: "light" | "dark",
+): string {
+  const card = SNAP_CARD_BG[appearance];
+  return `color-mix(in srgb, ${hex} 14%, ${card})`;
+}
+
 /**
  * Overrides Neynar / Tailwind theme tokens so `bg-primary`, `border-primary`, etc.
  * use the snap spec accent inside the preview subtree.
@@ -28,5 +51,7 @@ export function snapPreviewPrimaryCssProperties(
     "--ring": hex,
     "--color-primary": hex,
     "--color-primary-foreground": fg,
+    "--snap-action-primary-hover": snapActionPrimaryHover(hex, appearance),
+    "--snap-action-outline-hover": snapActionOutlineHover(hex, appearance),
   } as CSSProperties;
 }

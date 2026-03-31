@@ -15,9 +15,7 @@ Every snap page body is a tree whose root is a `stack`. The client renders child
 ```json
 {
   "type": "stack",
-  "children": [
-    { "type": "text", "style": "title", "content": "Hello" }
-  ]
+  "children": [{ "type": "text", "style": "title", "content": "Hello" }]
 }
 ```
 
@@ -26,49 +24,71 @@ Every snap page body is a tree whose root is a `stack`. The client renders child
 Renders text content in a predefined style.
 
 <div className="element-preview">
-  <div style={{fontSize: 22, fontWeight: 700}}>Title style</div>
-  <div style={{fontSize: 16}}>Body style — for main descriptive text</div>
-  <div style={{fontSize: 12, color: "var(--text-muted)"}}>Caption style — secondary info</div>
-  <div style={{fontSize: 13, fontWeight: 600}}>Label style</div>
+  <div style={{ fontSize: 22, fontWeight: 700 }}>Title style</div>
+  <div style={{ fontSize: 16 }}>Body style — for main descriptive text</div>
+  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+    Caption style — secondary info
+  </div>
+  <div style={{ fontSize: 13, fontWeight: 600 }}>Label style</div>
 </div>
 
 ```json
 { "type": "text", "style": "title", "content": "Rate these movies" }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `style` | Yes | `"title"` (max 80 chars), `"body"` (max 160 chars), `"caption"` (max 100 chars), `"label"` (max 40 chars) |
-| `content` | Yes | The text string |
-| `align` | No | `"left"` (default), `"center"`, `"right"` |
+| Property  | Required | Values                                                                                                    |
+| --------- | -------- | --------------------------------------------------------------------------------------------------------- |
+| `style`   | Yes      | `"title"` (max 80 chars), `"body"` (max 160 chars), `"caption"` (max 100 chars), `"label"` (max 40 chars) |
+| `content` | Yes      | The text string                                                                                           |
+| `align`   | No       | `"left"` (default), `"center"`, `"right"`                                                                 |
 
 ## `image`
 
 Renders an image from a URL.
 
 <div className="element-preview">
-  <img src="https://picsum.photos/seed/snap-docs/640/360" alt="Sample landscape" style={{width: "100%", borderRadius: 10, display: "block", aspectRatio: "16/9", objectFit: "cover"}} />
+  <img
+    src="https://picsum.photos/seed/snap-docs/640/360"
+    alt="Sample landscape"
+    style={{
+      width: "100%",
+      borderRadius: 10,
+      display: "block",
+      aspectRatio: "16/9",
+      objectFit: "cover",
+    }}
+  />
 </div>
 
 ```json
 { "type": "image", "url": "https://example.com/photo.jpg", "aspect": "16:9" }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `url` | Yes | HTTPS image URL. Supports jpg, png, gif, webp. GIFs autoplay and loop |
-| `aspect` | Yes | `"1:1"`, `"16:9"`, `"4:3"`, `"3:4"`, `"9:16"` |
-| `alt` | No | Alt text for accessibility |
+| Property | Required | Values                                                                |
+| -------- | -------- | --------------------------------------------------------------------- |
+| `url`    | Yes      | HTTPS image URL. Supports jpg, png, gif, webp. GIFs autoplay and loop |
+| `aspect` | Yes      | `"1:1"`, `"16:9"`, `"4:3"`, `"3:4"`, `"9:16"`                         |
+| `alt`    | No       | Alt text for accessibility                                            |
 
 ## `divider`
 
 A horizontal line to visually separate content sections.
 
 <div className="element-preview">
-  <div style={{fontSize: 16, fontWeight: 700}}>Poll Results</div>
-  <div style={{fontSize: 14, color: "var(--text-muted)", marginTop: 2}}>42 votes</div>
-  <hr style={{border: "none", borderTop: "1px solid var(--border)", margin: "10px 0"}} />
-  <div style={{fontSize: 12, color: "var(--text-faint)"}}>Closes in 2 hours</div>
+  <div style={{ fontSize: 16, fontWeight: 700 }}>Poll Results</div>
+  <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 2 }}>
+    42 votes
+  </div>
+  <hr
+    style={{
+      border: "none",
+      borderTop: "1px solid var(--border)",
+      margin: "10px 0",
+    }}
+  />
+  <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
+    Closes in 2 hours
+  </div>
 </div>
 
 ```json
@@ -85,18 +105,34 @@ Vertical breathing room. The client determines actual height.
 { "type": "spacer", "size": "medium" }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `size` | No | `"small"`, `"medium"` (default), `"large"` |
+| Property | Required | Values                                     |
+| -------- | -------- | ------------------------------------------ |
+| `size`   | No       | `"small"`, `"medium"` (default), `"large"` |
 
 ## `progress`
 
 A horizontal progress bar.
 
 <div className="element-preview">
-  <div style={{fontSize: 12, color: "var(--text-muted)", marginBottom: 4}}>72% Yes</div>
-  <div style={{height: 8, borderRadius: 999, background: "var(--border)", overflow: "hidden"}}>
-    <div style={{height: "100%", width: "72%", background: "#8B5CF6", borderRadius: 999}} />
+  <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>
+    72% Yes
+  </div>
+  <div
+    style={{
+      height: 8,
+      borderRadius: 999,
+      background: "var(--border)",
+      overflow: "hidden",
+    }}
+  >
+    <div
+      style={{
+        height: "100%",
+        width: "72%",
+        background: "#8B5CF6",
+        borderRadius: 999,
+      }}
+    />
   </div>
 </div>
 
@@ -104,21 +140,27 @@ A horizontal progress bar.
 { "type": "progress", "value": 72, "max": 100, "label": "72% Yes" }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `value` | Yes | Number, current value |
-| `max` | Yes | Number, maximum value |
-| `label` | No | Text label displayed alongside. Max 60 chars |
-| `color` | No | `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"gray"` |
+| Property | Required | Values                                                        |
+| -------- | -------- | ------------------------------------------------------------- |
+| `value`  | Yes      | Number, current value                                         |
+| `max`    | Yes      | Number, maximum value                                         |
+| `label`  | No       | Text label displayed alongside. Max 60 chars                  |
+| `color`  | No       | `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"gray"` |
 
 ## `list`
 
 An ordered or unordered list of items.
 
 <div className="element-preview">
-  <ol style={{margin: 0, paddingLeft: 20, fontSize: 14}}>
-    <li style={{display: "flex", justifyContent: "space-between"}}><span>@dwr.eth</span><span style={{color: "var(--text-muted)"}}>8/10 (80%)</span></li>
-    <li style={{display: "flex", justifyContent: "space-between"}}><span>@jessepollak</span><span style={{color: "var(--text-muted)"}}>7/10 (70%)</span></li>
+  <ol style={{ margin: 0, paddingLeft: 20, fontSize: 14 }}>
+    <li style={{ display: "flex", justifyContent: "space-between" }}>
+      <span>@dwr.eth</span>
+      <span style={{ color: "var(--text-muted)" }}>8/10 (80%)</span>
+    </li>
+    <li style={{ display: "flex", justifyContent: "space-between" }}>
+      <span>@jessepollak</span>
+      <span style={{ color: "var(--text-muted)" }}>7/10 (70%)</span>
+    </li>
   </ol>
 </div>
 
@@ -133,12 +175,12 @@ An ordered or unordered list of items.
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `style` | No | `"ordered"` (default), `"unordered"`, `"plain"` |
-| `items` | Yes | Array of list items. Max 4 items |
-| `items[].content` | Yes | Item text. Max 100 chars |
-| `items[].trailing` | No | Right-aligned text. Max 40 chars |
+| Property           | Required | Values                                          |
+| ------------------ | -------- | ----------------------------------------------- |
+| `style`            | No       | `"ordered"` (default), `"unordered"`, `"plain"` |
+| `items`            | Yes      | Array of list items. Max 4 items                |
+| `items[].content`  | Yes      | Item text. Max 100 chars                        |
+| `items[].trailing` | No       | Right-aligned text. Max 40 chars                |
 
 ## `grid`
 
@@ -160,25 +202,41 @@ A rows-by-columns grid of cells. Each cell has a background color and optional t
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `cols` | Yes | Number of columns. Min 2, max 64 |
-| `rows` | Yes | Number of rows. Min 2, max 8 |
-| `cells` | Yes | Array of cell definitions. Only non-empty cells need to be specified |
-| `cells[].row` | Yes | Row index (0-based) |
-| `cells[].col` | Yes | Column index (0-based) |
-| `cells[].color` | No | 6-digit hex color (`#RRGGBB`) for background. Omit for transparent |
-| `cells[].content` | No | Text content to display in the cell |
-| `cellSize` | No | `"auto"` (default, fills available width), `"square"` (cells are square) |
-| `gap` | No | `"none"`, `"small"` (default), `"medium"` |
-| `interactive` | No | If `true`, cells with no entry in `cells` array are tappable. Tap coordinates are included in the next POST |
+| Property          | Required | Values                                                                                                      |
+| ----------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
+| `cols`            | Yes      | Number of columns. Min 2, max 64                                                                            |
+| `rows`            | Yes      | Number of rows. Min 2, max 8                                                                                |
+| `cells`           | Yes      | Array of cell definitions. Only non-empty cells need to be specified                                        |
+| `cells[].row`     | Yes      | Row index (0-based)                                                                                         |
+| `cells[].col`     | Yes      | Column index (0-based)                                                                                      |
+| `cells[].color`   | No       | 6-digit hex color (`#RRGGBB`) for background. Omit for transparent                                          |
+| `cells[].content` | No       | Text content to display in the cell                                                                         |
+| `cellSize`        | No       | `"auto"` (default, fills available width), `"square"` (cells are square)                                    |
+| `gap`             | No       | `"none"`, `"small"` (default), `"medium"`                                                                   |
+| `interactive`     | No       | If `true`, cells with no entry in `cells` array are tappable. Tap coordinates are included in the next POST |
 
 ## `text_input`
 
 A single-line text input field.
 
 <div className="element-preview">
-  <input type="text" placeholder="Type 5-letter word..." maxLength={5} style={{width: "100%", padding: "10px 12px", border: "1px solid var(--border)", borderRadius: 10, fontSize: 14, fontFamily: "inherit", background: "var(--input-bg, #fff)", color: "var(--text-primary)", boxSizing: "border-box", outline: "none"}} />
+  <input
+    type="text"
+    placeholder="Type 5-letter word..."
+    maxLength={5}
+    style={{
+      width: "100%",
+      padding: "10px 12px",
+      border: "1px solid var(--border)",
+      borderRadius: 10,
+      fontSize: 14,
+      fontFamily: "inherit",
+      background: "var(--input-bg, #fff)",
+      color: "var(--text-primary)",
+      boxSizing: "border-box",
+      outline: "none",
+    }}
+  />
 </div>
 
 ```json
@@ -190,19 +248,25 @@ A single-line text input field.
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `name` | Yes | Field identifier, included in POST data |
-| `placeholder` | No | Placeholder text. Max 60 chars |
-| `maxLength` | No | Max input length. Max 280 chars |
+| Property      | Required | Values                                  |
+| ------------- | -------- | --------------------------------------- |
+| `name`        | Yes      | Field identifier, included in POST data |
+| `placeholder` | No       | Placeholder text. Max 60 chars          |
+| `maxLength`   | No       | Max input length. Max 280 chars         |
 
 ## `slider`
 
 A horizontal slider for numeric input.
 
 <div className="element-preview">
-  <div style={{fontSize: 13, marginBottom: 4}}>Your estimate</div>
-  <input type="range" min="0" max="100" defaultValue="50" style={{width: "100%", accentColor: "#8B5CF6"}} />
+  <div style={{ fontSize: 13, marginBottom: 4 }}>Your estimate</div>
+  <input
+    type="range"
+    min="0"
+    max="100"
+    defaultValue="50"
+    style={{ width: "100%", accentColor: "#8B5CF6" }}
+  />
 </div>
 
 ```json
@@ -216,16 +280,16 @@ A horizontal slider for numeric input.
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `name` | Yes | Field identifier, included in POST data |
-| `min` | Yes | Minimum value (number) |
-| `max` | Yes | Maximum value (number) |
-| `step` | No | Step increment. Default: 1 |
-| `value` | No | Initial value. Default: midpoint |
-| `label` | No | Label text. Max 60 chars |
-| `minLabel` | No | Label at left end. Max 20 chars |
-| `maxLabel` | No | Label at right end. Max 20 chars |
+| Property   | Required | Values                                  |
+| ---------- | -------- | --------------------------------------- |
+| `name`     | Yes      | Field identifier, included in POST data |
+| `min`      | Yes      | Minimum value (number)                  |
+| `max`      | Yes      | Maximum value (number)                  |
+| `step`     | No       | Step increment. Default: 1              |
+| `value`    | No       | Initial value. Default: midpoint        |
+| `label`    | No       | Label text. Max 60 chars                |
+| `minLabel` | No       | Label at left end. Max 20 chars         |
+| `maxLabel` | No       | Label at right end. Max 20 chars        |
 
 ## `button_group`
 
@@ -244,20 +308,26 @@ A set of tappable options. User selects one.
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `name` | Yes | Field identifier, included in POST data |
-| `options` | Yes | Array of option strings. Min 2, max 4. Each max 40 chars |
-| `style` | No | `"row"` (side by side, default for 2-3), `"stack"` (vertical, default for 4+), `"grid"` (2-col grid) |
+| Property  | Required | Values                                                                                               |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `name`    | Yes      | Field identifier, included in POST data                                                              |
+| `options` | Yes      | Array of option strings. Min 2, max 4. Each max 40 chars                                             |
+| `style`   | No       | `"row"` (side by side, default for 2-3), `"stack"` (vertical, default for 4+), `"grid"` (2-col grid) |
 
 ## `toggle`
 
 A single on/off toggle.
 
 <div className="element-preview">
-  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-    <span style={{fontSize: 14}}>Enable reminders</span>
-    <input type="checkbox" defaultChecked style={{accentColor: "#8B5CF6"}} />
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+    }}
+  >
+    <span style={{ fontSize: 14 }}>Enable reminders</span>
+    <input type="checkbox" defaultChecked style={{ accentColor: "#8B5CF6" }} />
   </div>
 </div>
 
@@ -270,35 +340,149 @@ A single on/off toggle.
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `name` | Yes | Field identifier, included in POST data |
-| `label` | Yes | Label text. Max 60 chars |
-| `value` | No | Initial state. Default: `false` |
+| Property | Required | Values                                  |
+| -------- | -------- | --------------------------------------- |
+| `name`   | Yes      | Field identifier, included in POST data |
+| `label`  | Yes      | Label text. Max 60 chars                |
+| `value`  | No       | Initial state. Default: `false`         |
 
 ## `bar_chart`
 
 A vertical bar chart for displaying labeled values. For poll results, rankings, and distributions.
 
 <div className="element-preview">
-  <div style={{display: "flex", alignItems: "flex-end", gap: 8, height: 80, borderBottom: "1px solid var(--border)", paddingBottom: 1}}>
-    <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%"}}>
-      <div style={{fontSize: 11, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3}}>21</div>
-      <div style={{width: "100%", maxWidth: 40, height: "84%", background: "#8B5CF6", borderRadius: "4px 4px 0 0"}} />
+  <div
+    style={{
+      display: "flex",
+      alignItems: "flex-end",
+      gap: 8,
+      height: 80,
+      borderBottom: "1px solid var(--border)",
+      paddingBottom: 1,
+    }}
+  >
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "var(--text-muted)",
+          marginBottom: 3,
+        }}
+      >
+        21
+      </div>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 40,
+          height: "84%",
+          background: "#8B5CF6",
+          borderRadius: "4px 4px 0 0",
+        }}
+      />
     </div>
-    <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%"}}>
-      <div style={{fontSize: 11, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3}}>18</div>
-      <div style={{width: "100%", maxWidth: 40, height: "72%", background: "#006BFF", borderRadius: "4px 4px 0 0"}} />
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "var(--text-muted)",
+          marginBottom: 3,
+        }}
+      >
+        18
+      </div>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 40,
+          height: "72%",
+          background: "#006BFF",
+          borderRadius: "4px 4px 0 0",
+        }}
+      />
     </div>
-    <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%"}}>
-      <div style={{fontSize: 11, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3}}>10</div>
-      <div style={{width: "100%", maxWidth: 40, height: "40%", background: "#00AC96", borderRadius: "4px 4px 0 0"}} />
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "var(--text-muted)",
+          marginBottom: 3,
+        }}
+      >
+        10
+      </div>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 40,
+          height: "40%",
+          background: "#00AC96",
+          borderRadius: "4px 4px 0 0",
+        }}
+      />
     </div>
   </div>
-  <div style={{display: "flex", gap: 8, marginTop: 4}}>
-    <div style={{flex: 1, textAlign: "center", fontSize: 11, color: "var(--text-muted)"}}>Anthropic</div>
-    <div style={{flex: 1, textAlign: "center", fontSize: 11, color: "var(--text-muted)"}}>Databricks</div>
-    <div style={{flex: 1, textAlign: "center", fontSize: 11, color: "var(--text-muted)"}}>OpenAI</div>
+  <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+    <div
+      style={{
+        flex: 1,
+        textAlign: "center",
+        fontSize: 11,
+        color: "var(--text-muted)",
+      }}
+    >
+      Anthropic
+    </div>
+    <div
+      style={{
+        flex: 1,
+        textAlign: "center",
+        fontSize: 11,
+        color: "var(--text-muted)",
+      }}
+    >
+      Databricks
+    </div>
+    <div
+      style={{
+        flex: 1,
+        textAlign: "center",
+        fontSize: 11,
+        color: "var(--text-muted)",
+      }}
+    >
+      OpenAI
+    </div>
   </div>
 </div>
 
@@ -314,24 +498,33 @@ A vertical bar chart for displaying labeled values. For poll results, rankings, 
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `bars` | Yes | Array of bar objects. Min 1, max 6 |
-| `bars[].label` | Yes | Bar label text. Max 40 chars |
-| `bars[].value` | Yes | Numeric value (>= 0) |
-| `bars[].color` | No | Palette name (e.g. `"green"`, `"red"`). Overrides chart `color` |
-| `max` | No | Scale maximum. If omitted, derived from largest bar value |
-| `color` | No | Default bar color: `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"blue"`, `"gray"` |
+| Property       | Required | Values                                                                                     |
+| -------------- | -------- | ------------------------------------------------------------------------------------------ |
+| `bars`         | Yes      | Array of bar objects. Min 1, max 6                                                         |
+| `bars[].label` | Yes      | Bar label text. Max 40 chars                                                               |
+| `bars[].value` | Yes      | Numeric value (>= 0)                                                                       |
+| `bars[].color` | No       | Palette name (e.g. `"green"`, `"red"`). Overrides chart `color`                            |
+| `max`          | No       | Scale maximum. If omitted, derived from largest bar value                                  |
+| `color`        | No       | Default bar color: `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"blue"`, `"gray"` |
 
 ## `group`
 
 Arranges child elements horizontally in a row. For displaying related stats, inputs, or content side by side.
 
 <div className="element-preview">
-  <div style={{display: "flex", gap: 12}}>
-    <div style={{flex: 1, textAlign: "center"}}><div style={{fontSize: 22, fontWeight: 700}}>42</div><div style={{fontSize: 12, color: "var(--text-muted)"}}>score</div></div>
-    <div style={{flex: 1, textAlign: "center"}}><div style={{fontSize: 22, fontWeight: 700}}>7</div><div style={{fontSize: 12, color: "var(--text-muted)"}}>streak</div></div>
-    <div style={{flex: 1, textAlign: "center"}}><div style={{fontSize: 22, fontWeight: 700}}>92%</div><div style={{fontSize: 12, color: "var(--text-muted)"}}>win rate</div></div>
+  <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ flex: 1, textAlign: "center" }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>42</div>
+      <div style={{ fontSize: 12, color: "var(--text-muted)" }}>score</div>
+    </div>
+    <div style={{ flex: 1, textAlign: "center" }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>7</div>
+      <div style={{ fontSize: 12, color: "var(--text-muted)" }}>streak</div>
+    </div>
+    <div style={{ flex: 1, textAlign: "center" }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>92%</div>
+      <div style={{ fontSize: 12, color: "var(--text-muted)" }}>win rate</div>
+    </div>
   </div>
 </div>
 
@@ -346,10 +539,10 @@ Arranges child elements horizontally in a row. For displaying related stats, inp
 }
 ```
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `layout` | Yes | `"row"` (horizontal arrangement) |
-| `children` | Yes | Array of child elements. Min 2, max 3 |
+| Property   | Required | Values                                |
+| ---------- | -------- | ------------------------------------- |
+| `layout`   | Yes      | `"row"` (horizontal arrangement)      |
+| `children` | Yes      | Array of child elements. Min 2, max 3 |
 
 ### Group Rules
 
@@ -371,10 +564,27 @@ This ensures the feed card always has readable content plus engagement or visual
 ### Example: Valid First Page
 
 <SnapCard valid={true}>
-  <div style={{fontSize: 22, fontWeight: 700, marginBottom: 8}}>Best sci-fi movies</div>
+  <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
+    Best sci-fi movies
+  </div>
   <InteractiveButtonGroup options={["Arrival", "Dune", "Interstellar"]} />
-  <div style={{fontSize: 12, color: "var(--text-muted)", marginTop: 8}}>Pick your favorite, then tap Vote</div>
-  <div style={{marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "#8B5CF6", color: "#fff", fontWeight: 600, fontSize: 14, textAlign: "center"}}>Vote</div>
+  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8 }}>
+    Pick your favorite, then tap Vote
+  </div>
+  <div
+    style={{
+      marginTop: 12,
+      padding: "10px 12px",
+      borderRadius: 10,
+      background: "#8B5CF6",
+      color: "#fff",
+      fontWeight: 600,
+      fontSize: 14,
+      textAlign: "center",
+    }}
+  >
+    Vote
+  </div>
 </SnapCard>
 
 ```json
@@ -400,7 +610,11 @@ This ensures the feed card always has readable content plus engagement or visual
       ]
     },
     "buttons": [
-      { "label": "Vote", "action": "post", "target": "https://example.com/vote" }
+      {
+        "label": "Vote",
+        "action": "post",
+        "target": "https://example.com/vote"
+      }
     ]
   }
 }
@@ -415,7 +629,14 @@ These examples show snap responses that **fail validation** and why.
 ### No title or body text
 
 <SnapCard valid={false}>
-  <div style={{width: "100%", aspectRatio: "16/9", borderRadius: 8, background: "var(--bg-hover)"}} />
+  <div
+    style={{
+      width: "100%",
+      aspectRatio: "16/9",
+      borderRadius: 8,
+      background: "var(--bg-hover)",
+    }}
+  />
 </SnapCard>
 
 ```json
@@ -425,7 +646,11 @@ These examples show snap responses that **fail validation** and why.
     "elements": {
       "type": "stack",
       "children": [
-        { "type": "image", "url": "https://example.com/photo.jpg", "aspect": "16:9" }
+        {
+          "type": "image",
+          "url": "https://example.com/photo.jpg",
+          "aspect": "16:9"
+        }
       ]
     }
   }
@@ -437,8 +662,8 @@ These examples show snap responses that **fail validation** and why.
 ### No interactive or media element
 
 <SnapCard valid={false}>
-  <div style={{fontSize: 22, fontWeight: 700}}>Hello</div>
-  <div style={{fontSize: 15, marginTop: 4}}>Welcome to my snap</div>
+  <div style={{ fontSize: 22, fontWeight: 700 }}>Hello</div>
+  <div style={{ fontSize: 15, marginTop: 4 }}>Welcome to my snap</div>
 </SnapCard>
 
 ```json
@@ -461,13 +686,30 @@ These examples show snap responses that **fail validation** and why.
 ### Too many elements
 
 <SnapCard valid={false}>
-  <div style={{fontSize: 18, fontWeight: 700}}>Title</div>
-  <div style={{fontSize: 14, marginTop: 2}}>Body</div>
-  <div style={{height: 6, borderRadius: 999, background: "var(--border)", marginTop: 6, overflow: "hidden"}}><div style={{height: "100%", width: "50%", background: "#8B5CF6"}} /></div>
-  <div style={{fontSize: 12, marginTop: 6}}>1. Item 1</div>
-  <input type="range" style={{width: "100%", marginTop: 6, accentColor: "#8B5CF6"}} />
-  <div style={{fontSize: 12, color: "var(--text-muted)", marginTop: 4}}>Too many!</div>
-  <div style={{fontSize: 10, color: "var(--text-faint)", marginTop: 4}}>6 elements — max is 5</div>
+  <div style={{ fontSize: 18, fontWeight: 700 }}>Title</div>
+  <div style={{ fontSize: 14, marginTop: 2 }}>Body</div>
+  <div
+    style={{
+      height: 6,
+      borderRadius: 999,
+      background: "var(--border)",
+      marginTop: 6,
+      overflow: "hidden",
+    }}
+  >
+    <div style={{ height: "100%", width: "50%", background: "#8B5CF6" }} />
+  </div>
+  <div style={{ fontSize: 12, marginTop: 6 }}>1. Item 1</div>
+  <input
+    type="range"
+    style={{ width: "100%", marginTop: 6, accentColor: "#8B5CF6" }}
+  />
+  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
+    Too many!
+  </div>
+  <div style={{ fontSize: 10, color: "var(--text-faint)", marginTop: 4 }}>
+    6 elements — max is 5
+  </div>
 </SnapCard>
 
 ```json
@@ -494,10 +736,27 @@ These examples show snap responses that **fail validation** and why.
 ### Two media elements
 
 <SnapCard valid={false}>
-  <div style={{fontSize: 18, fontWeight: 700, marginBottom: 8}}>Gallery</div>
-  <div style={{width: "100%", aspectRatio: "16/9", borderRadius: 8, background: "var(--bg-hover)", marginBottom: 6}} />
-  <div style={{width: "100%", aspectRatio: "16/9", borderRadius: 8, background: "var(--bg-hover)"}} />
-  <div style={{fontSize: 10, color: "var(--text-faint)", marginTop: 6}}>2 images — max is 1 media element</div>
+  <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Gallery</div>
+  <div
+    style={{
+      width: "100%",
+      aspectRatio: "16/9",
+      borderRadius: 8,
+      background: "var(--bg-hover)",
+      marginBottom: 6,
+    }}
+  />
+  <div
+    style={{
+      width: "100%",
+      aspectRatio: "16/9",
+      borderRadius: 8,
+      background: "var(--bg-hover)",
+    }}
+  />
+  <div style={{ fontSize: 10, color: "var(--text-faint)", marginTop: 6 }}>
+    2 images — max is 1 media element
+  </div>
 </SnapCard>
 
 ```json
@@ -508,8 +767,16 @@ These examples show snap responses that **fail validation** and why.
       "type": "stack",
       "children": [
         { "type": "text", "style": "title", "content": "Gallery" },
-        { "type": "image", "url": "https://example.com/a.jpg", "aspect": "16:9" },
-        { "type": "image", "url": "https://example.com/b.jpg", "aspect": "16:9" }
+        {
+          "type": "image",
+          "url": "https://example.com/a.jpg",
+          "aspect": "16:9"
+        },
+        {
+          "type": "image",
+          "url": "https://example.com/b.jpg",
+          "aspect": "16:9"
+        }
       ]
     }
   }
@@ -521,12 +788,21 @@ These examples show snap responses that **fail validation** and why.
 ### Hex accent (must be palette name)
 
 <SnapCard valid={false}>
-  <div style={{fontSize: 18, fontWeight: 700}}>Hello</div>
-  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8}}>
-    <span style={{fontSize: 14}}>Agree</span>
+  <div style={{ fontSize: 18, fontWeight: 700 }}>Hello</div>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 8,
+    }}
+  >
+    <span style={{ fontSize: 14 }}>Agree</span>
     <input type="checkbox" />
   </div>
-  <div style={{fontSize: 10, color: "var(--text-faint)", marginTop: 6}}>accent: "#8B5CF6" — must be "purple"</div>
+  <div style={{ fontSize: 10, color: "var(--text-faint)", marginTop: 6 }}>
+    accent: "#8B5CF6" — must be "purple"
+  </div>
 </SnapCard>
 
 ```json

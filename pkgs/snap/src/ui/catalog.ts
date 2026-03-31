@@ -91,7 +91,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     Group: {
       props: groupProps,
       description:
-        "Horizontal row layout; use `children` element ids only (no nested JSON objects).",
+        "Button row (`layout: row`) or 2-column grid (`layout: grid`); use `children` element ids only (no nested JSON objects).",
     },
     Stack: {
       props: stackProps,

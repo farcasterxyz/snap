@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { snapPreviewPrimaryCssProperties } from "@/lib/snapPreviewPrimaryCss";
 import { useColorMode } from "@neynar/ui/color-mode";
+import { SnapPreviewAccentProvider } from "@/features/snap-catalog/SnapPreviewAccentContext";
 import { SnapCatalogView } from "./snapCatalogRenderer";
 import { snapPageToJsonRenderSpec } from "../lib/snapPageToJsonRenderSpec";
 
@@ -218,7 +219,7 @@ export function SnapRenderer({
     <div
       style={{
         width: "100%",
-        maxWidth: 420,
+        maxWidth: 480,
         border: "1px solid var(--border)",
         borderRadius: 14,
         background: "var(--snap-card-bg)",
@@ -248,48 +249,51 @@ export function SnapRenderer({
       )}
 
       <div style={previewSurfaceStyle}>
-        <SnapCatalogView
-          key={pageKey}
-          spec={spec}
-          state={initialState}
-          loading={false}
-          onStateChange={(changes) => {
-            applyStatePaths(stateRef.current, changes);
-          }}
-          onAction={(name, params) => {
-            const inputs = (stateRef.current.inputs ?? {}) as Record<
-              string,
-              JsonValue
-            >;
-            switch (name) {
-              case "snap_post": {
-                const idx = Number(params?.buttonIndex ?? 0);
-                const btn =
-                  (snap.page.buttons?.[idx] as Record<string, JsonValue>) ?? {};
-                onPostButton(idx, btn, inputs);
-                break;
-              }
-              case "snap_link": {
-                const target = String(params?.target ?? "");
-                if (!target) break;
-                if (onLinkButton) {
-                  void onLinkButton(target);
-                } else if (typeof window !== "undefined") {
-                  window.open(target, "_blank", "noopener,noreferrer");
+        <SnapPreviewAccentProvider pageAccent={snap.page.theme?.accent}>
+          <SnapCatalogView
+            key={pageKey}
+            spec={spec}
+            state={initialState}
+            loading={false}
+            onStateChange={(changes) => {
+              applyStatePaths(stateRef.current, changes);
+            }}
+            onAction={(name, params) => {
+              const inputs = (stateRef.current.inputs ?? {}) as Record<
+                string,
+                JsonValue
+              >;
+              switch (name) {
+                case "snap_post": {
+                  const idx = Number(params?.buttonIndex ?? 0);
+                  const btn =
+                    (snap.page.buttons?.[idx] as Record<string, JsonValue>) ??
+                    {};
+                  onPostButton(idx, btn, inputs);
+                  break;
                 }
-                break;
+                case "snap_link": {
+                  const target = String(params?.target ?? "");
+                  if (!target) break;
+                  if (onLinkButton) {
+                    void onLinkButton(target);
+                  } else if (typeof window !== "undefined") {
+                    window.open(target, "_blank", "noopener,noreferrer");
+                  }
+                  break;
+                }
+                case "snap_mini_app":
+                case "snap_sdk": {
+                  // eslint-disable-next-line no-console
+                  console.info(`[emulator] ${name}`, params);
+                  break;
+                }
+                default:
+                  break;
               }
-              case "snap_mini_app":
-              case "snap_sdk": {
-                // eslint-disable-next-line no-console
-                console.info(`[emulator] ${name}`, params);
-                break;
-              }
-              default:
-                break;
-            }
-          }}
-        />
+            }}
+          />
+        </SnapPreviewAccentProvider>
       </div>
     </div>
   );
