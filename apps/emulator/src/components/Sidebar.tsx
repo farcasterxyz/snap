@@ -69,7 +69,7 @@ export default function Sidebar() {
           <FarcasterLogo size={18} />
           {!collapsed && (
             <span className="sidebar-logo-text">
-              Snaps <span className="sidebar-logo-dim">docs</span>
+              Snap <span className="sidebar-logo-dim">docs</span>
             </span>
           )}
         </Link>
