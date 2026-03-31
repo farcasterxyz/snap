@@ -12,17 +12,11 @@ cp -R "$REPO_ROOT/pkgs/hono" "$STAGE/packages/hono"
 cp -R "$REPO_ROOT/template/src" "$STAGE/src"
 cp "$REPO_ROOT/template/package.json" "$STAGE/package.json"
 cp "$REPO_ROOT/template/tsconfig.json" "$STAGE/tsconfig.json"
+cp "$REPO_ROOT/template/vercel.json" "$STAGE/vercel.json"
 
 cat > "$STAGE/pnpm-workspace.yaml" << 'EOF'
 packages:
   - "packages/*"
-EOF
-
-cat > "$STAGE/vercel.json" << 'EOF'
-{
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @farcaster/snap run build && pnpm --filter @farcaster/snap-hono run build"
-}
 EOF
 
 find "$STAGE" \( -name node_modules -o -name dist \) -type d -exec rm -rf {} + 2>/dev/null || true
