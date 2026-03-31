@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   BUTTON_GROUP_STYLE,
   DEFAULT_BUTTON_LAYOUT,

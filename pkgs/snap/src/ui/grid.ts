@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const gridCellZ = z.object({
   row: z.number().int().nonnegative(),

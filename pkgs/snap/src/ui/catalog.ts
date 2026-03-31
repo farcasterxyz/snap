@@ -1,5 +1,5 @@
 import { defineCatalog } from "@json-render/core";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { snapJsonRenderSchema } from "./schema.js";
 import { textProps } from "./text.js";
 import { imageProps } from "./image.js";
