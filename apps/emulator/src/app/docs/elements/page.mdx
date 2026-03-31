@@ -10,7 +10,7 @@ Every snap page body is a tree whose root is a `stack`. The client renders child
 
 - `page.elements.type` MUST be `"stack"`
 - `page.elements.children` is an array of elements (min 1, max 5)
-- Max 1 media element (`image`, `video`, or `grid`) per page
+- Max 1 media element (`image` or `grid`) per page
 
 ```json
 {
@@ -58,35 +58,6 @@ Renders an image from a URL.
 | --- | --- | --- |
 | `url` | Yes | HTTPS image URL. Supports jpg, png, gif, webp. GIFs autoplay and loop |
 | `aspect` | Yes | `"1:1"`, `"16:9"`, `"4:3"`, `"3:4"`, `"9:16"` |
-| `alt` | No | Alt text for accessibility |
-
-## `video`
-
-Renders a short video clip. Autoplays muted. Tap to unmute. Subsequent taps play/pause.
-
-<div className="element-preview" style={{padding: 0, overflow: "hidden"}}>
-  <div style={{position: "relative"}}>
-    <img src="https://picsum.photos/seed/snap-video/640/360" alt="Video thumbnail" style={{width: "100%", display: "block", aspectRatio: "16/9", objectFit: "cover"}} />
-    <div style={{position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.3)"}}>
-      <div style={{width: 48, height: 48, borderRadius: "50%", background: "rgba(255,255,255,0.9)", display: "flex", alignItems: "center", justifyContent: "center"}}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><polygon points="6 3 20 12 6 21 6 3" /></svg>
-      </div>
-    </div>
-  </div>
-</div>
-
-```json
-{
-  "type": "video",
-  "url": "https://example.com/clip.mp4",
-  "aspect": "16:9"
-}
-```
-
-| Property | Required | Values |
-| --- | --- | --- |
-| `url` | Yes | HTTPS video URL. Supports mp4, webm |
-| `aspect` | Yes | `"1:1"`, `"16:9"`, `"9:16"` |
 | `alt` | No | Alt text for accessibility |
 
 ## `divider`
@@ -383,7 +354,7 @@ Arranges child elements horizontally in a row. For displaying related stats, inp
 ### Group Rules
 
 - A group counts as 1 element toward the page max of 5
-- No media elements inside groups (`image`, `video`, `grid` are not allowed)
+- No media elements inside groups (`image`, `grid` are not allowed)
 - No nesting: groups cannot contain other groups
 - Children are rendered with equal width, side by side
 - Any non-media element is valid as a child: `text`, `progress`, `list`, `slider`, `button_group`, `toggle`, `text_input`, `divider`, `spacer`, `bar_chart`
@@ -393,7 +364,7 @@ Arranges child elements horizontally in a row. For displaying related stats, inp
 The first page returned from the snap URL is rendered as the feed card. In addition to normal page rules, the first page MUST include:
 
 - At least one `text` element with `style: "title"` or `style: "body"`
-- At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR at least one media element (`image`, `video`, or `grid`)
+- At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR at least one media element (`image` or `grid`)
 
 This ensures the feed card always has readable content plus engagement or visual context.
 
@@ -485,7 +456,7 @@ These examples show snap responses that **fail validation** and why.
 }
 ```
 
-**Fails:** First page must have at least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) or media element (`image`, `video`, `grid`). Text-only pages are invalid.
+**Fails:** First page must have at least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) or media element (`image`, `grid`). Text-only pages are invalid.
 
 ### Too many elements
 
@@ -545,7 +516,7 @@ These examples show snap responses that **fail validation** and why.
 }
 ```
 
-**Fails:** Max 1 media element (`image`, `video`, or `grid`) per page.
+**Fails:** Max 1 media element (`image` or `grid`) per page.
 
 ### Hex accent (must be palette name)
 
