@@ -1,14 +1,14 @@
 # Effects
 
-Effects are page-level overlays triggered on page load. They do not count toward the 5-element limit.
+Effects are page-level overlays that fire when a page is rendered. They trigger on both the initial load (GET) and after button taps (POST responses). They do not count toward the 5-element limit.
 
 ## Available Effects
 
 | Effect | Behavior |
 | --- | --- |
-| `confetti` | One-time burst of confetti particles on page load |
+| `confetti` | One-time burst of confetti particles when the page is rendered |
 
-Effects fire once when the page is rendered. They do not repeat on re-renders or refreshes of the same page.
+Effects fire once per page render. If a POST button returns the same page with `"effects": ["confetti"]`, the confetti fires again. They do not repeat on client-side re-renders of the same page.
 
 ## Preview
 
