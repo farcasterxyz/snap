@@ -1,5 +1,8 @@
 import type { MDXComponents } from "mdx/types";
 import CodeBlock from "@/components/CodeBlock";
+import InteractiveGrid from "@/components/docs/InteractiveGrid";
+import InteractiveButtonGroup from "@/components/docs/InteractiveButtonGroup";
+import SnapCard from "@/components/docs/SnapCard";
 
 function slugify(text: string): string {
   return text
@@ -53,5 +56,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h3: (props) => <Heading level={3} {...props} />,
     h4: (props) => <Heading level={4} {...props} />,
     pre: (props) => <CodeBlock {...props} />,
+    InteractiveGrid,
+    InteractiveButtonGroup,
+    SnapCard,
   };
 }
