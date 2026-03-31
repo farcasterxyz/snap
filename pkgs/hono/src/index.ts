@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { MEDIA_TYPE, type SnapFunction } from "@farcaster/snap";
 import { parseRequest } from "@farcaster/snap/server";
 import { payloadToResponse, snapHeaders } from "./payloadToResponse";
+import { renderSnapPage } from "./renderSnapPage";
 
 export type SnapHandlerOptions = {
   /**
@@ -18,10 +19,16 @@ export type SnapHandlerOptions = {
   skipJFSVerification?: boolean;
 
   /**
-   * Visible message in the HTML page served on GET when the client does not request snap JSON.
-   * @default "This is a Farcaster Snap server."
+   * Plain-text message for the browser fallback page. When set, overrides the
+   * default branded fallback with a simple `<p>` containing the escaped text.
    */
   fallbackText?: string;
+
+  /**
+   * Raw HTML string for the browser fallback page. When set, takes precedence
+   * over both the default branded fallback and `fallbackText`.
+   */
+  fallbackHtml?: string;
 };
 
 /**
@@ -41,9 +48,6 @@ export function registerSnapHandler(
   options: SnapHandlerOptions = {},
 ): void {
   const path = options.path ?? "/";
-  const fallbackText =
-    options.fallbackText ??
-    "This is a Farcaster Snap server. See <a href='https://snap.farcaster.xyz'>snap.farcaster.xyz</a> for more info.";
 
   app.use(path, cors({ origin: "*" }));
 
@@ -51,7 +55,26 @@ export function registerSnapHandler(
     const resourcePath = resourcePathFromRequest(c.req.url);
     const accept = c.req.header("Accept");
     if (!clientWantsSnapResponse(accept)) {
-      return new Response(fallbackHtmlDocument(fallbackText), {
+      let html: string;
+      if (options.fallbackHtml !== undefined) {
+        html = options.fallbackHtml;
+      } else if (options.fallbackText !== undefined) {
+        html = simpleFallbackHtml(options.fallbackText);
+      } else {
+        try {
+          const snap = await snapFn({
+            action: { type: "get" },
+            request: c.req.raw,
+          });
+          html = renderSnapPage(
+            snap,
+            snapOriginFromRequest(c.req.raw),
+          );
+        } catch {
+          html = brandedFallbackHtml(snapOriginFromRequest(c.req.raw));
+        }
+      }
+      return new Response(html, {
         status: 200,
         headers: snapHeaders(resourcePath, "text/html", [
           MEDIA_TYPE,
@@ -125,7 +148,7 @@ function escapeHtml(text: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function fallbackHtmlDocument(message: string): string {
+function simpleFallbackHtml(message: string): string {
   const body = escapeHtml(message);
   return `<!DOCTYPE html>
 <html lang="en">
@@ -136,6 +159,61 @@ function fallbackHtmlDocument(message: string): string {
 </head>
 <body>
 <p>${body}</p>
+</body>
+</html>`;
+}
+
+const FARCASTER_ICON_SVG = `<svg aria-hidden="true" focusable="false" viewBox="0 0 520 457" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M519.801 0V61.6809H458.172V123.31H477.054V123.331H519.801V456.795H416.57L416.507 456.49L363.832 207.03C358.81 183.251 345.667 161.736 326.827 146.434C307.988 131.133 284.255 122.71 260.006 122.71H259.8C235.551 122.71 211.818 131.133 192.979 146.434C174.139 161.736 160.996 183.259 155.974 207.03L103.239 456.795H0V123.323H42.7471V123.31H61.6262V61.6809H0V0H519.801Z" fill="currentColor"/></svg>`;
+
+function snapOriginFromRequest(request: Request): string {
+  const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim();
+  if (fromEnv) return fromEnv.replace(/\/$/, "");
+
+  const proto = request.headers.get("x-forwarded-proto")?.trim() || "https";
+  const host =
+    request.headers.get("x-forwarded-host")?.trim() ||
+    request.headers.get("host")?.trim();
+  if (host) return `${proto}://${host}`.replace(/\/$/, "");
+
+  return "https://snap.farcaster.xyz";
+}
+
+function brandedFallbackHtml(snapOrigin: string): string {
+  const snapUrl = encodeURIComponent(snapOrigin + "/");
+  const testUrl = `https://farcaster.xyz/~/developers/snaps?url=${snapUrl}`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farcaster Snap</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0A0A0A;color:#FAFAFA;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.c{text-align:center;max-width:400px;padding:48px 32px}
+.logo{color:#8B5CF6;margin-bottom:24px}
+.logo svg{width:48px;height:42px}
+h1{font-size:24px;font-weight:700;margin-bottom:8px}
+p{color:#A1A1AA;font-size:15px;line-height:1.5;margin-bottom:32px}
+.btns{display:flex;flex-direction:column;gap:12px}
+a{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;transition:opacity .15s}
+a:hover{opacity:.85}
+.p{background:#8B5CF6;color:#fff}
+.s{background:#1A1A2E;color:#FAFAFA;border:1px solid #2D2D44}
+.s svg{width:20px;height:18px}
+</style>
+</head>
+<body>
+<div class="c">
+<div class="logo">${FARCASTER_ICON_SVG}</div>
+<h1>Farcaster Snap</h1>
+<p>This is a Farcaster Snap &mdash; an interactive embed that lives in the feed.</p>
+<div class="btns">
+<a href="${testUrl}" class="p">Test this snap</a>
+<a href="https://farcaster.xyz" class="s">${FARCASTER_ICON_SVG} Sign up for Farcaster</a>
+</div>
+</div>
 </body>
 </html>`;
 }

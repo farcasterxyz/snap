@@ -73,8 +73,10 @@ describe("registerSnapHandler content type", () => {
       buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
     );
     const html = await res.text();
-    expect(html).toContain("Farcaster Snap server");
     expect(html).toContain("<!DOCTYPE html>");
+    expect(html).toContain("farcaster.xyz");
+    // Renders the snap's first page — title element "Hello" appears in the HTML
+    expect(html).toContain("Hello");
   });
 
   it("POST success returns snap content type", async () => {
