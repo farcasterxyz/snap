@@ -375,7 +375,7 @@ ${buttonsHtml}
 <div class="foot">
 <a href="https://farcaster.xyz">${FC_ICON} Farcaster</a>
 </div>
-<div class="modal" id="m">
+<div class="modal" id="m" onclick="if(event.target===this)this.style.display='none'">
 <div class="modal-box">
 ${FC_ICON}
 <h2>Open in Farcaster</h2>
