@@ -2,6 +2,8 @@
 
 Every snap page body is a tree whose root is a `stack`. The client renders child elements in order, top to bottom. The client controls sizing, spacing, fonts, and padding -- snaps do not specify pixel dimensions, margins, or CSS.
 
+> **See them live:** Open the [Element Showcase](https://farcaster.xyz/~/developers/snaps?url=https://snap-element-showcase.host.neynar.app/) in the emulator to interact with every element type.
+
 ## Page Root: `stack`
 
 `page.elements` must be a `stack` node: a vertical list of child elements.
@@ -22,6 +24,13 @@ Every snap page body is a tree whose root is a `stack`. The client renders child
 ## `text`
 
 Renders text content in a predefined style.
+
+<div className="element-preview">
+  <div style={{fontSize: 22, fontWeight: 700}}>Title style</div>
+  <div style={{fontSize: 16}}>Body style — for main descriptive text</div>
+  <div style={{fontSize: 12, color: "var(--text-muted)"}}>Caption style — secondary info</div>
+  <div style={{fontSize: 13, fontWeight: 600}}>Label style</div>
+</div>
 
 ```json
 { "type": "text", "style": "title", "content": "Rate these movies" }
@@ -69,6 +78,12 @@ Renders a short video clip. Autoplays muted. Tap to unmute. Subsequent taps play
 
 A horizontal line to visually separate content sections.
 
+<div className="element-preview">
+  <div style={{fontSize: 14}}>Content above</div>
+  <hr style={{border: "none", borderTop: "1px solid var(--border)", margin: "8px 0"}} />
+  <div style={{fontSize: 14}}>Content below</div>
+</div>
+
 ```json
 { "type": "divider" }
 ```
@@ -91,6 +106,13 @@ Vertical breathing room. The client determines actual height.
 
 A horizontal progress bar.
 
+<div className="element-preview">
+  <div style={{fontSize: 12, color: "var(--text-muted)", marginBottom: 4}}>72% Yes</div>
+  <div style={{height: 8, borderRadius: 999, background: "var(--border)", overflow: "hidden"}}>
+    <div style={{height: "100%", width: "72%", background: "#8B5CF6", borderRadius: 999}} />
+  </div>
+</div>
+
 ```json
 { "type": "progress", "value": 72, "max": 100, "label": "72% Yes" }
 ```
@@ -105,6 +127,13 @@ A horizontal progress bar.
 ## `list`
 
 An ordered or unordered list of items.
+
+<div className="element-preview">
+  <ol style={{margin: 0, paddingLeft: 20, fontSize: 14}}>
+    <li style={{display: "flex", justifyContent: "space-between"}}><span>@dwr.eth</span><span style={{color: "var(--text-muted)"}}>8/10 (80%)</span></li>
+    <li style={{display: "flex", justifyContent: "space-between"}}><span>@jessepollak</span><span style={{color: "var(--text-muted)"}}>7/10 (70%)</span></li>
+  </ol>
+</div>
 
 ```json
 {
@@ -127,6 +156,16 @@ An ordered or unordered list of items.
 ## `grid`
 
 A rows-by-columns grid of cells. Each cell has a background color and optional text content. For game boards, pixel canvases, and tile-based UIs.
+
+<div className="element-preview">
+  <div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 3}}>
+    <div style={{background: "#22C55E", borderRadius: 4, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#fff"}}>C</div>
+    <div style={{background: "#6B7280", borderRadius: 4, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#fff"}}>R</div>
+    <div style={{background: "#22C55E", borderRadius: 4, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#fff"}}>A</div>
+    <div style={{background: "#CA8A04", borderRadius: 4, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#fff"}}>N</div>
+    <div style={{background: "#22C55E", borderRadius: 4, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: "#fff"}}>E</div>
+  </div>
+</div>
 
 ```json
 {
@@ -157,6 +196,10 @@ A rows-by-columns grid of cells. Each cell has a background color and optional t
 
 A single-line text input field.
 
+<div className="element-preview">
+  <div style={{padding: "10px 12px", border: "1px solid var(--border)", borderRadius: 10, fontSize: 14, color: "var(--text-faint)"}}>Type 5-letter word...</div>
+</div>
+
 ```json
 {
   "type": "text_input",
@@ -175,6 +218,11 @@ A single-line text input field.
 ## `slider`
 
 A horizontal slider for numeric input.
+
+<div className="element-preview">
+  <div style={{fontSize: 13, marginBottom: 4}}>Your estimate</div>
+  <input type="range" min="0" max="100" defaultValue="50" style={{width: "100%", accentColor: "#8B5CF6"}} />
+</div>
 
 ```json
 {
@@ -202,6 +250,13 @@ A horizontal slider for numeric input.
 
 A set of tappable options. User selects one.
 
+<div className="element-preview">
+  <div style={{display: "flex", gap: 8}}>
+    <div style={{flex: 1, padding: "10px 12px", borderRadius: 10, border: "1px solid #8B5CF6", background: "rgba(139,92,246,0.12)", color: "#8B5CF6", fontWeight: 600, textAlign: "center", fontSize: 14}}>Tabs</div>
+    <div style={{flex: 1, padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)", textAlign: "center", fontSize: 14}}>Spaces</div>
+  </div>
+</div>
+
 ```json
 {
   "type": "button_group",
@@ -221,6 +276,13 @@ A set of tappable options. User selects one.
 
 A single on/off toggle.
 
+<div className="element-preview">
+  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+    <span style={{fontSize: 14}}>Enable reminders</span>
+    <input type="checkbox" defaultChecked style={{accentColor: "#8B5CF6"}} />
+  </div>
+</div>
+
 ```json
 {
   "type": "toggle",
@@ -239,6 +301,28 @@ A single on/off toggle.
 ## `bar_chart`
 
 A vertical bar chart for displaying labeled values. For poll results, rankings, and distributions.
+
+<div className="element-preview">
+  <div style={{display: "flex", alignItems: "flex-end", gap: 8, height: 80, borderBottom: "1px solid var(--border)", paddingBottom: 1}}>
+    <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%"}}>
+      <div style={{fontSize: 11, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3}}>21</div>
+      <div style={{width: "100%", maxWidth: 40, height: "84%", background: "#8B5CF6", borderRadius: "4px 4px 0 0"}} />
+    </div>
+    <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%"}}>
+      <div style={{fontSize: 11, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3}}>18</div>
+      <div style={{width: "100%", maxWidth: 40, height: "72%", background: "#006BFF", borderRadius: "4px 4px 0 0"}} />
+    </div>
+    <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%"}}>
+      <div style={{fontSize: 11, fontWeight: 600, color: "var(--text-muted)", marginBottom: 3}}>10</div>
+      <div style={{width: "100%", maxWidth: 40, height: "40%", background: "#00AC96", borderRadius: "4px 4px 0 0"}} />
+    </div>
+  </div>
+  <div style={{display: "flex", gap: 8, marginTop: 4}}>
+    <div style={{flex: 1, textAlign: "center", fontSize: 11, color: "var(--text-muted)"}}>Anthropic</div>
+    <div style={{flex: 1, textAlign: "center", fontSize: 11, color: "var(--text-muted)"}}>Databricks</div>
+    <div style={{flex: 1, textAlign: "center", fontSize: 11, color: "var(--text-muted)"}}>OpenAI</div>
+  </div>
+</div>
 
 ```json
 {
@@ -264,6 +348,14 @@ A vertical bar chart for displaying labeled values. For poll results, rankings, 
 ## `group`
 
 Arranges child elements horizontally in a row. For displaying related stats, inputs, or content side by side.
+
+<div className="element-preview">
+  <div style={{display: "flex", gap: 12}}>
+    <div style={{flex: 1, textAlign: "center"}}><div style={{fontSize: 22, fontWeight: 700}}>42</div><div style={{fontSize: 12, color: "var(--text-muted)"}}>score</div></div>
+    <div style={{flex: 1, textAlign: "center"}}><div style={{fontSize: 22, fontWeight: 700}}>7</div><div style={{fontSize: 12, color: "var(--text-muted)"}}>streak</div></div>
+    <div style={{flex: 1, textAlign: "center"}}><div style={{fontSize: 22, fontWeight: 700}}>92%</div><div style={{fontSize: 12, color: "var(--text-muted)"}}>win rate</div></div>
+  </div>
+</div>
 
 ```json
 {
