@@ -1,5 +1,5 @@
 import { serve } from "@hono/node-server";
-import app from "../api";
+import app from "./index";
 
 const port = Number(process.env.PORT ?? "3014");
 

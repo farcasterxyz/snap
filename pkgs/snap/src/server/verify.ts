@@ -2,7 +2,8 @@ import {
   compact,
   decode,
   decodePayload as jfsDecodePayload,
-  verify as jfsVerify,
+  encodePayload as jfsEncodePayload,
+  verify,
 } from "@farcaster/jfs";
 import { hexToBytes, type Hex } from "viem";
 import {
@@ -54,7 +55,7 @@ export async function verifyJFSRequestBody<TPayload>(
   }
 
   try {
-    await jfsVerify({ data: compactJfs, strict: true, keyTypes: ["app_key"] });
+    await verify({ data: compactJfs, strict: true, keyTypes: ["app_key"] });
   } catch (error) {
     return {
       valid: false,
@@ -112,6 +113,10 @@ export async function verifyJFSRequestBody<TPayload>(
 
 export function decodePayload<TPayload>(payload: string): TPayload {
   return jfsDecodePayload<TPayload>(payload);
+}
+
+export function encodePayload<TPayload>(payload: TPayload): string {
+  return jfsEncodePayload(payload);
 }
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {

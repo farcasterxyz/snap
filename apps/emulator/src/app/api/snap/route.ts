@@ -1,4 +1,4 @@
-import { encodePayload } from "@farcaster/jfs";
+import { encodePayload } from "@farcaster/snap/server";
 import { NextRequest, NextResponse } from "next/server";
 import type { SnapPayload } from "@farcaster/snap";
 import {

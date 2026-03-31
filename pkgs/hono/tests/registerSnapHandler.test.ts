@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
 import { registerSnapHandler } from "../src/index";
-import { encodePayload } from "@farcaster/jfs";
+import { buildSnapAlternateLinkHeader } from "../src/payloadToResponse";
+import { encodePayload } from "@farcaster/snap/server";
 import {
   MEDIA_TYPE,
   DEFAULT_THEME_ACCENT,
@@ -52,9 +53,12 @@ describe("registerSnapHandler content type", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe(SNAP_CONTENT_TYPE);
     expect(res.headers.get("Vary")).toBe("Accept");
+    expect(res.headers.get("Link")).toBe(
+      buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
+    );
   });
 
-  it("GET without snap Accept header returns plain text", async () => {
+  it("GET without snap Accept header returns HTML fallback", async () => {
     const app = new Hono();
     registerSnapHandler(app, minimalSnapFn, {
       skipJFSVerification: true,
@@ -63,8 +67,14 @@ describe("registerSnapHandler content type", () => {
     const res = await app.request("/", { method: "GET" });
 
     expect(res.status).toBe(200);
-    expect(res.headers.get("Content-Type")).toMatch(/^text\/plain/);
+    expect(res.headers.get("Content-Type")).toMatch(/^text\/html/);
     expect(res.headers.get("Vary")).toBe("Accept");
+    expect(res.headers.get("Link")).toBe(
+      buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
+    );
+    const html = await res.text();
+    expect(html).toContain("Farcaster Snap server");
+    expect(html).toContain("<!DOCTYPE html>");
   });
 
   it("POST success returns snap content type", async () => {
@@ -82,6 +92,9 @@ describe("registerSnapHandler content type", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe(SNAP_CONTENT_TYPE);
     expect(res.headers.get("Vary")).toBe("Accept");
+    expect(res.headers.get("Link")).toBe(
+      buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
+    );
   });
 
   it("POST with bare JSON body returns 400 when skipping JFS verification", async () => {

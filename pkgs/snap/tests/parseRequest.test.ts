@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseRequest } from "../src/server";
+import { parseRequest, encodePayload, decodePayload } from "../src/server";
 import { type SnapPayload } from "../src/schemas";
-import { decodePayload, encodePayload } from "@farcaster/jfs";
 
 describe("parseRequest", () => {
   function postBody(overrides: Record<string, unknown> = {}) {

@@ -91,11 +91,11 @@ importers:
   examples/current-time:
     dependencies:
       '@farcaster/snap':
-        specifier: ^1.2.0
-        version: 1.2.0(@noble/curves@2.0.1)(typescript@5.9.3)
+        specifier: ^1.2.2
+        version: 1.2.2(typescript@5.9.3)
       '@farcaster/snap-hono':
-        specifier: ^1.1.0
-        version: 1.1.1(@noble/curves@2.0.1)(hono@4.12.9)(typescript@5.9.3)
+        specifier: ^1.1.4
+        version: 1.1.4(hono@4.12.9)(typescript@5.9.3)
       '@hono/node-server':
         specifier: ^1.0.0
         version: 1.19.11(hono@4.12.9)
@@ -244,8 +244,8 @@ importers:
   pkgs/snap:
     dependencies:
       '@farcaster/jfs':
-        specifier: ^0.2.2
-        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+        specifier: ^0.3.0
+        version: 0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
       viem:
         specifier: ^2.21.0
         version: 2.47.6(typescript@5.9.3)(zod@4.3.6)
@@ -564,8 +564,8 @@ packages:
     peerDependencies:
       hono: '>=4.0.0'
 
-  '@farcaster/snap-hono@1.1.1':
-    resolution: {integrity: sha512-Gz0jCu+ll1Ni1ucLCVETvEIdzj9xrLe+8OZWFCJjE9Zb9XMrNd8uuGew7orDJYNRs+MBUEhSS47IUnvzn+F4PQ==}
+  '@farcaster/snap-hono@1.1.4':
+    resolution: {integrity: sha512-7pvEDNxbqvTTjR/DLlbu2O1m71QbJTGuA4QeipMhas16lg6Yq4y2wEXZy16mYjWLpelfeFMetgKsoLPR42d7Iw==}
     peerDependencies:
       hono: '>=4.0.0'
 
@@ -2748,12 +2748,11 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@farcaster/snap-hono@1.1.1(@noble/curves@2.0.1)(hono@4.12.9)(typescript@5.9.3)':
+  '@farcaster/snap-hono@1.1.4(hono@4.12.9)(typescript@5.9.3)':
     dependencies:
-      '@farcaster/snap': 1.2.0(@noble/curves@2.0.1)(typescript@5.9.3)
+      '@farcaster/snap': 1.2.2(typescript@5.9.3)
       hono: 4.12.9
     transitivePeerDependencies:
-      - '@noble/curves'
       - bufferutil
       - typescript
       - utf-8-validate

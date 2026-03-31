@@ -25,9 +25,16 @@ The snap media type is `application/vnd.farcaster.snap+json`.
 - When making an HTTP request, a client MAY include `application/vnd.farcaster.snap+json` in the `Accept` HTTP header to indicate snap support.
 - If `application/vnd.farcaster.snap+json` is the highest-priority acceptable type, the server MAY return a snap response.
 - If the server returns a snap response, it MUST set `Content-Type: application/vnd.farcaster.snap+json`.
-- If the request does not indicate snap support, the server MUST NOT return a snap response. Instead it SHOULD return a normal HTTP response (for example, a fallback or guidance).
+- If the request does not indicate snap support, the server MUST NOT return a snap response. Instead it SHOULD return another content type (for example, a text/html fallback).
 - Even when a snap is requested, the server MAY return a different content type (for example, if there was an internal error).
 - When the representation depends on `Accept` (for example, snap JSON versus a plain-text fallback on GET), the server MUST include `Vary: Accept` on those responses so caches and intermediaries key correctly.
+
+When multiple content types are available (e.g. snap and html), the server SHOULD return a Link header listing the available types. For example:
+
+```
+Link: </resource>; rel="alternate"; type="application/vnd.farcaster.snap+json",
+      </resource>; rel="alternate"; type="text/html"
+```
 
 If the response `Content-Type` is `application/vnd.farcaster.snap+json`, the client MUST render it as a snap.
 
