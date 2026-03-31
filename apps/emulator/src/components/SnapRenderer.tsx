@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { snapJsonRenderCatalog } from "@farcaster/snap-ui-elements";
+import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./snapCatalogRenderer";
 import { snapPageToJsonRenderSpec } from "../lib/snapPageToJsonRenderSpec";
 

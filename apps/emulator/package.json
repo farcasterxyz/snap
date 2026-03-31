@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "next build --webpack",
-    "build:workspace-deps": "pnpm --filter @farcaster/snap --filter @farcaster/snap-ui-elements run build",
+    "build:workspace-deps": "pnpm --filter @farcaster/snap run build",
     "clean": "rm -rf .next",
     "prebuild": "pnpm run build:workspace-deps",
     "predev": "pnpm run build:workspace-deps",
@@ -14,7 +14,6 @@
   "dependencies": {
     "@farcaster/jfs": "0.2.2",
     "@farcaster/snap": "workspace:*",
-    "@farcaster/snap-ui-elements": "workspace:*",
     "@json-render/core": "^0.15.0",
     "@json-render/react": "^0.15.0",
     "@mdx-js/loader": "^3.1.1",

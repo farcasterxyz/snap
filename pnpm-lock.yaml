@@ -32,9 +32,6 @@ importers:
       '@farcaster/snap':
         specifier: workspace:*
         version: link:../../pkgs/snap
-      '@farcaster/snap-ui-elements':
-        specifier: workspace:*
-        version: link:../../pkgs/ui-elements
       '@json-render/core':
         specifier: ^0.15.0
         version: 0.15.0(zod@4.3.6)
@@ -261,6 +258,9 @@ importers:
       '@farcaster/jfs':
         specifier: ^0.3.0
         version: 0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+      '@json-render/core':
+        specifier: ^0.15.0
+        version: 0.15.0(zod@4.3.6)
       viem:
         specifier: ^2.21.0
         version: 2.47.6(typescript@5.9.3)(zod@4.3.6)
@@ -283,19 +283,6 @@ importers:
       zod:
         specifier: ^4.0.0
         version: 4.3.6
-
-  pkgs/ui-elements:
-    dependencies:
-      '@json-render/core':
-        specifier: ^0.15.0
-        version: 0.15.0(zod@4.3.6)
-      zod:
-        specifier: ^3.25.0 || ^4.0.0
-        version: 4.3.6
-    devDependencies:
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
 
   template:
     dependencies:

@@ -20,6 +20,86 @@
       "types": "./dist/server/index.d.ts",
       "import": "./dist/server/index.js",
       "default": "./dist/server/index.js"
+    },
+    "./ui": {
+      "types": "./dist/ui/index.d.ts",
+      "import": "./dist/ui/index.js",
+      "default": "./dist/ui/index.js"
+    },
+    "./ui/text": {
+      "types": "./dist/ui/text.d.ts",
+      "import": "./dist/ui/text.js",
+      "default": "./dist/ui/text.js"
+    },
+    "./ui/image": {
+      "types": "./dist/ui/image.d.ts",
+      "import": "./dist/ui/image.js",
+      "default": "./dist/ui/image.js"
+    },
+    "./ui/divider": {
+      "types": "./dist/ui/divider.d.ts",
+      "import": "./dist/ui/divider.js",
+      "default": "./dist/ui/divider.js"
+    },
+    "./ui/spacer": {
+      "types": "./dist/ui/spacer.d.ts",
+      "import": "./dist/ui/spacer.js",
+      "default": "./dist/ui/spacer.js"
+    },
+    "./ui/progress": {
+      "types": "./dist/ui/progress.d.ts",
+      "import": "./dist/ui/progress.js",
+      "default": "./dist/ui/progress.js"
+    },
+    "./ui/list": {
+      "types": "./dist/ui/list.d.ts",
+      "import": "./dist/ui/list.js",
+      "default": "./dist/ui/list.js"
+    },
+    "./ui/grid": {
+      "types": "./dist/ui/grid.d.ts",
+      "import": "./dist/ui/grid.js",
+      "default": "./dist/ui/grid.js"
+    },
+    "./ui/text-input": {
+      "types": "./dist/ui/text-input.d.ts",
+      "import": "./dist/ui/text-input.js",
+      "default": "./dist/ui/text-input.js"
+    },
+    "./ui/slider": {
+      "types": "./dist/ui/slider.d.ts",
+      "import": "./dist/ui/slider.js",
+      "default": "./dist/ui/slider.js"
+    },
+    "./ui/button-group": {
+      "types": "./dist/ui/button-group.d.ts",
+      "import": "./dist/ui/button-group.js",
+      "default": "./dist/ui/button-group.js"
+    },
+    "./ui/toggle": {
+      "types": "./dist/ui/toggle.d.ts",
+      "import": "./dist/ui/toggle.js",
+      "default": "./dist/ui/toggle.js"
+    },
+    "./ui/bar-chart": {
+      "types": "./dist/ui/bar-chart.d.ts",
+      "import": "./dist/ui/bar-chart.js",
+      "default": "./dist/ui/bar-chart.js"
+    },
+    "./ui/group": {
+      "types": "./dist/ui/group.d.ts",
+      "import": "./dist/ui/group.js",
+      "default": "./dist/ui/group.js"
+    },
+    "./ui/stack": {
+      "types": "./dist/ui/stack.d.ts",
+      "import": "./dist/ui/stack.js",
+      "default": "./dist/ui/stack.js"
+    },
+    "./ui/button": {
+      "types": "./dist/ui/button.d.ts",
+      "import": "./dist/ui/button.js",
+      "default": "./dist/ui/button.js"
     }
   },
   "files": [
@@ -38,6 +118,7 @@
   "license": "MIT",
   "dependencies": {
     "@farcaster/jfs": "^0.3.0",
+    "@json-render/core": "^0.15.0",
     "viem": "^2.21.0"
   },
   "peerDependencies": {

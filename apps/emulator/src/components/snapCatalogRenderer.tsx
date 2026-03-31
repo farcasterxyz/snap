@@ -11,7 +11,7 @@ import {
   PALETTE_LIGHT_HEX,
   type PaletteColor,
 } from "@farcaster/snap";
-import { snapJsonRenderCatalog } from "@farcaster/snap-ui-elements";
+import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 
 /** Resolve a palette color name to its light-mode hex value. */
 function paletteHex(name: string): string {
