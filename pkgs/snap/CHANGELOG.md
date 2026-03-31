@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.3.1
+
+### Patch Changes
+
+- [`b85eb51`](https://github.com/farcasterxyz/snap/commit/b85eb511b22b8aacbbf6f47d45155d134f585494) Thanks [@lyoshenka](https://github.com/lyoshenka)! - drop video elements from spec (not really a patch change, i know)
+
 ## 1.3.0
 
 ### Minor Changes
