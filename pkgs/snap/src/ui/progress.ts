@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 import { PROGRESS_COLOR_VALUES } from "../constants.js";
 
 export const progressProps = z.object({

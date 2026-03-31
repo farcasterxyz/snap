@@ -15,7 +15,7 @@ import { toggleProps } from "./toggle.js";
 import { barChartProps } from "./bar-chart.js";
 import { groupProps } from "./group.js";
 import { stackProps } from "./stack.js";
-import { buttonProps } from "./button.js";
+import { actionButtonProps } from "./button.js";
 
 const snapPostParams = z.object({
   buttonIndex: z.number().int().nonnegative(),
@@ -99,7 +99,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
         "Vertical stack for snap page body; maps from snap `page.elements` (`type: stack`). Children are element ids in order top to bottom.",
     },
     ActionButton: {
-      props: buttonProps,
+      props: actionButtonProps,
       description:
         "Snap action button: post (next page), link (browser), mini_app, sdk — target is HTTPS URL or SDK id.",
     },

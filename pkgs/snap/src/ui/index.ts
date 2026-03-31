@@ -43,5 +43,5 @@ export type { GroupProps } from "./group.js";
 export { stackProps } from "./stack.js";
 export type { StackProps } from "./stack.js";
 
-export { buttonProps } from "./button.js";
-export type { ButtonProps } from "./button.js";
+export { actionButtonProps } from "./button.js";
+export type { ActionButtonProps } from "./button.js";
