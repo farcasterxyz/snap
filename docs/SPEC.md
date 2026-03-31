@@ -65,15 +65,15 @@ All snap pages render in the feed card — including pages returned by `post` bu
 
 These constraints apply to **every page**, not just the first. They are designed so that any valid combination of elements fits within the 500px feed card height (including padding and buttons).
 
-| Constraint              | Limit                         | Rationale                                  |
-| ----------------------- | ----------------------------- | ------------------------------------------ |
-| Elements per page       | Max 5                         | Prevents vertical overflow                 |
-| Media elements per page | Max 1 (image, video, or grid) | Media elements are tall; only one per page |
-| Body text               | Max 160 chars                 | ~4 lines, ~80px                            |
-| Caption text            | Max 100 chars                 | ~2 lines, ~36px                            |
-| List items              | Max 4                         | ~120px total                               |
-| Button group options    | Max 4                         | ~100px stacked                             |
-| Grid rows               | Max 8                         | Keeps the page within the feed card height |
+| Constraint              | Limit                 | Rationale                                  |
+| ----------------------- | --------------------- | ------------------------------------------ |
+| Elements per page       | Max 5                 | Prevents vertical overflow                 |
+| Media elements per page | Max 1 (image or grid) | Media elements are tall; only one per page |
+| Body text               | Max 160 chars         | ~4 lines, ~80px                            |
+| Caption text            | Max 100 chars         | ~2 lines, ~36px                            |
+| List items              | Max 4                 | ~120px total                               |
+| Button group options    | Max 4                 | ~100px stacked                             |
+| Grid rows               | Max 8                 | Keeps the page within the feed card height |
 
 Snaps that need longer text, bigger grids, or more list items can spread content across multiple pages via `post` buttons, or link to a Farcaster mini app for the full experience.
 

@@ -119,7 +119,6 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
     const catalogTypeMap: Record<string, string> = {
       text: "Text",
       image: "Image",
-      video: "Video",
       divider: "Divider",
       spacer: "Spacer",
       progress: "Progress",

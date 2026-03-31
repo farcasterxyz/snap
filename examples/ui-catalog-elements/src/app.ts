@@ -33,8 +33,6 @@ function pageIndexFromQuery(raw: string | null): number {
 
 const IMAGE_URL =
   "https://placehold.co/300x300.png?text=UI+catalog+image+(.png)";
-const VIDEO_URL =
-  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
 
 function buildSnapRoot(pageIndex: number, snapBaseUrl: string): SnapResponse {
   const idx = ((pageIndex % TOTAL_PAGES) + TOTAL_PAGES) % TOTAL_PAGES;
@@ -155,14 +153,26 @@ function buildSnapRoot(pageIndex: number, snapBaseUrl: string): SnapResponse {
         ];
       case 3:
         return [
-          { type: "text" as const, style: "title" as const, content: "Video" },
           {
-            type: "video" as const,
-            url: VIDEO_URL,
-            aspect: "16:9" as const,
-            alt: "UI catalog video",
+            type: "text" as const,
+            style: "title" as const,
+            content: "Progress + List",
           },
-          { type: "spacer" as const, size: "small" as const },
+          {
+            type: "progress" as const,
+            value: 72,
+            max: 100,
+            label: "Completion",
+            color: "purple" as const,
+          },
+          {
+            type: "list" as const,
+            style: "ordered" as const,
+            items: [
+              { content: "First step", trailing: "done" },
+              { content: "Second step", trailing: "active" },
+            ],
+          },
           { type: "divider" as const },
         ];
       case 4:

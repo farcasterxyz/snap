@@ -38,15 +38,15 @@ Every valid response is a page payload with this shape:
 
 ## Top-Level Fields
 
-| Field                | Required | Description                                                                                                                                                                        |
-| -------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`            | Yes      | Spec version. Must be `"1.0"`.                                                                                                                                                     |
-| `page.theme`         | No       | Accent color for the snap. Client derives all visual styling from this + the app's current light/dark mode. Defaults to `"purple"`.                              |
-| `page.theme.accent`  | No       | Palette color name: `gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`.                                                                                                                                                     |
-| `page.elements`      | Yes      | Page body tree root. MUST be `{ "type": "stack", "children": [...] }`. Children render top to bottom. Min 1, max 5 children. Max 1 media element (image, video, or grid) in stack. |
-| `page.buttons`       | No       | Array of action buttons at the bottom. Min 0, max 4.                                                                                                                               |
-| `page.button_layout` | No       | Layout for action buttons: `"stack"` (default, vertical), `"row"` (horizontal), `"grid"` (2-column grid).                                                                          |
-| `page.effects`       | No       | Array of effect names to trigger on page load.                                                                                                                                     |
+| Field                | Required | Description                                                                                                                                                                |
+| -------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`            | Yes      | Spec version. Must be `"1.0"`.                                                                                                                                             |
+| `page.theme`         | No       | Accent color for the snap. Client derives all visual styling from this + the app's current light/dark mode. Defaults to `"purple"`.                                        |
+| `page.theme.accent`  | No       | Palette color name: `gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`.                                                                                     |
+| `page.elements`      | Yes      | Page body tree root. MUST be `{ "type": "stack", "children": [...] }`. Children render top to bottom. Min 1, max 5 children. Max 1 media element (image or grid) in stack. |
+| `page.buttons`       | No       | Array of action buttons at the bottom. Min 0, max 4.                                                                                                                       |
+| `page.button_layout` | No       | Layout for action buttons: `"stack"` (default, vertical), `"row"` (horizontal), `"grid"` (2-column grid).                                                                  |
+| `page.effects`       | No       | Array of effect names to trigger on page load.                                                                                                                             |
 
 ## Page Root (`stack`)
 
@@ -56,7 +56,7 @@ Rules:
 
 - `page.elements.type` MUST be `"stack"`.
 - `page.elements.children` is an array of elements (min 1, max 5).
-- Max 1 media element (`image`, `video`, or `grid`) per page.
+- Max 1 media element (`image` or `grid`) per page.
 
 ## Element Types
 
@@ -106,24 +106,6 @@ Renders an image from a URL.
 | `aspect` | Yes      | `"1:1"`, `"16:9"`, `"4:3"`, `"3:4"`, `"9:16"`                          |
 | `alt`    | No       | Alt text for accessibility.                                            |
 
-### `video`
-
-Renders a short video clip. Autoplays muted. Tap to unmute. Subsequent taps play/pause the video.
-
-```json
-{
-  "type": "video",
-  "url": "https://example.com/clip.mp4",
-  "aspect": "16:9"
-}
-```
-
-| Property | Required | Values                               |
-| -------- | -------- | ------------------------------------ |
-| `url`    | Yes      | HTTPS video URL. Supports mp4, webm. |
-| `aspect` | Yes      | `"1:1"`, `"16:9"`, `"9:16"`          |
-| `alt`    | No       | Alt text for accessibility.          |
-
 ### `divider`
 
 A horizontal line to visually separate content sections.
@@ -154,12 +136,12 @@ A horizontal progress bar.
 { "type": "progress", "value": 72, "max": 100, "label": "72% Yes" }
 ```
 
-| Property | Required | Values                                                         |
-| -------- | -------- | -------------------------------------------------------------- |
-| `value`  | Yes      | Number, current value.                                         |
-| `max`    | Yes      | Number, maximum value.                                         |
-| `label`  | No       | Text label displayed alongside. Max 60 chars.                  |
-| `color`  | No       | `"accent"` (default) or any palette color name                 |
+| Property | Required | Values                                         |
+| -------- | -------- | ---------------------------------------------- |
+| `value`  | Yes      | Number, current value.                         |
+| `max`    | Yes      | Number, maximum value.                         |
+| `label`  | No       | Text label displayed alongside. Max 60 chars.  |
+| `color`  | No       | `"accent"` (default) or any palette color name |
 
 ### `list`
 
@@ -311,14 +293,14 @@ A vertical bar chart for displaying labeled values. For poll results, rankings, 
 }
 ```
 
-| Property       | Required | Values                                                                                      |
-| -------------- | -------- | ------------------------------------------------------------------------------------------- |
-| `bars`         | Yes      | Array of bar objects. Min 1, max 6.                                                         |
-| `bars[].label` | Yes      | Bar label text. Max 40 chars.                                                               |
-| `bars[].value` | Yes      | Numeric value (>= 0).                                                                       |
-| `bars[].color` | No       | Palette color name for this bar. Overrides chart `color`.                                   |
-| `max`          | No       | Scale maximum. If omitted, derived from the largest bar value.                              |
-| `color`        | No       | Default bar color: `"accent"` (default) or any palette color name                           |
+| Property       | Required | Values                                                            |
+| -------------- | -------- | ----------------------------------------------------------------- |
+| `bars`         | Yes      | Array of bar objects. Min 1, max 6.                               |
+| `bars[].label` | Yes      | Bar label text. Max 40 chars.                                     |
+| `bars[].value` | Yes      | Numeric value (>= 0).                                             |
+| `bars[].color` | No       | Palette color name for this bar. Overrides chart `color`.         |
+| `max`          | No       | Scale maximum. If omitted, derived from the largest bar value.    |
+| `color`        | No       | Default bar color: `"accent"` (default) or any palette color name |
 
 ### `group`
 
@@ -343,7 +325,7 @@ Arranges child elements horizontally in a row. For displaying related stats, inp
 Rules:
 
 - A group counts as 1 element toward the page max of 5.
-- No media elements inside groups (`image`, `video`, `grid` are not allowed).
+- No media elements inside groups (`image`, `grid` are not allowed).
 - No nesting: groups cannot contain other groups.
 - Children are rendered with equal width, side by side.
 - Any non-media element is valid as a child: `text`, `progress`, `list`, `slider`, `button_group`, `toggle`, `text_input`, `divider`, `spacer`, `bar_chart`.
@@ -355,7 +337,7 @@ The first page returned from the snap URL is rendered as the feed card.
 In addition to all normal page rules, the first page MUST include:
 
 - At least one `text` element with `style: "title"` or `style: "body"`
-- At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR at least one media element (`image`, `video`, or `grid`)
+- At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR at least one media element (`image` or `grid`)
 
 This ensures the feed card always has readable content plus engagement or visual context. A page with only buttons and no content is invalid.
 
@@ -457,16 +439,16 @@ All colors in snaps (accent, progress bar, bar chart) are specified as **named p
 
 The palette has 8 colors:
 
-| Name       | Light        | Dark         |
-| ---------- | ------------ | ------------ |
-| `gray`     | `#8F8F8F`    | `#8F8F8F`    |
-| `blue`     | `#006BFF`    | `#006FFE`    |
-| `red`      | `#FC0036`    | `#F13342`    |
-| `amber`    | `#FFAE00`    | `#FFAE00`    |
-| `green`    | `#28A948`    | `#00AC3A`    |
-| `teal`     | `#00AC96`    | `#00AA96`    |
-| `purple`   | `#8B5CF6`    | `#A78BFA`    |
-| `pink`     | `#F32782`    | `#F12B82`    |
+| Name     | Light     | Dark      |
+| -------- | --------- | --------- |
+| `gray`   | `#8F8F8F` | `#8F8F8F` |
+| `blue`   | `#006BFF` | `#006FFE` |
+| `red`    | `#FC0036` | `#F13342` |
+| `amber`  | `#FFAE00` | `#FFAE00` |
+| `green`  | `#28A948` | `#00AC3A` |
+| `teal`   | `#00AC96` | `#00AA96` |
+| `purple` | `#8B5CF6` | `#A78BFA` |
+| `pink`   | `#F32782` | `#F12B82` |
 
 The default accent is `purple`.
 
@@ -503,7 +485,7 @@ The default accent is `purple`.
 | Constraint              | Limit                                     |
 | ----------------------- | ----------------------------------------- |
 | Elements per page       | Max 5                                     |
-| Media elements per page | Max 1 (image, video, or grid)             |
+| Media elements per page | Max 1 (image or grid)                     |
 | Buttons per page        | Max 4                                     |
 | Title text              | Max 80 chars                              |
 | Body text               | Max 160 chars                             |

@@ -35,7 +35,6 @@ import {
   TEXT_CONTENT_MAX,
   TEXT_STYLE,
   TEXT_STYLE_VALUES,
-  VIDEO_ASPECT_VALUES,
 } from "./constants";
 
 /**
@@ -94,13 +93,6 @@ const imageUrlSchema = z
       "image URL must use HTTPS and end with a supported extension (.jpg, .png, .gif, .webp)",
   });
 
-const videoUrlSchema = z
-  .string()
-  .refine((s) => hasAllowedMediaExtension(s, ["mp4", "webm"]), {
-    message:
-      "video URL must use HTTPS and end with a supported extension (.mp4, .webm)",
-  });
-
 const textAlignSchema = z.enum(TEXT_ALIGN_VALUES);
 
 const textElementSchema = z
@@ -125,14 +117,6 @@ const imageElementSchema = z.object({
   type: z.literal(ELEMENT_TYPE.image),
   url: imageUrlSchema,
   aspect: z.enum(IMAGE_ASPECT_VALUES),
-  alt: z.string().optional(),
-});
-
-const videoElementSchema = z.object({
-  type: z.literal(ELEMENT_TYPE.video),
-  url: videoUrlSchema,
-  aspect: z.enum(VIDEO_ASPECT_VALUES),
-  maxDuration: z.number().max(LIMITS.maxVideoDurationSeconds).optional(),
   alt: z.string().optional(),
 });
 
@@ -434,7 +418,6 @@ const groupElementSchema = z.object({
 const elementSchema = z.discriminatedUnion("type", [
   textElementSchema,
   imageElementSchema,
-  videoElementSchema,
   dividerElementSchema,
   spacerElementSchema,
   progressElementSchema,
@@ -490,7 +473,7 @@ export const rootSchema = z
         if (mediaCount > 1) {
           ctx.addIssue({
             code: "custom",
-            message: `cannot have more than 1 media element (image, video, or grid)`,
+            message: `cannot have more than 1 media element (image or grid)`,
             path: ["elements", "children"],
           });
         }
@@ -524,7 +507,7 @@ export const firstPageRootSchema = rootSchema.superRefine((root, ctx) => {
     ctx.addIssue({
       code: "custom",
       message:
-        "first page must have at least one interactive element (button_group, slider, text_input, toggle) or media element (image, video, grid)",
+        "first page must have at least one interactive element (button_group, slider, text_input, toggle) or media element (image, grid)",
       path: ["page", "elements", "children"],
     });
   }

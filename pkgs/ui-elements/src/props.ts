@@ -7,7 +7,6 @@ import { z } from "zod/v4";
 const textStyleZ = z.enum(["title", "body", "caption", "label"]);
 const textAlignZ = z.enum(["left", "center", "right"]).optional();
 const imageAspectZ = z.enum(["1:1", "16:9", "4:3", "3:4", "9:16"]);
-const videoAspectZ = z.enum(["1:1", "16:9", "9:16"]);
 const spacerSizeZ = z.enum(["small", "medium", "large"]).optional();
 const progressColorZ = z
   .enum(["accent", "green", "red", "orange", "gray"])
@@ -43,11 +42,6 @@ export const snapComponentProps = {
   Image: z.object({
     url: z.string(),
     aspect: imageAspectZ,
-    alt: z.string().optional(),
-  }),
-  Video: z.object({
-    url: z.string(),
-    aspect: videoAspectZ,
     alt: z.string().optional(),
   }),
   Divider: z.object({}),

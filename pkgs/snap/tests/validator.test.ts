@@ -294,7 +294,7 @@ describe("Page root (stack)", () => {
   it("rejects more than 1 media element", () => {
     const elements = [
       { type: "image", url: "https://example.com/a.jpg", aspect: "1:1" },
-      { type: "video", url: "https://example.com/b.mp4", aspect: "16:9" },
+      { type: "grid", cols: 2, rows: 2, cells: [] },
     ];
     expectErrors({ version: "1.0", page: { elements: stackRoot(elements) } }, [
       "cannot have more than 1 media",
@@ -533,73 +533,6 @@ describe("Image element", () => {
       ["invalid_value\tpage.elements.children[0].aspect\t"],
     );
   });
-});
-
-// ─── Video element ──────────────────────────────────────────────────────────
-
-describe("Video element", () => {
-  it("accepts valid video", () => {
-    expectValid({
-      version: "1.0",
-      page: {
-        elements: stackRoot([
-          {
-            type: "video",
-            url: "https://example.com/clip.mp4",
-            aspect: "16:9",
-          },
-        ]),
-      },
-    });
-  });
-
-  it("requires url", () => {
-    expectErrors(
-      {
-        version: "1.0",
-        page: { elements: stackRoot([{ type: "video", aspect: "16:9" }]) },
-      },
-      ["invalid_type\tpage.elements.children[0].url\t"],
-    );
-  });
-
-  it("requires https url", () => {
-    expectErrors(
-      {
-        version: "1.0",
-        page: {
-          elements: stackRoot([
-            {
-              type: "video",
-              url: "http://example.com/clip.mp4",
-              aspect: "16:9",
-            },
-          ]),
-        },
-      },
-      ["URL must use HTTPS"],
-    );
-  });
-
-  it("rejects invalid aspect (4:3 not valid for video)", () => {
-    expectErrors(
-      {
-        version: "1.0",
-        page: {
-          elements: stackRoot([
-            {
-              type: "video",
-              url: "https://example.com/clip.mp4",
-              aspect: "4:3",
-            },
-          ]),
-        },
-      },
-      ["invalid_value\tpage.elements.children[0].aspect\t"],
-    );
-  });
-
-  // NOTE: video element does not include an author-specified maxDuration.
 });
 
 // ─── Divider element ────────────────────────────────────────────────────────
@@ -1768,23 +1701,6 @@ describe("First page validation", () => {
           e.message.includes("media"),
       ),
     ).toBe(true);
-  });
-
-  it("accepts first page with text + video", () => {
-    const result = validateFirstPage({
-      version: "1.0",
-      page: {
-        elements: stackRoot([
-          { type: "text", style: "title", content: "Watch this" },
-          {
-            type: "video",
-            url: "https://example.com/clip.mp4",
-            aspect: "16:9",
-          },
-        ]),
-      },
-    });
-    expect(result.valid).toBe(true);
   });
 
   it("accepts first page with text + grid (media)", () => {

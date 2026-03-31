@@ -39,8 +39,6 @@ function renderElement(el: Record<string, unknown>, accent: string): string {
       return renderText(el, accent);
     case "image":
       return renderImage(el);
-    case "video":
-      return renderVideo(el);
     case "grid":
       return renderGrid(el);
     case "progress":
@@ -67,17 +65,16 @@ function renderElement(el: Record<string, unknown>, accent: string): string {
         medium: "16px",
         large: "24px",
       };
-      return `<div style="height:${sizes[(el.size as string) ?? "medium"] ?? "16px"}"></div>`;
+      return `<div style="height:${
+        sizes[(el.size as string) ?? "medium"] ?? "16px"
+      }"></div>`;
     }
     default:
       return "";
   }
 }
 
-function renderText(
-  el: Record<string, unknown>,
-  _accent: string,
-): string {
+function renderText(el: Record<string, unknown>, _accent: string): string {
   const style = el.style as string;
   const content = esc(el.content as string);
   const align = (el.align as string) ?? "left";
@@ -85,9 +82,12 @@ function renderText(
     title: "font-size:20px;font-weight:700;color:#111",
     body: "font-size:15px;line-height:1.5;color:#374151",
     caption: "font-size:13px;color:#9CA3AF",
-    label: "font-size:13px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px",
+    label:
+      "font-size:13px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px",
   };
-  return `<div style="${styles[style] ?? styles.body};text-align:${align}">${content}</div>`;
+  return `<div style="${
+    styles[style] ?? styles.body
+  };text-align:${align}">${content}</div>`;
 }
 
 function renderImage(el: Record<string, unknown>): string {
@@ -95,15 +95,9 @@ function renderImage(el: Record<string, unknown>): string {
   const aspect = (el.aspect as string) ?? "16:9";
   const [w, h] = aspect.split(":").map(Number);
   const ratio = w && h ? `${w}/${h}` : "16/9";
-  return `<div style="aspect-ratio:${ratio};border-radius:8px;overflow:hidden;background:#F3F4F6"><img src="${url}" alt="${esc((el.alt as string) ?? "")}" style="width:100%;height:100%;object-fit:cover"></div>`;
-}
-
-function renderVideo(el: Record<string, unknown>): string {
-  const url = esc(el.url as string);
-  const aspect = (el.aspect as string) ?? "16:9";
-  const [w, h] = aspect.split(":").map(Number);
-  const ratio = w && h ? `${w}/${h}` : "16/9";
-  return `<div style="aspect-ratio:${ratio};border-radius:8px;overflow:hidden;background:#000"><video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover"></video></div>`;
+  return `<div style="aspect-ratio:${ratio};border-radius:8px;overflow:hidden;background:#F3F4F6"><img src="${url}" alt="${esc(
+    (el.alt as string) ?? "",
+  )}" style="width:100%;height:100%;object-fit:cover"></div>`;
 }
 
 function renderGrid(el: Record<string, unknown>): string {
@@ -136,46 +130,45 @@ function renderGrid(el: Record<string, unknown>): string {
     }
   }
 
-  return `<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${gapPx[gap] ?? "2px"}">${cellsHtml}</div>`;
+  return `<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${
+    gapPx[gap] ?? "2px"
+  }">${cellsHtml}</div>`;
 }
 
-function renderProgress(
-  el: Record<string, unknown>,
-  accent: string,
-): string {
+function renderProgress(el: Record<string, unknown>, accent: string): string {
   const value = el.value as number;
   const max = el.max as number;
   const label = el.label as string | undefined;
   const color = colorHex(el.color as string | undefined, accent);
   const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
   const labelHtml = label
-    ? `<div style="font-size:13px;color:#6B7280;margin-bottom:4px">${esc(label)}</div>`
+    ? `<div style="font-size:13px;color:#6B7280;margin-bottom:4px">${esc(
+        label,
+      )}</div>`
     : "";
   return `<div>${labelHtml}<div style="height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:4px"></div></div></div>`;
 }
 
-function renderBarChart(
-  el: Record<string, unknown>,
-  accent: string,
-): string {
+function renderBarChart(el: Record<string, unknown>, accent: string): string {
   const bars = el.bars as Array<{
     label: string;
     value: number;
     color?: string;
   }>;
   const max =
-    (el.max as number | undefined) ??
-    Math.max(...bars.map((b) => b.value), 1);
+    (el.max as number | undefined) ?? Math.max(...bars.map((b) => b.value), 1);
   const defaultColor = colorHex(el.color as string | undefined, accent);
 
   let html = `<div style="display:flex;align-items:flex-end;gap:12px;height:120px">`;
   for (const bar of bars) {
-    const color = bar.color ? (PALETTE[bar.color] ?? defaultColor) : defaultColor;
+    const color = bar.color ? PALETTE[bar.color] ?? defaultColor : defaultColor;
     const pct = max > 0 ? (bar.value / max) * 100 : 0;
     html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end">`;
     html += `<div style="font-size:11px;color:#6B7280;margin-bottom:4px">${bar.value}</div>`;
     html += `<div style="width:100%;height:${pct}%;background:${color};border-radius:4px 4px 0 0;min-height:4px"></div>`;
-    html += `<div style="font-size:11px;color:#9CA3AF;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${esc(bar.label)}</div>`;
+    html += `<div style="font-size:11px;color:#9CA3AF;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${esc(
+      bar.label,
+    )}</div>`;
     html += `</div>`;
   }
   html += `</div>`;
@@ -196,12 +189,16 @@ function renderList(el: Record<string, unknown>): string {
       style === "ordered"
         ? `<span style="color:#9CA3AF;min-width:20px">${i + 1}.</span>`
         : style === "unordered"
-          ? `<span style="color:#9CA3AF;min-width:20px">&bull;</span>`
-          : "";
+        ? `<span style="color:#9CA3AF;min-width:20px">&bull;</span>`
+        : "";
     const trailing = item.trailing
-      ? `<span style="color:#9CA3AF;font-size:13px;white-space:nowrap">${esc(item.trailing)}</span>`
+      ? `<span style="color:#9CA3AF;font-size:13px;white-space:nowrap">${esc(
+          item.trailing,
+        )}</span>`
       : "";
-    html += `<div style="display:flex;align-items:center;gap:8px;padding:6px 0">${prefix}<span style="flex:1;font-size:14px;color:#374151">${esc(item.content)}</span>${trailing}</div>`;
+    html += `<div style="display:flex;align-items:center;gap:8px;padding:6px 0">${prefix}<span style="flex:1;font-size:14px;color:#374151">${esc(
+      item.content,
+    )}</span>${trailing}</div>`;
   }
   return `<div>${html}</div>`;
 }
@@ -215,16 +212,15 @@ function renderButtonGroup(
   const dir = layout === "stack" ? "column" : "row";
   let html = `<div style="display:flex;flex-direction:${dir};gap:8px">`;
   for (const opt of options) {
-    html += `<button onclick="showModal()" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;font-size:14px;color:#374151;cursor:pointer;font-family:inherit">${esc(opt)}</button>`;
+    html += `<button onclick="showModal()" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;font-size:14px;color:#374151;cursor:pointer;font-family:inherit">${esc(
+      opt,
+    )}</button>`;
   }
   html += `</div>`;
   return html;
 }
 
-function renderSlider(
-  el: Record<string, unknown>,
-  accent: string,
-): string {
+function renderSlider(el: Record<string, unknown>, accent: string): string {
   const label = el.label as string | undefined;
   const min = el.min as number;
   const max = el.max as number;
@@ -233,7 +229,9 @@ function renderSlider(
   const maxLabel = el.maxLabel as string | undefined;
 
   const labelHtml = label
-    ? `<div style="font-size:13px;color:#6B7280;margin-bottom:4px">${esc(label)}</div>`
+    ? `<div style="font-size:13px;color:#6B7280;margin-bottom:4px">${esc(
+        label,
+      )}</div>`
     : "";
   const minL = minLabel
     ? `<span style="font-size:11px;color:#9CA3AF">${esc(minLabel)}</span>`
@@ -250,10 +248,7 @@ function renderTextInput(el: Record<string, unknown>): string {
   return `<input type="text" placeholder="${placeholder}" disabled style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#F9FAFB;font-size:14px;color:#9CA3AF;font-family:inherit;box-sizing:border-box">`;
 }
 
-function renderToggle(
-  el: Record<string, unknown>,
-  accent: string,
-): string {
+function renderToggle(el: Record<string, unknown>, accent: string): string {
   const label = esc(el.label as string);
   const value = el.value as boolean;
   const bg = value ? accent : "#D1D5DB";
@@ -264,10 +259,7 @@ function renderToggle(
 </div>`;
 }
 
-function renderGroup(
-  el: Record<string, unknown>,
-  accent: string,
-): string {
+function renderGroup(el: Record<string, unknown>, accent: string): string {
   const children = el.children as Array<Record<string, unknown>>;
   let html = `<div style="display:flex;gap:12px">`;
   for (const child of children) {
@@ -290,9 +282,14 @@ function renderButtons(
     layout === "row"
       ? "flex-direction:row"
       : layout === "grid"
-        ? "display:grid;grid-template-columns:1fr 1fr"
-        : "flex-direction:column";
-  const wrap = layout === "row" ? "display:flex;" : layout === "grid" ? "" : "display:flex;";
+      ? "display:grid;grid-template-columns:1fr 1fr"
+      : "flex-direction:column";
+  const wrap =
+    layout === "row"
+      ? "display:flex;"
+      : layout === "grid"
+      ? ""
+      : "display:flex;";
 
   let html = `<div style="${wrap}${dir};gap:8px;margin-top:12px">`;
   for (let i = 0; i < buttons.length; i++) {
@@ -301,8 +298,7 @@ function renderButtons(
     const style = (btn.style as string) ?? (i === 0 ? "primary" : "secondary");
     const bg = style === "primary" ? accent : "transparent";
     const color = style === "primary" ? "#fff" : accent;
-    const border =
-      style === "primary" ? "none" : `2px solid ${accent}`;
+    const border = style === "primary" ? "none" : `2px solid ${accent}`;
     html += `<button onclick="showModal()" style="flex:1;padding:10px 16px;border-radius:10px;background:${bg};color:${color};border:${border};font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">${label}</button>`;
   }
   html += `</div>`;
@@ -311,27 +307,26 @@ function renderButtons(
 
 // ─── Main renderer ──────────────────────────────────────
 
-export function renderSnapPage(
-  snap: SnapResponse,
-  snapOrigin: string,
-): string {
+export function renderSnapPage(snap: SnapResponse, snapOrigin: string): string {
   const page = snap.page;
   const accent = accentHex(page.theme?.accent);
 
   // Extract title for <title> tag
   const titleEl = page.elements.children.find(
-    (el) => el.type === "text" && (el as Record<string, unknown>).style === "title",
+    (el) =>
+      el.type === "text" && (el as Record<string, unknown>).style === "title",
   ) as Record<string, unknown> | undefined;
-  const pageTitle = titleEl
-    ? esc(titleEl.content as string)
-    : "Farcaster Snap";
+  const pageTitle = titleEl ? esc(titleEl.content as string) : "Farcaster Snap";
 
   const snapUrl = encodeURIComponent(snapOrigin + "/");
 
   // Render elements
   let elementsHtml = "";
   for (const el of page.elements.children) {
-    elementsHtml += `<div style="margin-bottom:12px">${renderElement(el as Record<string, unknown>, accent)}</div>`;
+    elementsHtml += `<div style="margin-bottom:12px">${renderElement(
+      el as Record<string, unknown>,
+      accent,
+    )}</div>`;
   }
 
   // Render buttons

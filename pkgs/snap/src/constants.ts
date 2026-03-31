@@ -7,7 +7,6 @@ export const MEDIA_TYPE = "application/vnd.farcaster.snap+json" as const;
 export const LIMITS = {
   maxElementsPerPage: 5,
   maxButtonsPerPage: 4,
-  maxVideoDurationSeconds: 30,
   maxTextInputChars: 280,
   maxListItems: 4,
   minListItems: 1,
@@ -50,7 +49,6 @@ export const IMAGE_ASPECT_VALUES = [
   "3:4",
   "9:16",
 ] as const;
-export const VIDEO_ASPECT_VALUES = ["1:1", "16:9", "9:16"] as const;
 
 export const SPACER_SIZE = {
   small: "small",
@@ -192,7 +190,6 @@ export const PAGE_ROOT_TYPE = {
 export const ELEMENT_TYPE = {
   text: "text",
   image: "image",
-  video: "video",
   divider: "divider",
   spacer: "spacer",
   progress: "progress",
@@ -229,7 +226,6 @@ export const DEFAULT_SLIDER_STEP = 1 as const;
 
 export const MEDIA_ELEMENT_TYPES = [
   ELEMENT_TYPE.image,
-  ELEMENT_TYPE.video,
   ELEMENT_TYPE.grid,
 ] as ElementType[];
 

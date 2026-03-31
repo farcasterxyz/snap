@@ -29,10 +29,6 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       props: snapComponentProps.Image,
       description: "HTTPS image with fixed aspect ratio.",
     },
-    Video: {
-      props: snapComponentProps.Video,
-      description: "HTTPS video (mp4/webm).",
-    },
     Divider: {
       props: snapComponentProps.Divider,
       description: "Horizontal rule between blocks.",

@@ -39,7 +39,6 @@ function estimateElementHeight(el: Element): number {
       return 48;
     }
     case ELEMENT_TYPE.image:
-    case ELEMENT_TYPE.video:
       return 180;
     case ELEMENT_TYPE.grid:
       return 180;

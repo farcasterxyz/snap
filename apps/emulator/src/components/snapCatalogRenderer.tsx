@@ -77,20 +77,6 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
     );
   },
 
-  Video: ({ element: { props } }) => {
-    const url = String(props.url ?? "");
-    return (
-      <video
-        src={url}
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{ width: "100%", borderRadius: 10, display: "block" }}
-      />
-    );
-  },
-
   Divider: () => (
     <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
   ),
