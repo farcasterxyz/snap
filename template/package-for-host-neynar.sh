@@ -7,8 +7,8 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 STAGE="$(mktemp -d "/tmp/neynar-snap-template-bundle.XXXXXX")"
 
 mkdir -p "$STAGE/packages"
-cp -R "$REPO_ROOT/packages/snap" "$STAGE/packages/snap"
-cp -R "$REPO_ROOT/packages/hono" "$STAGE/packages/hono"
+cp -R "$REPO_ROOT/pkgs/snap" "$STAGE/packages/snap"
+cp -R "$REPO_ROOT/pkgs/hono" "$STAGE/packages/hono"
 cp -R "$REPO_ROOT/template/src" "$STAGE/src"
 cp "$REPO_ROOT/template/package.json" "$STAGE/package.json"
 cp "$REPO_ROOT/template/tsconfig.json" "$STAGE/tsconfig.json"
@@ -21,7 +21,7 @@ EOF
 cat > "$STAGE/vercel.json" << 'EOF'
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter snap run build && pnpm --filter snap-hono run build"
+  "buildCommand": "pnpm --filter @farcaster/snap run build && pnpm --filter @farcaster/snap-hono run build"
 }
 EOF
 

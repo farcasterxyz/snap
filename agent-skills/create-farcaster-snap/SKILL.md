@@ -66,7 +66,7 @@ Fix any errors or implementation mistakes. Re-run local validation until the sna
 
 ## Step 5: Deploy or update (always)
 
-Every run **ends with a deplyoment** (new project or new version). Do not stop after “the JSON looks right” or after local-only validation.
+Every run **ends with a deployment** (new project or new version). Do not stop after “the JSON looks right” or after local-only validation.
 
 Fetch the deploy skill first:
 
@@ -106,13 +106,13 @@ If the user supplies an existing key and name, **update**; otherwise **create** 
 
 3. **Deploy request** — **`projectName`**, **`env`** as a JSON string (at least **`SNAP_PUBLIC_BASE_URL`** as below).
 
-   **First deploy** (no `Authorization`; response returns **`apiKey`** once). Use **`framework=auto`** below unless the template specifies a different Neynar **`framework`** value.
+   **First deploy** (no `Authorization`; response returns **`apiKey`** once). Use **`framework=hono`** below (matching the template's `vercel.json`).
 
    ```bash
    curl -X POST https://api.host.neynar.app/v1/deploy \
      -F "files=@/tmp/site.tar.gz" \
      -F "projectName=my-snap" \
-     -F "framework=auto" \
+     -F "framework=hono" \
      -F 'env={"SNAP_PUBLIC_BASE_URL":"https://my-snap.host.neynar.app"}' \
      -F "description=Short note for deploy history"
    ```
@@ -124,7 +124,7 @@ If the user supplies an existing key and name, **update**; otherwise **create** 
      -H "Authorization: Bearer <apiKey>" \
      -F "files=@/tmp/site.tar.gz" \
      -F "projectName=my-snap" \
-     -F "framework=auto" \
+     -F "framework=hono" \
      -F 'env={"SNAP_PUBLIC_BASE_URL":"https://my-snap.host.neynar.app"}' \
      -F "description=Short note for deploy history"
    ```
