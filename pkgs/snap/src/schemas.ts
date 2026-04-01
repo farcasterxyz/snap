@@ -536,6 +536,7 @@ export const payloadSchema = z
   .strict();
 
 export type SnapResponse = z.infer<typeof rootSchema>;
+export type SnapResponseInput = z.input<typeof rootSchema>;
 export type SnapPage = SnapResponse["page"];
 export type SnapPayload = z.infer<typeof payloadSchema>;
 
@@ -560,4 +561,4 @@ export type SnapContext = {
   request: Request;
 };
 
-export type SnapFunction = (ctx: SnapContext) => Promise<SnapResponse>;
+export type SnapFunction = (ctx: SnapContext) => Promise<SnapResponseInput>;

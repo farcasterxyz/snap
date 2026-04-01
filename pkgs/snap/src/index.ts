@@ -19,6 +19,7 @@ export {
   type SnapAction,
   type SnapContext,
   type SnapResponse,
+  type SnapResponseInput,
   type SnapFunction,
   type SnapPayload,
 } from "./schemas";

@@ -74,6 +74,13 @@ describe("Top-level structure", () => {
     expectValid(validMinimalPage());
   });
 
+  it("applies defaults for button_layout and theme when omitted", () => {
+    const minimal = validMinimalPage();
+    const parsed = rootSchema.parse(minimal);
+    expect(parsed.page.button_layout).toBe("stack");
+    expect(parsed.page.theme).toEqual({ accent: DEFAULT_THEME_ACCENT });
+  });
+
   it("rejects non-object input", () => {
     const result = validatePage("not an object");
     expect(result.valid).toBe(false);
