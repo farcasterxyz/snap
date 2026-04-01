@@ -32,7 +32,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@farcaster/snap": "workspace:*"
+    "@farcaster/snap": "workspace:*",
+    "@resvg/resvg-wasm": "^2.6.2",
+    "satori": "^0.10.0"
   },
   "peerDependencies": {
     "hono": ">=4.0.0"

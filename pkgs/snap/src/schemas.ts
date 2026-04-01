@@ -407,6 +407,8 @@ const groupChildElementSchema = z.discriminatedUnion("type", [
   barChartElementSchema,
 ]);
 
+export type GroupChildElement = z.infer<typeof groupChildElementSchema>;
+
 const groupElementSchema = z.object({
   type: z.literal(ELEMENT_TYPE.group),
   layout: z.enum(GROUP_LAYOUT_VALUES),
@@ -434,6 +436,8 @@ const elementSchema = z.discriminatedUnion("type", [
 ]);
 
 export type Element = z.infer<typeof elementSchema>;
+
+export type SnapPageElementInput = z.input<typeof elementSchema>;
 
 const elementsSchema = z
   .object({

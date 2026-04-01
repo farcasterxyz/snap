@@ -1,3 +1,5 @@
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 
@@ -7,46 +9,60 @@ const OPT_HTTP = "HTTP";
 const OPT_LOCAL = "Local";
 const OPT_DEPLOY = "Deploy";
 
+const __dir = dirname(fileURLToPath(import.meta.url));
+const fontsDir = join(__dir, "../assets/fonts");
+
 const app = new Hono();
 
-registerSnapHandler(app, async (ctx) => {
-  const pref =
-    ctx.action.type === "post" &&
-    typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
-      ? (ctx.action.inputs[BUTTON_GROUP_NAME] as string)
-      : undefined;
-  const body = onboardingBody(pref);
-  const caption = onboardingCaption(pref, ctx.action.type === "post");
-  const base = snapBaseUrlFromRequest(ctx.request);
-  return {
-    version: "1.0",
-    page: {
-      theme: { accent: "purple" },
-      button_layout: "stack",
-      elements: {
-        type: "stack" as const,
-        children: [
-          { type: "text", style: "title", content: "Snap starter" },
-          { type: "text", style: "body", content: body },
+registerSnapHandler(
+  app,
+  async (ctx) => {
+    const pref =
+      ctx.action.type === "post" &&
+      typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
+        ? (ctx.action.inputs[BUTTON_GROUP_NAME] as string)
+        : undefined;
+    const body = onboardingBody(pref);
+    const caption = onboardingCaption(pref, ctx.action.type === "post");
+    const base = snapBaseUrlFromRequest(ctx.request);
+    return {
+      version: "1.0",
+      page: {
+        theme: { accent: "purple" },
+        button_layout: "stack",
+        elements: {
+          type: "stack" as const,
+          children: [
+            { type: "text", style: "title", content: "Snap starter" },
+            { type: "text", style: "body", content: body },
+            {
+              type: "button_group",
+              name: BUTTON_GROUP_NAME,
+              options: [OPT_OVERVIEW, OPT_HTTP, OPT_LOCAL, OPT_DEPLOY],
+              style: "row",
+            },
+            { type: "text", style: "caption", content: caption },
+          ],
+        },
+        buttons: [
           {
-            type: "button_group",
-            name: BUTTON_GROUP_NAME,
-            options: [OPT_OVERVIEW, OPT_HTTP, OPT_LOCAL, OPT_DEPLOY],
-            style: "row",
+            label: "Refresh",
+            action: "post",
+            target: `${base}/`,
           },
-          { type: "text", style: "caption", content: caption },
         ],
       },
-      buttons: [
-        {
-          label: "Refresh",
-          action: "post",
-          target: `${base}/`,
-        },
+    };
+  },
+  {
+    og: {
+      fonts: [
+        { path: join(fontsDir, "inter-latin-400-normal.woff"), weight: 400 },
+        { path: join(fontsDir, "inter-latin-700-normal.woff"), weight: 700 },
       ],
     },
-  };
-});
+  },
+);
 
 export default app;
 

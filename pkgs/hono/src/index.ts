@@ -2,8 +2,15 @@ import type { Hono } from "hono";
 import { cors } from "hono/cors";
 import { MEDIA_TYPE, type SnapFunction } from "@farcaster/snap";
 import { parseRequest } from "@farcaster/snap/server";
+import { brandedFallbackHtml } from "./fallback";
 import { payloadToResponse, snapHeaders } from "./payloadToResponse";
 import { renderSnapPage } from "./renderSnapPage";
+import {
+  renderSnapPageToPng,
+  renderWithDedup,
+  etagForPage,
+  type OgOptions,
+} from "./og-image";
 
 export type SnapHandlerOptions = {
   /**
@@ -23,6 +30,13 @@ export type SnapHandlerOptions = {
    * over the default branded fallback.
    */
   fallbackHtml?: string;
+
+  /**
+   * Open Graph configuration. Set to `false` to disable OG tag injection and
+   * the `/~/og-image` route. Pass an `OgOptions` object to customize rendering.
+   * @default true
+   */
+  og?: boolean | OgOptions;
 };
 
 /**
@@ -42,15 +56,99 @@ export function registerSnapHandler(
   options: SnapHandlerOptions = {},
 ): void {
   const path = options.path ?? "/";
+  const ogEnabled = options.og !== false;
+  const ogOptions =
+    typeof options.og === "object" ? options.og : ogEnabled ? {} : undefined;
 
   app.use(path, cors({ origin: "*" }));
 
+  // ─── /~/og-image PNG route ────────────────────────────
+  if (ogEnabled && ogOptions) {
+    const imgPath = ogImagePath(path);
+
+    app.get(imgPath, async (c) => {
+      const resourcePath = resourcePathFromRequest(c.req.url);
+      const key = resourcePath;
+
+      const renderFn = async (): Promise<{ png: Uint8Array; etag: string }> => {
+        const snap = await snapFn({
+          action: { type: "get" },
+          request: stripAuthHeaders(c.req.raw),
+        });
+        const snapJson = JSON.stringify(snap);
+        const etag = etagForPage(snapJson);
+        const t0 = Date.now();
+        const png = await renderSnapPageToPng(snap, ogOptions);
+        const elapsed = Date.now() - t0;
+        return { png, etag, elapsed } as { png: Uint8Array; etag: string } & {
+          elapsed: number;
+        };
+      };
+
+      try {
+        // Adapter cache check
+        const adapter = ogOptions.cache;
+        if (adapter) {
+          const hit = await adapter.get(key);
+          if (hit) {
+            return new Response(hit.png as BodyInit, {
+              status: 200,
+              headers: {
+                "Content-Type": "image/png",
+                ETag: hit.etag,
+                "X-OG-Cache": "HIT",
+                ...ogCacheHeaders(ogOptions),
+              },
+            });
+          }
+        }
+
+        const result = await renderWithDedup(key, async () => {
+          const r = await renderFn();
+          return r;
+        });
+
+        const { png, etag } = result;
+        const elapsed = (result as typeof result & { elapsed?: number })
+          .elapsed;
+
+        if (adapter) {
+          await adapter
+            .set(key, { png, etag }, ogOptions.cdnMaxAge ?? 86400)
+            .catch(() => undefined);
+        }
+
+        return new Response(png as BodyInit, {
+          status: 200,
+          headers: {
+            "Content-Type": "image/png",
+            ETag: etag,
+            "X-OG-Cache": "MISS",
+            ...(elapsed != null ? { "X-OG-Render-Ms": String(elapsed) } : {}),
+            ...ogCacheHeaders(ogOptions),
+          },
+        });
+      } catch {
+        return new Response(null, {
+          status: 500,
+          headers: { "Cache-Control": "no-store" },
+        });
+      }
+    });
+  }
+
+  // ─── Main snap route ───────────────────────────────────
   app.get(path, async (c) => {
     const resourcePath = resourcePathFromRequest(c.req.url);
     const accept = c.req.header("Accept");
     if (!clientWantsSnapResponse(accept)) {
       const fallbackHtml =
-        options.fallbackHtml ?? (await getFallbackHtml(c.req.raw, snapFn));
+        options.fallbackHtml ??
+        (await getFallbackHtml(
+          c.req.raw,
+          snapFn,
+          ogEnabled ? buildOgImageUrl(c.req.raw, path) : undefined,
+        ));
       return new Response(fallbackHtml, {
         status: 200,
         headers: snapHeaders(resourcePath, "text/html", [
@@ -112,6 +210,35 @@ export function registerSnapHandler(
   });
 }
 
+// ─── Helpers ──────────────────────────────────────────────
+
+function ogImagePath(snapPath: string): string {
+  const p = snapPath.replace(/\/+$/, "") || "/";
+  return p === "/" ? "/~/og-image" : `${p}/~/og-image`;
+}
+
+function buildOgImageUrl(request: Request, snapPath: string): string {
+  const origin = snapOriginFromRequest(request);
+  return origin + ogImagePath(snapPath);
+}
+
+function ogCacheHeaders(
+  opts: import("./og-image").OgOptions,
+): Record<string, string> {
+  const cdnMaxAge = opts.cdnMaxAge ?? 86400;
+  const browserMaxAge = opts.browserMaxAge ?? 60;
+  return {
+    "Cache-Control": `public, max-age=${browserMaxAge}, s-maxage=${cdnMaxAge}, stale-while-revalidate=604800`,
+  };
+}
+
+function stripAuthHeaders(request: Request): Request {
+  const headers = new Headers(request.headers);
+  headers.delete("cookie");
+  headers.delete("authorization");
+  return new Request(request.url, { method: request.method, headers });
+}
+
 function resourcePathFromRequest(url: string): string {
   const u = new URL(url);
   return u.pathname + u.search;
@@ -120,19 +247,25 @@ function resourcePathFromRequest(url: string): string {
 async function getFallbackHtml(
   request: Request,
   snapFn: SnapFunction,
+  ogImageUrl?: string,
 ): Promise<string> {
+  const origin = snapOriginFromRequest(request);
+  const siteName =
+    process.env.SNAP_OG_SITE_NAME?.trim() ||
+    process.env.OG_SITE_NAME?.trim() ||
+    undefined;
+  const resourcePath = resourcePathFromRequest(request.url);
+
   try {
     const snap = await snapFn({
       action: { type: "get" },
-      request,
+      request: stripAuthHeaders(request),
     });
-    return renderSnapPage(snap, snapOriginFromRequest(request));
+    return renderSnapPage(snap, origin, { ogImageUrl, resourcePath, siteName });
   } catch {
-    return brandedFallbackHtml(snapOriginFromRequest(request));
+    return brandedFallbackHtml(origin, { ogImageUrl, resourcePath, siteName });
   }
 }
-
-const FARCASTER_ICON_SVG = `<svg aria-hidden="true" focusable="false" viewBox="0 0 520 457" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M519.801 0V61.6809H458.172V123.31H477.054V123.331H519.801V456.795H416.57L416.507 456.49L363.832 207.03C358.81 183.251 345.667 161.736 326.827 146.434C307.988 131.133 284.255 122.71 260.006 122.71H259.8C235.551 122.71 211.818 131.133 192.979 146.434C174.139 161.736 160.996 183.259 155.974 207.03L103.239 456.795H0V123.323H42.7471V123.31H61.6262V61.6809H0V0H519.801Z" fill="currentColor"/></svg>`;
 
 function snapOriginFromRequest(request: Request): string {
   const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim();
@@ -145,46 +278,6 @@ function snapOriginFromRequest(request: Request): string {
   if (host) return `${proto}://${host}`.replace(/\/$/, "");
 
   return "https://snap.farcaster.xyz";
-}
-
-function brandedFallbackHtml(snapOrigin: string): string {
-  const snapUrl = encodeURIComponent(snapOrigin + "/");
-  const testUrl = `https://farcaster.xyz/~/developers/snaps?url=${snapUrl}`;
-
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Farcaster Snap</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0A0A0A;color:#FAFAFA;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.c{text-align:center;max-width:400px;padding:48px 32px}
-.logo{color:#8B5CF6;margin-bottom:24px}
-.logo svg{width:48px;height:42px}
-h1{font-size:24px;font-weight:700;margin-bottom:8px}
-p{color:#A1A1AA;font-size:15px;line-height:1.5;margin-bottom:32px}
-.btns{display:flex;flex-direction:column;gap:12px}
-a{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;transition:opacity .15s}
-a:hover{opacity:.85}
-.p{background:#8B5CF6;color:#fff}
-.s{background:#1A1A2E;color:#FAFAFA;border:1px solid #2D2D44}
-.s svg{width:20px;height:18px}
-</style>
-</head>
-<body>
-<div class="c">
-<div class="logo">${FARCASTER_ICON_SVG}</div>
-<h1>Farcaster Snap</h1>
-<p>This is a Farcaster Snap &mdash; an interactive embed that lives in the feed.</p>
-<div class="btns">
-<a href="${testUrl}" class="p">Test this snap</a>
-<a href="https://farcaster.xyz" class="s">${FARCASTER_ICON_SVG} Sign up for Farcaster</a>
-</div>
-</div>
-</body>
-</html>`;
 }
 
 function clientWantsSnapResponse(accept: string | undefined): boolean {

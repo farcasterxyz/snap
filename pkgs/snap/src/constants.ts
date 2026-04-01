@@ -85,6 +85,8 @@ export const PALETTE_COLOR = {
   pink: "pink",
 } as const;
 
+export const PALETTE_COLOR_ACCENT = "accent" as const;
+
 export const PALETTE_COLOR_VALUES = [
   PALETTE_COLOR.gray,
   PALETTE_COLOR.blue,
@@ -123,7 +125,7 @@ export const PALETTE_DARK_HEX: Record<PaletteColor, string> = {
 };
 
 export const PROGRESS_COLOR_VALUES = [
-  "accent",
+  PALETTE_COLOR_ACCENT,
   ...PALETTE_COLOR_VALUES,
 ] as const;
 
@@ -174,7 +176,7 @@ export const BUTTON_LAYOUT_VALUES = ["stack", "row", "grid"] as const;
 export const DEFAULT_BUTTON_LAYOUT = BUTTON_LAYOUT_VALUES[0];
 
 export const BAR_CHART_COLOR_VALUES = [
-  "accent",
+  PALETTE_COLOR_ACCENT,
   ...PALETTE_COLOR_VALUES,
 ] as const;
 
