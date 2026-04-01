@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.3.2
+
+### Patch Changes
+
+- [#20](https://github.com/farcasterxyz/snap/pull/20) [`c26ef28`](https://github.com/farcasterxyz/snap/commit/c26ef28266c4b18f6939413aecacb1088ae7e224) Thanks [@lyoshenka](https://github.com/lyoshenka)! - added ui catalog
+
 ## 1.3.1
 
 ### Patch Changes
