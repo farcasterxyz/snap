@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import type { SnapResponse } from "@farcaster/snap";
+import type { SnapHandlerResult } from "@farcaster/snap";
 
 type View = "home" | "text" | "inputs" | "inputs_result" | "dataviz" | "grid";
 
@@ -31,7 +31,7 @@ registerSnapHandler(app, async (ctx) => {
   if (ctx.action.type === "get") return homePage(base);
 
   if (view === "inputs_result" && ctx.action.type === "post") {
-    return inputsResultPage(base, ctx.action.inputs, ctx.action.buttonIndex);
+    return inputsResultPage(base, ctx.action.inputs, ctx.action.button_index);
   }
 
   switch (view) {
@@ -52,7 +52,7 @@ export default app;
 
 // ─── Pages ──────────────────────────────────────────────
 
-function homePage(base: string): SnapResponse {
+function homePage(base: string): SnapHandlerResult {
   const cells: { row: number; col: number; color: string }[] = [];
   for (let r = 0; r < 2; r++)
     for (let c = 0; c < 7; c++)
@@ -114,7 +114,7 @@ function homePage(base: string): SnapResponse {
   };
 }
 
-function textPage(base: string): SnapResponse {
+function textPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     page: {
@@ -164,7 +164,7 @@ function textPage(base: string): SnapResponse {
   };
 }
 
-function inputsPage(base: string): SnapResponse {
+function inputsPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     page: {
@@ -232,7 +232,7 @@ function inputsResultPage(
   base: string,
   inputs: Record<string, unknown>,
   button_index: number,
-): SnapResponse {
+): SnapHandlerResult {
   const pick = typeof inputs.pick === "string" ? inputs.pick : "(none)";
   const rating = typeof inputs.rating === "number" ? inputs.rating : "?";
   const comment =
@@ -291,7 +291,7 @@ function inputsResultPage(
   };
 }
 
-function dataVizPage(base: string): SnapResponse {
+function dataVizPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     page: {
@@ -350,7 +350,7 @@ function dataVizPage(base: string): SnapResponse {
   };
 }
 
-function gridPage(base: string): SnapResponse {
+function gridPage(base: string): SnapHandlerResult {
   const BG = "#1E1E2E";
   const YL = "#FACC15";
   const BK = "#0F172A";

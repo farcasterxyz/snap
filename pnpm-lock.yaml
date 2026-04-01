@@ -162,11 +162,11 @@ importers:
   examples/element-showcase:
     dependencies:
       '@farcaster/snap':
-        specifier: ^1.3.1
-        version: 1.3.1(typescript@5.9.3)(zod@4.3.6)
+        specifier: ^1.4.0
+        version: 1.4.0(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/snap-hono':
-        specifier: ^1.1.6
-        version: 1.1.6(hono@4.12.9)(typescript@5.9.3)(zod@4.3.6)
+        specifier: ^1.2.0
+        version: 1.2.0(hono@4.12.9)(typescript@5.9.3)(zod@4.3.6)
       '@hono/node-server':
         specifier: ^1.0.0
         version: 1.19.11(hono@4.12.9)
@@ -358,11 +358,11 @@ importers:
   template:
     dependencies:
       '@farcaster/snap':
-        specifier: ^1.2.2
-        version: 1.2.2(typescript@5.9.3)
+        specifier: ^1.4.0
+        version: 1.4.0(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/snap-hono':
-        specifier: ^1.1.4
-        version: 1.1.4(hono@4.12.9)(typescript@5.9.3)
+        specifier: ^1.2.0
+        version: 1.2.0(hono@4.12.9)(typescript@5.9.3)(zod@4.3.6)
       '@hono/node-server':
         specifier: ^1.0.0
         version: 1.19.11(hono@4.12.9)
@@ -670,8 +670,8 @@ packages:
     peerDependencies:
       hono: '>=4.0.0'
 
-  '@farcaster/snap-hono@1.1.6':
-    resolution: {integrity: sha512-pM6WNijJTCvY2Od+83RLE4U3yq0gIBxXdI+ftG6AfpFKqJy2GES7ZrFcmG/EeBl1IFWEivjQK2zZfWPaBHN2Hg==}
+  '@farcaster/snap-hono@1.2.0':
+    resolution: {integrity: sha512-z2CnM0db7AjaPW4jmopR2F5k3KLpV08bEhEoOxeuqyS/rxAxrpVaGiPH+9UZhpxk32SQjYTmyEg5fLS6KPPDxQ==}
     peerDependencies:
       hono: '>=4.0.0'
 
@@ -681,10 +681,10 @@ packages:
   '@farcaster/snap@1.2.2':
     resolution: {integrity: sha512-eiLc7evNhNmIeHgz2ByI2uLXfs0UApUuVW5xteJuFmtnT0VsU7IOOp81HysokjC7I/WIkw30r/jNKlf+jyzapA==}
 
-  '@farcaster/snap@1.3.1':
-    resolution: {integrity: sha512-WONX9v7+sS+2dSeCcJ7RBXYWbhciREvR8rkabAhiFM4Enqm5jf6LxKpKTNLE22yyiLaOnaaV+a3/hE0UK7LUoQ==}
+  '@farcaster/snap@1.4.0':
+    resolution: {integrity: sha512-tGXUxZTMvsAtGi2ivEvssncZaWXcO8I3qb50nPSDmRBH4rUWq7CgapZKJohyG9VrrL9o95WAxCyBjyJ4G0RzkA==}
     peerDependencies:
-      zod: ^3.25.0 || ^4.0.0
+      zod: ^4.0.0
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -3357,9 +3357,9 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@farcaster/snap-hono@1.1.6(hono@4.12.9)(typescript@5.9.3)(zod@4.3.6)':
+  '@farcaster/snap-hono@1.2.0(hono@4.12.9)(typescript@5.9.3)(zod@4.3.6)':
     dependencies:
-      '@farcaster/snap': 1.3.1(typescript@5.9.3)(zod@4.3.6)
+      '@farcaster/snap': 1.4.0(typescript@5.9.3)(zod@4.3.6)
       hono: 4.12.9
     transitivePeerDependencies:
       - bufferutil
@@ -3389,9 +3389,10 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@farcaster/snap@1.3.1(typescript@5.9.3)(zod@4.3.6)':
+  '@farcaster/snap@1.4.0(typescript@5.9.3)(zod@4.3.6)':
     dependencies:
       '@farcaster/jfs': 0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+      '@json-render/core': 0.15.0(zod@4.3.6)
       viem: 2.47.6(typescript@5.9.3)(zod@4.3.6)
       zod: 4.3.6
     transitivePeerDependencies:
