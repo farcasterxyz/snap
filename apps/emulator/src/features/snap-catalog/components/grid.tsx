@@ -45,34 +45,39 @@ export function SnapGrid({
       const onPick = interactive
         ? () => set(tapPath, { row: r, col: c })
         : undefined;
+      const cellClass = cn(
+        "border-border flex min-h-7 w-full items-center justify-center rounded border text-xs font-semibold",
+        interactive ? "cursor-pointer select-none" : "cursor-default",
+        selected ? "border-2" : "border",
+      );
+      const cellStyle = {
+        background: cell?.color ?? "transparent",
+        borderColor: selected ? "var(--primary)" : undefined,
+      } as const;
+      const labelBase = `Cell ${r + 1},${c + 1}`;
+      const label =
+        cell?.content != null && String(cell.content).trim() !== ""
+          ? `${labelBase}: ${cell.content}`
+          : labelBase;
+      const content = cell?.content ?? "";
       cellsEls.push(
-        <div
-          key={`${r}-${c}`}
-          role={interactive ? "button" : undefined}
-          tabIndex={interactive ? 0 : undefined}
-          onClick={onPick}
-          onKeyDown={
-            interactive
-              ? (e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    set(tapPath, { row: r, col: c });
-                  }
-                }
-              : undefined
-          }
-          className={cn(
-            "border-border flex min-h-7 items-center justify-center rounded border text-xs font-semibold",
-            interactive ? "cursor-pointer select-none" : "cursor-default",
-            selected ? "border-2" : "border",
-          )}
-          style={{
-            background: cell?.color ?? "transparent",
-            borderColor: selected ? "var(--primary)" : undefined,
-          }}
-        >
-          {cell?.content ?? ""}
-        </div>,
+        interactive ? (
+          <button
+            key={`${r}-${c}`}
+            type="button"
+            onClick={onPick}
+            className={cellClass}
+            style={cellStyle}
+            aria-pressed={selected}
+            aria-label={label}
+          >
+            {content}
+          </button>
+        ) : (
+          <div key={`${r}-${c}`} className={cellClass} style={cellStyle}>
+            {content}
+          </div>
+        ),
       );
     }
   }

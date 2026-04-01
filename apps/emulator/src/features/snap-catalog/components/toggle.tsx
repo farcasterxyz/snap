@@ -37,7 +37,7 @@ export function SnapToggle({
         className={cn(
           /* purple-dawn `--input` for off state is purple-tinted; neutral gray when unchecked */
           mode === "light" &&
-            "data-unchecked:bg-border! data-unchecked:border-(--input-border)!",
+            "data-unchecked:!bg-border data-unchecked:!border-(--input-border)",
         )}
       />
     </div>

@@ -9,3 +9,7 @@ export const actionButtonProps = z.object({
 });
 
 export type ActionButtonProps = z.infer<typeof actionButtonProps>;
+
+/** Same schema as `actionButtonProps` (legacy export name). */
+export const buttonProps = actionButtonProps;
+export type ButtonProps = ActionButtonProps;
