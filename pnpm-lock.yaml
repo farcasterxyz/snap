@@ -24,23 +24,8 @@ importers:
         specifier: ^2.4.4
         version: 2.8.21
 
-  apps/emulator:
+  apps/docs:
     dependencies:
-      '@base-ui/react':
-        specifier: 1.0.0
-        version: 1.0.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@farcaster/jfs':
-        specifier: 0.2.2
-        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
-      '@farcaster/snap':
-        specifier: workspace:*
-        version: link:../../pkgs/snap
-      '@json-render/core':
-        specifier: ^0.15.0
-        version: 0.15.0(zod@4.3.6)
-      '@json-render/react':
-        specifier: ^0.15.0
-        version: 0.15.0(react@19.2.4)(zod@4.3.6)
       '@mdx-js/loader':
         specifier: ^3.1.1
         version: 3.1.1
@@ -50,12 +35,6 @@ importers:
       '@next/mdx':
         specifier: ^16.2.1
         version: 16.2.1(@mdx-js/loader@3.1.1)(@mdx-js/react@3.1.1(@types/react@19.2.14)(react@19.2.4))
-      '@neynar/ui':
-        specifier: ^1.2.2
-        version: 1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2)
-      '@noble/curves':
-        specifier: 2.0.1
-        version: 2.0.1
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
@@ -74,6 +53,58 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4.1.18
+        version: 4.2.2
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.2.2
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  apps/emulator:
+    dependencies:
+      '@base-ui/react':
+        specifier: 1.0.0
+        version: 1.0.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@farcaster/jfs':
+        specifier: 0.2.2
+        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+      '@farcaster/snap':
+        specifier: workspace:*
+        version: link:../../pkgs/snap
+      '@json-render/core':
+        specifier: ^0.15.0
+        version: 0.15.0(zod@4.3.6)
+      '@json-render/react':
+        specifier: ^0.15.0
+        version: 0.15.0(react@19.2.4)(zod@4.3.6)
+      '@neynar/ui':
+        specifier: ^1.2.2
+        version: 1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2)
+      '@noble/curves':
+        specifier: 2.0.1
+        version: 2.0.1
+      lucide-react:
+        specifier: ^1.7.0
+        version: 1.7.0(react@19.2.4)
+      next:
+        specifier: ^16.2.0
+        version: 16.2.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.2.4
+        version: 19.2.4(react@19.2.4)
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0

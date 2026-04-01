@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Sidebar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Farcaster Snap Emulator",
-  description: "Emulator for Farcaster Snaps",
+  title: "Farcaster Snaps",
+  description: "Documentation for Farcaster Snaps",
 };
 
 export default function RootLayout({
@@ -11,7 +12,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <div className="app-shell">
+          <Sidebar />
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
