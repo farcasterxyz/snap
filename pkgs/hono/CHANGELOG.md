@@ -1,5 +1,16 @@
 # @farcaster/snap-hono
 
+## 1.1.8
+
+### Patch Changes
+
+- [#25](https://github.com/farcasterxyz/snap/pull/25) [`2472b30`](https://github.com/farcasterxyz/snap/commit/2472b30a678859f47b49a36f6c1a7d780512e10a) Thanks [@rishavmukherji](https://github.com/rishavmukherji)! - fix: make button_layout and theme optional in SnapFunction return type
+
+  SnapFunction now accepts SnapResponseInput (Zod input type) instead of SnapResponse (Zod output type), so fields with schema defaults like button_layout and theme.accent are optional in handler return values.
+
+- Updated dependencies [[`2472b30`](https://github.com/farcasterxyz/snap/commit/2472b30a678859f47b49a36f6c1a7d780512e10a)]:
+  - @farcaster/snap@1.3.3
+
 ## 1.1.7
 
 ### Patch Changes
