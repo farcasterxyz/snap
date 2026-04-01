@@ -1,5 +1,14 @@
 # @farcaster/snap-hono
 
+## 1.2.1
+
+### Patch Changes
+
+- [`f4af26f`](https://github.com/farcasterxyz/snap/commit/f4af26f22e818376d2a2e9cf4747e3ccb23df569) Thanks [@lyoshenka](https://github.com/lyoshenka)! - export more types, add og image generation
+
+- Updated dependencies [[`f4af26f`](https://github.com/farcasterxyz/snap/commit/f4af26f22e818376d2a2e9cf4747e3ccb23df569)]:
+  - @farcaster/snap@1.4.1
+
 ## 1.2.0
 
 ### Minor Changes
