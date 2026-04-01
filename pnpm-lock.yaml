@@ -128,6 +128,31 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  examples/element-showcase:
+    dependencies:
+      '@farcaster/snap':
+        specifier: ^1.2.2
+        version: 1.2.2(typescript@5.9.3)
+      '@farcaster/snap-hono':
+        specifier: ^1.1.4
+        version: 1.1.4(hono@4.12.9)(typescript@5.9.3)
+      '@hono/node-server':
+        specifier: ^1.0.0
+        version: 1.19.11(hono@4.12.9)
+      hono:
+        specifier: ^4.0.0
+        version: 4.12.9
+    devDependencies:
+      '@types/node':
+        specifier: ^24.5.2
+        version: 24.12.0
+      tsx:
+        specifier: ^4.0.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   examples/shared-games:
     dependencies:
       '@farcaster/snap':

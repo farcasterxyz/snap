@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LIMITS, LIST_STYLE_VALUES } from "../constants.js";
 
 const listItemZ = z.object({
   content: z.string(),
@@ -6,8 +7,11 @@ const listItemZ = z.object({
 });
 
 export const listProps = z.object({
-  style: z.enum(["ordered", "unordered", "plain"]).optional(),
-  items: z.array(listItemZ).min(1).max(4),
+  style: z.enum(LIST_STYLE_VALUES).optional(),
+  items: z
+    .array(listItemZ)
+    .min(LIMITS.minListItems)
+    .max(LIMITS.maxListItems),
 });
 
 export type ListProps = z.infer<typeof listProps>;

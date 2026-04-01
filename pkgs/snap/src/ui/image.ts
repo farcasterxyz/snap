@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { IMAGE_ASPECT_VALUES } from "../constants.js";
 
 export const imageProps = z.object({
   url: z.string(),
-  aspect: z.enum(["1:1", "16:9", "4:3", "3:4", "9:16"]),
+  aspect: z.enum(IMAGE_ASPECT_VALUES),
   alt: z.string().optional(),
 });
 

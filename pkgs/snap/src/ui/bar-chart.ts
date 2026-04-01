@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { BAR_CHART_COLOR_VALUES, PALETTE_COLOR_VALUES } from "../constants.js";
+import {
+  BAR_CHART_COLOR_VALUES,
+  LIMITS,
+  PALETTE_COLOR_VALUES,
+} from "../constants.js";
 
 export const barChartProps = z.object({
   bars: z
@@ -11,7 +15,7 @@ export const barChartProps = z.object({
       }),
     )
     .min(1)
-    .max(6),
+    .max(LIMITS.maxBarChartBars),
   max: z.number().nonnegative().optional(),
   color: z.enum(BAR_CHART_COLOR_VALUES).optional(),
 });

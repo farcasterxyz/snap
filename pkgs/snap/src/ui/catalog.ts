@@ -1,5 +1,6 @@
 import { defineCatalog } from "@json-render/core";
 import { z } from "zod";
+import { BUTTON_STYLE_VALUES } from "../constants.js";
 import { snapJsonRenderSchema } from "./schema.js";
 import { textProps } from "./text.js";
 import { imageProps } from "./image.js";
@@ -21,7 +22,7 @@ const snapPostParams = z.object({
   buttonIndex: z.number().int().nonnegative(),
   target: z.string(),
   label: z.string().optional(),
-  style: z.enum(["primary", "secondary"]).optional(),
+  style: z.enum(BUTTON_STYLE_VALUES).optional(),
 });
 
 const snapTargetParams = z.object({
