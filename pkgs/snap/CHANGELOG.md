@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.4.0
+
+### Minor Changes
+
+- [`9171ca2`](https://github.com/farcasterxyz/snap/commit/9171ca2cb6888019ca407d25183d871122897ba3) Thanks [@lyoshenka](https://github.com/lyoshenka)! - fix inconsistencies, rename some params and exports
+
 ## 1.3.3
 
 ### Patch Changes
