@@ -13,18 +13,18 @@ export {
   type PaletteColor,
 } from "./constants";
 export {
-  rootSchema,
-  firstPageRootSchema,
+  snapResponseSchema,
+  firstPageResponseSchema,
   payloadSchema,
   type SnapAction,
   type SnapContext,
   type SnapResponse,
-  type SnapResponseInput,
+  type SnapHandlerResult,
   type SnapFunction,
   type SnapPayload,
 } from "./schemas";
 export {
-  validatePage,
-  validateFirstPage,
+  validateSnapResponse,
+  validateFirstPageResponse,
   type ValidationResult,
 } from "./validator";

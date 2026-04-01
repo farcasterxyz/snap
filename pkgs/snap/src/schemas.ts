@@ -391,6 +391,8 @@ const buttonSchema = z
     }
   });
 
+export type Button = z.infer<typeof buttonSchema>;
+
 /** Child elements allowed inside `group` (no media, no nested group) */
 const groupChildElementSchema = z.discriminatedUnion("type", [
   textElementSchema,
@@ -431,6 +433,8 @@ const elementSchema = z.discriminatedUnion("type", [
   barChartElementSchema,
 ]);
 
+export type Element = z.infer<typeof elementSchema>;
+
 const elementsSchema = z
   .object({
     type: z.literal(PAGE_ROOT_TYPE.stack),
@@ -443,11 +447,9 @@ const elementsSchema = z
   })
   .strict();
 
-export type Button = z.infer<typeof buttonSchema>;
-export type Element = z.infer<typeof elementSchema>;
 export type Elements = z.infer<typeof elementsSchema>;
 
-export const rootSchema = z
+export const snapResponseSchema = z
   .object({
     version: z.literal(SPEC_VERSION),
     page: z
@@ -481,37 +483,48 @@ export const rootSchema = z
   })
   .strict();
 
+// canonical snap response type
+export type SnapResponse = z.infer<typeof snapResponseSchema>;
+// what snap handlers may return (keeps optional fields optional)
+export type SnapHandlerResult = z.input<typeof snapResponseSchema>;
+
 // extra constraints for the first page to make it look nicer
-export const firstPageRootSchema = rootSchema.superRefine((root, ctx) => {
-  const body = root.page.elements.children;
+export const firstPageResponseSchema = snapResponseSchema.superRefine(
+  (response, ctx) => {
+    const elements = response.page.elements.children;
 
-  const hasTextTitleOrBody = body.some(
-    (el) =>
-      el.type === ELEMENT_TYPE.text &&
-      (el.style === TEXT_STYLE.title || el.style === TEXT_STYLE.body),
-  );
-  if (!hasTextTitleOrBody) {
-    ctx.addIssue({
-      code: "custom",
-      message:
-        'first page must have at least one text element with style "title" or "body"',
-      path: ["page", "elements", "children"],
-    });
-  }
+    const hasTextTitleOrBody = elements.some(
+      (el) =>
+        el.type === ELEMENT_TYPE.text &&
+        (el.style === TEXT_STYLE.title || el.style === TEXT_STYLE.body),
+    );
+    if (!hasTextTitleOrBody) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          'first page must have at least one text element with style "title" or "body"',
+        path: ["page", "elements", "children"],
+      });
+    }
 
-  const hasInteractive = body.some((el) =>
-    INTERACTIVE_ELEMENT_TYPES.includes(el.type),
-  );
-  const hasMedia = body.some((el) => MEDIA_ELEMENT_TYPES.includes(el.type));
-  if (!hasInteractive && !hasMedia) {
-    ctx.addIssue({
-      code: "custom",
-      message:
-        "first page must have at least one interactive element (button_group, slider, text_input, toggle) or media element (image, grid)",
-      path: ["page", "elements", "children"],
-    });
-  }
-});
+    const hasInteractive = elements.some((el) =>
+      INTERACTIVE_ELEMENT_TYPES.includes(el.type),
+    );
+    const hasMedia = elements.some((el) =>
+      MEDIA_ELEMENT_TYPES.includes(el.type),
+    );
+    if (!hasInteractive && !hasMedia) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "first page must have at least one interactive element (button_group, slider, text_input, toggle) or media element (image, grid)",
+        path: ["page", "elements", "children"],
+      });
+    }
+  },
+);
+
+export type FirstPageResponse = z.infer<typeof firstPageResponseSchema>;
 
 const postInputValueSchema = z.union([
   z.string(),
@@ -535,30 +548,35 @@ export const payloadSchema = z
   })
   .strict();
 
-export type SnapResponse = z.infer<typeof rootSchema>;
-export type SnapResponseInput = z.input<typeof rootSchema>;
-export type SnapPage = SnapResponse["page"];
 export type SnapPayload = z.infer<typeof payloadSchema>;
 
+export const ACTION_TYPE_GET = "get" as const;
+export const ACTION_TYPE_POST = "post" as const;
+
+const snapGetActionSchema = z.object({
+  type: z.literal(ACTION_TYPE_GET),
+});
+
+export type SnapGetAction = z.infer<typeof snapGetActionSchema>;
+
 const snapPostActionSchema = payloadSchema
-  .omit({ button_index: true })
   .extend({
-    type: z.literal("post"),
-    buttonIndex: payloadSchema.shape.button_index,
+    type: z.literal(ACTION_TYPE_POST),
   })
   .strict();
 
 export type SnapPostAction = z.infer<typeof snapPostActionSchema>;
 
-export type SnapAction =
-  | {
-      type: "get";
-    }
-  | SnapPostAction;
+export const snapActionSchema = z.discriminatedUnion("type", [
+  snapGetActionSchema,
+  snapPostActionSchema,
+]);
+
+export type SnapAction = z.infer<typeof snapActionSchema>;
 
 export type SnapContext = {
   action: SnapAction;
   request: Request;
 };
 
-export type SnapFunction = (ctx: SnapContext) => Promise<SnapResponseInput>;
+export type SnapFunction = (ctx: SnapContext) => Promise<SnapHandlerResult>;

@@ -43,7 +43,7 @@ cd my-snap
 pnpm install
 ```
 
-Edit `src/app.ts` to implement your snap logic:
+Edit `src/index.ts` to implement your snap logic:
 
 ```typescript
 import { Hono } from "hono";
@@ -53,8 +53,8 @@ const app = new Hono();
 
 registerSnapHandler(
   app,
-  async ({ action, request }) => {
-    if (action.type === "get") {
+  async (ctx) => {
+    if (ctx.action.type === "get") {
       return {
         version: "1.0",
         page: {
@@ -71,11 +71,11 @@ registerSnapHandler(
     }
 
     // Handle POST interactions
-    const { fid, inputs, buttonIndex } = action;
+    const { fid, inputs, button_index } = ctx.action;
     // ... your logic here
   },
   {
-    skipJfsVerification: process.env.SKIP_JFS_VERIFICATION === "1",
+    skipJFSVerification: process.env.SKIP_JFS_VERIFICATION === "1",
   },
 );
 ```

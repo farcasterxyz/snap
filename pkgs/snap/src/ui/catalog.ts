@@ -19,7 +19,7 @@ import { stackProps } from "./stack.js";
 import { actionButtonProps } from "./button.js";
 
 const snapPostParams = z.object({
-  buttonIndex: z.number().int().nonnegative(),
+  button_index: z.number().int().nonnegative(),
   target: z.string(),
   label: z.string().optional(),
   style: z.enum(BUTTON_STYLE_VALUES).optional(),

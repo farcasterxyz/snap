@@ -1,8 +1,8 @@
 import {
   MEDIA_TYPE,
-  rootSchema,
-  type SnapResponseInput,
-  validatePage,
+  type SnapHandlerResult,
+  validateSnapResponse,
+  snapResponseSchema,
 } from "@farcaster/snap";
 
 type PayloadToResponseOptions = {
@@ -13,13 +13,13 @@ type PayloadToResponseOptions = {
 const DEFAULT_LINK_MEDIA_TYPES = [MEDIA_TYPE, "text/html"] as const;
 
 export function payloadToResponse(
-  payload: SnapResponseInput,
+  payload: SnapHandlerResult,
   options: Partial<PayloadToResponseOptions> = {},
 ): Response {
   const resourcePath = options.resourcePath ?? "/";
   const mediaTypes = options.mediaTypes ?? [...DEFAULT_LINK_MEDIA_TYPES];
 
-  const validation = validatePage(payload);
+  const validation = validateSnapResponse(payload);
   if (!validation.valid) {
     return new Response(
       JSON.stringify({
@@ -35,7 +35,7 @@ export function payloadToResponse(
     );
   }
 
-  const finalized = rootSchema.parse(payload);
+  const finalized = snapResponseSchema.parse(payload);
   return new Response(JSON.stringify(finalized), {
     status: 200,
     headers: {

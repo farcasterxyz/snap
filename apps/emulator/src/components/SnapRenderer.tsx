@@ -146,7 +146,7 @@ export function SnapRenderer({
 }: {
   snap: SnapPage;
   onPostButton: (
-    buttonIndex: number,
+    button_index: number,
     button: Record<string, JsonValue>,
     inputs: Record<string, JsonValue>,
   ) => void;
@@ -265,7 +265,7 @@ export function SnapRenderer({
               >;
               switch (name) {
                 case "snap_post": {
-                  const idx = Number(params?.buttonIndex ?? 0);
+                  const idx = Number(params?.button_index ?? 0);
                   const btn =
                     (snap.page.buttons?.[idx] as Record<string, JsonValue>) ??
                     {};

@@ -27,9 +27,9 @@ const ceoVotes: number[] = [];
 
 registerSnapHandler(
   app,
-  async ({ action }): Promise<SnapResponse> => {
-    if (action.type === "post") {
-      const rawPos = action.inputs["position"];
+  async (ctx): Promise<SnapResponse> => {
+    if (ctx.action.type === "post") {
+      const rawPos = ctx.action.inputs["position"];
       const position = typeof rawPos === "number" ? Math.round(rawPos) : null;
 
       if (position !== null) {
@@ -160,9 +160,9 @@ const HOLDINGS = [
 
 registerSnapHandler(
   app,
-  async ({ action }): Promise<SnapResponse> => {
-    if (action.type === "post") {
-      const rawAmount = action.inputs["amount"];
+  async (ctx): Promise<SnapResponse> => {
+    if (ctx.action.type === "post") {
+      const rawAmount = ctx.action.inputs["amount"];
       const amountStr =
         typeof rawAmount === "string" ? rawAmount.replace(/[$,\s]/g, "") : "";
       const amount = parseFloat(amountStr);

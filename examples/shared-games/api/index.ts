@@ -754,8 +754,8 @@ function viewFromHomeSelection(sel: {
 
 const app = new Hono();
 
-registerSnapHandler(app, async ({ action, request }) => {
-  const url = new URL(request.url);
+registerSnapHandler(app, async (ctx) => {
+  const url = new URL(ctx.request.url);
   const viewParam = url.searchParams.get("view");
   const view: GameView =
     viewParam === "wordle" ||
@@ -766,14 +766,14 @@ registerSnapHandler(app, async ({ action, request }) => {
       ? viewParam
       : "home";
   const reset = url.searchParams.get("reset") === "1";
-  const snapBaseUrl = snapBaseUrlFromRequest(request);
+  const snapBaseUrl = snapBaseUrlFromRequest(ctx.request);
 
   if (view === "home") {
     let selection: { row: number; col: number } | undefined;
-    if (isSnapPostAction(action)) {
-      selection = getGridTap(action);
+    if (isSnapPostAction(ctx.action)) {
+      selection = getGridTap(ctx.action);
     }
-    if (isSnapPostAction(action) && selection) {
+    if (isSnapPostAction(ctx.action) && selection) {
       return pageForView(viewFromHomeSelection(selection), {
         snapBaseUrl,
       });
@@ -786,15 +786,15 @@ registerSnapHandler(app, async ({ action, request }) => {
     if (reset) {
       resetWordle();
       feedback = "Wordle reset. Crowd board cleared.";
-    } else if (isSnapPostAction(action)) {
-      const raw = action.inputs.guess;
+    } else if (isSnapPostAction(ctx.action)) {
+      const raw = ctx.action.inputs.guess;
       const guess = typeof raw === "string" ? raw.toUpperCase() : "";
       const sanitized = guess.replace(/[^A-Z]/g, "").slice(0, 5);
       if (sanitized.length !== 5) {
         feedback = "Enter exactly 5 letters (A-Z).";
       } else {
-        wordle.guessesByFid.set(action.fid, sanitized);
-        wordle.timeline.push({ guess: sanitized, at: action.timestamp });
+        wordle.guessesByFid.set(ctx.action.fid, sanitized);
+        wordle.timeline.push({ guess: sanitized, at: ctx.action.timestamp });
         wordle.timeline = wordle.timeline.slice(-6);
       }
     }
@@ -806,10 +806,10 @@ registerSnapHandler(app, async ({ action, request }) => {
     if (reset) {
       resetCanvas();
       feedback = "Canvas cleared.";
-    } else if (isSnapPostAction(action)) {
-      const colorRaw = action.inputs.paint_color;
+    } else if (isSnapPostAction(ctx.action)) {
+      const colorRaw = ctx.action.inputs.paint_color;
       const selected = typeof colorRaw === "string" ? colorRaw : undefined;
-      const tap = getGridTap(action);
+      const tap = getGridTap(ctx.action);
 
       if (!tap) {
         feedback = "Tap a pixel tile first, then press Paint.";
@@ -843,21 +843,21 @@ registerSnapHandler(app, async ({ action, request }) => {
     if (reset) {
       resetStory();
       feedback = "Story reset.";
-    } else if (isSnapPostAction(action)) {
-      const raw = action.inputs.proposal_line;
+    } else if (isSnapPostAction(ctx.action)) {
+      const raw = ctx.action.inputs.proposal_line;
       const proposed = typeof raw === "string" ? normalizeWhitespace(raw) : "";
       if (!proposed || proposed.length < 3) {
         feedback = "Propose a line (at least 3 characters).";
       } else if (proposed.length > 80) {
         feedback = "Keep the line under 80 characters.";
       } else {
-        const prev = story.votesByFid.get(action.fid);
+        const prev = story.votesByFid.get(ctx.action.fid);
         if (prev) {
           const prevCount = story.proposals.get(prev) ?? 0;
           if (prevCount <= 1) story.proposals.delete(prev);
           else story.proposals.set(prev, prevCount - 1);
         }
-        story.votesByFid.set(action.fid, proposed);
+        story.votesByFid.set(ctx.action.fid, proposed);
         story.proposals.set(proposed, (story.proposals.get(proposed) ?? 0) + 1);
 
         const top = getTopProposal();
@@ -877,8 +877,8 @@ registerSnapHandler(app, async ({ action, request }) => {
     if (reset) {
       resetEstimate();
       feedback = "Estimates cleared.";
-    } else if (isSnapPostAction(action)) {
-      const raw = action.inputs.estimate_guess;
+    } else if (isSnapPostAction(ctx.action)) {
+      const raw = ctx.action.inputs.estimate_guess;
       const guessNum = typeof raw === "number" ? raw : Number(raw);
       if (!Number.isFinite(guessNum)) {
         feedback = "Estimate must be a number.";
@@ -889,7 +889,7 @@ registerSnapHandler(app, async ({ action, request }) => {
         if (aligned !== guessNum) {
           feedback = "Estimate must align with the slider step.";
         } else {
-          estimate.guessesByFid.set(action.fid, guessNum);
+          estimate.guessesByFid.set(ctx.action.fid, guessNum);
         }
       }
     }
@@ -901,14 +901,14 @@ registerSnapHandler(app, async ({ action, request }) => {
   if (reset) {
     resetPrediction();
     feedback = "Prediction reset.";
-  } else if (isSnapPostAction(action)) {
-    const raw = action.inputs.prediction_vote;
+  } else if (isSnapPostAction(ctx.action)) {
+    const raw = ctx.action.inputs.prediction_vote;
     const vote = typeof raw === "string" ? raw : "";
     const nextVote = vote === "Yes" ? "yes" : vote === "No" ? "no" : undefined;
     if (!nextVote) {
       feedback = "Pick Yes or No first.";
     } else {
-      prediction.votesByFid.set(action.fid, nextVote);
+      prediction.votesByFid.set(ctx.action.fid, nextVote);
     }
   }
   return buildPredictionPage({ snapBaseUrl, feedback });

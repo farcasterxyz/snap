@@ -1,4 +1,9 @@
-import { payloadSchema, type SnapAction } from "../schemas";
+import {
+  ACTION_TYPE_GET,
+  ACTION_TYPE_POST,
+  payloadSchema,
+  type SnapAction,
+} from "../schemas";
 import { decodePayload, verifyJFSRequestBody } from "./verify";
 import { z } from "zod";
 
@@ -66,7 +71,7 @@ export async function parseRequest(
   if (request.method === "GET") {
     return {
       success: true,
-      action: { type: "get" },
+      action: { type: ACTION_TYPE_GET },
     };
   }
 
@@ -129,11 +134,8 @@ export async function parseRequest(
   return {
     success: true,
     action: {
-      type: "post",
-      fid: body.fid,
-      inputs: body.inputs,
-      buttonIndex: body.button_index,
-      timestamp: body.timestamp,
+      type: ACTION_TYPE_POST,
+      ...body,
     },
   };
 }

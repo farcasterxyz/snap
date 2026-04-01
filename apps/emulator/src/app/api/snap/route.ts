@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as {
     currentUrl?: string;
     target?: string;
-    buttonIndex?: number;
+    button_index?: number;
     inputs?: Record<string, unknown>;
     fid?: number;
   } | null;
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
   const payload: SnapPayload = {
     fid: userFid,
     inputs: (body.inputs ?? {}) as SnapPayload["inputs"],
-    button_index: body.buttonIndex ?? 0,
+    button_index: body.button_index ?? 0,
     timestamp,
   };
 

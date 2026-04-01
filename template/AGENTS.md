@@ -5,8 +5,7 @@
 ```
 template/
 ├── src/
-│   ├── app.ts       # Hono app + registerSnapHandler callback (edit this)
-│   ├── index.ts     # Vercel Edge entrypoint (exports default app, GET, POST)
+│   ├── index.ts     # Hono app + registerSnapHandler callback (edit this); Vercel entry
 │   └── server.ts    # Local dev server (@hono/node-server, port 3003)
 ├── package.json
 ├── tsconfig.json
@@ -15,12 +14,12 @@ template/
 
 ## Handler callback
 
-`registerSnapHandler` calls your function with `{ action, request }`.
+`registerSnapHandler` calls your function with a `SnapContext` value (conventionally named `ctx`): `{ action, request }`.
 
-- `action.type === "get"` — first page load (GET request). No other fields on the action object.
-- `action.type === "post"` — user interaction (POST request). Includes `inputs` (Record of input name → value), `fid` (user's Farcaster ID), `buttonIndex` (which button was tapped), and `timestamp`.
+- `ctx.action.type === "get"` — first page load (GET request). No other fields on the action object.
+- `ctx.action.type === "post"` — user interaction (POST request). Includes `inputs` (Record of input name → value), `fid` (user's Farcaster ID), `button_index` (which button was tapped), and `timestamp`.
 
-Check `action.type` before accessing `inputs` — it only exists on `"post"` actions.
+Check `ctx.action.type` before accessing `inputs` — it only exists on `"post"` actions.
 
 ## Local development
 

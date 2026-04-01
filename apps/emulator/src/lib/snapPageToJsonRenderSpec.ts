@@ -174,7 +174,7 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
       const params: Record<string, unknown> =
         catalogAction === "snap_post"
           ? {
-              buttonIndex: i,
+              button_index: i,
               target,
               label,
               style,

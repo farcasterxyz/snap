@@ -8,13 +8,13 @@ import {
   TEXT_STYLE,
 } from "./constants";
 import {
-  firstPageRootSchema,
-  rootSchema,
+  firstPageResponseSchema,
+  snapResponseSchema,
   type Button,
   type Element,
 } from "./schemas";
 
-type SnapRoot = z.infer<typeof rootSchema>;
+type SnapRoot = z.infer<typeof snapResponseSchema>;
 
 export type ValidationResult = {
   valid: boolean;
@@ -158,8 +158,8 @@ function heightBudgetValidationErrorForRoot(
   );
 }
 
-export function validatePage(json: unknown): ValidationResult {
-  const parsed = rootSchema.safeParse(json);
+export function validateSnapResponse(json: unknown): ValidationResult {
+  const parsed = snapResponseSchema.safeParse(json);
   if (!parsed.success) {
     return {
       valid: false,
@@ -175,8 +175,8 @@ export function validatePage(json: unknown): ValidationResult {
   return { valid: true, issues: [] };
 }
 
-export function validateFirstPage(json: unknown): ValidationResult {
-  const parsed = firstPageRootSchema.safeParse(json);
+export function validateFirstPageResponse(json: unknown): ValidationResult {
+  const parsed = firstPageResponseSchema.safeParse(json);
   if (!parsed.success) {
     return {
       valid: false,

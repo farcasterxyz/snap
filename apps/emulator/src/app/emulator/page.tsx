@@ -649,7 +649,7 @@ export default function EmulatorPage() {
   );
 
   const handlePostButton = async (
-    buttonIndex: number,
+    button_index: number,
     button: Record<string, unknown>,
     inputs: Record<string, unknown>,
   ) => {
@@ -685,7 +685,7 @@ export default function EmulatorPage() {
     const requestBody = {
       currentUrl: currentSourceUrl,
       target,
-      buttonIndex,
+      button_index,
       inputs,
       fid: fidParsed,
     };

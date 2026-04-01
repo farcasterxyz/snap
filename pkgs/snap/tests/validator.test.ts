@@ -6,8 +6,11 @@ import {
   DEFAULT_THEME_ACCENT,
   SPACER_SIZE,
 } from "../src/constants";
-import { rootSchema } from "../src/schemas";
-import { validatePage, validateFirstPage } from "../src/validator";
+import { snapResponseSchema } from "../src/schemas";
+import {
+  validateSnapResponse,
+  validateFirstPageResponse,
+} from "../src/validator";
 
 function stackRoot<T>(children: T[]) {
   return { type: "stack" as const, children };
@@ -36,14 +39,14 @@ function validMinimalPage() {
 }
 
 function expectValid(json: unknown) {
-  const result = validatePage(json);
+  const result = validateSnapResponse(json);
   expect(result.valid).toBe(true);
   expect(result.issues).toHaveLength(0);
 }
 
 /** Each needle must appear in some error's code, path, or message (Zod-native output). */
 function expectErrors(json: unknown, needles: string[]) {
-  const result = validatePage(json);
+  const result = validateSnapResponse(json);
   expect(result.valid).toBe(false);
   for (const needle of needles) {
     const ok = result.issues.some((e) => {
@@ -58,7 +61,7 @@ function expectErrors(json: unknown, needles: string[]) {
 }
 
 function expectErrorCount(json: unknown, count: number) {
-  const result = validatePage(json);
+  const result = validateSnapResponse(json);
   expect(result.issues).toHaveLength(count);
   return result;
 }
@@ -76,19 +79,19 @@ describe("Top-level structure", () => {
 
   it("applies defaults for button_layout and theme when omitted", () => {
     const minimal = validMinimalPage();
-    const parsed = rootSchema.parse(minimal);
+    const parsed = snapResponseSchema.parse(minimal);
     expect(parsed.page.button_layout).toBe("stack");
     expect(parsed.page.theme).toEqual({ accent: DEFAULT_THEME_ACCENT });
   });
 
   it("rejects non-object input", () => {
-    const result = validatePage("not an object");
+    const result = validateSnapResponse("not an object");
     expect(result.valid).toBe(false);
     expect(result.issues[0].code).toBe("invalid_type");
   });
 
   it("rejects null input", () => {
-    const result = validatePage(null);
+    const result = validateSnapResponse(null);
     expect(result.valid).toBe(false);
   });
 
@@ -177,12 +180,12 @@ describe("Theme validation", () => {
   });
 
   it("parses default theme accent when page omits theme", () => {
-    const parsed = rootSchema.parse(validMinimalPage());
+    const parsed = snapResponseSchema.parse(validMinimalPage());
     expect(parsed.page.theme).toEqual({ accent: DEFAULT_THEME_ACCENT });
   });
 
   it("parses default theme accent when theme is empty object", () => {
-    const parsed = rootSchema.parse({
+    const parsed = snapResponseSchema.parse({
       ...validMinimalPage(),
       page: { ...validMinimalPage().page, theme: {} },
     });
@@ -194,7 +197,7 @@ describe("Theme validation", () => {
 
 describe("Schema parse defaults (list, spacer, button_group, slider)", () => {
   it("parses default list style when omitted", () => {
-    const parsed = rootSchema.parse({
+    const parsed = snapResponseSchema.parse({
       version: "1.0",
       page: {
         elements: stackRoot([{ type: "list", items: [{ content: "x" }] }]),
@@ -206,7 +209,7 @@ describe("Schema parse defaults (list, spacer, button_group, slider)", () => {
   });
 
   it("parses default spacer size when omitted", () => {
-    const parsed = rootSchema.parse({
+    const parsed = snapResponseSchema.parse({
       version: "1.0",
       page: { elements: stackRoot([{ type: "spacer" }]) },
     });
@@ -216,7 +219,7 @@ describe("Schema parse defaults (list, spacer, button_group, slider)", () => {
   });
 
   it("parses default button_group style row for 2–3 options", () => {
-    const parsed = rootSchema.parse({
+    const parsed = snapResponseSchema.parse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -231,7 +234,7 @@ describe("Schema parse defaults (list, spacer, button_group, slider)", () => {
   });
 
   it("parses default button_group style stack for 4 options", () => {
-    const parsed = rootSchema.parse({
+    const parsed = snapResponseSchema.parse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -250,7 +253,7 @@ describe("Schema parse defaults (list, spacer, button_group, slider)", () => {
   });
 
   it("parses default slider step when omitted", () => {
-    const parsed = rootSchema.parse({
+    const parsed = snapResponseSchema.parse({
       version: "1.0",
       page: {
         elements: stackRoot([{ type: "slider", name: "x", min: 0, max: 100 }]),
@@ -1610,7 +1613,7 @@ describe("Buttons validation", () => {
 
 describe("Multiple errors", () => {
   it("returns all errors at once, not just the first", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "2.0",
       page: {
         theme: "bad",
@@ -1643,7 +1646,7 @@ describe("Multiple errors", () => {
 
 describe("First page validation", () => {
   it("accepts valid first page with text + interactive", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1656,7 +1659,7 @@ describe("First page validation", () => {
   });
 
   it("accepts valid first page with text + image", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1669,7 +1672,7 @@ describe("First page validation", () => {
   });
 
   it("rejects first page without text title/body", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1690,7 +1693,7 @@ describe("First page validation", () => {
   });
 
   it("rejects first page without interactive or media", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1711,7 +1714,7 @@ describe("First page validation", () => {
   });
 
   it("accepts first page with text + grid (media)", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1729,7 +1732,7 @@ describe("First page validation", () => {
   });
 
   it("accepts first page with slider (interactive)", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1742,7 +1745,7 @@ describe("First page validation", () => {
   });
 
   it("accepts first page with toggle (interactive)", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1755,7 +1758,7 @@ describe("First page validation", () => {
   });
 
   it("accepts first page with text_input (interactive)", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -1768,7 +1771,7 @@ describe("First page validation", () => {
   });
 
   it("includes both regular and first-page errors", () => {
-    const result = validateFirstPage({
+    const result = validateFirstPageResponse({
       version: "1.0",
       page: { elements: stackRoot([{ type: "spacer" }]) },
     });
@@ -1834,12 +1837,12 @@ describe("Spec examples", () => {
     };
 
     // Regular validation
-    const result = validatePage(wordle);
+    const result = validateSnapResponse(wordle);
     expect(result.valid).toBe(true);
     expect(result.issues).toHaveLength(0);
 
     // First page validation
-    const firstResult = validateFirstPage(wordle);
+    const firstResult = validateFirstPageResponse(wordle);
     expect(firstResult.valid).toBe(true);
     expect(firstResult.issues).toHaveLength(0);
   });
@@ -1900,7 +1903,7 @@ describe("Spec examples", () => {
       },
     };
 
-    const result = validatePage(wordleResponse);
+    const result = validateSnapResponse(wordleResponse);
     expect(result.valid).toBe(true);
     expect(result.issues).toHaveLength(0);
   });
@@ -1940,11 +1943,11 @@ describe("Spec examples", () => {
       },
     };
 
-    const result = validatePage(thisOrThat);
+    const result = validateSnapResponse(thisOrThat);
     expect(result.valid).toBe(true);
     expect(result.issues).toHaveLength(0);
 
-    const firstResult = validateFirstPage(thisOrThat);
+    const firstResult = validateFirstPageResponse(thisOrThat);
     expect(firstResult.valid).toBe(true);
   });
 
@@ -2000,7 +2003,7 @@ describe("Spec examples", () => {
       },
     };
 
-    const result = validatePage(thisOrThatResponse);
+    const result = validateSnapResponse(thisOrThatResponse);
     expect(result.valid).toBe(true);
     expect(result.issues).toHaveLength(0);
   });
@@ -2061,7 +2064,7 @@ describe("Spec examples", () => {
       },
     };
 
-    const result = validatePage(thisOrThatResponseFromSpec);
+    const result = validateSnapResponse(thisOrThatResponseFromSpec);
     expect(result.valid).toBe(false);
     expect(
       result.issues.some((e) => e.message.includes("cannot have more than 5")),
@@ -2073,7 +2076,7 @@ describe("Spec examples", () => {
 
 describe("Edge cases", () => {
   it("handles elements that are not objects", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "1.0",
       page: { elements: stackRoot([42, "text", null]) },
     });
@@ -2086,7 +2089,7 @@ describe("Edge cases", () => {
   });
 
   it("handles missing fields gracefully", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "1.0",
       page: { elements: stackRoot([{ type: "slider" }]) },
     });
@@ -2100,7 +2103,7 @@ describe("Edge cases", () => {
   });
 
   it("provides path info for nested errors", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -2121,7 +2124,7 @@ describe("Edge cases", () => {
   });
 
   it("validates all elements in the array, not just the first", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -2139,7 +2142,7 @@ describe("Edge cases", () => {
   });
 
   it("validates all buttons, not just the first", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "1.0",
       page: {
         elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
@@ -2175,7 +2178,7 @@ describe("Edge cases", () => {
   });
 
   it("error includes expected/received for length violations", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "1.0",
       page: {
         elements: stackRoot([
@@ -2192,7 +2195,7 @@ describe("Edge cases", () => {
   });
 
   it("rejects grid with negative cell indices", () => {
-    const result = validatePage({
+    const result = validateSnapResponse({
       version: "1.0",
       page: {
         elements: stackRoot([

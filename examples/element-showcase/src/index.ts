@@ -16,8 +16,8 @@ const PALETTE_HEX = [
 
 const app = new Hono();
 
-registerSnapHandler(app, async ({ action, request }) => {
-  const url = new URL(request.url);
+registerSnapHandler(app, async (ctx) => {
+  const url = new URL(ctx.request.url);
   const rawView = url.searchParams.get("view") ?? "home";
   const view = (
     ["home", "text", "inputs", "inputs_result", "dataviz", "grid"].includes(
@@ -26,12 +26,12 @@ registerSnapHandler(app, async ({ action, request }) => {
       ? rawView
       : "home"
   ) as View;
-  const base = snapBaseUrl(request);
+  const base = snapBaseUrl(ctx.request);
 
-  if (action.type === "get") return homePage(base);
+  if (ctx.action.type === "get") return homePage(base);
 
-  if (view === "inputs_result" && action.type === "post") {
-    return inputsResultPage(base, action.inputs, action.buttonIndex);
+  if (view === "inputs_result" && ctx.action.type === "post") {
+    return inputsResultPage(base, ctx.action.inputs, ctx.action.buttonIndex);
   }
 
   switch (view) {
@@ -148,8 +148,7 @@ function textPage(base: string): SnapResponse {
           {
             type: "text",
             style: "caption",
-            content:
-              "Caption (100 chars) — timestamps, attribution, metadata",
+            content: "Caption (100 chars) — timestamps, attribution, metadata",
           },
         ],
       },
@@ -232,7 +231,7 @@ function inputsPage(base: string): SnapResponse {
 function inputsResultPage(
   base: string,
   inputs: Record<string, unknown>,
-  buttonIndex: number,
+  button_index: number,
 ): SnapResponse {
   const pick = typeof inputs.pick === "string" ? inputs.pick : "(none)";
   const rating = typeof inputs.rating === "number" ? inputs.rating : "?";
@@ -272,7 +271,7 @@ function inputsResultPage(
           {
             type: "text",
             style: "caption",
-            content: `Button index: ${buttonIndex}. All input values sent via POST.`,
+            content: `Button index: ${button_index}. All input values sent via POST.`,
           },
         ],
       },
@@ -358,12 +357,40 @@ function gridPage(base: string): SnapResponse {
   const RD = "#FC0036";
 
   const face = new Map<string, string>([
-    ["1,2", YL], ["1,3", YL], ["1,4", YL], ["1,5", YL],
-    ["2,1", YL], ["2,2", YL], ["2,3", YL], ["2,4", YL], ["2,5", YL], ["2,6", YL],
-    ["3,1", YL], ["3,2", BK], ["3,3", YL], ["3,4", YL], ["3,5", BK], ["3,6", YL],
-    ["4,1", YL], ["4,2", YL], ["4,3", YL], ["4,4", YL], ["4,5", YL], ["4,6", YL],
-    ["5,1", YL], ["5,2", RD], ["5,3", YL], ["5,4", YL], ["5,5", RD], ["5,6", YL],
-    ["6,1", YL], ["6,2", YL], ["6,3", RD], ["6,4", RD], ["6,5", YL], ["6,6", YL],
+    ["1,2", YL],
+    ["1,3", YL],
+    ["1,4", YL],
+    ["1,5", YL],
+    ["2,1", YL],
+    ["2,2", YL],
+    ["2,3", YL],
+    ["2,4", YL],
+    ["2,5", YL],
+    ["2,6", YL],
+    ["3,1", YL],
+    ["3,2", BK],
+    ["3,3", YL],
+    ["3,4", YL],
+    ["3,5", BK],
+    ["3,6", YL],
+    ["4,1", YL],
+    ["4,2", YL],
+    ["4,3", YL],
+    ["4,4", YL],
+    ["4,5", YL],
+    ["4,6", YL],
+    ["5,1", YL],
+    ["5,2", RD],
+    ["5,3", YL],
+    ["5,4", YL],
+    ["5,5", RD],
+    ["5,6", YL],
+    ["6,1", YL],
+    ["6,2", YL],
+    ["6,3", RD],
+    ["6,4", RD],
+    ["6,5", YL],
+    ["6,6", YL],
   ]);
 
   const cells: { row: number; col: number; color: string }[] = [];

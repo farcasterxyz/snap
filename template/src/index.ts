@@ -9,15 +9,15 @@ const OPT_DEPLOY = "Deploy";
 
 const app = new Hono();
 
-registerSnapHandler(app, async ({ action, request }) => {
+registerSnapHandler(app, async (ctx) => {
   const pref =
-    action.type === "post" &&
-    typeof action.inputs[BUTTON_GROUP_NAME] === "string"
-      ? (action.inputs[BUTTON_GROUP_NAME] as string)
+    ctx.action.type === "post" &&
+    typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
+      ? (ctx.action.inputs[BUTTON_GROUP_NAME] as string)
       : undefined;
   const body = onboardingBody(pref);
-  const caption = onboardingCaption(pref, action.type === "post");
-  const base = snapBaseUrlFromRequest(request);
+  const caption = onboardingCaption(pref, ctx.action.type === "post");
+  const base = snapBaseUrlFromRequest(ctx.request);
   return {
     version: "1.0",
     page: {

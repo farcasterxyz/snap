@@ -224,10 +224,10 @@ function buildSnapRoot(pageIndex: number, snapBaseUrl: string): SnapResponse {
 
 const app = new Hono();
 
-registerSnapHandler(app, async ({ request }) => {
-  const url = new URL(request.url);
+registerSnapHandler(app, async (ctx) => {
+  const url = new URL(ctx.request.url);
   const pageIndex = pageIndexFromQuery(url.searchParams.get("page"));
-  const snapBaseUrl = snapBaseUrlFromRequest(request);
+  const snapBaseUrl = snapBaseUrlFromRequest(ctx.request);
   return buildSnapRoot(pageIndex, snapBaseUrl);
 });
 

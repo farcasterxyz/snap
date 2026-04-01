@@ -43,7 +43,7 @@ describe("parseRequest", () => {
         type: "post",
         fid: 42,
         inputs: { guess: "HELLO" },
-        buttonIndex: 0,
+        button_index: 0,
         timestamp: payload.timestamp,
       },
     });
