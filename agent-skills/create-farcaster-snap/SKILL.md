@@ -6,7 +6,7 @@ allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
 
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-03-30**. If that date is more than 7 days ago, fetch the latest version before proceeding and overwrite the existing file:
+This skill was last updated on **2026-04-01**. If that date is more than 7 days ago, fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
 curl -s https://raw.githubusercontent.com/farcasterxyz/snap/main/agent-skills/create-farcaster-snap/SKILL.md | tee /path/to/current/create-farcaster-snap/SKILL.md
@@ -66,91 +66,39 @@ Fix any errors or implementation mistakes. Re-run local validation until the sna
 
 ## Step 5: Deploy or update (always)
 
-Every run **ends with a deplyoment** (new project or new version). Do not stop after “the JSON looks right” or after local-only validation.
+Every run **ends with a deployment** (new project or new version). Do not stop after “the JSON looks right” or after local-only validation.
 
-Fetch the deploy skill first:
+Fetch and follow the deploy skill:
 
 ```bash
 curl -s https://host.neynar.app/SKILL.md
 ```
 
-Use `framework=hono`. The Neynar deploy API sends the project to Vercel where
-Hono apps run on **Edge runtime** by default. This imposes constraints on what
-the bundled function can import (no Node.js built-ins, no native modules). Use
-one `POST` with a **`.tar.gz`** of the app—no git or dashboard required.
+That skill is the **single source of truth** for packaging, API usage, first deploy vs update, API key handling, and project management. Follow it exactly. The rest of this section covers only **snap-specific** context the deploy skill doesn't know about.
 
-**Stable `projectName`:** Choose a durable name (alphanumeric + hyphens, 2–100 chars) per snap or product so updates target the same live URL. Example: **`my-team-widget-snap`**.
+### Snap-specific deploy settings
 
-First deploy (no API key yet): `POST` **without** `Authorization`. The response includes **`apiKey`** **exactly once**—save it (for example **`.agentdeploy`** in the project, gitignored, or a user-provided secret). Also record **`projectName`** and **`projectId`** if you need the management API.
+- **`framework=hono`** — snaps use Hono on Vercel Edge runtime. This means no Node.js built-ins or native modules in the deployed bundle. Keep `src/server.ts` (which imports `@hono/node-server`) out of the deploy archive — it's for local dev only.
+- **`SNAP_PUBLIC_BASE_URL`** — pass this in the `env` field so button targets point to the live HTTPS origin, not `localhost`. Set it to `https://<projectName>.host.neynar.app`.
 
-Subsequent deploys (update in place): Same **`projectName`** and tarball, with:
+  ```bash
+  -F 'env={“SNAP_PUBLIC_BASE_URL”:”https://my-snap.host.neynar.app”}'
+  ```
 
-```text
-Authorization: Bearer <apiKey>
-```
-
-Same multipart body as before (files, framework, env, optional `description`). This creates a **new version** on the same **`https://<projectName>.host.neynar.app`** project.
-
-If the user supplies an existing key and name, **update**; otherwise **create** and **tell them to store the new `apiKey`**.
-
-**Packaging**
-
-1. **Archive contents** — include whatever the project needs to install and build (see its **`README.md`** and file tree: typically **`package.json`**, lockfile, source dirs, config files). **Do not** upload **`node_modules`** .
-
-2. **Create the archive:**
-
-   ```bash
-   tar czf /tmp/site.tar.gz -C /path/to/project-or-staging \
-     --exclude=node_modules --exclude='.DS_Store' .
-   ```
-
-3. **Deploy request** — **`projectName`**, **`env`** as a JSON string (at least **`SNAP_PUBLIC_BASE_URL`** as below).
-
-   **First deploy** (no `Authorization`; response returns **`apiKey`** once). Use **`framework=auto`** below unless the template specifies a different Neynar **`framework`** value.
-
-   ```bash
-   curl -X POST https://api.host.neynar.app/v1/deploy \
-     -F "files=@/tmp/site.tar.gz" \
-     -F "projectName=my-snap" \
-     -F "framework=auto" \
-     -F 'env={"SNAP_PUBLIC_BASE_URL":"https://my-snap.host.neynar.app"}' \
-     -F "description=Short note for deploy history"
-   ```
-
-   **Update existing project** (same **`projectName`**, Bearer token from a prior deploy):
-
-   ```bash
-   curl -X POST https://api.host.neynar.app/v1/deploy \
-     -H "Authorization: Bearer <apiKey>" \
-     -F "files=@/tmp/site.tar.gz" \
-     -F "projectName=my-snap" \
-     -F "framework=auto" \
-     -F 'env={"SNAP_PUBLIC_BASE_URL":"https://my-snap.host.neynar.app"}' \
-     -F "description=Short note for deploy history"
-   ```
-
-4. **Canonical URL** — the response includes a **`url`** (often **`*.vercel.app`**). **`GET /v1/projects/:projectId`** with the Bearer token returns **`currentUrl`**, usually **`https://<projectName>.host.neynar.app`**. Use that origin when communicating the live snap to the user and when setting **`SNAP_PUBLIC_BASE_URL`** on later deploys.
+- **`@noble/curves` peer dependency** — `@farcaster/jfs` declares `@noble/curves@2.x` as a peer dep. If your lockfile resolves `1.x` instead, add `@noble/curves@^2.0.0` as a direct dependency in `package.json` before bundling.
 
 ## Step 6: Verify production and report
 
-Sanity-check the **public** snap (retry if needed—see below):
+Sanity-check the **public** snap with the snap Accept header (retry a few times — routing may take a moment after deploy):
 
 ```bash
 curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://<projectName>.host.neynar.app/'
 ```
 
-Expect **HTTP 200** and valid snap JSON, content type **`application/vnd.farcaster.snap+json`**.
+Expect **HTTP 200** and valid snap JSON with content type **`application/vnd.farcaster.snap+json`**.
 
-**Important:** Right after a deploy, **`https://<projectName>.host.neynar.app`** may return errors briefly while routing or the edge catches up—the **`*.vercel.app`** **`url`** in the response may already return **200**. **Wait a few seconds and retry** (or poll **`GET /v1/projects/:projectId/deploy/:deploymentId`** until **`deployStatus`** is **`ready`**). Do **not** treat immediate errors as a failed deploy.
+**Tell the user:**
 
-**Tell the user**
-
-- **`https://<projectName>.host.neynar.app`** (and optionally the raw Vercel **`url`** if useful).
-- On **first** deploy only: the **`apiKey`** and that it must be saved for future updates.
-- Short note on what the snap does (elements, buttons, POST behavior).
-
-#### Important: `@noble/curves` peer dependency
-
-`@farcaster/jfs` declares `@noble/curves@2.x` as a peer dependency. If your
-lockfile resolves `1.x` instead, add `@noble/curves@^2.0.0` as a direct
-dependency in `package.json` before bundling.
+- The live URL: **`https://<projectName>.host.neynar.app`**
+- On **first** deploy only: the **`apiKey`** (must be saved for future updates)
+- Short note on what the snap does (elements, buttons, POST behavior)
