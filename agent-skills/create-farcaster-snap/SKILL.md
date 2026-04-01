@@ -76,6 +76,8 @@ curl -s https://host.neynar.app/SKILL.md
 
 That skill is the **single source of truth** for packaging, API usage, first deploy vs update, API key handling, and project management. Follow it exactly. The rest of this section covers only **snap-specific** context the deploy skill doesn't know about.
 
+**Stable `projectName`:** Choose a durable name (alphanumeric + hyphens, 2–100 chars) per snap so updates target the same live URL instead of creating a new project each time. Example: **`my-team-widget-snap`**.
+
 ### Snap-specific deploy settings
 
 - **`framework=hono`** — snaps use Hono on Vercel Edge runtime. This means no Node.js built-ins or native modules in the deployed bundle. Keep `src/server.ts` (which imports `@hono/node-server`) out of the deploy archive — it's for local dev only.
@@ -96,6 +98,8 @@ curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://<projectName>
 ```
 
 Expect **HTTP 200** and valid snap JSON with content type **`application/vnd.farcaster.snap+json`**.
+
+**Important:** Right after a deploy, the `host.neynar.app` URL may return errors briefly while routing propagates. **Wait a few seconds and retry** before treating it as a failed deploy.
 
 **Tell the user:**
 
