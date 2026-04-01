@@ -1,4 +1,4 @@
-import type { SnapResponse } from "@farcaster/snap";
+import type { SnapResponseInput } from "@farcaster/snap";
 
 const PALETTE: Record<string, string> = {
   gray: "#8F8F8F",
@@ -307,7 +307,7 @@ function renderButtons(
 
 // ─── Main renderer ──────────────────────────────────────
 
-export function renderSnapPage(snap: SnapResponse, snapOrigin: string): string {
+export function renderSnapPage(snap: SnapResponseInput, snapOrigin: string): string {
   const page = snap.page;
   const accent = accentHex(page.theme?.accent);
 

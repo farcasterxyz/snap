@@ -1,7 +1,7 @@
 import {
   MEDIA_TYPE,
   rootSchema,
-  type SnapResponse,
+  type SnapResponseInput,
   validatePage,
 } from "@farcaster/snap";
 
@@ -13,7 +13,7 @@ type PayloadToResponseOptions = {
 const DEFAULT_LINK_MEDIA_TYPES = [MEDIA_TYPE, "text/html"] as const;
 
 export function payloadToResponse(
-  payload: SnapResponse,
+  payload: SnapResponseInput,
   options: Partial<PayloadToResponseOptions> = {},
 ): Response {
   const resourcePath = options.resourcePath ?? "/";
