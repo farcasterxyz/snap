@@ -68,17 +68,11 @@ Fix any errors or implementation mistakes. Re-run local validation until the sna
 
 Every run **ends with a deployment** (new project or new version). Do not stop after “the JSON looks right” or after local-only validation.
 
-Fetch and follow the deploy skill:
-
-```bash
-curl -s https://host.neynar.app/SKILL.md
-```
-
-That skill is the **single source of truth** for packaging, API usage, first deploy vs update, API key handling, and project management. Follow it exactly. The rest of this section covers only **snap-specific** context the deploy skill doesn't know about.
+**Read all of the settings below first**, then fetch the deploy skill and follow it, applying these snap-specific overrides:
 
 **Stable `projectName`:** Choose a durable name (alphanumeric + hyphens, 2–100 chars) per snap so updates target the same live URL instead of creating a new project each time. Example: **`my-team-widget-snap`**.
 
-### Snap-specific deploy settings
+**Snap-specific deploy settings:**
 
 - **`framework=hono`** — snaps use Hono on Vercel Edge runtime. This means no Node.js built-ins or native modules in the deployed bundle. Keep `src/server.ts` (which imports `@hono/node-server`) out of the deploy archive — it's for local dev only.
 - **`SNAP_PUBLIC_BASE_URL`** — pass this in the `env` field so button targets point to the live HTTPS origin, not `localhost`. Set it to `https://<projectName>.host.neynar.app`.
@@ -88,6 +82,12 @@ That skill is the **single source of truth** for packaging, API usage, first dep
   ```
 
 - **`@noble/curves` peer dependency** — `@farcaster/jfs` declares `@noble/curves@2.x` as a peer dep. If your lockfile resolves `1.x` instead, add `@noble/curves@^2.0.0` as a direct dependency in `package.json` before bundling.
+
+Now fetch and follow the deploy skill for packaging, API usage, first deploy vs update, API key handling, and project management:
+
+```bash
+curl -s https://host.neynar.app/SKILL.md
+```
 
 ## Step 6: Verify production and report
 
