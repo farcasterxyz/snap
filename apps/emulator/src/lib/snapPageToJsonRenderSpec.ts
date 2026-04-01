@@ -82,7 +82,7 @@ function collectInputDefaults(
 
 /**
  * Turn snap `page` JSON into a json-render {@link Spec} for {@link snapJsonRenderCatalog},
- * plus initial state (`inputs`, `theme.accent`).
+ * plus initial state (`inputs`, and `theme.accent` when the snap sets one).
  */
 export function snapPageToJsonRenderSpec(snap: SnapLike): {
   spec: Spec;
@@ -201,7 +201,7 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
       const gid = nextId("btnrow");
       elements[gid] = {
         type: "Group",
-        props: { layout: "row" },
+        props: { layout: layout === "grid" ? "grid" : "row" },
         children: buttonIds,
       };
       stackChildren.push(gid);
@@ -221,13 +221,10 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
     children: stackChildren,
   };
 
-  const accent = snap.page.theme?.accent ?? "purple";
+  const accent = snap.page.theme?.accent;
 
   return {
     spec: { root: stackId, elements },
-    initialState: {
-      inputs,
-      theme: { accent },
-    },
+    initialState: accent ? { inputs, theme: { accent } } : { inputs },
   };
 }

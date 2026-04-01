@@ -41,9 +41,9 @@ The emulator lives under [`apps/emulator`](./apps/emulator). Hono examples are u
 
 Convenience methods for running a Snap server using [Hono](https://hono.dev)
 
-### @farcaster/snap-ui-elements
+### @farcaster/snap/ui
 
-Shared catalog of UI element types and schemas that Snap JSON may reference. Built on [json-render](https://json-render.dev/).
+The json-render catalog for snaps is exported from `@farcaster/snap/ui` and per-component sub-paths (e.g., `@farcaster/snap/ui/button`). Built on [json-render](https://json-render.dev/).
 
 ## 🛠️ Development
 

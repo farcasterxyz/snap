@@ -782,7 +782,11 @@ export default function EmulatorPage() {
         <div style={{ padding: 16, display: "grid", gap: 10, flexShrink: 0 }}>
           <label
             htmlFor="snap-url"
-            style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "var(--text-secondary)",
+            }}
           >
             Snap URL
           </label>
@@ -809,7 +813,11 @@ export default function EmulatorPage() {
           />
           <label
             htmlFor="snap-fid"
-            style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "var(--text-secondary)",
+            }}
           >
             User FID
           </label>
@@ -842,7 +850,10 @@ export default function EmulatorPage() {
               padding: "10px 14px",
               borderRadius: 10,
               border: "none",
-              background: loading || !urlInput.trim() ? "var(--btn-disabled-bg)" : "var(--btn-primary-bg)",
+              background:
+                loading || !urlInput.trim()
+                  ? "var(--btn-disabled-bg)"
+                  : "var(--btn-primary-bg)",
               color: "var(--btn-primary-color)",
               fontWeight: 600,
               fontSize: 14,
@@ -1551,7 +1562,12 @@ export default function EmulatorPage() {
                 gap: 10,
                 width: "100%",
                 maxWidth: 480,
-                placeItems: "center",
+                minWidth: 0,
+                // Section uses `place-items: center`, which shrink-wraps this column; stretch so the
+                // snap card matches the preview width (same pattern as the error state above).
+                justifySelf: "stretch",
+                // `place-items: center` on this inner grid would shrink-wrap SnapRenderer; stretch children.
+                justifyItems: "stretch",
               }}
             >
               <SnapRenderer
