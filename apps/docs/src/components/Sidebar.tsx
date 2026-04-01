@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { ColorModeToggle, useColorMode } from "@neynar/ui/color-mode";
-import { PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { PanelLeftClose, PanelLeftOpen, ExternalLink, Sun, Moon } from "lucide-react";
 import FarcasterLogo from "./FarcasterLogo";
 
 type NavItem = { label: string; href: string; external?: boolean };
@@ -54,27 +53,34 @@ const NAV: NavSection[] = [
   },
 ];
 
+function getInitialTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light";
+  const stored = localStorage.getItem("docs-theme");
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
-  const { setPreference } = useColorMode();
   const [collapsed, setCollapsed] = useState(false);
-  const didMigrateLegacyTheme = useRef(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    if (didMigrateLegacyTheme.current || typeof document === "undefined") {
-      return;
-    }
-    didMigrateLegacyTheme.current = true;
-    if (document.cookie.includes("color-mode=")) {
-      localStorage.removeItem("docs-theme");
-      return;
-    }
-    const legacy = localStorage.getItem("docs-theme");
-    if (legacy === "light" || legacy === "dark") {
-      setPreference(legacy);
-      localStorage.removeItem("docs-theme");
-    }
-  }, [setPreference]);
+    const initial = getInitialTheme();
+    setTheme(initial);
+    document.documentElement.setAttribute("data-theme", initial);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => {
+      const next = prev === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("docs-theme", next);
+      return next;
+    });
+  }, []);
 
   return (
     <nav className={`sidebar${collapsed ? " sidebar--collapsed" : ""}`}>
@@ -118,7 +124,7 @@ export default function Sidebar() {
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="sidebar-link"
+                      className="sidebar-link sidebar-link--external"
                     >
                       {item.label}
                       <ExternalLink
@@ -143,13 +149,14 @@ export default function Sidebar() {
           </div>
 
           <div className="sidebar-footer">
-            <ColorModeToggle
-              variant="ghost"
-              size="sm"
-              align="end"
-              className="h-7 w-7 p-0 text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
-              title="Theme: system, light, or dark"
-            />
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+              aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            >
+              {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
+            </button>
           </div>
         </>
       )}
