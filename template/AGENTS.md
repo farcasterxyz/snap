@@ -13,6 +13,15 @@ template/
 └── vercel.json
 ```
 
+## Handler callback
+
+`registerSnapHandler` calls your function with `{ action, request }`.
+
+- `action.type === "get"` — first page load (GET request). No other fields on the action object.
+- `action.type === "post"` — user interaction (POST request). Includes `inputs` (Record of input name → value), `fid` (user's Farcaster ID), `buttonIndex` (which button was tapped), and `timestamp`.
+
+Check `action.type` before accessing `inputs` — it only exists on `"post"` actions.
+
 ## Local development
 
 ```bash
