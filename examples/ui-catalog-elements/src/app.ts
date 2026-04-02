@@ -38,11 +38,29 @@ function snapBaseUrlFromRequest(request: Request): string {
     request.headers.get("x-forwarded-host")?.trim() ||
     request.headers.get("host")?.trim();
   if (host) {
-    const proto =
-      request.headers.get("x-forwarded-proto")?.trim() ||
-      (host.startsWith("localhost") || host.startsWith("127.0.0.1")
-        ? "http"
-        : "https");
+    const forwarded = request.headers.get("x-forwarded-proto")?.trim();
+    if (forwarded) {
+      return `${forwarded}://${host}`.replace(/\/$/, "");
+    }
+    try {
+      const u = new URL(request.url);
+      if (u.protocol === "http:" || u.protocol === "https:") {
+        const proto = u.protocol === "https:" ? "https" : "http";
+        return `${proto}://${host}`.replace(/\/$/, "");
+      }
+    } catch {
+      /* request.url may be relative in some adapters */
+    }
+    const hostname = host.split(":")[0]?.toLowerCase() ?? "";
+    const isLoopback =
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "[::1]";
+    const isPrivateLan =
+      /^192\.168\.\d+\.\d+$/.test(hostname) ||
+      /^10\.\d+\.\d+\.\d+$/.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/.test(hostname);
+    const proto = isLoopback || isPrivateLan ? "http" : "https";
     return `${proto}://${host}`.replace(/\/$/, "");
   }
 
