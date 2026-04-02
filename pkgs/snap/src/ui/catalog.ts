@@ -30,7 +30,7 @@ const snapTargetParams = z.object({
 });
 
 const snapClientParams = z.object({
-  client_action: z.record(z.string(), z.unknown()).optional(),
+  client_action: z.record(z.string(), z.unknown()),
 });
 
 /**
