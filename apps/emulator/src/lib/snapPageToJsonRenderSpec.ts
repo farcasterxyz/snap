@@ -187,14 +187,16 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
             ? { client_action: clientAction }
             : { target };
 
+      const buttonProps: Record<string, unknown> = { label, action, style };
+      if (catalogAction === "snap_client") {
+        if (clientAction) buttonProps.client_action = clientAction;
+      } else {
+        buttonProps.target = target;
+      }
+
       elements[bid] = {
         type: "ActionButton",
-        props: {
-          label,
-          action,
-          target,
-          style,
-        },
+        props: buttonProps,
         on: {
           press: { action: catalogAction, params },
         },

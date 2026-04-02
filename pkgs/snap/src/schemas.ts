@@ -446,14 +446,14 @@ const buttonSchema = z
   .superRefine((val, ctx) => {
     if (val.action === BUTTON_ACTION.client) {
       // client buttons require client_action, must not have target
-      if (!val.client_action) {
+      if (val.client_action === undefined) {
         ctx.addIssue({
           code: "custom",
           message: `button with action "client" must include a "client_action" object`,
           path: ["client_action"],
         });
       }
-      if (val.target) {
+      if (val.target !== undefined) {
         ctx.addIssue({
           code: "custom",
           message: `button with action "client" must not include "target"`,
@@ -462,14 +462,14 @@ const buttonSchema = z
       }
     } else {
       // post/link/mini_app buttons require target, must not have client_action
-      if (!val.target) {
+      if (val.target === undefined) {
         ctx.addIssue({
           code: "custom",
           message: `button with action "${val.action}" must include a "target" URL`,
           path: ["target"],
         });
       }
-      if (val.client_action) {
+      if (val.client_action !== undefined) {
         ctx.addIssue({
           code: "custom",
           message: `button with action "${val.action}" must not include "client_action"`,
