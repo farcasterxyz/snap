@@ -37,6 +37,14 @@ pnpm --filter @farcaster/snap-emulator dev
 
 The emulator lives under [`apps/emulator`](./apps/emulator). Hono examples are under [`examples/`](./examples/README.md); the deployable starter is [`template/`](./template/README.md).
 
+### @farcaster/snap-emulator-native
+
+Expo app for **iOS/Android** local preview of snaps (GET + json-render, POST with the same dev JFS-shaped body as the web emulator). See [`apps/emulator-native/README.md`](./apps/emulator-native/README.md).
+
+```bash
+pnpm --filter @farcaster/snap-emulator-native start
+```
+
 ### @farcaster/snap-hono
 
 Convenience methods for running a Snap server using [Hono](https://hono.dev)

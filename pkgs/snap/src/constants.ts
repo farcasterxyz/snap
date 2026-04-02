@@ -237,3 +237,33 @@ export const INTERACTIVE_ELEMENT_TYPES = [
   ELEMENT_TYPE.text_input,
   ELEMENT_TYPE.toggle,
 ] as ElementType[];
+
+/**
+ * Map a palette color name to hex for the current appearance (protocol: named colors only; spec/response.md).
+ * Unknown names fall back to `purple`.
+ */
+export function resolveSnapPaletteHex(
+  name: string,
+  appearance: "light" | "dark",
+): string {
+  const map = appearance === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
+  if (
+    Object.prototype.hasOwnProperty.call(map, name) &&
+    typeof map[name as PaletteColor] === "string"
+  ) {
+    return map[name as PaletteColor];
+  }
+  return map.purple;
+}
+
+/**
+ * Resolve `progress.color` / chart colors: `"accent"` uses the snap theme accent; otherwise a palette name.
+ */
+export function resolveSnapSemanticColor(
+  semantic: string,
+  themeAccent: PaletteColor,
+  appearance: "light" | "dark",
+): string {
+  const name = semantic === "accent" ? themeAccent : semantic;
+  return resolveSnapPaletteHex(name, appearance);
+}

@@ -1,14 +1,14 @@
 "use client";
 
-import { Progress } from "@base-ui/react/progress";
-import {
-  ProgressTrack,
-  ProgressIndicator,
-  ProgressLabel,
-} from "@neynar/ui/progress";
+import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 import type { PaletteColor } from "@farcaster/snap";
 import { useSnapPalette } from "../hooks/useSnapAccent";
 
+/**
+ * Use Base UI progress parts from a single module only. Mixing `@neynar/ui/progress`
+ * subcomponents with `Progress.Root` from another resolution of `@base-ui/react/progress`
+ * can split React context (pnpm) and trigger "ProgressRootContext is missing".
+ */
 export function SnapProgress({
   element: { props },
 }: {
@@ -27,18 +27,29 @@ export function SnapProgress({
     semantic === "accent" || !hasSemantic ? "var(--primary)" : hex(semantic);
 
   return (
-    <Progress.Root value={percent} className="flex w-full flex-col gap-1">
+    <ProgressPrimitive.Root
+      value={percent}
+      className="flex w-full flex-col gap-1"
+      data-slot="progress"
+    >
       {props.label != null ? (
-        <ProgressLabel className="text-muted-foreground text-xs">
+        <ProgressPrimitive.Label
+          className="text-muted-foreground text-xs"
+          data-slot="progress-label"
+        >
           {String(props.label)}
-        </ProgressLabel>
+        </ProgressPrimitive.Label>
       ) : null}
-      <ProgressTrack>
-        <ProgressIndicator
-          className="transition-all"
+      <ProgressPrimitive.Track
+        className="bg-muted relative flex h-1.5 w-full items-center overflow-x-hidden rounded-full"
+        data-slot="progress-track"
+      >
+        <ProgressPrimitive.Indicator
+          className="h-full transition-all"
+          data-slot="progress-indicator"
           style={{ backgroundColor: fill }}
         />
-      </ProgressTrack>
-    </Progress.Root>
+      </ProgressPrimitive.Track>
+    </ProgressPrimitive.Root>
   );
 }

@@ -12,6 +12,8 @@ export {
   PALETTE_LIGHT_HEX,
   PALETTE_DARK_HEX,
   type PaletteColor,
+  resolveSnapPaletteHex,
+  resolveSnapSemanticColor,
 } from "./constants";
 export {
   snapResponseSchema,

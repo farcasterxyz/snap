@@ -5,7 +5,7 @@ import { useStateStore } from "@json-render/react";
 import type { PaletteColor } from "@farcaster/snap";
 import { PALETTE_DARK_HEX, PALETTE_LIGHT_HEX } from "@farcaster/snap";
 import { useColorMode } from "@neynar/ui/color-mode";
-import { resolveSnapPaletteHex } from "@/lib/resolveSnapPaletteHex";
+import { resolveSnapPaletteHex } from "@farcaster/snap";
 import { snapPreviewPrimaryCssProperties } from "@/lib/snapPreviewPrimaryCss";
 import { useSnapPreviewPageAccent } from "../SnapPreviewAccentContext";
 

@@ -88,7 +88,32 @@ SKIP_JFS_VERIFICATION=1 pnpm dev  # http://localhost:3003
 
 ## Testing
 
+### Farcaster web emulator
+
 Use the [Emulator](https://farcaster.xyz/~/developers/snaps) to test your snap. Enter your snap's URL and interact with it -- the emulator signs messages automatically, so no signature bypass is needed.
+
+### Local web emulator (this repo)
+
+From the repo root, run the Next.js emulator (default **port 3000**):
+
+```bash
+pnpm --filter @farcaster/snap-emulator dev
+```
+
+Open `http://localhost:3000`, paste your snap URL (or host + path), and use **Load snap**. Same dev behavior as in [AGENTS.md](https://github.com/farcasterxyz/snap/blob/main/AGENTS.md): JFS verification is skipped when `NODE_ENV` is not `production` unless you override env vars.
+
+### Native emulator (Expo, iOS / Android)
+
+The monorepo includes **`@farcaster/snap-emulator-native`**: a **React Native (Expo)** app that GETs snap JSON with the correct `Accept` header and renders the json-render catalog on a device or simulator. Use it to verify layout and interactions on mobile without shipping to production.
+
+```bash
+pnpm install
+pnpm --filter @farcaster/snap-emulator-native start
+```
+
+Then open the iOS Simulator, Android emulator, or Expo Go (QR code). Enter the **port** of a local snap server (for example **3015** for [`examples/ui-catalog-elements`](https://github.com/farcasterxyz/snap/blob/main/examples/README.md)); the app builds `http://localhost:{port}/` by default. On a **physical device**, use your machine's **LAN IP** instead of `localhost` so the phone can reach your computer.
+
+Details, POST behavior, and Metro monorepo notes: [`apps/emulator-native/README.md`](https://github.com/farcasterxyz/snap/blob/main/apps/emulator-native/README.md).
 
 ## Deploying
 

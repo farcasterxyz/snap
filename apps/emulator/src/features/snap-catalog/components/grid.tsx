@@ -36,18 +36,22 @@ export function SnapGrid({
   const cellsEls: ReactNode[] = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      const cell = cellMap.get(`${r},${c}`);
+      const key = `${r},${c}`;
+      const cell = cellMap.get(key);
+      /** Spec: only positions omitted from `cells` are tappable when `interactive`. */
+      const isWall = cellMap.has(key);
+      const isTappable = interactive && !isWall;
       const selected =
-        interactive &&
+        isTappable &&
         tapCoord != null &&
         tapCoord.row === r &&
         tapCoord.col === c;
-      const onPick = interactive
+      const onPick = isTappable
         ? () => set(tapPath, { row: r, col: c })
         : undefined;
       const cellClass = cn(
         "border-border flex min-h-7 w-full items-center justify-center rounded border text-xs font-semibold",
-        interactive ? "cursor-pointer select-none" : "cursor-default",
+        isTappable ? "cursor-pointer select-none" : "cursor-default",
         selected ? "border-2" : "border",
       );
       const cellStyle = {
@@ -61,9 +65,9 @@ export function SnapGrid({
           : labelBase;
       const content = cell?.content ?? "";
       cellsEls.push(
-        interactive ? (
+        isTappable ? (
           <button
-            key={`${r}-${c}`}
+            key={key}
             type="button"
             onClick={onPick}
             className={cellClass}
@@ -74,7 +78,7 @@ export function SnapGrid({
             {content}
           </button>
         ) : (
-          <div key={`${r}-${c}`} className={cellClass} style={cellStyle}>
+          <div key={key} className={cellClass} style={cellStyle}>
             {content}
           </div>
         ),

@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { resolveSnapPaletteHex } from "./resolveSnapPaletteHex";
+import { resolveSnapPaletteHex } from "@farcaster/snap";
 
 /** Readable on-primary text for hex backgrounds (e.g. amber vs purple). */
 function pickForegroundForBg(hex: string): string {

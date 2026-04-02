@@ -15,8 +15,8 @@ export function SnapText({
     align === "center"
       ? "text-center"
       : align === "right"
-      ? "text-right"
-      : "text-left";
+        ? "text-right"
+        : "text-left";
 
   if (style === "title") {
     return (
