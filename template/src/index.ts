@@ -70,10 +70,15 @@ function snapBaseUrlFromRequest(request: Request): string {
   const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/$/, "");
 
-  const proto = request.headers.get("x-forwarded-proto")?.trim() || "https";
   const host =
     request.headers.get("x-forwarded-host")?.trim() ||
     request.headers.get("host")?.trim();
+  const isLoopback =
+    host !== undefined &&
+    /^(localhost|127\.0\.0\.1|\[::1\]|::1)(:\d+)?$/.test(host);
+  const proto =
+    request.headers.get("x-forwarded-proto")?.trim() ||
+    (isLoopback ? "http" : "https");
   if (host) return `${proto}://${host}`.replace(/\/$/, "");
 
   return `http://localhost:${process.env.PORT ?? "3003"}`.replace(/\/$/, "");
