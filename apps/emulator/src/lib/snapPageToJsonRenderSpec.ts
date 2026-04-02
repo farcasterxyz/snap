@@ -171,6 +171,10 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
       const style = btn.style === "secondary" ? "secondary" : "primary";
       const catalogAction = snapActionToCatalogAction(action);
 
+      const clientAction =
+        (btn.client_action as Record<string, JsonValue> | undefined) ??
+        (btn.sdk_action as Record<string, JsonValue> | undefined);
+
       const params: Record<string, unknown> =
         catalogAction === "snap_post"
           ? {
@@ -179,7 +183,9 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
               label,
               style,
             }
-          : { target };
+          : catalogAction === "snap_client"
+            ? { client_action: clientAction }
+            : { target };
 
       elements[bid] = {
         type: "ActionButton",

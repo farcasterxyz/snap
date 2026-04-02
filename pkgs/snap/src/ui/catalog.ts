@@ -29,6 +29,10 @@ const snapTargetParams = z.object({
   target: z.string(),
 });
 
+const snapClientParams = z.object({
+  client_action: z.record(z.string(), z.unknown()).optional(),
+});
+
 /**
  * Basic catalog: one json-render component per snap element type, plus ActionButton for snap buttons.
  * Does not validate cross-field rules (media count, height budget); snap JSON still goes through `@farcaster/snap` validation.
@@ -122,7 +126,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     snap_client: {
       description:
         "Trigger a Farcaster client action (view_cast, view_profile, compose_cast, …).",
-      params: snapTargetParams,
+      params: snapClientParams,
     },
   },
 });
