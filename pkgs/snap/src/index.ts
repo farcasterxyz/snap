@@ -21,6 +21,7 @@ export {
   snapResponseSchema,
   firstPageResponseSchema,
   payloadSchema,
+  createDefaultDataStore,
   type Button,
   type Element,
   type Elements,
@@ -32,6 +33,9 @@ export {
   type SnapHandlerResult,
   type SnapFunction,
   type SnapPayload,
+  type DataStoreValue,
+  type SnapDataStore,
+  type SnapDataStoreOperations,
 } from "./schemas";
 export {
   validateSnapResponse,

@@ -81,3 +81,7 @@ curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://my-snap.host.
 
 Expect valid JSON with `content-type: application/vnd.farcaster.snap+json` and
 `buttons[].target` pointing to your HTTPS origin (not `localhost`).
+
+### Note on package versioning
+
+The `@farcaster/snap*` dependencies must always point to public NPM package versions. NEVER use "workspace:\*". This is a template for others to copy.
