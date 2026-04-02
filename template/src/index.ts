@@ -1,7 +1,9 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
+import { SnapContext, SnapResponse } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
+import { withUpstash } from "@farcaster/snap-upstash";
 
 const BUTTON_GROUP_NAME = "topic" as const;
 const OPT_OVERVIEW = "Overview";
@@ -9,60 +11,58 @@ const OPT_HTTP = "HTTP";
 const OPT_LOCAL = "Local";
 const OPT_DEPLOY = "Deploy";
 
+async function snap(ctx: SnapContext): Promise<SnapResponse> {
+  const pref =
+    ctx.action.type === "post" &&
+    typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
+      ? (ctx.action.inputs[BUTTON_GROUP_NAME] as string)
+      : undefined;
+  const body = onboardingBody(pref);
+  const caption = onboardingCaption(pref, ctx.action.type === "post");
+  const base = snapBaseUrlFromRequest(ctx.request);
+  return {
+    version: "1.0",
+    page: {
+      theme: { accent: "purple" },
+      button_layout: "stack",
+      elements: {
+        type: "stack" as const,
+        children: [
+          { type: "text", style: "title", content: "Snap starter" },
+          { type: "text", style: "body", content: body },
+          {
+            type: "button_group",
+            name: BUTTON_GROUP_NAME,
+            options: [OPT_OVERVIEW, OPT_HTTP, OPT_LOCAL, OPT_DEPLOY],
+            style: "row",
+          },
+          { type: "text", style: "caption", content: caption },
+        ],
+      },
+      buttons: [
+        {
+          label: "Refresh",
+          action: "post",
+          target: `${base}/`,
+        },
+      ],
+    },
+  };
+}
+
 const __dir = dirname(fileURLToPath(import.meta.url));
 const fontsDir = join(__dir, "../assets/fonts");
 
 const app = new Hono();
 
-registerSnapHandler(
-  app,
-  async (ctx) => {
-    const pref =
-      ctx.action.type === "post" &&
-      typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
-        ? (ctx.action.inputs[BUTTON_GROUP_NAME] as string)
-        : undefined;
-    const body = onboardingBody(pref);
-    const caption = onboardingCaption(pref, ctx.action.type === "post");
-    const base = snapBaseUrlFromRequest(ctx.request);
-    return {
-      version: "1.0",
-      page: {
-        theme: { accent: "purple" },
-        button_layout: "stack",
-        elements: {
-          type: "stack" as const,
-          children: [
-            { type: "text", style: "title", content: "Snap starter" },
-            { type: "text", style: "body", content: body },
-            {
-              type: "button_group",
-              name: BUTTON_GROUP_NAME,
-              options: [OPT_OVERVIEW, OPT_HTTP, OPT_LOCAL, OPT_DEPLOY],
-              style: "row",
-            },
-            { type: "text", style: "caption", content: caption },
-          ],
-        },
-        buttons: [
-          {
-            label: "Refresh",
-            action: "post",
-            target: `${base}/`,
-          },
-        ],
-      },
-    };
+registerSnapHandler(app, withUpstash(snap), {
+  og: {
+    fonts: [
+      { path: join(fontsDir, "inter-latin-400-normal.woff"), weight: 400 },
+      { path: join(fontsDir, "inter-latin-700-normal.woff"), weight: 700 },
+    ],
   },
-  {
-    og: {
-      fonts: [
-        { path: join(fontsDir, "inter-latin-400-normal.woff"), weight: 400 },
-        { path: join(fontsDir, "inter-latin-700-normal.woff"), weight: 700 },
-      ],
-    },
-  },
-);
+});
 
 export default app;
 
@@ -72,9 +72,7 @@ function snapBaseUrlFromRequest(request: Request): string {
 
   const forwardedHost = request.headers.get("x-forwarded-host");
   const hostHeader = request.headers.get("host");
-  const host = (forwardedHost ?? hostHeader)
-    ?.split(",")[0]
-    .trim();
+  const host = (forwardedHost ?? hostHeader)?.split(",")[0].trim();
   const isLoopback =
     host !== undefined &&
     /^(localhost|127\.0\.0\.1|\[::1\]|::1)(:\d+)?$/.test(host);
@@ -82,8 +80,8 @@ function snapBaseUrlFromRequest(request: Request): string {
   const proto = forwardedProto
     ? forwardedProto.split(",")[0].trim().toLowerCase()
     : isLoopback
-      ? "http"
-      : "https";
+    ? "http"
+    : "https";
   if (host) return `${proto}://${host}`.replace(/\/$/, "");
 
   return `http://localhost:${process.env.PORT ?? "3003"}`.replace(/\/$/, "");
