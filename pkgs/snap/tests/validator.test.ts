@@ -3,9 +3,9 @@ import {
   BUTTON_GROUP_STYLE,
   DEFAULT_LIST_STYLE,
   DEFAULT_SLIDER_STEP,
-  DEFAULT_THEME_ACCENT,
   SPACER_SIZE,
 } from "../src/constants";
+import { DEFAULT_THEME_ACCENT } from "../src/colors";
 import { snapResponseSchema } from "../src/schemas";
 import {
   validateSnapResponse,

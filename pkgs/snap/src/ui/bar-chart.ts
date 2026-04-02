@@ -1,9 +1,6 @@
 import { z } from "zod";
-import {
-  BAR_CHART_COLOR_VALUES,
-  LIMITS,
-  PALETTE_COLOR_VALUES,
-} from "../constants.js";
+import { LIMITS } from "../constants.js";
+import { BAR_CHART_COLOR_VALUES, PALETTE_COLOR_VALUES } from "../colors.js";
 
 export const barChartProps = z.object({
   bars: z

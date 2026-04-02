@@ -3,9 +3,11 @@ export {
   PAGE_ROOT_TYPE,
   ELEMENT_TYPE,
   MEDIA_TYPE,
-  DEFAULT_THEME_ACCENT,
   DEFAULT_LIST_STYLE,
   DEFAULT_SLIDER_STEP,
+} from "./constants";
+export {
+  DEFAULT_THEME_ACCENT,
   PALETTE_COLOR,
   PALETTE_COLOR_ACCENT,
   PALETTE_COLOR_VALUES,
@@ -14,8 +16,10 @@ export {
   type PaletteColor,
   resolveSnapPaletteHex,
   resolveSnapSemanticColor,
-} from "./constants";
+} from "./colors";
 export {
+  ACTION_TYPE_GET,
+  ACTION_TYPE_POST,
   snapResponseSchema,
   firstPageResponseSchema,
   payloadSchema,

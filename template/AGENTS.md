@@ -28,7 +28,20 @@ pnpm install
 pnpm dev          # runs on http://localhost:3003
 ```
 
-Test with: `curl -sS -H 'Accept: application/vnd.farcaster.snap+json' http://localhost:3003/`
+Test GET (first page): `curl -sS -H 'Accept: application/vnd.farcaster.snap+json' http://localhost:3003/`
+
+Test POST (button tap): `pnpm dev` already sets `SKIP_JFS_VERIFICATION=true`, so POST works without real signatures. The body must still be JFS-shaped (header/payload/signature strings). The payload must be base64url-encoded (no `+`/`/`/`=`):
+
+```bash
+PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"button_index\":0,\"timestamp\":$(date +%s)}" \
+  | base64 | tr '+/' '-_' | tr -d '=')
+curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
+  -H 'Content-Type: application/json' \
+  -d "{\"header\":\"dev\",\"payload\":\"$PAYLOAD\",\"signature\":\"dev\"}" \
+  'http://localhost:3003/'
+```
+
+Note: the `timestamp` must be within 300 seconds of the current time (hence `$(date +%s)`).
 
 ## Deploying to host.neynar.app (Vercel Edge)
 
