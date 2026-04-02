@@ -22,6 +22,7 @@ const NAV: NavSection[] = [
     items: [
       { label: "Elements", href: "/docs/elements" },
       { label: "Buttons", href: "/docs/buttons" },
+      { label: "Actions", href: "/docs/actions" },
       { label: "Effects", href: "/docs/effects" },
       { label: "Constraints", href: "/docs/constraints" },
     ],

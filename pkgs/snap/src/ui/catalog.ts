@@ -102,7 +102,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     ActionButton: {
       props: actionButtonProps,
       description:
-        "Snap action button: post (next page), link (browser), mini_app, sdk — target is HTTPS URL or SDK id.",
+        "Snap action button: post (next page), link (browser), mini_app, client — target is HTTPS URL or client_action object.",
     },
   },
   actions: {
@@ -119,9 +119,9 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       description: "Open `target` as an in-app Farcaster mini app.",
       params: snapTargetParams,
     },
-    snap_sdk: {
+    snap_client: {
       description:
-        "Run a Farcaster client SDK action (cast:view, user:follow, …).",
+        "Trigger a Farcaster client action (view_cast, view_profile, compose_cast, …).",
       params: snapTargetParams,
     },
   },

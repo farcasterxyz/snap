@@ -353,17 +353,25 @@ Buttons appear at the bottom of the page, below all elements. Each button perfor
       "action": "post",
       "target": "https://example.com/submit"
     },
-    { "label": "Learn more", "action": "link", "target": "https://example.com" }
+    { "label": "Learn more", "action": "link", "target": "https://example.com" },
+    {
+      "label": "View profile",
+      "action": "client",
+      "client_action": { "type": "view_profile", "fid": 6841 }
+    }
   ]
 }
 ```
 
-| Property | Required | Description                                                                                |
-| -------- | -------- | ------------------------------------------------------------------------------------------ |
-| `label`  | Yes      | Button text. Max 30 chars.                                                                 |
-| `action` | Yes      | One of the four action types (see below).                                                  |
-| `target` | Yes      | URL or SDK action identifier.                                                              |
-| `style`  | No       | `"primary"` (filled, default for first button), `"secondary"` (outlined, default for rest) |
+| Property     | Required | Description                                                                                |
+| ------------ | -------- | ------------------------------------------------------------------------------------------ |
+| `label`      | Yes      | Button text. Max 30 chars.                                                                 |
+| `action`     | Yes      | One of the four action types: `post`, `link`, `mini_app`, `client`.                           |
+| `target`     | Yes*     | URL for `post`, `link`, and `mini_app` buttons. Not used for `client` buttons.                |
+| `client_action` | Yes*     | Structured client action object for `client` buttons. Not used for other button types.        |
+| `style`      | No       | `"primary"` (filled, default for first button), `"secondary"` (outlined, default for rest) |
+
+\* `target` is required for `post`, `link`, and `mini_app` buttons. `client_action` is required for `client` buttons. A button must have exactly one of `target` or `client_action`.
 
 ### Target URLs
 
@@ -371,53 +379,9 @@ For `post`, `link`, and `mini_app`, `target` is a normal URL and must use HTTPS 
 
 For local development (for example a snap server on your machine, or the emulator hitting `http://localhost:...`), `http://` is valid only when the host is loopback: `localhost`, `127.0.0.1`, or IPv6 loopback (`[::1]` / `::1`). Any other `http://` target is invalid.
 
-For `sdk`, `target` is an SDK action identifier, not an HTTP(S) URL.
-
 ### Action Types
 
-#### `post`
-
-Makes a POST request to the target URL. The request body is a **JFS compact string** ([JSON Farcaster Signatures](https://github.com/farcasterxyz/protocol/discussions/208)) whose decoded payload includes all input element values from the current page, the user's FID, and a timestamp. See [Authentication](./SPEC.md#authentication). The response must be a valid page JSON; the client renders it as the next page.
-
-Decoded JFS payload shape (signed inside JFS, not sent as bare JSON):
-
-```json
-{
-  "fid": 12345,
-  "inputs": {
-    "guess": "CLASS",
-    "vote": "Tabs"
-  },
-  "button_index": 0,
-  "timestamp": 1710864000
-}
-```
-
-Response: A valid page JSON object.
-
-Timeout: The client waits up to 5 seconds. If the server doesn't respond, the client shows an error state on the current page (not a blank screen). The user can retry.
-
-#### `link`
-
-Opens the target URL in the device's external browser. No request is made to the server. The snap stays in its current state.
-
-#### `mini_app`
-
-Opens the target URL as a Farcaster mini app (slides up from bottom, rendered inside the Farcaster app). The target must be a valid Farcaster mini app URL.
-
-#### `sdk`
-
-Triggers a Farcaster SDK action. The target is an SDK action identifier with parameters. Uses the existing Farcaster SDK action set.
-
-Examples:
-
-```json
-{ "label": "View cast", "action": "sdk", "target": "cast:view:0x1234abcd" }
-{ "label": "Follow", "action": "sdk", "target": "user:follow:12345" }
-{ "label": "Send tip", "action": "sdk", "target": "wallet:send:0x1234:0.01:ETH" }
-```
-
-The exact SDK action format follows the existing Farcaster SDK specification.
+Full documentation for all action types, including the list of supported client actions and their parameters, is in [action.md](./action.md).
 
 ## Effects
 

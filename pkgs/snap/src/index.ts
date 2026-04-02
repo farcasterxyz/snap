@@ -5,6 +5,8 @@ export {
   MEDIA_TYPE,
   DEFAULT_LIST_STYLE,
   DEFAULT_SLIDER_STEP,
+  CLIENT_ACTION,
+  CLIENT_ACTION_VALUES,
 } from "./constants";
 export {
   DEFAULT_THEME_ACCENT,
@@ -21,11 +23,13 @@ export {
   snapResponseSchema,
   firstPageResponseSchema,
   payloadSchema,
+  clientActionSchema,
   createDefaultDataStore,
   type Button,
   type Element,
   type Elements,
   type GroupChildElement,
+  type ClientAction,
   type SnapAction,
   type SnapPageElementInput,
   type SnapContext,

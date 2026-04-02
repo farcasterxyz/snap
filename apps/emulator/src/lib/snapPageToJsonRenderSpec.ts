@@ -34,7 +34,7 @@ function stripType(el: Record<string, JsonValue>): Record<string, JsonValue> {
 
 function snapActionToCatalogAction(
   action: string,
-): "snap_post" | "snap_link" | "snap_mini_app" | "snap_sdk" {
+): "snap_post" | "snap_link" | "snap_mini_app" | "snap_client" {
   switch (action) {
     case "post":
       return "snap_post";
@@ -42,8 +42,8 @@ function snapActionToCatalogAction(
       return "snap_link";
     case "mini_app":
       return "snap_mini_app";
-    case "sdk":
-      return "snap_sdk";
+    case "client":
+      return "snap_client";
     default:
       return "snap_link";
   }

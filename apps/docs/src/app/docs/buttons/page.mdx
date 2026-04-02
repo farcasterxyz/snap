@@ -14,6 +14,11 @@ Buttons appear at the bottom of the page, below all elements. Each button perfor
       "label": "Learn more",
       "action": "link",
       "target": "https://example.com"
+    },
+    {
+      "label": "View profile",
+      "action": "client",
+      "client_action": { "type": "view_profile", "fid": 6841 }
     }
   ]
 }
@@ -24,9 +29,12 @@ Buttons appear at the bottom of the page, below all elements. Each button perfor
 | Property | Required | Description |
 | --- | --- | --- |
 | `label` | Yes | Button text. Max 30 chars |
-| `action` | Yes | One of the four action types (see below) |
-| `target` | Yes | URL or SDK action identifier |
+| `action` | Yes | One of the four action types: `post`, `link`, `mini_app`, `client` |
+| `target` | Yes* | URL for `post`, `link`, and `mini_app` buttons |
+| `client_action` | Yes* | Structured client action object for `client` buttons. See [Actions](/docs/actions) |
 | `style` | No | `"primary"` (filled, default for first button), `"secondary"` (outlined, default for rest) |
+
+\* `target` is required for `post`, `link`, and `mini_app` buttons. `client_action` is required for `client` buttons. A button must have exactly one of `target` or `client_action`.
 
 ## Button Layout
 
@@ -41,8 +49,6 @@ The `page.button_layout` field controls how buttons are arranged:
 For `post`, `link`, and `mini_app`, `target` is a normal URL and must use HTTPS in production.
 
 For local development, `http://` is valid only when the host is loopback: `localhost`, `127.0.0.1`, or IPv6 loopback (`[::1]` / `::1`). Any other `http://` target is invalid.
-
-For `sdk`, `target` is an SDK action identifier, not an HTTP(S) URL.
 
 ## Action Types
 
@@ -76,20 +82,20 @@ Opens the target URL in the device's external browser. No request is made to the
 
 Opens the target URL as a Farcaster mini app (slides up from bottom, rendered inside the Farcaster app). The target must be a valid Farcaster mini app URL.
 
-### `sdk`
+### `client`
 
-Triggers a Farcaster SDK action. The target is an SDK action identifier with parameters.
+Triggers a Farcaster client action. Instead of a `target` URL, `client` buttons use a structured `client_action` object. See the full list of supported client actions on the [Actions](/docs/actions) page.
 
 ```json
-{ "label": "View cast", "action": "sdk", "target": "cast:view:0x1234abcd" }
+{ "label": "View cast", "action": "client", "client_action": { "type": "view_cast", "hash": "0x1234abcd" } }
 ```
 
 ```json
-{ "label": "Follow", "action": "sdk", "target": "user:follow:12345" }
+{ "label": "Share", "action": "client", "client_action": { "type": "compose_cast", "text": "Check this out!" } }
 ```
 
 ```json
-{ "label": "Send tip", "action": "sdk", "target": "wallet:send:0x1234:0.01:ETH" }
+{ "label": "Send tip", "action": "client", "client_action": { "type": "send_token", "recipientFid": 3 } }
 ```
 
 ## Input Data in POST Requests

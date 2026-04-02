@@ -283,7 +283,7 @@ export function SnapRenderer({
                   break;
                 }
                 case "snap_mini_app":
-                case "snap_sdk": {
+                case "snap_client": {
                   // eslint-disable-next-line no-console
                   console.info(`[emulator] ${name}`, params);
                   break;

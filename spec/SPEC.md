@@ -106,9 +106,9 @@ A button with `action: "post"` can target any snap server URL, including a diffe
 
 When the user taps such a button, the client fetches the target URL, receives a page JSON, and renders it. The user is now "inside" the new snap. The mini app header updates to show the new snap's name and creator.
 
-## Input Data in POST Requests
+## Actions
 
-POST action payload rules are defined in [action.md](./action.md).
+All button action types (including POST payload rules and client actions) are defined in [action.md](./action.md).
 
 ## Effects and Theme
 
@@ -132,6 +132,7 @@ A valid snap page must pass these checks:
 ### URL Validation (at publish time)
 
 - For `post`, `link`, and `mini_app` buttons, `target` must use **HTTPS**. As an exception for local development and emulators, **`http://` is allowed** when the host is loopback only: `localhost`, `127.0.0.1`, or IPv6 loopback (`[::1]` / `::1`). Non-loopback HTTP targets are invalid.
+- For `client` buttons, `client_action` must be a valid client action object (see [action.md](./action.md))
 - Snap URL responds with valid page JSON
 - No `javascript:` URIs
 

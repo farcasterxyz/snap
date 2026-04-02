@@ -1502,7 +1502,7 @@ describe("Buttons validation", () => {
     );
   });
 
-  it("requires target", () => {
+  it("requires target for post action", () => {
     expectErrors(
       {
         version: "1.0",
@@ -1511,7 +1511,7 @@ describe("Buttons validation", () => {
           buttons: [{ label: "Go", action: "post" }],
         },
       },
-      ["invalid_type\tpage.buttons[0].target\t"],
+      ['must include a "target" URL'],
     );
   });
 
@@ -1576,16 +1576,139 @@ describe("Buttons validation", () => {
     );
   });
 
-  it("allows non-https target for sdk action", () => {
+  it("allows client action with client_action object", () => {
     expectValid({
       version: "1.0",
       page: {
         elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
         buttons: [
-          { label: "Follow", action: "sdk", target: "user:follow:12345" },
+          {
+            label: "Follow",
+            action: "client",
+            client_action: { type: "view_profile", fid: 12345 },
+          },
         ],
       },
     });
+  });
+
+  it("rejects client button without client_action", () => {
+    expectErrors(
+      {
+        version: "1.0",
+        page: {
+          elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
+          buttons: [{ label: "Go", action: "client" }],
+        },
+      },
+      ['must include a "client_action"'],
+    );
+  });
+
+  it("rejects client button with target", () => {
+    expectErrors(
+      {
+        version: "1.0",
+        page: {
+          elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
+          buttons: [
+            {
+              label: "Go",
+              action: "client",
+              target: "https://example.com",
+              client_action: { type: "view_profile", fid: 1 },
+            },
+          ],
+        },
+      },
+      ['must not include "target"'],
+    );
+  });
+
+  it("rejects post button with client_action", () => {
+    expectErrors(
+      {
+        version: "1.0",
+        page: {
+          elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
+          buttons: [
+            {
+              label: "Go",
+              action: "post",
+              target: "https://example.com",
+              client_action: { type: "view_profile", fid: 1 },
+            },
+          ],
+        },
+      },
+      ['must not include "client_action"'],
+    );
+  });
+
+  it("allows all client action types", () => {
+    const clientActions = [
+      { type: "view_cast", hash: "0x1234" },
+      { type: "view_profile", fid: 6841 },
+      { type: "compose_cast", text: "Hello" },
+      { type: "compose_cast", text: "Reply", parent: { type: "cast", hash: "0xabc" } },
+      { type: "compose_cast", embeds: ["https://example.com"] },
+      { type: "view_token", token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" },
+      { type: "send_token" },
+      { type: "send_token", token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", amount: "1000000", recipientFid: 3 },
+      { type: "swap_token" },
+      { type: "swap_token", sellToken: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", buyToken: "eip155:8453/erc20:0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed" },
+    ];
+
+    for (const client_action of clientActions) {
+      expectValid({
+        version: "1.0",
+        page: {
+          elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
+          buttons: [{ label: "Go", action: "client", client_action }],
+        },
+      });
+    }
+  });
+
+  it("rejects invalid client action type", () => {
+    expectErrors(
+      {
+        version: "1.0",
+        page: {
+          elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
+          buttons: [
+            {
+              label: "Go",
+              action: "client",
+              client_action: { type: "invalid_action" },
+            },
+          ],
+        },
+      },
+      ["invalid_union"],
+    );
+  });
+
+  it("rejects compose_cast with more than 2 embeds", () => {
+    expectErrors(
+      {
+        version: "1.0",
+        page: {
+          elements: stackRoot([{ type: "text", style: "title", content: "x" }]),
+          buttons: [
+            {
+              label: "Go",
+              action: "client",
+              client_action: {
+                type: "compose_cast",
+                embeds: ["https://a.com", "https://b.com", "https://c.com"],
+              },
+            },
+          ],
+        },
+      },
+      ["max 2"],
+    );
   });
 
   it("rejects invalid button style", () => {
@@ -1638,7 +1761,8 @@ describe("Multiple errors", () => {
     expect(blob).toContain("invalid_union\tpage.elements.children[1].type\t");
     expect(blob).toContain("too_big\tpage.buttons[0].label\t");
     expect(blob).toContain("invalid_value\tpage.buttons[0].action\t");
-    expect(blob).toContain("invalid_type\tpage.buttons[0].target\t");
+    // target is now optional (validated conditionally via superRefine), so
+    // the multiple-error test no longer produces an invalid_type for target.
   });
 });
 
