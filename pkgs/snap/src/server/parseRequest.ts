@@ -7,7 +7,6 @@ import {
 import { decodePayload, verifyJFSRequestBody } from "./verify";
 import { z } from "zod";
 
-/** Default replay window per SPEC.md § Replay Protection (5 minutes). */
 const DEFAULT_SNAP_POST_MAX_SKEW_SECONDS = 300 as const;
 
 export type ParseRequestError =
@@ -37,6 +36,13 @@ export type ParseRequestOptions = {
    * When true, skip {@link verifyJFSRequestBody} (signature checks).
    */
   skipJFSVerification?: boolean;
+
+  /**
+   * Maximum allowed absolute difference between the request timestamp and the
+   * server clock, in seconds. Requests outside this window are rejected as
+   * potential replays. Defaults to 300 (5 minutes) when not provided.
+   */
+  maxSkewSeconds?: number;
 };
 
 export type ParseRequestResult =
@@ -75,7 +81,7 @@ export async function parseRequest(
     };
   }
 
-  const maxSkew = DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
+  const maxSkew = options.maxSkewSeconds ?? DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
   const nowSec = Math.floor(Date.now() / 1000);
 
   const text = await request.text();

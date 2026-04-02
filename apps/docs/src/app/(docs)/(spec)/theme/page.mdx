@@ -1,6 +1,7 @@
 # Theme & Styling
 
-Snaps specify only an accent color. The client handles all other styling, including light/dark mode from app settings.
+Snaps specify only an accent color. The client handles all other styling, including
+light/dark mode from app settings.
 
 ## How Theming Works
 
@@ -15,9 +16,7 @@ The snap provides a single `theme.accent` color. The Farcaster client uses this 
     },
     "elements": {
       "type": "stack",
-      "children": [
-        { "type": "text", "style": "title", "content": "My Snap" }
-      ]
+      "children": [{ "type": "text", "style": "title", "content": "My Snap" }]
     }
   }
 }
@@ -25,10 +24,10 @@ The snap provides a single `theme.accent` color. The Farcaster client uses this 
 
 ### Theme Properties
 
-| Property | Required | Values |
-| --- | --- | --- |
-| `page.theme` | No | Theme object. If omitted, defaults apply |
-| `page.theme.accent` | No | Palette name (e.g. `"purple"`, `"blue"`). Default: `"purple"` |
+| Property            | Required | Values                                                                                                     |
+| ------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `page.theme`        | No       | Theme object. If omitted, defaults apply                                                                   |
+| `page.theme.accent` | No       | Palette color name: `gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`. Default: `"purple"` |
 
 ## Accent Surfaces
 
@@ -55,4 +54,6 @@ Snaps **cannot** specify:
 - Element pixel dimensions
 - Light/dark mode
 
-The client is responsible for all layout decisions -- spacing between elements, card padding, font rendering, and responsive behavior. This means snaps look native in every Farcaster client, regardless of platform.
+The client is responsible for all layout decisions — spacing between elements, card
+padding, font rendering, and responsive behavior — so snaps look native in every
+Farcaster client.

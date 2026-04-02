@@ -1,12 +1,20 @@
 # Elements
 
-Every snap page body is a tree whose root is a `stack`. The client renders child elements in order, top to bottom. The client controls sizing, spacing, fonts, and padding -- snaps do not specify pixel dimensions, margins, or CSS.
+The page body is a tree whose root is always a `stack`. `stack.children` is the vertical
+list of blocks; the client renders them in order top to bottom. The client controls
+sizing, spacing, fonts, and padding. Snaps do not specify pixel dimensions, margins, or
+CSS. Each element type has a fixed set of properties; unknown properties are ignored.
 
-> **Sample:** Open the [Element Showcase](https://farcaster.xyz/~/developers/snaps?url=https://snap-element-showcase.host.neynar.app/) in the emulator to interact with every element type.
+> **Sample:** Open the
+> [Element Showcase](https://farcaster.xyz/~/developers/snaps?url=https://snap-element-showcase.host.neynar.app/)
+> in the emulator to interact with every element type.
 
-## Page Root: `stack`
+## Page Root (`stack`)
 
-`page.elements` must be a `stack` node: a vertical list of child elements.
+`page.elements` is a tree root, not a flat list. It must be a `stack` node: a vertical
+list of child elements.
+
+Rules:
 
 - `page.elements.type` MUST be `"stack"`
 - `page.elements.children` is an array of elements (min 1, max 5)
@@ -18,6 +26,13 @@ Every snap page body is a tree whose root is a `stack`. The client renders child
   "children": [{ "type": "text", "style": "title", "content": "Hello" }]
 }
 ```
+
+The snap `page.elements` object. Not used inside `group` children.
+
+| Property   | Required | Values                                                                                 |
+| ---------- | -------- | -------------------------------------------------------------------------------------- |
+| `type`     | Yes      | Must be `"stack"`.                                                                     |
+| `children` | Yes      | Min 1, max 5 elements (same types as in this document: `text`, `image`, `group`, ...). |
 
 ## `text`
 
@@ -39,7 +54,7 @@ Renders text content in a predefined style.
 | Property  | Required | Values                                                                                                    |
 | --------- | -------- | --------------------------------------------------------------------------------------------------------- |
 | `style`   | Yes      | `"title"` (max 80 chars), `"body"` (max 160 chars), `"caption"` (max 100 chars), `"label"` (max 40 chars) |
-| `content` | Yes      | The text string                                                                                           |
+| `content` | Yes      | The text string.                                                                                          |
 | `align`   | No       | `"left"` (default), `"center"`, `"right"`                                                                 |
 
 ## `image`
@@ -64,11 +79,11 @@ Renders an image from a URL.
 { "type": "image", "url": "https://example.com/photo.jpg", "aspect": "16:9" }
 ```
 
-| Property | Required | Values                                                                |
-| -------- | -------- | --------------------------------------------------------------------- |
-| `url`    | Yes      | HTTPS image URL. Supports jpg, png, gif, webp. GIFs autoplay and loop |
-| `aspect` | Yes      | `"1:1"`, `"16:9"`, `"4:3"`, `"3:4"`, `"9:16"`                         |
-| `alt`    | No       | Alt text for accessibility                                            |
+| Property | Required | Values                                                                 |
+| -------- | -------- | ---------------------------------------------------------------------- |
+| `url`    | Yes      | HTTPS image URL. Supports jpg, png, gif, webp. GIFs autoplay and loop. |
+| `aspect` | Yes      | `"1:1"`, `"16:9"`, `"4:3"`, `"3:4"`, `"9:16"`                          |
+| `alt`    | No       | Alt text for accessibility.                                            |
 
 ## `divider`
 
@@ -76,9 +91,7 @@ A horizontal line to visually separate content sections.
 
 <div className="element-preview">
   <div style={{ fontSize: 16, fontWeight: 700 }}>Poll Results</div>
-  <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 2 }}>
-    42 votes
-  </div>
+  <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 2 }}>42 votes</div>
   <hr
     style={{
       border: "none",
@@ -86,9 +99,7 @@ A horizontal line to visually separate content sections.
       margin: "10px 0",
     }}
   />
-  <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-    Closes in 2 hours
-  </div>
+  <div style={{ fontSize: 12, color: "var(--text-faint)" }}>Closes in 2 hours</div>
 </div>
 
 ```json
@@ -140,12 +151,12 @@ A horizontal progress bar.
 { "type": "progress", "value": 72, "max": 100, "label": "72% Yes" }
 ```
 
-| Property | Required | Values                                                        |
-| -------- | -------- | ------------------------------------------------------------- |
-| `value`  | Yes      | Number, current value                                         |
-| `max`    | Yes      | Number, maximum value                                         |
-| `label`  | No       | Text label displayed alongside. Max 60 chars                  |
-| `color`  | No       | `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"gray"` |
+| Property | Required | Values                                         |
+| -------- | -------- | ---------------------------------------------- |
+| `value`  | Yes      | Number, current value                          |
+| `max`    | Yes      | Number, maximum value                          |
+| `label`  | No       | Text label displayed alongside. Max 60 chars   |
+| `color`  | No       | `"accent"` (default) or any palette color name |
 
 ## `list`
 
@@ -175,16 +186,17 @@ An ordered or unordered list of items.
 }
 ```
 
-| Property           | Required | Values                                          |
-| ------------------ | -------- | ----------------------------------------------- |
-| `style`            | No       | `"ordered"` (default), `"unordered"`, `"plain"` |
-| `items`            | Yes      | Array of list items. Max 4 items                |
-| `items[].content`  | Yes      | Item text. Max 100 chars                        |
-| `items[].trailing` | No       | Right-aligned text. Max 40 chars                |
+| Property           | Required | Values                                                                           |
+| ------------------ | -------- | -------------------------------------------------------------------------------- |
+| `style`            | No       | `"ordered"` (default, numbered), `"unordered"` (bullets), `"plain"` (no markers) |
+| `items`            | Yes      | Array of list items. Max 4 items.                                                |
+| `items[].content`  | Yes      | Item text. Max 100 chars.                                                        |
+| `items[].trailing` | No       | Right-aligned text (for scores, stats). Max 40 chars.                            |
 
 ## `grid`
 
-A rows-by-columns grid of cells. Each cell has a background color and optional text content. For game boards, pixel canvases, and tile-based UIs.
+A rows x columns grid of cells. Each cell has a background color and optional text
+content. For game boards, pixel canvases, and tile-based UIs.
 
 <div className="element-preview">
   <InteractiveGrid />
@@ -202,18 +214,18 @@ A rows-by-columns grid of cells. Each cell has a background color and optional t
 }
 ```
 
-| Property          | Required | Values                                                                                                      |
-| ----------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
-| `cols`            | Yes      | Number of columns. Min 2, max 64                                                                            |
-| `rows`            | Yes      | Number of rows. Min 2, max 8                                                                                |
-| `cells`           | Yes      | Array of cell definitions. Only non-empty cells need to be specified                                        |
-| `cells[].row`     | Yes      | Row index (0-based)                                                                                         |
-| `cells[].col`     | Yes      | Column index (0-based)                                                                                      |
-| `cells[].color`   | No       | 6-digit hex color (`#RRGGBB`) for background. Omit for transparent                                          |
-| `cells[].content` | No       | Text content to display in the cell                                                                         |
-| `cellSize`        | No       | `"auto"` (default, fills available width), `"square"` (cells are square)                                    |
-| `gap`             | No       | `"none"`, `"small"` (default), `"medium"`                                                                   |
-| `interactive`     | No       | If `true`, cells with no entry in `cells` array are tappable. Tap coordinates are included in the next POST |
+| Property          | Required | Values                                                                                                                                                                                                                                                                                                     |
+| ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cols`            | Yes      | Number of columns. Min 2, max 64.                                                                                                                                                                                                                                                                          |
+| `rows`            | Yes      | Number of rows. Min 2, max 8.                                                                                                                                                                                                                                                                              |
+| `cells`           | Yes      | Array of cell definitions. Only non-empty cells need to be specified.                                                                                                                                                                                                                                      |
+| `cells[].row`     | Yes      | Row index (0-based).                                                                                                                                                                                                                                                                                       |
+| `cells[].col`     | Yes      | Column index (0-based).                                                                                                                                                                                                                                                                                    |
+| `cells[].color`   | No       | 6-digit hex color (`#RRGGBB`) for background. Omit for transparent.                                                                                                                                                                                                                                        |
+| `cells[].content` | No       | Text content to display in the cell.                                                                                                                                                                                                                                                                       |
+| `cellSize`        | No       | `"auto"` (default, fills available width), `"square"` (cells are square)                                                                                                                                                                                                                                   |
+| `gap`             | No       | `"none"`, `"small"` (default), `"medium"`                                                                                                                                                                                                                                                                  |
+| `interactive`     | No       | If `true`, cells with no entry in the `cells` array are tappable. Tap coordinates are included in the next POST. Cells with any properties (color, content) are not tappable and are fixed content. This allows games like crosswords to have both interactive empty cells and non-interactive wall cells. |
 
 ## `text_input`
 
@@ -248,11 +260,11 @@ A single-line text input field.
 }
 ```
 
-| Property      | Required | Values                                  |
-| ------------- | -------- | --------------------------------------- |
-| `name`        | Yes      | Field identifier, included in POST data |
-| `placeholder` | No       | Placeholder text. Max 60 chars          |
-| `maxLength`   | No       | Max input length. Max 280 chars         |
+| Property      | Required | Values                                   |
+| ------------- | -------- | ---------------------------------------- |
+| `name`        | Yes      | Field identifier, included in POST data. |
+| `placeholder` | No       | Placeholder text. Max 60 chars.          |
+| `maxLength`   | No       | Max input length. Max 280 chars.         |
 
 ## `slider`
 
@@ -348,7 +360,8 @@ A single on/off toggle.
 
 ## `bar_chart`
 
-A vertical bar chart for displaying labeled values. For poll results, rankings, and distributions.
+A vertical bar chart for displaying labeled values. For poll results, rankings, and
+distributions.
 
 <div className="element-preview">
   <div
@@ -498,18 +511,19 @@ A vertical bar chart for displaying labeled values. For poll results, rankings, 
 }
 ```
 
-| Property       | Required | Values                                                                                     |
-| -------------- | -------- | ------------------------------------------------------------------------------------------ |
-| `bars`         | Yes      | Array of bar objects. Min 1, max 6                                                         |
-| `bars[].label` | Yes      | Bar label text. Max 40 chars                                                               |
-| `bars[].value` | Yes      | Numeric value (>= 0)                                                                       |
-| `bars[].color` | No       | Palette name (e.g. `"green"`, `"red"`). Overrides chart `color`                            |
-| `max`          | No       | Scale maximum. If omitted, derived from largest bar value                                  |
-| `color`        | No       | Default bar color: `"accent"` (default), `"green"`, `"red"`, `"amber"`, `"blue"`, `"gray"` |
+| Property       | Required | Values                                                            |
+| -------------- | -------- | ----------------------------------------------------------------- |
+| `bars`         | Yes      | Array of bar objects. Min 1, max 6.                               |
+| `bars[].label` | Yes      | Bar label text. Max 40 chars.                                     |
+| `bars[].value` | Yes      | Numeric value (>= 0).                                             |
+| `bars[].color` | No       | Palette color name for this bar. Overrides chart `color`.         |
+| `max`          | No       | Scale maximum. If omitted, derived from the largest bar value.    |
+| `color`        | No       | Default bar color: `"accent"` (default) or any palette color name |
 
 ## `group`
 
-Arranges child elements horizontally in a row. For displaying related stats, inputs, or content side by side.
+Arranges child elements horizontally in a row. For displaying related stats, inputs, or
+content side by side.
 
 <div className="element-preview">
   <div style={{ display: "flex", gap: 12 }}>
@@ -539,10 +553,10 @@ Arranges child elements horizontally in a row. For displaying related stats, inp
 }
 ```
 
-| Property   | Required | Values                                |
-| ---------- | -------- | ------------------------------------- |
-| `layout`   | Yes      | `"row"` (horizontal arrangement)      |
-| `children` | Yes      | Array of child elements. Min 2, max 3 |
+| Property   | Required | Values                                 |
+| ---------- | -------- | -------------------------------------- |
+| `layout`   | Yes      | `"row"` (horizontal arrangement).      |
+| `children` | Yes      | Array of child elements. Min 2, max 3. |
 
 ### Group Rules
 
@@ -550,16 +564,21 @@ Arranges child elements horizontally in a row. For displaying related stats, inp
 - No media elements inside groups (`image`, `grid` are not allowed)
 - No nesting: groups cannot contain other groups
 - Children are rendered with equal width, side by side
-- Any non-media element is valid as a child: `text`, `progress`, `list`, `slider`, `button_group`, `toggle`, `text_input`, `divider`, `spacer`, `bar_chart`
+- Any non-media element is valid as a child: `text`, `progress`, `list`, `slider`,
+  `button_group`, `toggle`, `text_input`, `divider`, `spacer`, `bar_chart`
 
-## First Page Requirements
+## First Page (Feed Card) Requirements
 
-The first page returned from the snap URL is rendered as the feed card. In addition to normal page rules, the first page MUST include:
+The first page returned from the snap URL is rendered as the feed card.
+
+In addition to all normal page rules, the first page MUST include:
 
 - At least one `text` element with `style: "title"` or `style: "body"`
-- At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR at least one media element (`image` or `grid`)
+- At least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) OR
+  at least one media element (`image` or `grid`)
 
-This ensures the feed card always has readable content plus engagement or visual context.
+This ensures the feed card always has readable content plus engagement or visual
+context. A page with only buttons and no content is invalid.
 
 ### Example: Valid First Page
 
@@ -620,7 +639,8 @@ This ensures the feed card always has readable content plus engagement or visual
 }
 ```
 
-This is valid because it has a `title` text element and an interactive element (`button_group`).
+This is valid because it has a `title` text element and an interactive element
+(`button_group`).
 
 ## Common Validation Errors
 
@@ -657,7 +677,8 @@ These examples show snap responses that **fail validation** and why.
 }
 ```
 
-**Fails:** First page must have at least one `text` element with style `"title"` or `"body"`. An image alone isn't enough.
+**Fails:** First page must have at least one `text` element with style `"title"` or
+`"body"`. An image alone isn't enough.
 
 ### No interactive or media element
 
@@ -681,7 +702,9 @@ These examples show snap responses that **fail validation** and why.
 }
 ```
 
-**Fails:** First page must have at least one interactive element (`button_group`, `slider`, `text_input`, `toggle`) or media element (`image`, `grid`). Text-only pages are invalid.
+**Fails:** First page must have at least one interactive element (`button_group`,
+`slider`, `text_input`, `toggle`) or media element (`image`, `grid`). Text-only pages
+are invalid.
 
 ### Too many elements
 
@@ -700,10 +723,7 @@ These examples show snap responses that **fail validation** and why.
     <div style={{ height: "100%", width: "50%", background: "#8B5CF6" }} />
   </div>
   <div style={{ fontSize: 12, marginTop: 6 }}>1. Item 1</div>
-  <input
-    type="range"
-    style={{ width: "100%", marginTop: 6, accentColor: "#8B5CF6" }}
-  />
+  <input type="range" style={{ width: "100%", marginTop: 6, accentColor: "#8B5CF6" }} />
   <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
     Too many!
   </div>
@@ -821,4 +841,5 @@ These examples show snap responses that **fail validation** and why.
 }
 ```
 
-**Fails:** `accent` must be a palette name (`gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`), not a hex value. Use `"purple"` instead of `"#8B5CF6"`.
+**Fails:** `accent` must be a palette name (`gray`, `blue`, `red`, `amber`, `green`,
+`teal`, `purple`, `pink`), not a hex value. Use `"purple"` instead of `"#8B5CF6"`.
