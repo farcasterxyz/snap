@@ -25,15 +25,16 @@ export function withUpstash(
   snapFn: SnapFunction,
   options?: WithUpstashOptions,
 ): SnapFunction {
-  let redis: Redis;
-  try {
-    redis = Redis.fromEnv();
-  } catch (err) {
-    console.warn(
-      "Failed to create Redis client (missing env vars?). Skipping Upstash data store setup.",
-    );
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+
+  if (!url || !token) {
+    console.warn("missing env vars -- skipping Upstash data store setup");
     return snapFn;
   }
+
+  const redis = new Redis({ url, token });
 
   const acquireTimeoutMs = Math.max(
     1,

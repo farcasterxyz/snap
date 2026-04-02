@@ -63,6 +63,8 @@ describe("withUpstash — no env vars", () => {
   beforeEach(() => {
     delete process.env.UPSTASH_REDIS_REST_URL;
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
   });
 
   it("returns the original snapFn and passes ctx through unchanged", async () => {
@@ -89,6 +91,8 @@ describe("withUpstash — with env vars", () => {
   const FAKE_TOKEN = "fake-token";
 
   beforeEach(() => {
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
     process.env.UPSTASH_REDIS_REST_URL = FAKE_URL;
     process.env.UPSTASH_REDIS_REST_TOKEN = FAKE_TOKEN;
   });
@@ -96,6 +100,8 @@ describe("withUpstash — with env vars", () => {
   afterEach(() => {
     delete process.env.UPSTASH_REDIS_REST_URL;
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
     vi.resetModules();
   });
 
