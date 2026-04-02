@@ -66,10 +66,29 @@ export function withUpstash(
         );
       }
 
+      let fnError: unknown;
       try {
         return await fn(ops);
+      } catch (err) {
+        fnError = err;
+        throw err;
       } finally {
-        await lock.release();
+        try {
+          await lock.release();
+        } catch (releaseError) {
+          if (!fnError) {
+            // If the critical section succeeded but releasing the lock failed,
+            // propagate the release error.
+            throw releaseError;
+          }
+          // If both the critical section and lock release failed, log the
+          // release error and preserve the original error from fn(ops).
+          // eslint-disable-next-line no-console
+          console.error(
+            "snap-upstash: failed to release lock",
+            releaseError,
+          );
+        }
       }
     },
   };
