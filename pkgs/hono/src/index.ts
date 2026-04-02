@@ -1,6 +1,11 @@
 import type { Hono } from "hono";
 import { cors } from "hono/cors";
-import { MEDIA_TYPE, type SnapFunction } from "@farcaster/snap";
+import {
+  createDefaultDataStore,
+  MEDIA_TYPE,
+  type SnapFunction,
+  ACTION_TYPE_GET,
+} from "@farcaster/snap";
 import { parseRequest } from "@farcaster/snap/server";
 import { brandedFallbackHtml } from "./fallback";
 import { payloadToResponse, snapHeaders } from "./payloadToResponse";
@@ -11,6 +16,8 @@ import {
   etagForPage,
   type OgOptions,
 } from "./og-image";
+
+const defaultData = createDefaultDataStore();
 
 export type SnapHandlerOptions = {
   /**
@@ -72,8 +79,9 @@ export function registerSnapHandler(
 
       const renderFn = async (): Promise<{ png: Uint8Array; etag: string }> => {
         const snap = await snapFn({
-          action: { type: "get" },
+          action: { type: ACTION_TYPE_GET },
           request: stripAuthHeaders(c.req.raw),
+          data: defaultData,
         });
         const snapJson = JSON.stringify(snap);
         const etag = etagForPage(snapJson);
@@ -159,8 +167,9 @@ export function registerSnapHandler(
     }
 
     const response = await snapFn({
-      action: { type: "get" },
+      action: { type: ACTION_TYPE_GET },
       request: c.req.raw,
+      data: defaultData,
     });
 
     return payloadToResponse(response, {
@@ -201,7 +210,11 @@ export function registerSnapHandler(
       }
     }
 
-    const response = await snapFn({ action: parsed.action, request: raw });
+    const response = await snapFn({
+      action: parsed.action,
+      request: raw,
+      data: defaultData,
+    });
 
     return payloadToResponse(response, {
       resourcePath: resourcePathFromRequest(raw.url),
@@ -258,8 +271,9 @@ async function getFallbackHtml(
 
   try {
     const snap = await snapFn({
-      action: { type: "get" },
+      action: { type: ACTION_TYPE_GET },
       request: stripAuthHeaders(request),
+      data: defaultData,
     });
     return renderSnapPage(snap, origin, { ogImageUrl, resourcePath, siteName });
   } catch {

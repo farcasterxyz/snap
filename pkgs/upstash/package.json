@@ -1,0 +1,45 @@
+{
+  "name": "@farcaster/snap-upstash",
+  "version": "0.1.0",
+  "description": "Upstash Redis data store adapter for Farcaster Snaps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/farcasterxyz/snap.git",
+    "directory": "pkgs/upstash"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias --resolve-full-paths --resolve-full-extension .js",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@farcaster/snap": "workspace:*",
+    "@upstash/lock": "^0.2.1",
+    "@upstash/redis": "^1.37.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
