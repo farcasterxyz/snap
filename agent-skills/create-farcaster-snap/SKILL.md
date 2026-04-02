@@ -26,7 +26,7 @@ As a last step, always use curl to check that the live app is working correctly.
 
 ## Step 1: Read the spec (and element references)
 
-Read `docs/SPEC.md` first, then read every linked doc it references. Do not rely on memorized spec content.
+Read `spec/SPEC.md` first, then read every linked doc it references (especially `spec/action.md` for button action types and client actions). Do not rely on memorized spec content.
 
 ## Step 2: Implement the snap (follow the template)
 
@@ -38,10 +38,11 @@ Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
-- Conform to `docs/SPEC.md` for overall snap/page shape and behavior.
+- Conform to `spec/SPEC.md` for overall snap/page shape and behavior.
 - Put elements under the page `elements` tree (`page.elements.type` + `elements.children`) per the spec.
 - Ensure first page rules are satisfied (title/body text + interactive/media requirement).
-- Ensure button schemas/targets match `docs/response.md` URL/action rules.
+- Ensure button schemas/targets match `spec/response.md` URL/action rules.
+- For `client` action buttons, include a `client_action` object (not `target`). See `spec/action.md` for all client action types.
 
 Design guidance:
 
@@ -49,7 +50,9 @@ Design guidance:
 - Prefer `style: "title"` for the main heading, `body` for main copy, `caption` for metadata.
 - Keep strings within current text caps (title/body/caption/label/button/list, etc.).
 - Keep page height-safe: max 5 root elements, max 1 media element, max 4 buttons.
-- Use `"post"` buttons with absolute targets. In production, use HTTPS.
+- Four button action types: `post` (server round-trip), `link` (open URL), `mini_app` (open Farcaster mini app), `client` (trigger client-side action like view_cast, view_profile, view_token, send_token, swap_token, compose_cast).
+- Use `"post"` buttons with absolute targets for server navigation. In production, use HTTPS.
+- Use `"client"` buttons with `client_action` for navigation/wallet actions that don't need a server call (e.g. `{ "type": "view_cast", "hash": "0x..." }` or `{ "type": "send_token", "token": "eip155:8453/erc20:0x...", "recipientFid": 3 }`).
 - For local dev/emulator, HTTP is only valid on loopback (`localhost`, `127.0.0.1`, `[::1]`, `::1`).
 
 ## Step 3: Validate locally
