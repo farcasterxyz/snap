@@ -87,14 +87,32 @@ export const BUTTON_ACTION = {
   post: "post",
   link: "link",
   mini_app: "mini_app",
-  sdk: "sdk",
+  client: "client",
 } as const;
 
 export const BUTTON_ACTION_VALUES = [
   BUTTON_ACTION.post,
   BUTTON_ACTION.link,
   BUTTON_ACTION.mini_app,
-  BUTTON_ACTION.sdk,
+  BUTTON_ACTION.client,
+] as const;
+
+export const CLIENT_ACTION = {
+  view_cast: "view_cast",
+  view_profile: "view_profile",
+  compose_cast: "compose_cast",
+  view_token: "view_token",
+  send_token: "send_token",
+  swap_token: "swap_token",
+} as const;
+
+export const CLIENT_ACTION_VALUES = [
+  CLIENT_ACTION.view_cast,
+  CLIENT_ACTION.view_profile,
+  CLIENT_ACTION.compose_cast,
+  CLIENT_ACTION.view_token,
+  CLIENT_ACTION.send_token,
+  CLIENT_ACTION.swap_token,
 ] as const;
 
 export const BUTTON_STYLE = {

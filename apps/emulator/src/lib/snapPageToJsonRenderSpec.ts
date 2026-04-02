@@ -34,7 +34,7 @@ function stripType(el: Record<string, JsonValue>): Record<string, JsonValue> {
 
 function snapActionToCatalogAction(
   action: string,
-): "snap_post" | "snap_link" | "snap_mini_app" | "snap_sdk" {
+): "snap_post" | "snap_link" | "snap_mini_app" | "snap_client" {
   switch (action) {
     case "post":
       return "snap_post";
@@ -42,8 +42,8 @@ function snapActionToCatalogAction(
       return "snap_link";
     case "mini_app":
       return "snap_mini_app";
-    case "sdk":
-      return "snap_sdk";
+    case "client":
+      return "snap_client";
     default:
       return "snap_link";
   }
@@ -171,6 +171,10 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
       const style = btn.style === "secondary" ? "secondary" : "primary";
       const catalogAction = snapActionToCatalogAction(action);
 
+      const clientAction =
+        (btn.client_action as Record<string, JsonValue> | undefined) ??
+        (btn.sdk_action as Record<string, JsonValue> | undefined);
+
       const params: Record<string, unknown> =
         catalogAction === "snap_post"
           ? {
@@ -179,16 +183,20 @@ export function snapPageToJsonRenderSpec(snap: SnapLike): {
               label,
               style,
             }
-          : { target };
+          : catalogAction === "snap_client"
+            ? { client_action: clientAction }
+            : { target };
+
+      const buttonProps: Record<string, unknown> = { label, action, style };
+      if (catalogAction === "snap_client") {
+        if (clientAction) buttonProps.client_action = clientAction;
+      } else {
+        buttonProps.target = target;
+      }
 
       elements[bid] = {
         type: "ActionButton",
-        props: {
-          label,
-          action,
-          target,
-          style,
-        },
+        props: buttonProps,
         on: {
           press: { action: catalogAction, params },
         },

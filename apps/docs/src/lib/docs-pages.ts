@@ -42,6 +42,7 @@ export const DOC_SECTIONS: DocSection[] = [
     pages: [
       { pathname: "/elements", title: "Elements" },
       { pathname: "/buttons", title: "Buttons" },
+      { pathname: "/actions", title: "Actions" },
       { pathname: "/effects", title: "Effects" },
       { pathname: "/constraints", title: "Constraints" },
       { pathname: "/theme", title: "Theme & Styling" },

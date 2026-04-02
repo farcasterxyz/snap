@@ -1,1 +1,0 @@
-apps/docs/src/app/(docs)/(spec)

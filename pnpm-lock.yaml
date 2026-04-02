@@ -134,6 +134,34 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  examples/action-showcase:
+    dependencies:
+      '@farcaster/snap':
+        specifier: workspace:*
+        version: link:../../pkgs/snap
+      '@farcaster/snap-hono':
+        specifier: workspace:*
+        version: link:../../pkgs/hono
+      '@hono/node-server':
+        specifier: ^1.0.0
+        version: 1.19.12(hono@4.12.9)
+      hono:
+        specifier: ^4.0.0
+        version: 4.12.9
+      zod:
+        specifier: ^4.0.0
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: ^24.5.2
+        version: 24.12.0
+      tsx:
+        specifier: ^4.0.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   examples/current-time:
     dependencies:
       '@farcaster/snap':

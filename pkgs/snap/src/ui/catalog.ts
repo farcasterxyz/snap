@@ -29,6 +29,10 @@ const snapTargetParams = z.object({
   target: z.string(),
 });
 
+const snapClientParams = z.object({
+  client_action: z.record(z.string(), z.unknown()),
+});
+
 /**
  * Basic catalog: one json-render component per snap element type, plus ActionButton for snap buttons.
  * Does not validate cross-field rules (media count, height budget); snap JSON still goes through `@farcaster/snap` validation.
@@ -102,7 +106,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     ActionButton: {
       props: actionButtonProps,
       description:
-        "Snap action button: post (next page), link (browser), mini_app, sdk — target is HTTPS URL or SDK id.",
+        "Snap action button: post (next page), link (browser), mini_app, client — target is HTTPS URL or client_action object.",
     },
   },
   actions: {
@@ -119,10 +123,10 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       description: "Open `target` as an in-app Farcaster mini app.",
       params: snapTargetParams,
     },
-    snap_sdk: {
+    snap_client: {
       description:
-        "Run a Farcaster client SDK action (cast:view, user:follow, …).",
-      params: snapTargetParams,
+        "Trigger a Farcaster client action (view_cast, view_profile, compose_cast, …).",
+      params: snapClientParams,
     },
   },
 });

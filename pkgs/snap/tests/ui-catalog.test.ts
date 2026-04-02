@@ -28,7 +28,7 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
 
   it("exports expected snap action names", () => {
     expect([...snapJsonRenderCatalog.actionNames].sort()).toEqual(
-      ["snap_link", "snap_mini_app", "snap_post", "snap_sdk"].sort(),
+      ["snap_link", "snap_mini_app", "snap_post", "snap_client"].sort(),
     );
   });
 });
