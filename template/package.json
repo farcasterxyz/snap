@@ -12,6 +12,7 @@
     "@farcaster/snap": "workspace:*",
     "@farcaster/snap-hono": "workspace:*",
     "@hono/node-server": "^1.0.0",
+    "@noble/curves": "^2.0.0",
     "hono": "^4.0.0",
     "zod": "^4.0.0"
   },
