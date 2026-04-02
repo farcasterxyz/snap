@@ -9,9 +9,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@farcaster/snap": "^1.5.0",
-    "@farcaster/snap-hono": "^1.3.0",
-    "@farcaster/snap-upstash": "^1.0.0",
+    "@farcaster/snap": "^1.5.1",
+    "@farcaster/snap-hono": "^1.3.1",
+    "@farcaster/snap-upstash": "^1.0.1",
     "@hono/node-server": "^1.0.0",
     "@noble/curves": "^2.0.0",
     "hono": "^4.0.0",
