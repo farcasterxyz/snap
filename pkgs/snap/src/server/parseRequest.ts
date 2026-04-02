@@ -7,7 +7,7 @@ import {
 import { decodePayload, verifyJFSRequestBody } from "./verify";
 import { z } from "zod";
 
-/** Default replay window per SPEC.md § Replay Protection (5 minutes). */
+/** Default replay window per docs spec */
 const DEFAULT_SNAP_POST_MAX_SKEW_SECONDS = 300 as const;
 
 export type ParseRequestError =

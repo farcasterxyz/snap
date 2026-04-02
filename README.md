@@ -5,7 +5,6 @@ Spec and tooling for interactive snaps on [Farcaster](https://farcaster.xyz).
 > [!NOTE]
 > This spec is in beta and may change rapidly in the near term.
 
-
 ## 🚀 Quickstart
 
 Agent command/skill docs live in [agent-skills/README.md](./agent-skills/README.md).
@@ -20,7 +19,7 @@ See [snap.farcaster.xyz](https://snap.farcaster.xyz) for more info.
 
 Core library for Snap servers: Zod schemas and types for snap JSON, validation of pages and POST bodies, and JFS verification for signed POST requests (`verifyJFSRequestBody`).
 
-The human-readable spec lives under [docs/](./docs); see [docs/README.md](./docs/README.md) for how it relates to the code.
+The human-readable spec is authored as MDX under `apps/docs/src/app/(docs)/` and published at [snap.farcaster.xyz](https://snap.farcaster.xyz). Runtime validation remains in `@farcaster/snap` (`pkgs/snap`).
 
 ### @farcaster/snap-emulator
 

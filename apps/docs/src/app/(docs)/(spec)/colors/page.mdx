@@ -1,0 +1,185 @@
+# Color Palette
+
+All colors in snaps (accent, progress bar, bar chart) are specified as **named palette
+colors**, not hex values. The client maps each name to a hex value appropriate for its
+current light/dark mode. This ensures visual consistency across the feed and guarantees
+readability in both modes.
+
+The palette has 8 colors:
+
+| Name     | Light     | Dark      |
+| -------- | --------- | --------- |
+| `gray`   | `#8F8F8F` | `#8F8F8F` |
+| `blue`   | `#006BFF` | `#006FFE` |
+| `red`    | `#FC0036` | `#F13342` |
+| `amber`  | `#FFAE00` | `#FFAE00` |
+| `green`  | `#28A948` | `#00AC3A` |
+| `teal`   | `#00AC96` | `#00AA96` |
+| `purple` | `#8B5CF6` | `#A78BFA` |
+| `pink`   | `#F32782` | `#F12B82` |
+
+The default accent is `purple`.
+
+## The Palette (visual)
+
+Swatches below match the table above (light / dark hex per mode).
+
+<div className="palette-grid">
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#8F8F8F" }} />
+    <div className="palette-info">
+      <strong>gray</strong>
+      <span>
+        Light: <code>#8F8F8F</code>
+      </span>
+      <span>
+        Dark: <code>#8F8F8F</code>
+      </span>
+    </div>
+  </div>
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#006BFF" }} />
+    <div className="palette-info">
+      <strong>blue</strong>
+      <span>
+        Light: <code>#006BFF</code>
+      </span>
+      <span>
+        Dark: <code>#006FFE</code>
+      </span>
+    </div>
+  </div>
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#FC0036" }} />
+    <div className="palette-info">
+      <strong>red</strong>
+      <span>
+        Light: <code>#FC0036</code>
+      </span>
+      <span>
+        Dark: <code>#F13342</code>
+      </span>
+    </div>
+  </div>
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#FFAE00" }} />
+    <div className="palette-info">
+      <strong>amber</strong>
+      <span>
+        Light: <code>#FFAE00</code>
+      </span>
+      <span>
+        Dark: <code>#FFAE00</code>
+      </span>
+    </div>
+  </div>
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#28A948" }} />
+    <div className="palette-info">
+      <strong>green</strong>
+      <span>
+        Light: <code>#28A948</code>
+      </span>
+      <span>
+        Dark: <code>#00AC3A</code>
+      </span>
+    </div>
+  </div>
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#00AC96" }} />
+    <div className="palette-info">
+      <strong>teal</strong>
+      <span>
+        Light: <code>#00AC96</code>
+      </span>
+      <span>
+        Dark: <code>#00AA96</code>
+      </span>
+    </div>
+  </div>
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#8B5CF6" }} />
+    <div className="palette-info">
+      <strong>purple</strong>
+      <span>
+        Light: <code>#8B5CF6</code>
+      </span>
+      <span>
+        Dark: <code>#A78BFA</code>
+      </span>
+    </div>
+  </div>
+  <div className="palette-card">
+    <div className="palette-swatch" style={{ background: "#F32782" }} />
+    <div className="palette-info">
+      <strong>pink</strong>
+      <span>
+        Light: <code>#F32782</code>
+      </span>
+      <span>
+        Dark: <code>#F12B82</code>
+      </span>
+    </div>
+  </div>
+</div>
+
+The snap specifies a name (e.g. `"blue"`). The client resolves it to the correct hex for
+the current mode.
+
+## Where Palette Colors Are Used
+
+**`page.theme.accent`** — one of the 8 palette names (default: `"purple"`).
+
+```json
+{
+  "theme": { "accent": "blue" }
+}
+```
+
+**`progress.color`** — `"accent"` (uses theme accent) or any palette name.
+
+```json
+{ "type": "progress", "value": 72, "max": 100, "color": "green" }
+```
+
+**`bar_chart.color`** — `"accent"` or any palette name (default bar fill).
+
+**`bar_chart.bars[].color`** — any palette name (per-bar override).
+
+**Exception:** `grid.cells[].color` accepts free hex (`#RRGGBB`). Games and pixel
+canvases need arbitrary colors for content like Wordle tiles and pixel art.
+
+```json
+{
+  "type": "bar_chart",
+  "bars": [
+    { "label": "Yes", "value": 62, "color": "green" },
+    { "label": "No", "value": 38, "color": "red" }
+  ]
+}
+```
+
+Where the accent color appears on UI surfaces is documented on
+[Theme & Styling](/theme#accent-surfaces).
+
+## Grid Cell Colors (Exception)
+
+Each cell can specify an arbitrary hex color via `cells[].color` (see exception above).
+This is necessary for game boards, pixel art, and other visual applications where the
+color IS the content.
+
+```json
+{
+  "type": "grid",
+  "cols": 5,
+  "rows": 6,
+  "cells": [
+    { "row": 0, "col": 0, "color": "#22C55E", "content": "C" },
+    { "row": 0, "col": 1, "color": "#6B7280", "content": "R" },
+    { "row": 0, "col": 2, "color": "#CA8A04", "content": "A" }
+  ]
+}
+```
+
+Global styling limits (fonts, spacing, light/dark mode, etc.) are on
+[Theme & Styling](/theme#snaps-cannot-specify).

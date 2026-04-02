@@ -3,55 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { PanelLeftClose, PanelLeftOpen, ExternalLink, Sun, Moon } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, Sun, Moon } from "lucide-react";
 import FarcasterLogo from "./FarcasterLogo";
+import { DOC_SECTIONS } from "@/lib/docs-pages";
 
 type NavItem = { label: string; href: string; external?: boolean };
 type NavSection = { title: string; items: NavItem[] };
 
-const NAV: NavSection[] = [
-  {
-    title: "Getting Started",
-    items: [
-      { label: "Introduction", href: "/" },
-      { label: "Examples", href: "/examples" },
-    ],
-  },
-  {
-    title: "Spec",
-    items: [
-      { label: "Elements", href: "/elements" },
-      { label: "Buttons", href: "/buttons" },
-      { label: "Effects", href: "/effects" },
-      { label: "Constraints", href: "/constraints" },
-    ],
-  },
-  {
-    title: "Styling",
-    items: [
-      { label: "Theme", href: "/theme" },
-      { label: "Colors", href: "/colors" },
-    ],
-  },
-  {
-    title: "Guides",
-    items: [
-      { label: "Building a Snap", href: "/building" },
-      { label: "Existing Website", href: "/existing-site" },
-      { label: "Authentication", href: "/auth" },
-    ],
-  },
-  {
-    title: "Tools",
-    items: [
-      {
-        label: "Emulator",
-        href: "https://farcaster.xyz/~/developers/snaps",
-        external: true,
-      },
-    ],
-  },
-];
+const NAV: NavSection[] = DOC_SECTIONS.map((section) => ({
+  title: section.title,
+  items: section.pages.map((page) => ({
+    label: page.title,
+    href: page.pathname,
+  })),
+})).filter((section) => section.items.length > 0);
 
 function getInitialTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
@@ -117,33 +82,17 @@ export default function Sidebar() {
             {NAV.map((section) => (
               <div key={section.title} className="sidebar-section">
                 <div className="sidebar-section-title">{section.title}</div>
-                {section.items.map((item) =>
-                  item.external ? (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="sidebar-link sidebar-link--external"
-                    >
-                      {item.label}
-                      <ExternalLink
-                        size={12}
-                        style={{ marginLeft: 4, opacity: 0.5 }}
-                      />
-                    </a>
-                  ) : (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`sidebar-link${
-                        pathname === item.href ? " active" : ""
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ),
-                )}
+                {section.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`sidebar-link${
+                      pathname === item.href ? " active" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
             ))}
           </div>
@@ -153,7 +102,9 @@ export default function Sidebar() {
               className="theme-toggle"
               onClick={toggleTheme}
               title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+              aria-label={`Switch to ${
+                theme === "light" ? "dark" : "light"
+              } mode`}
             >
               {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
             </button>

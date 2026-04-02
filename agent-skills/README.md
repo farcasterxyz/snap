@@ -8,5 +8,5 @@ This directory contains agent-facing command/skill files used to run structured 
 
 ## Notes
 
-- Structural truth: `spec/SPEC.md` plus `spec/elements.md` and `spec/buttons.md` (stack `root.children`, first-page rules, limits).
+- Structural truth: docs app MDX under `apps/docs/src/app/(docs)/` — start with `(learn)/page.mdx` (overview), then `(spec)/elements`, `buttons`, `effects`, `theme`, `colors`, `constraints`, `auth`, and `(learn)/examples`.
 - Runnable servers: `snap-template` in `template/` — see `template/README.md` for env vars and Vercel.

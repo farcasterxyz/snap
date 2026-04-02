@@ -1,6 +1,10 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import { DOC_PAGES, getDocPageByPathname } from "@/lib/docs-pages";
+import {
+  DOC_SECTIONS,
+  docPathnameToMdxFile,
+  getDocPageByPathname,
+} from "@/lib/docs-pages";
 
 const DOCS_DIR = join(process.cwd(), "src/app/(docs)");
 const INTERACTIVE_PREVIEW_PLACEHOLDER = "[Interactive preview on docs site]";
@@ -57,7 +61,7 @@ export function getDocMarkdownByPathname(pathname: string): string | null {
     return null;
   }
 
-  return readDocMarkdown(page.file);
+  return readDocMarkdown(docPathnameToMdxFile(page.pathname));
 }
 
 export function getAllDocsMarkdown(): string {
@@ -69,13 +73,17 @@ export function getAllDocsMarkdown(): string {
     "",
   ];
 
-  for (const page of DOC_PAGES) {
-    try {
-      sections.push(
-        `---\n\n## ${page.title}\n\n${readDocMarkdown(page.file)}\n`,
-      );
-    } catch {
-      // Skip missing files.
+  for (const section of DOC_SECTIONS) {
+    for (const page of section.pages) {
+      try {
+        sections.push(
+          `---\n\n## ${page.title}\n\n${readDocMarkdown(
+            docPathnameToMdxFile(page.pathname),
+          )}\n`,
+        );
+      } catch {
+        // Skip missing files.
+      }
     }
   }
 

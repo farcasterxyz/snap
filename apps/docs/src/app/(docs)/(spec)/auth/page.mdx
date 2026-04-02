@@ -1,6 +1,26 @@
 # Authentication
 
-Every POST request from the client to a snap server MUST be authenticated with **JSON Farcaster Signatures (JFS)**.
+Every POST request from the client to a snap server MUST be authenticated with **JSON
+Farcaster Signatures (JFS)**. See the
+[FIP: JSON Farcaster Signatures](https://github.com/farcasterxyz/protocol/discussions/208)
+discussion for the format and semantics.
+
+## Replay protection
+
+The request payload MUST contain a `timestamp` field (Unix seconds).
+
+Servers SHOULD reject requests with timestamps outside an allowed skew (for example 5
+minutes) to limit replay.
+
+## Requirements
+
+- The client MUST send a valid JFS for every authenticated POST
+- The server MUST verify the JFS cryptographically and MUST verify the signing key
+  against hub (or equivalent) state for the FID
+- The server SHOULD enforce replay protection using `timestamp` (and any other policy
+  you require)
+
+---
 
 ## How It Works
 
@@ -36,11 +56,12 @@ The decoded JFS payload (signed inside JFS, not sent as bare JSON):
 
 ## JSON Farcaster Signatures (JFS) Format
 
-JFS is a standardized way for Farcaster identities to sign arbitrary payloads. It consists of three components:
+JFS is a standardized way for Farcaster identities to sign arbitrary payloads. It
+consists of three components:
 
-1. **Header** -- metadata (FID, key type, key)
-2. **Payload** -- the content being signed
-3. **Signature** -- the cryptographic signature
+1. **Header** — metadata (FID, key type, key)
+2. **Payload** — the content being signed
+3. **Signature** — the cryptographic signature
 
 ### Compact Serialization
 
@@ -66,7 +87,8 @@ JFS supports three key types:
 | `auth`    | ERC-191          | Signature from a registered auth address |
 | `app_key` | EdDSA            | Signature from a registered App Key      |
 
-For snaps, the client typically uses `app_key` (EdDSA signature from the user's registered signer key).
+For snaps, the client typically uses `app_key` (EdDSA signature from the user's
+registered signer key).
 
 ### Verification
 
@@ -79,19 +101,8 @@ To verify a JFS:
 
 ### Reference Implementation
 
-The official Node.js package is [`@farcaster/jfs`](https://github.com/farcasterxyz/auth-monorepo).
-
-## Replay Protection
-
-The request payload MUST contain a `timestamp` field (Unix seconds).
-
-Servers SHOULD reject requests with timestamps outside an allowed skew (for example, 5 minutes) to limit replay attacks.
-
-## Requirements
-
-- The client MUST send a valid JFS for every authenticated POST
-- The server MUST verify the JFS cryptographically and MUST verify the signing key against hub (or equivalent) state for the FID
-- The server SHOULD enforce replay protection using `timestamp` (and any other policy you require)
+The official Node.js package is
+[`@farcaster/jfs`](https://github.com/farcasterxyz/auth-monorepo).
 
 ## Server-Side Verification with @farcaster/snap-hono
 
@@ -113,4 +124,5 @@ registerSnapHandler(
 );
 ```
 
-Set `SKIP_JFS_VERIFICATION=1` in your environment for local development to skip JFS verification.
+Set `SKIP_JFS_VERIFICATION=1` in your environment for local development to skip JFS
+verification.

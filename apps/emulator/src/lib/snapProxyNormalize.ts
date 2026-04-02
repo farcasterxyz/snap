@@ -48,7 +48,7 @@ export function toAbsoluteSnapTarget(baseUrl: string, target: string): string {
 }
 
 /**
- * Ensure `page` matches SPEC.md: `page.elements` is `{ type: "stack", children: [...] }`.
+ * Ensure `page` matches the snap spec: `page.elements` is `{ type: "stack", children: [...] }`.
  */
 export function normalizeSnapPageShape(
   page: Record<string, JsonValue>,

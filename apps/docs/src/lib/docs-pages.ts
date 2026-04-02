@@ -1,33 +1,54 @@
 export type DocPage = {
   pathname: string;
-  file: string;
   title: string;
 };
 
-export const DOC_PAGES: DocPage[] = [
-  { pathname: "/", file: "page.mdx", title: "Introduction" },
-  { pathname: "/examples", file: "examples/page.mdx", title: "Examples" },
-  { pathname: "/elements", file: "elements/page.mdx", title: "Elements" },
-  { pathname: "/buttons", file: "buttons/page.mdx", title: "Buttons" },
-  { pathname: "/effects", file: "effects/page.mdx", title: "Effects" },
+export type DocSection = {
+  title: string;
+  pages: DocPage[];
+};
+
+/** Route group folder under `src/app/(docs)/` for each sidebar section (URLs unchanged). */
+const SECTION_APP_FOLDER: Record<string, string> = {
+  Learn: "(learn)",
+  Create: "(create)",
+  Integrate: "(integrate)",
+  Spec: "(spec)",
+};
+
+export const DOC_SECTIONS: DocSection[] = [
   {
-    pathname: "/constraints",
-    file: "constraints/page.mdx",
-    title: "Constraints",
-  },
-  { pathname: "/theme", file: "theme/page.mdx", title: "Theme & Styling" },
-  { pathname: "/colors", file: "colors/page.mdx", title: "Color Palette" },
-  {
-    pathname: "/building",
-    file: "building/page.mdx",
-    title: "Building a Snap",
+    title: "Learn",
+    pages: [
+      { pathname: "/", title: "Introduction" },
+      { pathname: "/examples", title: "Examples" },
+    ],
   },
   {
-    pathname: "/existing-site",
-    file: "existing-site/page.mdx",
-    title: "Adding a Snap to an Existing Website",
+    title: "Create",
+    pages: [{ pathname: "/building", title: "Building a Snap" }],
   },
-  { pathname: "/auth", file: "auth/page.mdx", title: "Authentication" },
+  {
+    title: "Integrate",
+    pages: [
+      {
+        pathname: "/existing-site",
+        title: "Adding a Snap to an Existing Website",
+      },
+    ],
+  },
+  {
+    title: "Spec",
+    pages: [
+      { pathname: "/elements", title: "Elements" },
+      { pathname: "/buttons", title: "Buttons" },
+      { pathname: "/effects", title: "Effects" },
+      { pathname: "/constraints", title: "Constraints" },
+      { pathname: "/theme", title: "Theme & Styling" },
+      { pathname: "/colors", title: "Color Palette" },
+      { pathname: "/auth", title: "Authentication" },
+    ],
+  },
 ];
 
 export function normalizeDocPathname(pathname: string): string {
@@ -42,10 +63,40 @@ export function normalizeDocPathname(pathname: string): string {
   return pathname;
 }
 
+/** Relative path under `src/app/(docs)/` for the page's MDX source. */
+export function docPathnameToMdxFile(pathname: string): string {
+  const normalized = normalizeDocPathname(pathname);
+
+  for (const section of DOC_SECTIONS) {
+    const folder = SECTION_APP_FOLDER[section.title];
+    if (!folder) {
+      throw new Error(`No app folder mapped for section: ${section.title}`);
+    }
+    for (const page of section.pages) {
+      if (normalizeDocPathname(page.pathname) !== normalized) {
+        continue;
+      }
+      if (normalized === "/") {
+        return `${folder}/page.mdx`;
+      }
+      return `${folder}/${page.pathname.slice(1)}/page.mdx`;
+    }
+  }
+
+  throw new Error(`Unknown doc pathname: ${pathname}`);
+}
+
 export function getDocPageByPathname(pathname: string): DocPage | null {
   const normalizedPathname = normalizeDocPathname(pathname);
 
-  return DOC_PAGES.find((page) => page.pathname === normalizedPathname) ?? null;
+  for (const section of DOC_SECTIONS) {
+    const page = section.pages.find((p) => p.pathname === normalizedPathname);
+    if (page) {
+      return page;
+    }
+  }
+
+  return null;
 }
 
 export function isDocPathname(pathname: string): boolean {

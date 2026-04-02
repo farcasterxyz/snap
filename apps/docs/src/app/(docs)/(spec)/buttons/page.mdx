@@ -1,0 +1,118 @@
+# Buttons
+
+Buttons appear at the bottom of the page, below all elements. Each button performs one
+action.
+
+```json
+{
+  "buttons": [
+    {
+      "label": "Submit",
+      "action": "post",
+      "target": "https://example.com/submit"
+    },
+    {
+      "label": "Learn more",
+      "action": "link",
+      "target": "https://example.com"
+    }
+  ]
+}
+```
+
+| Property | Required | Description                                                                                |
+| -------- | -------- | ------------------------------------------------------------------------------------------ |
+| `label`  | Yes      | Button text. Max 30 chars.                                                                 |
+| `action` | Yes      | One of the four action types (see below).                                                  |
+| `target` | Yes      | URL or SDK action identifier.                                                              |
+| `style`  | No       | `"primary"` (filled, default for first button), `"secondary"` (outlined, default for rest) |
+
+## Button Layout
+
+The `page.button_layout` field controls how buttons are arranged:
+
+- `"stack"` — vertical, one button per row (default)
+- `"row"` — horizontal, side by side
+- `"grid"` — 2-column grid
+
+## Target URLs
+
+For `post`, `link`, and `mini_app`, `target` is a normal URL and must use HTTPS in
+production.
+
+For local development (for example a snap server on your machine, or the emulator
+hitting `http://localhost:...`), `http://` is valid only when the host is loopback:
+`localhost`, `127.0.0.1`, or IPv6 loopback (`[::1]` / `::1`). Any other `http://` target
+is invalid.
+
+For `sdk`, `target` is an SDK action identifier, not an HTTP(S) URL.
+
+## Action Types
+
+### `post`
+
+Makes a POST request to the target URL. The request body is a **JFS compact string**
+([JSON Farcaster Signatures](https://github.com/farcasterxyz/protocol/discussions/208))
+whose decoded payload includes all input element values from the current page, the
+user's FID, and a timestamp. See [Authentication](/auth). The response must be a valid
+page JSON; the client renders it as the next page.
+
+Decoded JFS payload shape (signed inside JFS, not sent as bare JSON):
+
+```json
+{
+  "fid": 12345,
+  "inputs": {
+    "guess": "CLASS",
+    "vote": "Tabs"
+  },
+  "button_index": 0,
+  "timestamp": 1710864000
+}
+```
+
+Response: A valid page JSON object.
+
+Timeout: The client waits up to 5 seconds. If the server doesn't respond, the client
+shows an error state on the current page (not a blank screen). The user can retry.
+
+### `link`
+
+Opens the target URL in the device's external browser. No request is made to the server.
+The snap stays in its current state.
+
+### `mini_app`
+
+Opens the target URL as a Farcaster mini app (slides up from bottom, rendered inside the
+Farcaster app). The target must be a valid Farcaster mini app URL.
+
+### `sdk`
+
+Triggers a Farcaster SDK action. The target is an SDK action identifier with parameters.
+Uses the existing Farcaster SDK action set.
+
+Examples:
+
+```json
+{ "label": "View cast", "action": "sdk", "target": "cast:view:0x1234abcd" }
+{ "label": "Follow", "action": "sdk", "target": "user:follow:12345" }
+{ "label": "Send tip", "action": "sdk", "target": "wallet:send:0x1234:0.01:ETH" }
+```
+
+The exact SDK action format follows the existing Farcaster SDK specification.
+
+## Input Data in POST Requests
+
+When a button with `action: "post"` is tapped, the client collects values from all input
+elements on the current page and includes them in the POST body.
+
+| Element Type         | Data Included                            |
+| -------------------- | ---------------------------------------- |
+| `text_input`         | `{ "name": "string value" }`             |
+| `slider`             | `{ "name": numeric_value }`              |
+| `button_group`       | `{ "name": "selected option string" }`   |
+| `toggle`             | `{ "name": true/false }`                 |
+| `grid` (interactive) | `{ "grid_tap": { "row": N, "col": N } }` |
+
+Input elements without a user interaction are included with their default/initial
+values.

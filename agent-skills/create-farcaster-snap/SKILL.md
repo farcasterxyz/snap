@@ -26,7 +26,7 @@ As a last step, always use curl to check that the live app is working correctly.
 
 ## Step 1: Read the spec (and element references)
 
-Read `docs/SPEC.md` first, then read every linked doc it references. Do not rely on memorized spec content.
+Read the introduction and spec MDX in the docs app (`apps/docs/src/app/(docs)/(learn)/page.mdx`, then each `(spec)/*/page.mdx` and `(learn)/examples/page.mdx` as needed). On GitHub: [docs app source](<https://github.com/farcasterxyz/snap/tree/main/apps/docs/src/app/(docs)>). Do not rely on memorized spec content.
 
 ## Step 2: Implement the snap (follow the template)
 
@@ -38,10 +38,10 @@ Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
-- Conform to `docs/SPEC.md` for overall snap/page shape and behavior.
+- Conform to the published spec (same content as the docs app introduction + spec pages) for overall snap/page shape and behavior.
 - Put elements under the page `elements` tree (`page.elements.type` + `elements.children`) per the spec.
 - Ensure first page rules are satisfied (title/body text + interactive/media requirement).
-- Ensure button schemas/targets match `docs/response.md` URL/action rules.
+- Ensure button schemas/targets match the [Buttons](https://snap.farcaster.xyz/buttons) spec page (URL/action rules).
 
 Design guidance:
 
