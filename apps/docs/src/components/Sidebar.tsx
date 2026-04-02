@@ -13,32 +13,32 @@ const NAV: NavSection[] = [
   {
     title: "Getting Started",
     items: [
-      { label: "Introduction", href: "/docs" },
-      { label: "Examples", href: "/docs/examples" },
+      { label: "Introduction", href: "/" },
+      { label: "Examples", href: "/examples" },
     ],
   },
   {
     title: "Spec",
     items: [
-      { label: "Elements", href: "/docs/elements" },
-      { label: "Buttons", href: "/docs/buttons" },
-      { label: "Effects", href: "/docs/effects" },
-      { label: "Constraints", href: "/docs/constraints" },
+      { label: "Elements", href: "/elements" },
+      { label: "Buttons", href: "/buttons" },
+      { label: "Effects", href: "/effects" },
+      { label: "Constraints", href: "/constraints" },
     ],
   },
   {
     title: "Styling",
     items: [
-      { label: "Theme", href: "/docs/theme" },
-      { label: "Colors", href: "/docs/colors" },
+      { label: "Theme", href: "/theme" },
+      { label: "Colors", href: "/colors" },
     ],
   },
   {
     title: "Guides",
     items: [
-      { label: "Building a Snap", href: "/docs/building" },
-      { label: "Existing Website", href: "/docs/existing-site" },
-      { label: "Authentication", href: "/docs/auth" },
+      { label: "Building a Snap", href: "/building" },
+      { label: "Existing Website", href: "/existing-site" },
+      { label: "Authentication", href: "/auth" },
     ],
   },
   {
@@ -86,7 +86,7 @@ export default function Sidebar() {
     <nav className={`sidebar${collapsed ? " sidebar--collapsed" : ""}`}>
       <div className="sidebar-header">
         <Link
-          href="/docs"
+          href="/"
           style={{ textDecoration: "none", color: "inherit" }}
           className="sidebar-logo"
         >

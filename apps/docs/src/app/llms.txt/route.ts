@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
-const DOCS_DIR = join(process.cwd(), "src/app/docs");
+const DOCS_DIR = join(process.cwd(), "src/app/(docs)");
 
 const PAGES = [
   { file: "page.mdx", title: "Introduction" },
@@ -12,7 +12,10 @@ const PAGES = [
   { file: "effects/page.mdx", title: "Effects" },
   { file: "constraints/page.mdx", title: "Constraints" },
   { file: "building/page.mdx", title: "Building a Snap" },
-  { file: "existing-site/page.mdx", title: "Adding a Snap to an Existing Website" },
+  {
+    file: "existing-site/page.mdx",
+    title: "Adding a Snap to an Existing Website",
+  },
   { file: "auth/page.mdx", title: "Authentication" },
   { file: "examples/page.mdx", title: "Examples" },
 ];
@@ -22,7 +25,7 @@ export async function GET() {
     "# Farcaster Snaps Documentation",
     "",
     "> This file aggregates all Farcaster Snaps documentation for LLM consumption.",
-    "> Source: https://snap.farcaster.xyz/docs",
+    "> Source: https://snap.farcaster.xyz/",
     "",
   ];
 
@@ -31,7 +34,10 @@ export async function GET() {
       const content = readFileSync(join(DOCS_DIR, page.file), "utf-8");
       // Strip JSX/HTML blocks that won't help LLMs (like palette swatches)
       const cleaned = content
-        .replace(/<div className="palette-grid">[\s\S]*?<\/div>/g, "[See color palette table on docs site]")
+        .replace(
+          /<div className="palette-grid">[\s\S]*?<\/div>/g,
+          "[See color palette table on docs site]",
+        )
         .trim();
       sections.push(`---\n\n## ${page.title}\n\n${cleaned}\n`);
     } catch {
