@@ -590,7 +590,7 @@ export type DataStoreValue =
 
 export type SnapDataStoreOperations = {
   get(key: string): Promise<DataStoreValue | null>;
-  set(key: string, value: DataStoreValue): Promise<DataStoreValue>;
+  set(key: string, value: DataStoreValue): Promise<void>;
 };
 
 export type SnapDataStore = SnapDataStoreOperations & {

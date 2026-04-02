@@ -65,39 +65,7 @@ describe("withUpstash — no env vars", () => {
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
   });
 
-  it("passes through to the wrapped snap function", async () => {
-    const { withUpstash } = await import("../src/index.js");
-
-    const received: SnapContext[] = [];
-    const snapFn: SnapFunction = async (ctx) => {
-      received.push(ctx);
-      return minimalResponse;
-    };
-
-    const wrapped = withUpstash(snapFn);
-    const ctx = makeCtx();
-    await wrapped(ctx);
-
-    expect(received).toHaveLength(1);
-  });
-
-  it("replaces ctx.data with the default throwing stub", async () => {
-    const { withUpstash } = await import("../src/index.js");
-
-    let capturedData: SnapContext["data"] | undefined;
-    const snapFn: SnapFunction = async (ctx) => {
-      capturedData = ctx.data;
-      return minimalResponse;
-    };
-
-    const wrapped = withUpstash(snapFn);
-    await wrapped(makeCtx());
-
-    expect(capturedData).toBeDefined();
-    await expect(capturedData!.get("key")).rejects.toThrow("not configured");
-  });
-
-  it("does not replace other ctx fields", async () => {
+  it("returns the original snapFn and passes ctx through unchanged", async () => {
     const { withUpstash } = await import("../src/index.js");
 
     let capturedCtx: SnapContext | undefined;
@@ -106,12 +74,13 @@ describe("withUpstash — no env vars", () => {
       return minimalResponse;
     };
 
-    const ctx = makeCtx();
     const wrapped = withUpstash(snapFn);
+    expect(wrapped).toBe(snapFn);
+
+    const ctx = makeCtx();
     await wrapped(ctx);
 
-    expect(capturedCtx?.action).toEqual(ctx.action);
-    expect(capturedCtx?.request).toBe(ctx.request);
+    expect(capturedCtx).toBe(ctx);
   });
 });
 

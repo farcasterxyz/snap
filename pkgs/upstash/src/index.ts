@@ -8,12 +8,14 @@ import {
 } from "@farcaster/snap";
 
 export type WithUpstashOptions = {
-  /** Lock acquisition timeout in milliseconds. */
-  lockTimeout?: number;
+  lockAcquireTimeoutMs?: number;
+  lockLeaseDurationMs?: number;
 };
 
-const DEFAULT_LOCK_TIMEOUT = 10_000;
+const DEFAULT_LOCK_ACQUIRE_TIMEOUT_MS = 5_000;
+const DEFAULT_LOCK_LEASE_DURATION_MS = 1_000;
 const LOCK_KEY = "snap:lock";
+const LOCK_RETRY_DELAY_MS = 50;
 
 /**
  * Wraps a SnapFunction and injects an Upstash Redis-backed data store into
@@ -34,14 +36,21 @@ export function withUpstash(
   }
 
   const redis = new Redis({ url, token });
-  const lockTimeout = options?.lockTimeout ?? DEFAULT_LOCK_TIMEOUT;
+  const acquireTimeoutMs = Math.max(
+    1,
+    options?.lockAcquireTimeoutMs ?? DEFAULT_LOCK_ACQUIRE_TIMEOUT_MS,
+  );
+  const leaseDurationMs = Math.max(
+    1,
+    options?.lockLeaseDurationMs ?? DEFAULT_LOCK_LEASE_DURATION_MS,
+  );
 
   const ops: SnapDataStoreOperations = {
     async get(key: string): Promise<DataStoreValue | null> {
       return redis.get<DataStoreValue>(key);
     },
-    async set(key: string, value: DataStoreValue): Promise<DataStoreValue> {
-      return redis.set(key, value);
+    async set(key: string, value: DataStoreValue): Promise<void> {
+      await redis.set(key, value);
     },
   };
 
@@ -53,16 +62,16 @@ export function withUpstash(
       const lock = new Lock({
         id: LOCK_KEY,
         redis,
-        lease: lockTimeout,
+        lease: leaseDurationMs,
         retry: {
-          attempts: Math.ceil(lockTimeout / 50),
-          delay: 50,
+          attempts: Math.ceil(acquireTimeoutMs / LOCK_RETRY_DELAY_MS),
+          delay: LOCK_RETRY_DELAY_MS,
         },
       });
 
       if (!(await lock.acquire())) {
         throw new Error(
-          `snap-upstash: failed to acquire lock within ${lockTimeout}ms`,
+          `snap-upstash: failed to acquire lock within ${acquireTimeoutMs}ms`,
         );
       }
 
