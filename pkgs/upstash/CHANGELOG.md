@@ -1,5 +1,12 @@
 # @farcaster/snap-upstash
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`740ad60`](https://github.com/farcasterxyz/snap/commit/740ad605a9909688f39ab717df322ba65ed5fb59)]:
+  - @farcaster/snap@1.5.1
+
 ## 1.0.0
 
 ### Major Changes

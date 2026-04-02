@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.5.1
+
+### Patch Changes
+
+- [`740ad60`](https://github.com/farcasterxyz/snap/commit/740ad605a9909688f39ab717df322ba65ed5fb59) Thanks [@lyoshenka](https://github.com/lyoshenka)! - add sdk actions
+
 ## 1.5.0
 
 ### Minor Changes
