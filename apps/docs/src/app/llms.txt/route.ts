@@ -7,6 +7,7 @@ const PAGES = [
   { file: "page.mdx", title: "Introduction" },
   { file: "elements/page.mdx", title: "Elements" },
   { file: "buttons/page.mdx", title: "Buttons" },
+  { file: "actions/page.mdx", title: "Actions" },
   { file: "colors/page.mdx", title: "Color Palette" },
   { file: "theme/page.mdx", title: "Theme & Styling" },
   { file: "effects/page.mdx", title: "Effects" },
