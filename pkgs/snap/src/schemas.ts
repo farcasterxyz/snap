@@ -602,13 +602,13 @@ export function createDefaultDataStore(): SnapDataStore {
     "Data store is not configured. Use withUpstash() from @farcaster/snap-upstash or provide a data store implementation.",
   );
   return {
-    get(): Promise<never> {
+    get(_key: string): Promise<never> {
       return Promise.reject(err);
     },
-    set(): Promise<never> {
+    set(_key: string, _value: DataStoreValue): Promise<never> {
       return Promise.reject(err);
     },
-    withLock(): Promise<never> {
+    withLock<T>(_fn: (store: SnapDataStoreOperations) => Promise<T>): Promise<never> {
       return Promise.reject(err);
     },
   };
