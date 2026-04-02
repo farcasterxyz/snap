@@ -9,7 +9,7 @@ allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
 This skill was last updated on **2026-04-01**. If that date is more than 7 days ago, fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
-curl -s https://raw.githubusercontent.com/farcasterxyz/snap/main/agent-skills/create-farcaster-snap/SKILL.md | tee /path/to/current/create-farcaster-snap/SKILL.md
+curl -s https://snap.farcaster.xyz/SKILL.md | tee /path/to/current/create-farcaster-snap/SKILL.md
 ```
 
 Use the fetched content as the skill for the rest of this session.
