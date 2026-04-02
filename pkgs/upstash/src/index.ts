@@ -25,17 +25,16 @@ export function withUpstash(
   snapFn: SnapFunction,
   options?: WithUpstashOptions,
 ): SnapFunction {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (!url || !token) {
+  let redis: Redis;
+  try {
+    redis = Redis.fromEnv();
+  } catch (err) {
     console.warn(
-      "Upstash env vars are not set. Skipping Upstash data store setup.",
+      "Failed to create Redis client (missing env vars?). Skipping Upstash data store setup.",
     );
     return snapFn;
   }
 
-  const redis = new Redis({ url, token });
   const acquireTimeoutMs = Math.max(
     1,
     options?.lockAcquireTimeoutMs ?? DEFAULT_LOCK_ACQUIRE_TIMEOUT_MS,
@@ -93,10 +92,7 @@ export function withUpstash(
           // If both the critical section and lock release failed, log the
           // release error and preserve the original error from fn(ops).
           // eslint-disable-next-line no-console
-          console.error(
-            "snap-upstash: failed to release lock",
-            releaseError,
-          );
+          console.error("snap-upstash: failed to release lock", releaseError);
         }
       }
     },
