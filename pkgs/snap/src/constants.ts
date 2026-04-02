@@ -68,6 +68,8 @@ export const DEFAULT_LIST_STYLE = "ordered" as const;
 
 export const GRID_CELL_SIZE_VALUES = ["auto", "square"] as const;
 export const GRID_GAP_VALUES = ["none", "small", "medium"] as const;
+export const DEFAULT_GRID_GAP =
+  "small" as const satisfies (typeof GRID_GAP_VALUES)[number];
 
 export const BUTTON_GROUP_STYLE = {
   row: "row",

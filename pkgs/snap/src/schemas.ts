@@ -7,6 +7,7 @@ import {
   BUTTON_LAYOUT_VALUES,
   BUTTON_STYLE_VALUES,
   DEFAULT_BUTTON_LAYOUT,
+  DEFAULT_GRID_GAP,
   DEFAULT_LIST_STYLE,
   DEFAULT_SLIDER_STEP,
   EFFECT_VALUES,
@@ -68,32 +69,9 @@ const themeSchema = z
   })
   .strict();
 
-const httpsUrl = z.string().refine((s) => s.startsWith(HTTPS_PREFIX), {
-  message: "URL must use HTTPS",
+const imageUrlSchema = z.string().refine((s) => s.startsWith(HTTPS_PREFIX), {
+  message: "image URL must use HTTPS",
 });
-
-function hasAllowedMediaExtension(
-  urlString: string,
-  allowedExtensions: string[],
-): boolean {
-  try {
-    const url = new URL(urlString);
-    if (url.protocol !== "https:") return false;
-    const lowerPathname = url.pathname.toLowerCase();
-    return allowedExtensions.some((extension) =>
-      lowerPathname.endsWith(`.${extension}`),
-    );
-  } catch {
-    return false;
-  }
-}
-
-const imageUrlSchema = z
-  .string()
-  .refine((s) => hasAllowedMediaExtension(s, ["jpg", "png", "gif", "webp"]), {
-    message:
-      "image URL must use HTTPS and end with a supported extension (.jpg, .png, .gif, .webp)",
-  });
 
 const textAlignSchema = z.enum(TEXT_ALIGN_VALUES);
 
@@ -208,7 +186,7 @@ const gridElementSchema = z
     rows: z.number().int().min(LIMITS.minGridRows).max(LIMITS.maxGridRows),
     cells: z.array(gridCellSchema),
     cellSize: z.enum(GRID_CELL_SIZE_VALUES).optional(),
-    gap: z.enum(GRID_GAP_VALUES).optional(),
+    gap: z.enum(GRID_GAP_VALUES).default(DEFAULT_GRID_GAP),
     interactive: z.boolean().optional(),
   })
   .superRefine((val, ctx) => {
@@ -608,7 +586,9 @@ export function createDefaultDataStore(): SnapDataStore {
     set(_key: string, _value: DataStoreValue): Promise<never> {
       return Promise.reject(err);
     },
-    withLock<T>(_fn: (store: SnapDataStoreOperations) => Promise<T>): Promise<never> {
+    withLock<T>(
+      _fn: (store: SnapDataStoreOperations) => Promise<T>,
+    ): Promise<never> {
       return Promise.reject(err);
     },
   };
