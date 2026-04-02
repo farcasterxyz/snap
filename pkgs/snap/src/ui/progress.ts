@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PROGRESS_COLOR_VALUES } from "../constants.js";
+import { PROGRESS_COLOR_VALUES } from "../colors.js";
 
 export const progressProps = z.object({
   value: z.number(),
