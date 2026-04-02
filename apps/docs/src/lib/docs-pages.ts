@@ -13,7 +13,8 @@ const SECTION_APP_FOLDER: Record<string, string> = {
   Learn: "(learn)",
   Create: "(create)",
   Integrate: "(integrate)",
-  Spec: "(spec)",
+  Reference: "(spec)",
+  Agents: "(learn)",
 };
 
 export const DOC_SECTIONS: DocSection[] = [
@@ -38,7 +39,7 @@ export const DOC_SECTIONS: DocSection[] = [
     ],
   },
   {
-    title: "Spec",
+    title: "Reference",
     pages: [
       { pathname: "/elements", title: "Elements" },
       { pathname: "/buttons", title: "Buttons" },
@@ -49,6 +50,10 @@ export const DOC_SECTIONS: DocSection[] = [
       { pathname: "/colors", title: "Color Palette" },
       { pathname: "/auth", title: "Authentication" },
     ],
+  },
+  {
+    title: "Agents",
+    pages: [{ pathname: "/agents", title: "Agents" }],
   },
 ];
 

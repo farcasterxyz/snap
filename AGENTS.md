@@ -15,6 +15,10 @@
 - Keep workflow docs and reference docs distinct. Skills and README files should mainly help people and agents find the right path and execute tasks; they should not become shadow specs.
 - Use `AGENTS.md` to capture intent, philosophy, and high-level design direction so agents can understand where the project is going, not just how it works today.
 
+## Operational handbook
+
+Ports, env vars, package behaviors, build quirks, and other workspace-specific facts live in [`WORKSPACE.md`](./WORKSPACE.md). Read that file when you need a specific operational detail.
+
 ## Learned User Preferences
 
 - **Deep modules principle:** Each workspace package under `pkgs/` keeps a single public surface: `src/index.ts` must list that module’s exports. **All imports from outside the module go through that entry only** (package name such as `@farcaster/snap`, which resolve to `index.ts`). Do not import another package by reaching into its implementation paths (for example `…/snap/src/server/hubs` via relative file paths from a different package). Inside the same package, implementation files import each other with relative paths; do not re-export through random barrels—only `index.ts` aggregates what other packages may use. Do not use `export { … } from "./other"` or `export * from "./other"` in non-`index` implementation files as a shortcut for external consumers; add exports to `index.ts` instead.

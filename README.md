@@ -1,13 +1,19 @@
 # Farcaster Snaps 🫰
 
-Spec and tooling for interactive snaps on [Farcaster](https://farcaster.xyz).
+Snaps are lightweight interactive apps right in your [Farcaster](https://farcaster.xyz) feed.
+
+This is the monorepo for the core packages, docs site, emulator, template, and examples.
 
 > [!NOTE]
 > This spec is in beta and may change rapidly in the near term.
 
 ## 🚀 Quickstart
 
-Agent command/skill docs live in [agent-skills/README.md](./agent-skills/README.md).
+Tell your agent
+
+```
+Read https://snap.farcaster.xyz/SKILL.md and make a snap that ...
+```
 
 ## 📖 Docs for Humans
 
@@ -84,3 +90,103 @@ Pick the affected package(s) and the bump level (major / minor / patch). That wr
 Changelogs use [@changesets/changelog-github](https://github.com/changesets/changelog-github) against this repo. GitHub Releases are created for published versions on `main`.
 
 **CI secrets** (org/repo): `NPM_TOKEN`, and `REPO_SCOPED_TOKEN` for the Changesets GitHub app token (same pattern as other Farcaster repos such as [miniapps](https://github.com/farcasterxyz/miniapps)).
+
+# Farcaster Snaps
+
+Spec and tooling for building interactive Farcaster Snaps. This is the monorepo for the core packages, docs site, emulator, template, and examples.
+
+> **Beta:** The spec is in beta and may change in the near term.
+
+## Public docs
+
+Human and agent starting point: **[snap.farcaster.xyz](https://snap.farcaster.xyz)**
+
+The docs site is the canonical prose documentation. It covers the protocol overview, all element and button types, constraints, authentication, and integration patterns.
+
+## Repo map
+
+```
+pkgs/
+  snap/        @farcaster/snap       — Zod schemas, validation, JFS verification
+  hono/        @farcaster/snap-hono  — Hono registerSnapHandler integration
+  upstash/     @farcaster/snap-upstash — Upstash Redis-backed SnapDataStore
+apps/
+  docs/                              — Next.js docs site (snap.farcaster.xyz)
+  emulator/    @farcaster/snap-emulator — Local snap emulator (port 3000)
+template/                            — Deployable Hono starter (port 3003)
+examples/                            — Runnable example snap servers
+agent-skills/                        — Agent workflow skill files
+spec/                                — Pointer stubs; canonical spec lives in apps/docs
+```
+
+The canonical machine definition of the protocol is `pkgs/snap/src/schemas.ts`. The docs site explains those schemas in prose.
+
+## Development
+
+This repo uses [pnpm](https://pnpm.io/) workspaces and [Turborepo](https://turbo.build/).
+
+```bash
+pnpm install
+pnpm build       # turbo build — all packages
+pnpm test        # turbo test — Vitest in @farcaster/snap
+pnpm typecheck   # turbo typecheck
+```
+
+Run the docs site locally:
+
+```bash
+pnpm exec turbo dev --filter=@farcaster/snap-docs
+# Opens at http://localhost:3001
+```
+
+Run the emulator:
+
+```bash
+pnpm exec turbo dev --filter=@farcaster/snap-emulator
+# Opens at http://localhost:3000
+```
+
+Run the template snap:
+
+```bash
+cd template && pnpm install && pnpm dev
+# Opens at http://localhost:3003
+```
+
+See [`WORKSPACE.md`](./WORKSPACE.md) for port reference, env vars, and other operational details.
+
+## Packages
+
+### `@farcaster/snap`
+
+Core library: Zod schemas and types for snap JSON, runtime validation of pages and POST bodies, and JFS verification (`verifyJFSRequestBody`). Safe for browser bundles — the main entry has no Node.js dependencies.
+
+### `@farcaster/snap-hono`
+
+Hono integration: `registerSnapHandler` wires GET and POST routes, validates responses, and handles JFS verification.
+
+### `@farcaster/snap-upstash`
+
+Optional `SnapDataStore` backed by Upstash Redis. Wraps your snap function with `withUpstash(snapFn)`.
+
+### `@farcaster/snap/ui`
+
+json-render catalog for snap elements. Exported from `@farcaster/snap/ui` and per-component sub-paths (e.g., `@farcaster/snap/ui/button`).
+
+## Releases
+
+Published packages are versioned with [Changesets](https://github.com/changesets/changesets). To add a changeset for a consumer-facing change:
+
+```bash
+pnpm exec changeset
+```
+
+Pick the affected packages and bump level. Commit the resulting file under `.changeset/`. On push to `main`, the Changesets workflow either opens a "Version packages" PR or publishes to npm if the PR was already merged.
+
+**Never create or edit `.changeset/*.md` files manually.**
+
+## Agents working in this repo
+
+Read [`AGENTS.md`](./AGENTS.md) for design principles, philosophy, and coding conventions. Read [`WORKSPACE.md`](./WORKSPACE.md) for operational details (ports, env vars, build quirks).
+
+The create-snap agent skill lives at [`agent-skills/create-farcaster-snap/SKILL.md`](./agent-skills/create-farcaster-snap/SKILL.md) and is also served from [snap.farcaster.xyz/agents](https://snap.farcaster.xyz/agents).
