@@ -264,8 +264,10 @@ function renderElement(
       const gap: Record<string, string> = { none: "0", sm: "4px", md: "8px", lg: "16px" };
       const gapVal = gap[String(p.gap ?? "md")] ?? "8px";
       const dir = direction === "horizontal" ? "row" : "column";
+      const justifyMap: Record<string, string> = { start: "flex-start", center: "center", end: "flex-end", between: "space-between", around: "space-around" };
+      const jc = p.justify ? justifyMap[String(p.justify)] : undefined;
       const childIds = el.children ?? [];
-      let html = `<div style="display:flex;flex-direction:${dir};gap:${gapVal}">`;
+      let html = `<div style="display:flex;flex-direction:${dir};gap:${gapVal}${jc ? `;justify-content:${jc}` : ""}">`;
       for (const childKey of childIds) {
         const flex = direction === "horizontal" ? "flex:1;" : "";
         html += `<div style="${flex}">${renderElement(childKey, spec, accent)}</div>`;

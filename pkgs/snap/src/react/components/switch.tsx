@@ -6,7 +6,7 @@ import { Label } from "@neynar/ui/label";
 import { Switch } from "@neynar/ui/switch";
 import { useColorMode } from "@neynar/ui/color-mode";
 import { cn } from "@neynar/ui/utils";
-import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
+import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 
 export function SnapSwitch({
   element: { props },

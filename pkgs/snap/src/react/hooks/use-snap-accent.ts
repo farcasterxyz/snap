@@ -5,9 +5,9 @@ import { useStateStore } from "@json-render/react";
 import type { PaletteColor } from "@farcaster/snap";
 import { PALETTE_DARK_HEX, PALETTE_LIGHT_HEX } from "@farcaster/snap";
 import { useColorMode } from "@neynar/ui/color-mode";
-import { resolveSnapPaletteHex } from "@/lib/resolveSnapPaletteHex";
-import { snapPreviewPrimaryCssProperties } from "@/lib/snapPreviewPrimaryCss";
-import { useSnapPreviewPageAccent } from "../SnapPreviewAccentContext";
+import { resolveSnapPaletteHex } from "../lib/resolve-palette-hex";
+import { snapPreviewPrimaryCssProperties } from "../lib/preview-primary-css";
+import { useSnapPreviewPageAccent } from "../accent-context";
 
 /**
  * CSS variables so Neynar controls (`bg-primary`, `data-checked:bg-primary`, etc.)

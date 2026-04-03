@@ -22,6 +22,7 @@ const JUSTIFY: Record<string, string> = {
   center: "justify-center",
   end: "justify-end",
   between: "justify-between",
+  around: "justify-around",
 };
 
 export function SnapStack({

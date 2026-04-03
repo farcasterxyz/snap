@@ -25,16 +25,18 @@ export function SnapText({
   const align = (props.align as "left" | "center" | "right") ?? undefined;
   const config = SIZE_MAP[size] ?? SIZE_MAP.md;
 
+  const alignClass = align === "center" ? "text-center" : align === "right" ? "text-right" : "";
+
   if (config.component === "title") {
     return (
-      <Title order={config.order} weight={weight ?? "bold"} className={align === "center" ? "text-center" : align === "right" ? "text-right" : ""}>
+      <Title order={config.order} weight={weight ?? "bold"} className={`flex-1 ${alignClass}`}>
         {content}
       </Title>
     );
   }
 
   return (
-    <Text size={config.textSize} weight={weight} align={align}>
+    <Text size={config.textSize} weight={weight} align={align} className="flex-1">
       {content}
     </Text>
   );

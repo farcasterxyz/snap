@@ -36,7 +36,7 @@ import {
   TrendingDown,
   type LucideIcon,
 } from "lucide-react";
-import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
+import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 
 export const ICON_MAP: Record<string, LucideIcon> = {
   "arrow-right": ArrowRight,

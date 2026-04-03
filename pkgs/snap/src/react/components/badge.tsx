@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@neynar/ui/badge";
-import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
+import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 import { ICON_MAP } from "./icon";
 
 export function SnapBadge({

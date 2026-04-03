@@ -2,7 +2,7 @@
 
 import { useStateStore } from "@json-render/react";
 import { Label } from "@neynar/ui/label";
-import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
+import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 
 // TODO: switch back to @neynar/ui/slider once Base UI fixes the inline
 // <script> tag that triggers a React console warning on client render.

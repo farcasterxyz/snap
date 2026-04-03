@@ -1,6 +1,6 @@
 "use client";
 
-import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
+import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 
 export function SnapProgress({
   element: { props },
