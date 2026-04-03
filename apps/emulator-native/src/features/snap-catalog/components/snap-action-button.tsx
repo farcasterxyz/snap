@@ -71,7 +71,7 @@ export function SnapActionButton({
 }
 
 const styles = StyleSheet.create({
-  outer: { minWidth: 0 },
+  outer: { flex: 1, minWidth: 0 },
   btn: {
     paddingHorizontal: 16,
     borderRadius: 10,
