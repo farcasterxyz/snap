@@ -1,7 +1,9 @@
+declare const __DEV__: boolean;
+
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useSnapPalette } from "../useSnapPalette";
-import { useTheme } from "../../../ThemeContext";
+import { useSnapPalette } from "../use-snap-palette";
+import { useSnapTheme } from "../theme";
 import { ICON_MAP } from "./snap-icon";
 
 const VARIANT_MAP: Record<string, "default" | "secondary" | "outline" | "ghost"> = {
@@ -16,7 +18,7 @@ export function SnapActionButton({
   emit,
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { accentHex } = useSnapPalette();
-  const { colors } = useTheme();
+  const { colors } = useSnapTheme();
   const label = String(props.label ?? "Action");
   const variant = VARIANT_MAP[String(props.variant ?? "default")] ?? "default";
   const iconName = props.icon ? String(props.icon) : undefined;
@@ -51,9 +53,9 @@ export function SnapActionButton({
             try {
               await emit("press");
             } catch (err: unknown) {
-              if (__DEV__) {
+              if (typeof __DEV__ !== "undefined" && __DEV__) {
                 // eslint-disable-next-line no-console
-                console.error("[emulator-native] snap action failed", err);
+                console.error("[snap] action failed", err);
               }
             }
           })();

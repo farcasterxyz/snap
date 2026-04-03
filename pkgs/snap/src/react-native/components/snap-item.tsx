@@ -1,13 +1,13 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useTheme } from "../../../ThemeContext";
+import { useSnapTheme } from "../theme";
 
 export function SnapItem({
   element: { props },
   children,
 }: ComponentRenderProps<Record<string, unknown>> & { children?: ReactNode }) {
-  const { colors } = useTheme();
+  const { colors } = useSnapTheme();
   const title = String(props.title ?? "");
   const description = props.description
     ? String(props.description)

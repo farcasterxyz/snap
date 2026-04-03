@@ -1,6 +1,6 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { StyleSheet, Text, View } from "react-native";
-import { useSnapPalette } from "../useSnapPalette";
+import { useSnapPalette } from "../use-snap-palette";
 import { ICON_MAP } from "./snap-icon";
 
 export function SnapBadge({

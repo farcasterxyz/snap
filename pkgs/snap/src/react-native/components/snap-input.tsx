@@ -1,13 +1,13 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { useStateStore } from "@json-render/react-native";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { useTheme } from "../../../ThemeContext";
+import { useSnapTheme } from "../theme";
 
 export function SnapInput({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { get, set } = useStateStore();
-  const { colors } = useTheme();
+  const { colors } = useSnapTheme();
   const name = String(props.name ?? "input");
   const path = `/inputs/${name}`;
   const label = props.label ? String(props.label) : undefined;

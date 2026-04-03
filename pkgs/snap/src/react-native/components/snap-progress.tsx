@@ -1,13 +1,13 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { StyleSheet, Text, View } from "react-native";
-import { useSnapPalette } from "../useSnapPalette";
-import { useTheme } from "../../../ThemeContext";
+import { useSnapPalette } from "../use-snap-palette";
+import { useSnapTheme } from "../theme";
 
 export function SnapProgress({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { accentHex } = useSnapPalette();
-  const { colors } = useTheme();
+  const { colors } = useSnapTheme();
   const value = Number(props.value ?? 0);
   const max = Math.max(1, Number(props.max ?? 100));
   const percent = Math.min(100, Math.max(0, (value / max) * 100));

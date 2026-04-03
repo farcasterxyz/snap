@@ -1,11 +1,11 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { StyleSheet, View } from "react-native";
-import { useTheme } from "../../../ThemeContext";
+import { useSnapTheme } from "../theme";
 
 export function SnapSeparator({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
-  const { colors } = useTheme();
+  const { colors } = useSnapTheme();
   const orientation = String(props.orientation ?? "horizontal");
   const isVertical = orientation === "vertical";
 
