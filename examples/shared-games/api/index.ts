@@ -213,7 +213,7 @@ function buildHomePage(args: { snapBaseUrl: string }): SnapHandlerResult {
   return {
     version: SPEC_VERSION,
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -360,7 +360,7 @@ function buildWordlePage(args: {
   return {
     version: SPEC_VERSION,
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: elements as any,
     },
@@ -377,7 +377,7 @@ function buildCanvasPage(args: {
   return {
     version: SPEC_VERSION,
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -569,7 +569,7 @@ function buildStoryPage(args: {
   return {
     version: SPEC_VERSION,
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: elements as any,
     },
@@ -702,7 +702,7 @@ function buildEstimatePage(args: {
   return {
     version: SPEC_VERSION,
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: elements as any,
     },
@@ -725,7 +725,7 @@ function buildPredictionPage(args: {
   return {
     version: SPEC_VERSION,
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {

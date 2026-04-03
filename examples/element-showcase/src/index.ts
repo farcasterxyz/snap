@@ -46,7 +46,7 @@ function homePage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -126,7 +126,7 @@ function textPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "blue" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -211,7 +211,7 @@ function inputsPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "teal" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -315,7 +315,7 @@ function inputsResultPage(
   return {
     version: "1.0",
     theme: { accent: "green" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -397,7 +397,7 @@ function dataVizPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "amber" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -490,7 +490,7 @@ function gridPage(base: string): SnapHandlerResult {
     version: "1.0",
     theme: { accent: "pink" },
     effects: ["confetti"],
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {

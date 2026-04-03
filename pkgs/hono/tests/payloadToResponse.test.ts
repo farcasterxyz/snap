@@ -8,7 +8,7 @@ import {
 describe("payloadToResponse", () => {
   const minimalRoot = {
     version: "1.0" as const,
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: { type: "stack", props: {}, children: ["title"] },
@@ -37,7 +37,7 @@ describe("payloadToResponse", () => {
   it("returns 400 with issues on invalid payload", async () => {
     const r = payloadToResponse({
       version: "999" as "1.0",
-      spec: {
+      ui: {
         root: "",
         elements: {},
       },

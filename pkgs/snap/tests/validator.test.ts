@@ -12,7 +12,7 @@ function makeSpec(elements: Record<string, { type: string; props?: Record<string
 function validMinimalSnap() {
   return {
     version: "1.0",
-    spec: makeSpec({
+    ui: makeSpec({
       title: { type: "item", props: { title: "Hello" } },
     }),
   };
@@ -48,20 +48,20 @@ describe("Schema basics", () => {
   });
 
   it("requires version 1.0", () => {
-    expectInvalid({ spec: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
-    expectInvalid({ version: "2.0", spec: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
+    expectInvalid({ ui: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
+    expectInvalid({ version: "2.0", ui: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
   });
 
-  it("requires spec with root and elements", () => {
+  it("requires ui with root and elements", () => {
     expectInvalid({ version: "1.0" });
-    expectInvalid({ version: "1.0", spec: {} });
-    expectInvalid({ version: "1.0", spec: { root: "x" } });
+    expectInvalid({ version: "1.0", ui: {} });
+    expectInvalid({ version: "1.0", ui: { root: "x" } });
   });
 
-  it("accepts all element types in spec", () => {
+  it("accepts all element types in ui", () => {
     expectValid({
       version: "1.0",
-      spec: makeSpec({
+      ui: makeSpec({
         a: { type: "item", props: { title: "Test" } },
         b: { type: "badge", props: { content: "New" } },
         c: { type: "image", props: { url: "https://example.com/img.jpg", aspect: "16:9" } },
@@ -74,7 +74,7 @@ describe("Schema basics", () => {
   it("accepts interactive elements", () => {
     expectValid({
       version: "1.0",
-      spec: makeSpec({
+      ui: makeSpec({
         a: { type: "input", props: { name: "text" } },
         b: { type: "slider", props: { name: "val", min: 0, max: 100 } },
         c: { type: "toggle_group", props: { name: "choice", options: [{ value: "a", label: "A" }, { value: "b", label: "B" }] } },
@@ -87,7 +87,7 @@ describe("Schema basics", () => {
   it("accepts buttons with on.press actions", () => {
     expectValid({
       version: "1.0",
-      spec: {
+      ui: {
         root: "page",
         elements: {
           page: { type: "stack", children: ["title", "submit"] },
@@ -105,7 +105,7 @@ describe("Schema basics", () => {
   it("accepts nested stacks with children", () => {
     expectValid({
       version: "1.0",
-      spec: {
+      ui: {
         root: "page",
         elements: {
           page: { type: "stack", children: ["row"] },

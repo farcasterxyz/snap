@@ -99,7 +99,7 @@ function welcomePage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -145,7 +145,7 @@ function typographyPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "blue" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -180,7 +180,7 @@ function imagesPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "teal" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -266,7 +266,7 @@ function iconsPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "amber" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -356,7 +356,7 @@ function itemsPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "green" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -457,7 +457,7 @@ function layoutPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "amber" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -521,7 +521,7 @@ function formPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "teal" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -584,7 +584,7 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
     version: "1.0",
     theme: { accent: "green" },
     effects: ["confetti"],
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {
@@ -639,7 +639,7 @@ function actionsPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "pink" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {

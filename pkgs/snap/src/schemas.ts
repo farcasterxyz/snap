@@ -23,7 +23,7 @@ const themeSchema = z
   .strict();
 
 // ─── Snap response ─────────────────────────────────────
-// `spec` is a json-render Spec — validated by the catalog at runtime,
+// `ui` is a json-render Spec — validated by the catalog at runtime,
 // typed here via the json-render Spec type.
 
 export const snapResponseSchema = z
@@ -31,13 +31,13 @@ export const snapResponseSchema = z
     version: z.literal(SPEC_VERSION),
     theme: themeSchema.optional().default({ accent: DEFAULT_THEME_ACCENT }),
     effects: z.array(z.enum(EFFECT_VALUES)).optional(),
-    spec: z.custom<Spec>(
+    ui: z.custom<Spec>(
       (val) =>
         val != null &&
         typeof val === "object" &&
         "root" in val &&
         "elements" in val,
-      { message: "spec must be a json-render Spec with root and elements" },
+      { message: "ui must be a json-render Spec with root and elements" },
     ),
   })
   .strict();

@@ -53,7 +53,7 @@ registerSnapHandler(
         return {
           version: "1.0",
           theme: { accent: "purple" },
-          spec: {
+          ui: {
             root: "page",
             elements: {
               page: {
@@ -139,7 +139,7 @@ registerSnapHandler(
     return {
       version: "1.0",
       theme: { accent: "purple" },
-      spec: {
+      ui: {
         root: "page",
         elements: {
           page: {
@@ -276,7 +276,7 @@ registerSnapHandler(
         return {
           version: "1.0",
           theme: { accent: "green" },
-          spec: {
+          ui: {
             root: "page",
             elements: elements as any,
           },
@@ -287,7 +287,7 @@ registerSnapHandler(
     return {
       version: "1.0",
       theme: { accent: "green" },
-      spec: {
+      ui: {
         root: "page",
         elements: {
           page: {

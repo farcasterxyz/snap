@@ -794,7 +794,7 @@ export async function renderSnapPageToPng(
   options?: OgOptions,
 ): Promise<Uint8Array> {
   const accent = accentHex(snap.theme?.accent as string | undefined);
-  const spec = snap.spec as unknown as SnapSpec;
+  const spec = snap.ui as unknown as SnapSpec;
   const elements = specToElementList(spec);
   const pageButtons = specToButtons(spec);
 

@@ -9,7 +9,7 @@ registerSnapHandler(app, async (): Promise<SnapHandlerResult> => {
   return {
     version: "1.0",
     theme: { accent: "green" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {

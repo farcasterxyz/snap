@@ -135,7 +135,7 @@ Open a URL as an in-app Farcaster mini app.
 
 ## Client Actions
 
-These are executed by the consuming app. The snap server declares the intent in the spec; the client decides how to fulfill it. Different clients may implement these differently — Warpcast opens native views, a web client navigates to URLs, the emulator logs to console.
+These are executed by the consuming app. The snap server declares the intent in the response; the client decides how to fulfill it. Different clients may implement these differently — Warpcast opens native views, a web client navigates to URLs, the emulator logs to console.
 
 If a client doesn't support a particular client action, it should fail gracefully (e.g. show a message, not crash).
 
