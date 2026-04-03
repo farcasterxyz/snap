@@ -16,12 +16,7 @@ export function SnapProgress({
   return (
     <View style={styles.wrap}>
       {label ? (
-        <View style={styles.labelRow}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
-          <Text style={[styles.percent, { color: colors.textSecondary }]}>
-            {Math.round(percent)}%
-          </Text>
-        </View>
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
       ) : null}
       <View style={[styles.track, { backgroundColor: colors.muted }]}>
         <View style={[styles.fill, { width: `${percent}%`, backgroundColor: accentHex }]} />
@@ -32,13 +27,7 @@ export function SnapProgress({
 
 const styles = StyleSheet.create({
   wrap: { flex: 1, width: "100%", gap: 4 },
-  labelRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
   label: { fontSize: 13 },
-  percent: { fontSize: 13 },
   track: {
     height: 10,
     borderRadius: 9999,
