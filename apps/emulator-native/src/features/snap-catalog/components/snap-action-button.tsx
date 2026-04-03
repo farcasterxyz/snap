@@ -2,6 +2,7 @@ import type { ComponentRenderProps } from "@json-render/react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSnapPalette } from "../useSnapPalette";
 import { useTheme } from "../../../ThemeContext";
+import { ICON_MAP } from "./snap-icon";
 
 const VARIANT_MAP: Record<string, "default" | "secondary" | "outline" | "ghost"> = {
   default: "default",
@@ -57,10 +58,8 @@ export function SnapActionButton({
           })();
         }}
       >
-        {iconName ? (
-          <Text style={{ color: iconColor, fontSize: 12 }}>
-            [{iconName}]
-          </Text>
+        {iconName && ICON_MAP[iconName] ? (
+          (() => { const I = ICON_MAP[iconName]!; return <I size={16} color={iconColor} />; })()
         ) : null}
         <Text style={{ color: textColor, fontSize: 16, fontWeight: "600" }}>
           {label}

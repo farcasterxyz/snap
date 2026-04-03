@@ -1,6 +1,7 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { StyleSheet, Text, View } from "react-native";
 import { useSnapPalette } from "../useSnapPalette";
+import { ICON_MAP } from "./snap-icon";
 
 export function SnapBadge({
   element: { props },
@@ -12,6 +13,8 @@ export function SnapBadge({
   const isAccent = !color || color === "accent";
   const resolvedColor = isAccent ? accentHex : hex(color);
 
+  const Icon = iconName ? ICON_MAP[iconName] : undefined;
+
   return (
     <View
       style={[
@@ -21,13 +24,15 @@ export function SnapBadge({
           : { borderColor: resolvedColor },
       ]}
     >
+      {Icon && (
+        <Icon size={10} color={isAccent ? "#fff" : resolvedColor} />
+      )}
       <Text
         style={[
           styles.label,
           { color: isAccent ? "#fff" : resolvedColor },
         ]}
       >
-        {iconName ? `[${iconName}] ` : ""}
         {label}
       </Text>
     </View>
@@ -37,6 +42,9 @@ export function SnapBadge({
 const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 9999,

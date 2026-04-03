@@ -8,6 +8,7 @@ import {
 import { useStateStore } from "@json-render/react-native";
 import { useColorScheme } from "react-native";
 
+// TODO: export resolveSnapPaletteHex from @farcaster/snap and use it here
 function resolveHex(name: string, appearance: "light" | "dark"): string {
   const map = appearance === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
   if (Object.hasOwn(map, name)) {

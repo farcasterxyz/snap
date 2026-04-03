@@ -1,17 +1,84 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import { useSnapPalette } from "../useSnapPalette";
+import {
+  ArrowRight,
+  ArrowLeft,
+  ExternalLink,
+  ChevronRight,
+  Check,
+  X,
+  AlertTriangle,
+  Info,
+  Clock,
+  Heart,
+  MessageCircle,
+  Repeat,
+  Share,
+  User,
+  Users,
+  Star,
+  Trophy,
+  Zap,
+  Flame,
+  Gift,
+  ImageIcon,
+  Play,
+  Pause,
+  Wallet,
+  Coins,
+  Plus,
+  Minus,
+  RefreshCw,
+  Bookmark,
+  ThumbsUp,
+  ThumbsDown,
+  TrendingUp,
+  TrendingDown,
+  type LucideIcon,
+} from "lucide-react-native";
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  "arrow-right": ArrowRight,
+  "arrow-left": ArrowLeft,
+  "external-link": ExternalLink,
+  "chevron-right": ChevronRight,
+  check: Check,
+  x: X,
+  "alert-triangle": AlertTriangle,
+  info: Info,
+  clock: Clock,
+  heart: Heart,
+  "message-circle": MessageCircle,
+  repeat: Repeat,
+  share: Share,
+  user: User,
+  users: Users,
+  star: Star,
+  trophy: Trophy,
+  zap: Zap,
+  flame: Flame,
+  gift: Gift,
+  image: ImageIcon,
+  play: Play,
+  pause: Pause,
+  wallet: Wallet,
+  coins: Coins,
+  plus: Plus,
+  minus: Minus,
+  "refresh-cw": RefreshCw,
+  bookmark: Bookmark,
+  "thumbs-up": ThumbsUp,
+  "thumbs-down": ThumbsDown,
+  "trending-up": TrendingUp,
+  "trending-down": TrendingDown,
+};
 
 const SIZE_PX: Record<string, number> = {
   sm: 16,
   md: 20,
 };
 
-/**
- * Icon placeholder for React Native. Renders the icon name as text
- * since we don't bundle lucide-react-native. A real app would use
- * an icon library here.
- */
 export function SnapIcon({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
@@ -22,34 +89,14 @@ export function SnapIcon({
   const isAccent = !color || color === "accent";
   const resolvedColor = isAccent ? accentHex : hex(color);
 
+  const Icon = ICON_MAP[name];
+  if (!Icon) return null;
+
   return (
-    <View
-      style={[
-        styles.circle,
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor: resolvedColor,
-        },
-      ]}
-    >
-      <Text
-        style={[styles.label, { fontSize: size * 0.45, color: "#fff" }]}
-        numberOfLines={1}
-      >
-        {name.charAt(0).toUpperCase()}
-      </Text>
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <Icon size={size} color={resolvedColor} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  circle: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  label: {
-    fontWeight: "700",
-  },
-});
+export { ICON_MAP };
