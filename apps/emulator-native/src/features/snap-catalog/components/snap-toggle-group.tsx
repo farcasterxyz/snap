@@ -59,7 +59,7 @@ export function SnapToggleGroup({
       <View
         style={[
           styles.group,
-          { backgroundColor: colors.muted },
+          { backgroundColor: colors.border + "33" },
           isVertical ? styles.groupVertical : styles.groupHorizontal,
         ]}
       >
