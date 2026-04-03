@@ -2,10 +2,10 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const SKILL_PAGE_TXT = join(dirname(fileURLToPath(import.meta.url)), "page.txt");
+const SKILL_MD_PATH = join(dirname(fileURLToPath(import.meta.url)), "SKILL.md");
 
 export async function GET() {
-  const body = readFileSync(SKILL_PAGE_TXT, "utf-8");
+  const body = readFileSync(SKILL_MD_PATH, "utf-8");
   return new Response(body, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
