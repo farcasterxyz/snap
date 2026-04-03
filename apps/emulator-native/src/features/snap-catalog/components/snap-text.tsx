@@ -1,5 +1,6 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { StyleSheet, Text, View } from "react-native";
+import { useTheme } from "../../../ThemeContext";
 
 const SIZE_STYLES: Record<string, { fontSize: number; lineHeight?: number; fontWeight?: "400" | "500" | "600" | "700" }> = {
   lg: { fontSize: 20, fontWeight: "700" },
@@ -16,6 +17,7 @@ const WEIGHT_MAP: Record<string, "400" | "500" | "600" | "700"> = {
 export function SnapText({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
+  const { colors } = useTheme();
   const content = String(props.content ?? "");
   const size = String(props.size ?? "md");
   const weight = props.weight ? String(props.weight) : undefined;
@@ -31,6 +33,7 @@ export function SnapText({
         style={[
           styles.base,
           {
+            color: colors.text,
             fontSize: sizeStyle!.fontSize,
             lineHeight: sizeStyle!.lineHeight,
             fontWeight: resolvedWeight,
@@ -46,5 +49,5 @@ export function SnapText({
 
 const styles = StyleSheet.create({
   wrap: { width: "100%" },
-  base: { color: "#111827" },
+  base: {},
 });

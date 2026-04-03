@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { ActivityIndicator, Alert, Platform, StyleSheet, View } from "react-native";
 import { SnapCatalogView } from "../features/snap-catalog/catalogRenderer";
 import { hexToRgba, useSnapPreviewChromePalette } from "../features/snap-catalog/useSnapPalette";
+import { useTheme } from "../ThemeContext";
 import { applyStatePaths } from "../lib/applyStatePaths";
 import type { JsonValue, SnapPageResponse } from "../lib/snapPayload";
 
@@ -21,6 +22,7 @@ export function SnapPreview({
   onLinkButton: (target: string) => void | Promise<void>;
 }) {
   const { accentHex } = useSnapPreviewChromePalette(snap.theme?.accent);
+  const { mode, colors } = useTheme();
 
   const frameRingStyle = useMemo(
     () => ({
@@ -45,8 +47,9 @@ export function SnapPreview({
   const cardStyle = useMemo(
     () => ({
       borderColor: hexToRgba(accentHex, 0.22),
+      backgroundColor: mode === "dark" ? "#1a1a2a" : "#fff",
     }),
-    [accentHex],
+    [accentHex, mode],
   );
 
   const { spec } = snap;
@@ -81,11 +84,6 @@ export function SnapPreview({
 
   const pageKey = useMemo(() => JSON.stringify(spec), [spec]);
 
-  /**
-   * json-render's ActionProvider stores `handlers` in React state and only uses
-   * the initial value -- so the Proxy wrapping `onAction` must stay referentially
-   * stable while always invoking the latest handlers (refs).
-   */
   const onPostRef = useRef(onPostButton);
   const onLinkRef = useRef(onLinkButton);
   onPostRef.current = onPostButton;
@@ -105,17 +103,39 @@ export function SnapPreview({
         if (target) await onLinkRef.current(target);
         break;
       }
-      case "open_mini_app":
-      case "view_cast":
-      case "view_profile":
-      case "compose_cast":
-      case "view_token":
-      case "send_token":
+      case "open_mini_app": {
+        const url = String(p?.url ?? p?.target ?? "");
+        Alert.alert("Client Action", `open_mini_app\n${url || "(no url)"}`);
+        break;
+      }
+      case "view_cast": {
+        const hash = String(p?.hash ?? "");
+        Alert.alert("Client Action", `view_cast\nhash: ${hash || "(none)"}`);
+        break;
+      }
+      case "view_profile": {
+        const fid = String(p?.fid ?? "");
+        Alert.alert("Client Action", `view_profile\nfid: ${fid || "(none)"}`);
+        break;
+      }
+      case "compose_cast": {
+        const text = String(p?.text ?? "");
+        Alert.alert("Client Action", `compose_cast\n${text || "(no text)"}`);
+        break;
+      }
+      case "view_token": {
+        const token = String(p?.token ?? p?.address ?? "");
+        Alert.alert("Client Action", `view_token\n${token || "(no token)"}`);
+        break;
+      }
+      case "send_token": {
+        const token = String(p?.token ?? p?.address ?? "");
+        Alert.alert("Client Action", `send_token\n${token || "(no token)"}`);
+        break;
+      }
       case "swap_token": {
-        Alert.alert(
-          "Native emulator",
-          `${String(name)} is not implemented in this preview.`,
-        );
+        const token = String(p?.token ?? p?.address ?? "");
+        Alert.alert("Client Action", `swap_token\n${token || "(no token)"}`);
         break;
       }
       default:
@@ -127,7 +147,12 @@ export function SnapPreview({
     <View style={[styles.frameRing, frameRingStyle]} accessibilityRole="none">
       <View style={[styles.card, cardStyle]}>
         {loading ? (
-          <View style={styles.overlay}>
+          <View
+            style={[
+              styles.overlay,
+              { backgroundColor: mode === "dark" ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.75)" },
+            ]}
+          >
             <ActivityIndicator size="large" color={accentHex} />
           </View>
         ) : null}
@@ -159,14 +184,12 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: 18,
-    backgroundColor: "#fff",
     overflow: "hidden",
     borderWidth: 1,
     minHeight: 120,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255,255,255,0.75)",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10,

@@ -4,6 +4,7 @@ import { encodePayload } from "@farcaster/snap/server";
 import * as Linking from "expo-linking";
 import { useCallback, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -15,6 +16,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SnapPreview } from "./components/SnapPreview";
+import { ThemeProvider, useTheme } from "./ThemeContext";
 import { SNAP_UPSTREAM_ACCEPT } from "./lib/snapUpstreamConstants";
 import {
   coerceUpstreamUrlToMatchCurrentSnap,
@@ -101,9 +103,7 @@ function snapUrlForLocalPort(port: string): string | null {
 }
 
 /**
- * Stale preview: port digits differ from the loaded snap’s origin port.
- * Compares ports only — after POST, `currentSourceUrl` gains `?page=` etc.; full-URL
- * comparison would falsely warn “port changed”.
+ * Stale preview: port digits differ from the loaded snap's origin port.
  */
 function portDiffersFromLoadedLocalSnap(
   portInput: string,
@@ -130,7 +130,8 @@ function portDiffersFromLoadedLocalSnap(
   return fieldPort !== loadedPort;
 }
 
-export default function App() {
+function AppContent() {
+  const { mode, colors, toggleMode } = useTheme();
   const [portInput, setPortInput] = useState(DEFAULT_LOCAL_PORT);
   const [fidInput, setFidInput] = useState("3");
   const [snap, setSnap] = useState<SnapPageResponse | null>(null);
@@ -141,7 +142,7 @@ export default function App() {
   const handleLoad = useCallback(async () => {
     const url = snapUrlForLocalPort(portInput);
     if (!url) {
-      setError("Enter a valid port (1–65535)");
+      setError("Enter a valid port (1-65535)");
       return;
     }
 
@@ -313,10 +314,10 @@ export default function App() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.root}
+      style={[styles.root, { backgroundColor: colors.bg }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <StatusBar style="dark" />
+      <StatusBar style={mode === "dark" ? "light" : "dark"} />
       <View style={styles.layout}>
         <ScrollView
           style={styles.pageScroll}
@@ -324,24 +325,37 @@ export default function App() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator
         >
-          <Text style={styles.title}>Snap emulator (native)</Text>
-          <Text style={styles.hint}>
+          <View style={styles.headerRow}>
+            <Text style={[styles.title, { color: colors.text }]}>
+              Snap emulator (native)
+            </Text>
+            <Pressable
+              style={[styles.modeToggle, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              onPress={toggleMode}
+            >
+              <Text style={[styles.modeToggleText, { color: colors.text }]}>
+                {mode === "dark" ? "Light" : "Dark"}
+              </Text>
+            </Pressable>
+          </View>
+          <Text style={[styles.hint, { color: colors.textSecondary }]}>
             GET/POST go to{" "}
             <Text style={styles.hintMono}>{LOCAL_SNAP_ORIGIN}:port/</Text> (no
             web proxy). Dev JFS matches the web emulator. On a physical device,
             use your machine&apos;s LAN IP instead of localhost.
           </Text>
 
-          <Text style={styles.label}>Port</Text>
-          <View style={styles.portRow}>
-            <Text style={styles.portPrefix} selectable>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>Port</Text>
+          <View style={[styles.portRow, { borderColor: colors.border, backgroundColor: colors.inputBg }]}>
+            <Text style={[styles.portPrefix, { color: colors.textSecondary }]} selectable>
               {LOCAL_SNAP_ORIGIN}:
             </Text>
             <TextInput
-              style={styles.portInput}
+              style={[styles.portInput, { color: colors.text }]}
               value={portInput}
               onChangeText={(t) => setPortInput(coercePortInput(t))}
               placeholder={DEFAULT_LOCAL_PORT}
+              placeholderTextColor={colors.textSecondary}
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="number-pad"
@@ -349,12 +363,13 @@ export default function App() {
             />
           </View>
 
-          <Text style={styles.label}>User FID</Text>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>User FID</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { borderColor: colors.border, backgroundColor: colors.inputBg, color: colors.text }]}
             value={fidInput}
             onChangeText={setFidInput}
             placeholder="e.g. 12345"
+            placeholderTextColor={colors.textSecondary}
             keyboardType="number-pad"
           />
 
@@ -395,7 +410,7 @@ export default function App() {
             </>
           ) : (
             <View style={styles.placeholderWrap}>
-              <Text style={styles.placeholder}>
+              <Text style={[styles.placeholder, { color: colors.textSecondary }]}>
                 Enter a port and tap Load ({LOCAL_SNAP_ORIGIN}
                 :{DEFAULT_LOCAL_PORT}/ by default).
               </Text>
@@ -407,8 +422,16 @@ export default function App() {
   );
 }
 
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+}
+
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#f3f4f6" },
+  root: { flex: 1 },
   layout: {
     flex: 1,
     maxWidth: 520,
@@ -422,24 +445,33 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     gap: 10,
   },
-  title: { fontSize: 22, fontWeight: "700", color: "#111827" },
-  hint: { fontSize: 13, color: "#6b7280", marginBottom: 8 },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  title: { fontSize: 22, fontWeight: "700" },
+  modeToggle: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  modeToggleText: { fontSize: 13, fontWeight: "600" },
+  hint: { fontSize: 13, marginBottom: 8 },
   hintMono: { fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }) },
-  label: { fontSize: 12, fontWeight: "600", color: "#4b5563" },
+  label: { fontSize: 12, fontWeight: "600" },
   portRow: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#d1d5db",
     borderRadius: 10,
-    backgroundColor: "#fff",
     paddingLeft: 12,
     paddingRight: 4,
     minHeight: 44,
   },
   portPrefix: {
     fontSize: 15,
-    color: "#374151",
     fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
   },
   portInput: {
@@ -448,17 +480,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 4,
     fontSize: 15,
-    color: "#111827",
     fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
   },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#d1d5db",
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 15,
-    backgroundColor: "#fff",
   },
   loadBtn: {
     backgroundColor: "#006BFF",
@@ -481,7 +510,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 4,
   },
-  placeholder: { fontSize: 14, color: "#9ca3af" },
+  placeholder: { fontSize: 14 },
   placeholderWrap: {
     paddingTop: 24,
     paddingBottom: 16,

@@ -2,12 +2,14 @@ import type { ComponentRenderProps } from "@json-render/react-native";
 import { useStateStore } from "@json-render/react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSnapPalette } from "../useSnapPalette";
+import { useTheme } from "../../../ThemeContext";
 
 export function SnapToggleGroup({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { get, set } = useStateStore();
   const { accentHex } = useSnapPalette();
+  const { colors } = useTheme();
   const name = String(props.name ?? "toggle_group");
   const path = `/inputs/${name}`;
   const label = props.label ? String(props.label) : undefined;
@@ -53,7 +55,7 @@ export function SnapToggleGroup({
 
   return (
     <View style={styles.wrap}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text> : null}
       <View
         style={[
           styles.group,
@@ -67,6 +69,7 @@ export function SnapToggleGroup({
               key={index}
               style={({ pressed }) => [
                 styles.option,
+                { borderColor: colors.border, backgroundColor: colors.inputBg },
                 isSelected && { backgroundColor: accentHex, borderColor: accentHex },
                 pressed && styles.pressed,
                 !isVertical && styles.optionHorizontal,
@@ -76,6 +79,7 @@ export function SnapToggleGroup({
               <Text
                 style={[
                   styles.optionText,
+                  { color: colors.text },
                   isSelected && styles.optionTextSelected,
                 ]}
               >
@@ -91,9 +95,9 @@ export function SnapToggleGroup({
 
 const styles = StyleSheet.create({
   wrap: { width: "100%", gap: 6 },
-  label: { fontSize: 14, fontWeight: "500", color: "#374151" },
+  label: { fontSize: 14, fontWeight: "500" },
   group: {
-    gap: 8,
+    gap: 4,
   },
   groupHorizontal: {
     flexDirection: "row",
@@ -107,10 +111,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#d1d5db",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
   },
   optionHorizontal: {
     flex: 1,
@@ -119,7 +121,6 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#111827",
   },
   optionTextSelected: {
     color: "#fff",

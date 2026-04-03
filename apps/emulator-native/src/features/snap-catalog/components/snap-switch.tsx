@@ -2,12 +2,14 @@ import type { ComponentRenderProps } from "@json-render/react-native";
 import { useStateStore } from "@json-render/react-native";
 import { StyleSheet, Switch, Text, View } from "react-native";
 import { useSnapPalette } from "../useSnapPalette";
+import { useTheme } from "../../../ThemeContext";
 
 export function SnapSwitch({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { get, set } = useStateStore();
   const { accentHex } = useSnapPalette();
+  const { colors } = useTheme();
   const name = String(props.name ?? "switch");
   const path = `/inputs/${name}`;
   const label = props.label ? String(props.label) : undefined;
@@ -17,11 +19,11 @@ export function SnapSwitch({
 
   return (
     <View style={styles.row}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: colors.text }]}>{label}</Text> : null}
       <Switch
         value={checked}
         onValueChange={(v) => set(path, v)}
-        trackColor={{ false: "#d1d5db", true: accentHex }}
+        trackColor={{ false: colors.border, true: accentHex }}
         thumbColor="#fff"
       />
     </View>
@@ -37,7 +39,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    color: "#111827",
     flex: 1,
   },
 });

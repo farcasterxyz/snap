@@ -3,12 +3,14 @@ import { useStateStore } from "@json-render/react-native";
 import Slider from "@react-native-community/slider";
 import { StyleSheet, Text, View } from "react-native";
 import { useSnapPalette } from "../useSnapPalette";
+import { useTheme } from "../../../ThemeContext";
 
 export function SnapSlider({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { get, set } = useStateStore();
   const { accentHex } = useSnapPalette();
+  const { colors } = useTheme();
   const name = String(props.name ?? "slider");
   const path = `/inputs/${name}`;
   const min = Number(props.min ?? 0);
@@ -31,8 +33,10 @@ export function SnapSlider({
     <View style={styles.wrap}>
       {label ? (
         <View style={styles.labelRow}>
-          <Text style={styles.label}>{label}</Text>
-          <Text style={styles.valueText}>{String(Math.round(clamped))}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
+          <Text style={[styles.valueText, { color: colors.textSecondary }]}>
+            {String(Math.round(clamped))}
+          </Text>
         </View>
       ) : null}
       <Slider
@@ -43,13 +47,17 @@ export function SnapSlider({
         value={clamped}
         onValueChange={(v) => set(path, v)}
         minimumTrackTintColor={accentHex}
-        maximumTrackTintColor="#e5e7eb"
+        maximumTrackTintColor={colors.border}
         thumbTintColor={accentHex}
       />
       {minLabel != null || maxLabel != null ? (
         <View style={styles.minMaxRow}>
-          <Text style={styles.minMax}>{minLabel ?? String(min)}</Text>
-          <Text style={styles.minMax}>{maxLabel ?? String(max)}</Text>
+          <Text style={[styles.minMax, { color: colors.textSecondary }]}>
+            {minLabel ?? String(min)}
+          </Text>
+          <Text style={[styles.minMax, { color: colors.textSecondary }]}>
+            {maxLabel ?? String(max)}
+          </Text>
         </View>
       ) : null}
     </View>
@@ -63,12 +71,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  label: { fontSize: 14, color: "#374151", flex: 1 },
-  valueText: { fontSize: 14, color: "#6b7280" },
+  label: { fontSize: 14, flex: 1 },
+  valueText: { fontSize: 14 },
   slider: { width: "100%", height: 40 },
   minMaxRow: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  minMax: { fontSize: 12, color: "#9ca3af" },
+  minMax: { fontSize: 12 },
 });

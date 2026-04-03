@@ -1,30 +1,34 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useTheme } from "../../../ThemeContext";
 
 export function SnapItem({
   element: { props },
   children,
 }: ComponentRenderProps<Record<string, unknown>> & { children?: ReactNode }) {
+  const { colors } = useTheme();
   const title = String(props.title ?? "");
   const description = props.description
     ? String(props.description)
     : undefined;
   const variant = String(props.variant ?? "default");
 
-  const containerStyle =
+  const containerVariant =
     variant === "outline"
-      ? [styles.container, styles.containerOutline]
+      ? { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, borderRadius: 10 }
       : variant === "muted"
-        ? [styles.container, styles.containerMuted]
-        : [styles.container];
+        ? { backgroundColor: colors.surface, borderRadius: 10 }
+        : {};
 
   return (
-    <View style={containerStyle}>
+    <View style={[styles.container, containerVariant]}>
       <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
         {description ? (
-          <Text style={styles.description}>{description}</Text>
+          <Text style={[styles.description, { color: colors.textSecondary }]}>
+            {description}
+          </Text>
         ) : null}
       </View>
       {children ? <View style={styles.actions}>{children}</View> : null}
@@ -41,15 +45,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 12,
   },
-  containerOutline: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#e5e7eb",
-    borderRadius: 10,
-  },
-  containerMuted: {
-    backgroundColor: "#f9fafb",
-    borderRadius: 10,
-  },
   content: {
     flex: 1,
     gap: 2,
@@ -57,11 +52,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#111827",
   },
   description: {
     fontSize: 13,
-    color: "#6b7280",
   },
   actions: {
     flexDirection: "row",

@@ -8,12 +8,28 @@ export function SnapBadge({
   const { accentHex, hex } = useSnapPalette();
   const label = String(props.label ?? "");
   const color = props.color ? String(props.color) : undefined;
+  const iconName = props.icon ? String(props.icon) : undefined;
   const isAccent = !color || color === "accent";
   const resolvedColor = isAccent ? accentHex : hex(color);
 
   return (
-    <View style={[styles.badge, { borderColor: resolvedColor }]}>
-      <Text style={[styles.label, { color: resolvedColor }]}>{label}</Text>
+    <View
+      style={[
+        styles.badge,
+        isAccent
+          ? { backgroundColor: resolvedColor, borderColor: resolvedColor }
+          : { borderColor: resolvedColor },
+      ]}
+    >
+      <Text
+        style={[
+          styles.label,
+          { color: isAccent ? "#fff" : resolvedColor },
+        ]}
+      >
+        {iconName ? `[${iconName}] ` : ""}
+        {label}
+      </Text>
     </View>
   );
 }
