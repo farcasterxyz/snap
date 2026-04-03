@@ -1,5 +1,5 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 const VGAP: Record<string, number> = {
@@ -39,7 +39,11 @@ export function SnapStack({
         { gap },
       ]}
     >
-      {children}
+      {isHorizontal
+        ? Children.map(children, (child) => (
+            <View style={styles.hChild}>{child}</View>
+          ))
+        : children}
     </View>
   );
 }
@@ -51,7 +55,9 @@ const styles = StyleSheet.create({
   horizontal: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
+  },
+  hChild: {
+    flex: 1,
+    minWidth: 0,
   },
 });
