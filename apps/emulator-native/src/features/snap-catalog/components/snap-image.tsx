@@ -29,8 +29,9 @@ export function SnapImage({
 
 const styles = StyleSheet.create({
   frame: {
+    flex: 1,
     width: "100%",
-    borderRadius: 12,
+    borderRadius: 8,
     overflow: "hidden",
     backgroundColor: "#f3f4f6",
   },
