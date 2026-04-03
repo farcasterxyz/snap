@@ -10,6 +10,8 @@ export function SnapItemGroup({
   const { colors } = useTheme();
   const border = Boolean(props.border);
   const separator = Boolean(props.separator);
+  const GAP_MAP: Record<string, number> = { none: 0, sm: 4, md: 8, lg: 12 };
+  const gap = !separator ? (GAP_MAP[String(props.gap ?? "none")] ?? 0) : 0;
   const items = Children.toArray(children);
 
   return (
@@ -17,6 +19,7 @@ export function SnapItemGroup({
       style={[
         styles.group,
         border && { borderWidth: 1, borderColor: colors.border, borderRadius: 12 },
+        !separator && gap > 0 && { gap },
       ]}
     >
       {items.map((child, i) => (
