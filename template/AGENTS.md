@@ -21,6 +21,18 @@ template/
 
 Check `ctx.action.type` before accessing `inputs` — it only exists on `"post"` actions.
 
+### Return type
+
+Use `SnapHandlerResult` (not `SnapResponse`) as the handler return type. `SnapHandlerResult` keeps fields with defaults optional — you can omit `button_layout` (defaults to `"stack"`) and `theme` (defaults to `{ accent: "purple" }`). `SnapResponse` is the post-validation type where all defaults are filled in; using it as a return type forces you to specify every field.
+
+```typescript
+import { SnapContext, SnapHandlerResult } from "@farcaster/snap";
+
+async function snap(ctx: SnapContext): Promise<SnapHandlerResult> {
+  return { version: "1.0", page: { elements: { ... } } }; // button_layout, theme optional
+}
+```
+
 ## Local development
 
 ```bash

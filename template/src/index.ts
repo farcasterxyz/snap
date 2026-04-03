@@ -1,7 +1,7 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
-import { SnapContext, SnapResponse } from "@farcaster/snap";
+import { SnapContext, SnapHandlerResult } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import { withUpstash } from "@farcaster/snap-upstash";
 
@@ -11,7 +11,7 @@ const OPT_HTTP = "HTTP";
 const OPT_LOCAL = "Local";
 const OPT_DEPLOY = "Deploy";
 
-async function snap(ctx: SnapContext): Promise<SnapResponse> {
+async function snap(ctx: SnapContext): Promise<SnapHandlerResult> {
   const pref =
     ctx.action.type === "post" &&
     typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
@@ -24,7 +24,6 @@ async function snap(ctx: SnapContext): Promise<SnapResponse> {
     version: "1.0",
     page: {
       theme: { accent: "purple" },
-      button_layout: "stack",
       elements: {
         type: "stack" as const,
         children: [

@@ -34,7 +34,7 @@ Explore the [`template/` directory on GitHub](https://github.com/farcasterxyz/sn
 
 Read README.md and AGENTS.md there first, then follow the links therein to more content. Also skim it's @farcaster/snap\* dependencies.
 
-Express the UI as the object your snap handler returns.
+Express the UI as the object your snap handler returns. Use `SnapHandlerResult` (not `SnapResponse`) as the return type — it keeps `button_layout` (defaults to `"stack"`) and `theme` (defaults to `{ accent: "purple" }`) optional so you only specify what you need.
 
 **Hard rules (enforced by schema/validator):**
 
@@ -62,6 +62,19 @@ Run the dev server and check the snap:
 ```bash
 curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'http://localhost:<port>/'
 ```
+
+Test POST (button tap) — `pnpm dev` sets `SKIP_JFS_VERIFICATION=true`, so POST works without real signatures. The body must still be JFS-shaped. The payload must be base64url-encoded:
+
+```bash
+PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"button_index\":0,\"timestamp\":$(date +%s)}" \
+  | base64 | tr '+/' '-_' | tr -d '=')
+curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
+  -H 'Content-Type: application/json' \
+  -d "{\"header\":\"dev\",\"payload\":\"$PAYLOAD\",\"signature\":\"dev\"}" \
+  'http://localhost:<port>/'
+```
+
+To test with input values, add them to the `inputs` object in the payload (e.g. `\"inputs\":{\"name\":\"value\"}`).
 
 ## Step 4: Fix and repeat
 
