@@ -6,9 +6,8 @@ import {
   type PaletteColor,
 } from "@farcaster/snap";
 import { useStateStore } from "@json-render/react-native";
-import { useTheme } from "../../ThemeContext";
+import { useSnapTheme } from "./theme";
 
-// TODO: export resolveSnapPaletteHex from @farcaster/snap and use it here
 function resolveHex(name: string, appearance: "light" | "dark"): string {
   const map = appearance === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
   if (Object.hasOwn(map, name)) {
@@ -30,7 +29,7 @@ function themeAccentFromStore(get: (path: string) => unknown): PaletteColor {
 }
 
 export function useSnapPalette() {
-  const { mode } = useTheme();
+  const { mode } = useSnapTheme();
   const { get } = useStateStore();
   const accentName = themeAccentFromStore(get);
   const accentHex = resolveHex(accentName, mode);
@@ -55,7 +54,7 @@ export function hexToRgba(hex: string, alpha: number): string {
 }
 
 export function useSnapPreviewChromePalette(themeAccent: string | undefined) {
-  const { mode } = useTheme();
+  const { mode } = useSnapTheme();
   const accentName =
     typeof themeAccent === "string" && isPaletteColor(themeAccent)
       ? themeAccent

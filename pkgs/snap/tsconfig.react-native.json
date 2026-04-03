@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noEmitOnError": false,
+    "paths": {
+      "react": ["../../apps/emulator-native/node_modules/react"],
+      "react/*": ["../../apps/emulator-native/node_modules/react/*"],
+      "react-native": ["../../apps/emulator-native/node_modules/react-native"],
+      "@json-render/react-native": ["../../apps/emulator-native/node_modules/@json-render/react-native"],
+      "lucide-react-native": ["../../apps/emulator-native/node_modules/lucide-react-native"],
+      "@react-native-community/slider": ["../../apps/emulator-native/node_modules/@react-native-community/slider"],
+      "expo-image": ["../../apps/emulator-native/node_modules/expo-image"],
+      "@farcaster/snap": ["./src/index.ts"],
+      "@farcaster/snap/ui": ["./src/ui/index.ts"]
+    },
+    "typeRoots": ["../../apps/emulator-native/node_modules/@types"]
+  },
+  "include": ["src/react-native/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

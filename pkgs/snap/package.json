@@ -100,6 +100,11 @@
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.js",
       "default": "./dist/react/index.js"
+    },
+    "./react-native": {
+      "types": "./dist/react-native/index.d.ts",
+      "import": "./dist/react-native/index.js",
+      "default": "./dist/react-native/index.js"
     }
   },
   "files": [
@@ -110,7 +115,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && tsc-alias --resolve-full-paths --resolve-full-extension .js",
+    "build": "tsc && (tsc -p tsconfig.react-native.json || true) && tsc-alias --resolve-full-paths --resolve-full-extension .js",
     "clean": "rm -rf dist",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

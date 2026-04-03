@@ -2,15 +2,15 @@ import type { ComponentRenderProps } from "@json-render/react-native";
 import { useStateStore } from "@json-render/react-native";
 import Slider from "@react-native-community/slider";
 import { StyleSheet, Text, View } from "react-native";
-import { useSnapPalette } from "../useSnapPalette";
-import { useTheme } from "../../../ThemeContext";
+import { useSnapPalette } from "../use-snap-palette";
+import { useSnapTheme } from "../theme";
 
 export function SnapSlider({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { get, set } = useStateStore();
   const { accentHex } = useSnapPalette();
-  const { colors } = useTheme();
+  const { colors } = useSnapTheme();
   const name = String(props.name ?? "slider");
   const path = `/inputs/${name}`;
   const min = Number(props.min ?? 0);
