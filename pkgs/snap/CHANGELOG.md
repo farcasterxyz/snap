@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.6.0
+
+### Minor Changes
+
+- [`644763c`](https://github.com/farcasterxyz/snap/commit/644763ca68ef93e0682b75f8476d9671a4f7c125) Thanks [@lyoshenka](https://github.com/lyoshenka)! - switch to json-render
+
 ## 1.5.2
 
 ### Patch Changes
