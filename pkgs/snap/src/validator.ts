@@ -7,14 +7,12 @@ import {
   SPACER_SIZE,
   TEXT_STYLE,
 } from "./constants";
+import { type Button, type Element } from "./elements";
 import {
   firstPageResponseSchema,
   snapResponseSchema,
-  type Button,
-  type Element,
+  type SnapResponse,
 } from "./schemas";
-
-type SnapRoot = z.infer<typeof snapResponseSchema>;
 
 export type ValidationResult = {
   valid: boolean;
@@ -145,7 +143,7 @@ function heightBudgetValidationError(
 }
 
 function heightBudgetValidationErrorForRoot(
-  root: SnapRoot,
+  root: SnapResponse,
 ): z.core.$ZodIssue | null {
   const layout =
     typeof root.page.button_layout === "string"

@@ -18,32 +18,36 @@ export {
   type PaletteColor,
 } from "./colors";
 export {
+  type Button,
+  type Element,
+  type Elements,
+  type GroupChildElement,
+  type SnapPageElementInput,
+} from "./elements";
+export { type ClientAction, clientActionSchema } from "./actions";
+export {
   ACTION_TYPE_GET,
   ACTION_TYPE_POST,
   snapResponseSchema,
   firstPageResponseSchema,
   payloadSchema,
-  clientActionSchema,
-  createDefaultDataStore,
-  type Button,
-  type Element,
-  type Elements,
-  type GroupChildElement,
-  type ClientAction,
   type SnapAction,
-  type SnapPageElementInput,
   type SnapContext,
   type SnapResponse,
   type SnapHandlerResult,
   type SnapFunction,
   type SnapPayload,
-  type DataStoreValue,
-  type SnapDataStore,
-  type SnapDataStoreOperations,
 } from "./schemas";
 export {
   validateSnapResponse,
   validateFirstPageResponse,
   type ValidationResult,
 } from "./validator";
+export {
+  type DataStoreValue,
+  type SnapDataStore,
+  type SnapDataStoreOperations,
+  createDefaultDataStore,
+  createInMemoryDataStore,
+} from "./dataStore";
 export { type Middleware, useMiddleware } from "./middleware";

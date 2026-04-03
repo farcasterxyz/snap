@@ -1,7 +1,7 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
-import { SnapFunction } from "@farcaster/snap";
+import { SnapFunction, useMiddleware } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import { withUpstash } from "@farcaster/snap-upstash";
 
@@ -55,13 +55,11 @@ const fontsDir = join(__dir, "../assets/fonts");
 
 const app = new Hono();
 
-const plugins: ((fn: SnapFunction) => SnapFunction)[] = [
+const snapWithMiddleware = useMiddleware(snap, [
   withUpstash, // optional. use this if you want persistent data storage.
-];
+]);
 
-const snapWithPlugins = plugins.reduce((acc, plugin) => plugin(acc), snap);
-
-registerSnapHandler(app, snapWithPlugins, {
+registerSnapHandler(app, snapWithMiddleware, {
   og: {
     fonts: [
       { path: join(fontsDir, "inter-latin-400-normal.woff"), weight: 400 },
