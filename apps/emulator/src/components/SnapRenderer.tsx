@@ -115,18 +115,25 @@ function applyStatePaths(
   }
 }
 
+export type SnapActionHandlers = {
+  submit: (target: string, inputs: Record<string, JsonValue>) => void;
+  open_url: (target: string) => void;
+  open_mini_app: (target: string) => void;
+  view_cast: (params: { hash: string }) => void;
+  view_profile: (params: { fid: number }) => void;
+  compose_cast: (params: { text?: string; channelKey?: string; embeds?: string[] }) => void;
+  view_token: (params: { token: string }) => void;
+  send_token: (params: { token: string; amount?: string; recipientFid?: number; recipientAddress?: string }) => void;
+  swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
+};
+
 export function SnapRenderer({
   snap,
-  onPostButton,
-  onLinkButton,
+  handlers,
   loading,
 }: {
   snap: SnapPage;
-  onPostButton: (
-    target: string,
-    inputs: Record<string, JsonValue>,
-  ) => void;
-  onLinkButton?: (target: string) => void | Promise<void>;
+  handlers: SnapActionHandlers;
   loading: boolean;
 }) {
   const { spec } = snap;
@@ -207,33 +214,47 @@ export function SnapRenderer({
                 string,
                 JsonValue
               >;
+              const p = (params ?? {}) as Record<string, unknown>;
               switch (name) {
-                case "submit": {
-                  const target = String(params?.target ?? "");
-                  onPostButton(target, inputs);
+                case "submit":
+                  handlers.submit(String(p.target ?? ""), inputs);
                   break;
-                }
-                case "open_url": {
-                  const target = String(params?.target ?? "");
-                  if (!target) break;
-                  if (onLinkButton) {
-                    void onLinkButton(target);
-                  } else if (typeof window !== "undefined") {
-                    window.open(target, "_blank", "noopener,noreferrer");
-                  }
+                case "open_url":
+                  handlers.open_url(String(p.target ?? ""));
                   break;
-                }
                 case "open_mini_app":
-                case "view_cast":
-                case "view_profile":
-                case "compose_cast":
-                case "view_token":
-                case "send_token":
-                case "swap_token": {
-                  // eslint-disable-next-line no-console
-                  console.info(`[emulator] ${name}`, params);
+                  handlers.open_mini_app(String(p.target ?? ""));
                   break;
-                }
+                case "view_cast":
+                  handlers.view_cast({ hash: String(p.hash ?? "") });
+                  break;
+                case "view_profile":
+                  handlers.view_profile({ fid: Number(p.fid ?? 0) });
+                  break;
+                case "compose_cast":
+                  handlers.compose_cast({
+                    text: p.text ? String(p.text) : undefined,
+                    channelKey: p.channelKey ? String(p.channelKey) : undefined,
+                    embeds: Array.isArray(p.embeds) ? p.embeds as string[] : undefined,
+                  });
+                  break;
+                case "view_token":
+                  handlers.view_token({ token: String(p.token ?? "") });
+                  break;
+                case "send_token":
+                  handlers.send_token({
+                    token: String(p.token ?? ""),
+                    amount: p.amount ? String(p.amount) : undefined,
+                    recipientFid: p.recipientFid ? Number(p.recipientFid) : undefined,
+                    recipientAddress: p.recipientAddress ? String(p.recipientAddress) : undefined,
+                  });
+                  break;
+                case "swap_token":
+                  handlers.swap_token({
+                    sellToken: p.sellToken ? String(p.sellToken) : undefined,
+                    buyToken: p.buyToken ? String(p.buyToken) : undefined,
+                  });
+                  break;
                 default:
                   break;
               }

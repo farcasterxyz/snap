@@ -16,7 +16,7 @@ import { SNAP_UPSTREAM_ACCEPT } from "@/lib/snapUpstreamConstants";
 
 /** HTTP request the emulator proxy sends to the snap origin (not browser → `/api/snap`). */
 type OutboundSnapRequestLog = {
-  method: "GET" | "POST";
+  method: "GET" | "POST" | "CLIENT";
   url: string;
   headers: Record<string, string>;
   body?: string;
@@ -1566,8 +1566,66 @@ export default function EmulatorPage() {
             >
               <SnapRenderer
                 snap={snap}
-                onPostButton={handlePostButton}
-                onLinkButton={handleLinkButton}
+                handlers={{
+                  submit: handlePostButton,
+                  open_url: handleLinkButton,
+                  open_mini_app: (target) => {
+                    appendPairRequest({
+                      title: `Client action: open_mini_app`,
+                      content: JSON.stringify({ target }, null, 2),
+                      emulatorFetchHeaders: {},
+                      outboundToSnap: { method: "CLIENT", url: target, headers: {} },
+                    });
+                  },
+                  view_cast: (params) => {
+                    appendPairRequest({
+                      title: `Client action: view_cast`,
+                      content: JSON.stringify(params, null, 2),
+                      emulatorFetchHeaders: {},
+                      outboundToSnap: { method: "CLIENT", url: `cast/${params.hash}`, headers: {} },
+                    });
+                  },
+                  view_profile: (params) => {
+                    appendPairRequest({
+                      title: `Client action: view_profile`,
+                      content: JSON.stringify(params, null, 2),
+                      emulatorFetchHeaders: {},
+                      outboundToSnap: { method: "CLIENT", url: `profile/${params.fid}`, headers: {} },
+                    });
+                  },
+                  compose_cast: (params) => {
+                    appendPairRequest({
+                      title: `Client action: compose_cast`,
+                      content: JSON.stringify(params, null, 2),
+                      emulatorFetchHeaders: {},
+                      outboundToSnap: { method: "CLIENT", url: "compose", headers: {} },
+                    });
+                  },
+                  view_token: (params) => {
+                    appendPairRequest({
+                      title: `Client action: view_token`,
+                      content: JSON.stringify(params, null, 2),
+                      emulatorFetchHeaders: {},
+                      outboundToSnap: { method: "CLIENT", url: `token/${params.token}`, headers: {} },
+                    });
+                  },
+                  send_token: (params) => {
+                    appendPairRequest({
+                      title: `Client action: send_token`,
+                      content: JSON.stringify(params, null, 2),
+                      emulatorFetchHeaders: {},
+                      outboundToSnap: { method: "CLIENT", url: `send/${params.token}`, headers: {} },
+                    });
+                  },
+                  swap_token: (params) => {
+                    appendPairRequest({
+                      title: `Client action: swap_token`,
+                      content: JSON.stringify(params, null, 2),
+                      emulatorFetchHeaders: {},
+                      outboundToSnap: { method: "CLIENT", url: "swap", headers: {} },
+                    });
+                  },
+                }}
                 loading={loading}
               />
               <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
