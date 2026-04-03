@@ -22,7 +22,7 @@ export function SnapItem({
     (props.variant as "default" | "outline" | "muted") ?? "default";
 
   return (
-    <Item variant={variant} className="py-1.5 px-2.5">
+    <Item variant={variant} className="py-1.5 px-2.5 border-border/50">
       <ItemContent className="gap-0.5">
         <ItemTitle>{title}</ItemTitle>
         {description && <ItemDescription className="mt-0">{description}</ItemDescription>}
