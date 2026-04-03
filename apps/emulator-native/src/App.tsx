@@ -338,12 +338,6 @@ function AppContent() {
               </Text>
             </Pressable>
           </View>
-          <Text style={[styles.hint, { color: colors.textSecondary }]}>
-            GET/POST go to{" "}
-            <Text style={styles.hintMono}>{LOCAL_SNAP_ORIGIN}:port/</Text> (no
-            web proxy). Dev JFS matches the web emulator. On a physical device,
-            use your machine&apos;s LAN IP instead of localhost.
-          </Text>
 
           <Text style={[styles.label, { color: colors.textSecondary }]}>Port</Text>
           <View style={[styles.portRow, { borderColor: colors.border, backgroundColor: colors.inputBg }]}>

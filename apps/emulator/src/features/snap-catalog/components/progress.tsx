@@ -14,7 +14,7 @@ export function SnapProgress({
   const label = props.label ? String(props.label) : null;
 
   return (
-    <div className="flex w-full flex-col gap-1" style={accentStyle}>
+    <div className="flex w-full flex-1 flex-col gap-1" style={accentStyle}>
       {label && (
         <span className="text-muted-foreground text-xs">{label}</span>
       )}

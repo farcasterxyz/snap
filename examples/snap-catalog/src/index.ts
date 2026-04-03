@@ -7,7 +7,6 @@ type View =
   | "typography"
   | "images"
   | "icons"
-  | "content"
   | "items"
   | "layout"
   | "form"
@@ -19,7 +18,6 @@ const FLOW: View[] = [
   "typography",
   "images",
   "icons",
-  "content",
   "items",
   "layout",
   "form",
@@ -42,7 +40,6 @@ registerSnapHandler(app, async (ctx) => {
     case "typography": return typographyPage(base);
     case "images": return imagesPage(base);
     case "icons": return iconsPage(base);
-    case "content": return contentPage(base);
     case "items": return itemsPage(base);
     case "layout": return layoutPage(base);
     case "form": return formPage(base);
@@ -275,10 +272,28 @@ function iconsPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["step", "heading", "sep1", "label-nav", "row-nav", "label-status", "row-status", "label-social", "row-social", "label-content", "row-content", "label-media", "row-media", "label-commerce", "row-commerce", "label-actions", "row-actions", "label-feedback", "row-feedback", "sep2", "nav"],
+          children: ["step", "heading", "sep0", "label-badges", "badge-row1", "badge-row2", "sep1", "label-nav", "row-nav", "label-status", "row-status", "label-social", "row-social", "label-content", "row-content", "label-media", "row-media", "label-commerce", "row-commerce", "label-actions", "row-actions", "label-feedback", "row-feedback", "sep2", "nav"],
         },
-        step: { type: "badge", props: { label: `Icons \u00b7 ${step("icons")}` } },
-        heading: { type: "text", props: { content: "34 curated Lucide icons across 8 categories.", size: "sm" } },
+        step: { type: "badge", props: { label: `Icons & Badges \u00b7 ${step("icons")}` } },
+        heading: { type: "text", props: { content: "Badges with colors and icons, plus 34 curated Lucide icons.", size: "sm" } },
+        sep0: { type: "separator", props: {} },
+        "label-badges": { type: "text", props: { content: "Badges", size: "sm", weight: "medium" } },
+        "badge-row1": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["bd1", "bd2", "bd3"],
+        },
+        bd1: { type: "badge", props: { label: "Accent" } },
+        bd2: { type: "badge", props: { label: "Blue", color: "blue" } },
+        bd3: { type: "badge", props: { label: "Red", color: "red" } },
+        "badge-row2": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["bd4", "bd5", "bd6"],
+        },
+        bd4: { type: "badge", props: { label: "Live", color: "green", icon: "zap" } },
+        bd5: { type: "badge", props: { label: "Hot", color: "red", icon: "flame" } },
+        bd6: { type: "badge", props: { label: "3 New", color: "blue", icon: "info" } },
         sep1: { type: "separator", props: {} },
         "label-nav": { type: "text", props: { content: "Navigation", size: "sm", weight: "medium" } },
         "row-nav": { type: "stack", props: { direction: "horizontal" }, children: ["i-arrow-right", "i-arrow-left", "i-external-link", "i-chevron-right"] },
@@ -336,86 +351,6 @@ function iconsPage(base: string): SnapHandlerResult {
   };
 }
 
-function contentPage(base: string): SnapHandlerResult {
-  return {
-    version: "1.0",
-    theme: { accent: "purple" },
-    spec: {
-      root: "page",
-      elements: {
-        page: {
-          type: "stack",
-          props: {},
-          children: ["step", "heading", "sep1", "badges", "sep2", "items", "sep3", "progress-row", "sep4", "icons", "sep5", "nav"],
-        },
-        step: { type: "badge", props: { label: `Content \u00b7 ${step("content")}` } },
-        heading: {
-          type: "text",
-          props: { content: "Badges, items, progress bars, and icons.", size: "sm" },
-        },
-        sep1: { type: "separator", props: {} },
-        badges: {
-          type: "stack",
-          props: { direction: "horizontal" },
-          children: ["b1", "b2", "b3", "b4", "b5"],
-        },
-        b1: { type: "badge", props: { label: "Default" } },
-        b2: { type: "badge", props: { label: "Blue", color: "blue" } },
-        b3: { type: "badge", props: { label: "Red", color: "red", icon: "flame" } },
-        b4: { type: "badge", props: { label: "Green", color: "green", icon: "check" } },
-        b5: { type: "badge", props: { label: "Gray", color: "gray" } },
-        sep2: { type: "separator", props: {} },
-        items: {
-          type: "item_group",
-          props: { separator: true, gap: "sm" },
-          children: ["i1", "i2", "i3"],
-        },
-        i1: {
-          type: "item",
-          props: { title: "Trending Cast", description: "842 likes in the last hour" },
-          children: ["i1-badge"],
-        },
-        "i1-badge": { type: "badge", props: { label: "Hot", color: "red", icon: "flame" } },
-        i2: {
-          type: "item",
-          props: { title: "Weekly Digest", description: "Your personalized summary", variant: "outline" },
-          children: ["i2-icon"],
-        },
-        "i2-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
-        i3: {
-          type: "item",
-          props: { title: "Community Update", description: "3 new proposals", variant: "muted" },
-          children: ["i3-badge"],
-        },
-        "i3-badge": { type: "badge", props: { label: "3 New", color: "blue", icon: "info" } },
-        sep3: { type: "separator", props: {} },
-        "progress-row": {
-          type: "stack",
-          props: { direction: "horizontal" },
-          children: ["p1", "p2"],
-        },
-        p1: { type: "progress", props: { value: 78, max: 100, label: "Engagement" } },
-        p2: { type: "progress", props: { value: 45, max: 100, label: "Completion" } },
-        sep4: { type: "separator", props: {} },
-        icons: {
-          type: "stack",
-          props: { direction: "horizontal" },
-          children: ["ic1", "ic2", "ic3", "ic4", "ic5", "ic6", "ic7", "ic8"],
-        },
-        ic1: { type: "icon", props: { name: "heart", color: "red" } },
-        ic2: { type: "icon", props: { name: "star", color: "amber" } },
-        ic3: { type: "icon", props: { name: "zap", color: "purple" } },
-        ic4: { type: "icon", props: { name: "trophy", color: "amber" } },
-        ic5: { type: "icon", props: { name: "thumbs-up", color: "blue" } },
-        ic6: { type: "icon", props: { name: "trending-up", color: "green" } },
-        ic7: { type: "icon", props: { name: "gift", color: "pink" } },
-        ic8: { type: "icon", props: { name: "bookmark", color: "gray" } },
-        sep5: { type: "separator", props: {} },
-        ...nav(base, "content"),
-      },
-    },
-  };
-}
 
 function itemsPage(base: string): SnapHandlerResult {
   return {
@@ -427,90 +362,90 @@ function itemsPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["step", "heading", "sep1", "label-plain", "group-plain", "sep2", "label-sep", "group-sep", "sep3", "label-border", "group-border", "sep4", "label-both", "group-both", "sep5", "nav"],
+          children: [
+            "step", "heading",
+            "sep1", "label-variants", "v-default", "v-outline", "v-muted",
+            "sep2", "label-actions", "a-badge", "a-icon", "a-button",
+            "sep3", "label-groups", "label-sep", "group-sep", "label-border", "group-border",
+            "sep4", "label-progress", "progress-row",
+            "sep5", "nav",
+          ],
         },
         step: { type: "badge", props: { label: `Items & Groups \u00b7 ${step("items")}` } },
-        heading: {
-          type: "text",
-          props: { content: "Item groups with border, separator, and gap options.", size: "sm" },
-        },
+        heading: { type: "text", props: { content: "Items, variants, action slots, and group styles.", size: "sm" } },
+
+        // Item variants
         sep1: { type: "separator", props: {} },
-        "label-plain": { type: "text", props: { content: "Plain (gap: sm)", size: "sm", weight: "medium" } },
-        "group-plain": {
-          type: "item_group",
-          props: { gap: "sm" },
-          children: ["p1", "p2", "p3"],
-        },
-        p1: { type: "item", props: { title: "Alice", description: "Online now" } },
-        p2: { type: "item", props: { title: "Bob", description: "Last seen 2h ago" } },
-        p3: { type: "item", props: { title: "Charlie", description: "Away" } },
+        "label-variants": { type: "text", props: { content: "Item Variants", size: "sm", weight: "medium" } },
+        "v-default": { type: "item", props: { title: "Default", description: "No background, no border" } },
+        "v-outline": { type: "item", props: { title: "Outline", description: "Bordered with padding", variant: "outline" } },
+        "v-muted": { type: "item", props: { title: "Muted", description: "Subtle background", variant: "muted" } },
+
+        // Items with action children
         sep2: { type: "separator", props: {} },
-        "label-sep": { type: "text", props: { content: "Separator", size: "sm", weight: "medium" } },
+        "label-actions": { type: "text", props: { content: "Action Slots", size: "sm", weight: "medium" } },
+        "a-badge": {
+          type: "item",
+          props: { title: "Trending Cast", description: "842 likes in the last hour" },
+          children: ["a-badge-v"],
+        },
+        "a-badge-v": { type: "badge", props: { label: "Hot", color: "red", icon: "flame" } },
+        "a-icon": {
+          type: "item",
+          props: { title: "Weekly Digest", description: "Your personalized summary", variant: "outline" },
+          children: ["a-icon-v"],
+        },
+        "a-icon-v": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        "a-button": {
+          type: "item",
+          props: { title: "Share this Snap", description: "Pre-fill the composer" },
+          children: ["a-button-v"],
+        },
+        "a-button-v": {
+          type: "button",
+          props: { label: "Share", variant: "outline", icon: "share" },
+          on: { press: { action: "compose_cast", params: { text: "Check out Snaps!" } } },
+        },
+
+        // Group styles
+        sep3: { type: "separator", props: {} },
+        "label-groups": { type: "text", props: { content: "Item Groups", size: "sm", weight: "medium" } },
+        "label-sep": { type: "text", props: { content: "With separators", size: "sm" } },
         "group-sep": {
           type: "item_group",
-          props: { separator: true },
-          children: ["s1", "s2", "s3"],
+          props: { separator: true, gap: "sm" },
+          children: ["gs1", "gs2", "gs3"],
         },
-        s1: {
-          type: "item",
-          props: { title: "Notifications" },
-          children: ["s1-icon"],
-        },
-        "s1-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
-        s2: {
-          type: "item",
-          props: { title: "Privacy" },
-          children: ["s2-icon"],
-        },
-        "s2-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
-        s3: {
-          type: "item",
-          props: { title: "Account" },
-          children: ["s3-icon"],
-        },
-        "s3-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
-        sep3: { type: "separator", props: {} },
-        "label-border": { type: "text", props: { content: "Border", size: "sm", weight: "medium" } },
+        gs1: { type: "item", props: { title: "Notifications" }, children: ["gs1-i"] },
+        "gs1-i": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        gs2: { type: "item", props: { title: "Privacy" }, children: ["gs2-i"] },
+        "gs2-i": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        gs3: { type: "item", props: { title: "Account" }, children: ["gs3-i"] },
+        "gs3-i": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        "label-border": { type: "text", props: { content: "With border", size: "sm" } },
         "group-border": {
           type: "item_group",
-          props: { border: true, gap: "sm" },
-          children: ["b1", "b2"],
+          props: { border: true, separator: true, gap: "sm" },
+          children: ["gb1", "gb2", "gb3"],
         },
-        b1: {
-          type: "item",
-          props: { title: "Pro Plan", description: "$9/month" },
-          children: ["b1-badge"],
-        },
-        "b1-badge": { type: "badge", props: { label: "Active", color: "green", icon: "check" } },
-        b2: {
-          type: "item",
-          props: { title: "Free Plan", description: "$0/month" },
-        },
+        gb1: { type: "item", props: { title: "dwr.eth", description: "2,847 pts" }, children: ["gb1-b"] },
+        "gb1-b": { type: "badge", props: { label: "#1", color: "amber", icon: "trophy" } },
+        gb2: { type: "item", props: { title: "v.eth", description: "2,103 pts" }, children: ["gb2-b"] },
+        "gb2-b": { type: "badge", props: { label: "#2", color: "gray" } },
+        gb3: { type: "item", props: { title: "horsefacts.eth", description: "1,892 pts" }, children: ["gb3-b"] },
+        "gb3-b": { type: "badge", props: { label: "#3", color: "gray" } },
+
+        // Progress bars
         sep4: { type: "separator", props: {} },
-        "label-both": { type: "text", props: { content: "Border + Separator", size: "sm", weight: "medium" } },
-        "group-both": {
-          type: "item_group",
-          props: { border: true, separator: true },
-          children: ["bs1", "bs2", "bs3"],
+        "label-progress": { type: "text", props: { content: "Progress Bars", size: "sm", weight: "medium" } },
+        "progress-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["pr1", "pr2"],
         },
-        bs1: {
-          type: "item",
-          props: { title: "Cast #1" },
-          children: ["bs1-badge"],
-        },
-        "bs1-badge": { type: "badge", props: { label: "842", color: "red", icon: "heart" } },
-        bs2: {
-          type: "item",
-          props: { title: "Cast #2" },
-          children: ["bs2-badge"],
-        },
-        "bs2-badge": { type: "badge", props: { label: "631", color: "red", icon: "heart" } },
-        bs3: {
-          type: "item",
-          props: { title: "Cast #3" },
-          children: ["bs3-badge"],
-        },
-        "bs3-badge": { type: "badge", props: { label: "427", color: "red", icon: "heart" } },
+        pr1: { type: "progress", props: { value: 78, max: 100, label: "Engagement" } },
+        pr2: { type: "progress", props: { value: 45, max: 100, label: "Completion" } },
+
         sep5: { type: "separator", props: {} },
         ...nav(base, "items"),
       },
