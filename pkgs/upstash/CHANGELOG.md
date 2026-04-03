@@ -1,5 +1,11 @@
 # @farcaster/snap-upstash
 
+## 1.0.4
+
+### Patch Changes
+
+- [`b10ada0`](https://github.com/farcasterxyz/snap/commit/b10ada02dd85ce71ce4aebe2f6ac3b682c8f61a1) Thanks [@lyoshenka](https://github.com/lyoshenka)! - needs bumpin
+
 ## 1.0.3
 
 ### Patch Changes
