@@ -67,7 +67,7 @@ Test POST (button tap) — `pnpm dev` sets `SKIP_JFS_VERIFICATION=true`, so POST
 
 ```bash
 PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"button_index\":0,\"timestamp\":$(date +%s)}" \
-  | base64 | tr '+/' '-_' | tr -d '=')
+  | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
 curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
   -H 'Content-Type: application/json' \
   -d "{\"header\":\"dev\",\"payload\":\"$PAYLOAD\",\"signature\":\"dev\"}" \

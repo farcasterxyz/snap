@@ -29,7 +29,7 @@ Use `SnapHandlerResult` (not `SnapResponse`) as the handler return type. `SnapHa
 import { SnapContext, SnapHandlerResult } from "@farcaster/snap";
 
 async function snap(ctx: SnapContext): Promise<SnapHandlerResult> {
-  return { version: "1.0", page: { elements: { ... } } }; // button_layout, theme optional
+  return { version: "1.0", page: { elements: { type: "stack", children: [/* ... */] } } }; // button_layout, theme optional
 }
 ```
 
