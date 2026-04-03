@@ -518,14 +518,14 @@ importers:
   template:
     dependencies:
       '@farcaster/snap':
-        specifier: workspace:*
-        version: link:../pkgs/snap
+        specifier: 1.6.0
+        version: 1.6.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/snap-hono':
-        specifier: workspace:*
-        version: link:../pkgs/hono
+        specifier: 1.4.0
+        version: 1.4.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(hono@4.12.9)(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/snap-upstash':
-        specifier: workspace:*
-        version: link:../pkgs/upstash
+        specifier: 1.0.4
+        version: 1.0.4(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
       '@hono/node-server':
         specifier: ^1.0.0
         version: 1.19.12(hono@4.12.9)
@@ -1421,6 +1421,32 @@ packages:
     peerDependencies:
       typescript: '>= 5.8.3'
       viem: 2.x
+
+  '@farcaster/snap-hono@1.4.0':
+    resolution: {integrity: sha512-lpG/aX7+S64fJH0hKnvHTlrpAw7PokU6697XhRaW38JgZOlYLPCXb5KyrP/o4wpRIBa7GoPL+RRo928uzX94bw==}
+    peerDependencies:
+      hono: '>=4.0.0'
+
+  '@farcaster/snap-upstash@1.0.4':
+    resolution: {integrity: sha512-zYxrKO3NPEB6HSrN8iJoYUIExEM4l4Xq28Y32VRUk7/WRGwdFqdm0d6sTBHuM+XflmXXHq5z5dlz3hoIRNedmA==}
+
+  '@farcaster/snap@1.6.0':
+    resolution: {integrity: sha512-f8f3kQqlopcYfp6SAmd7yjoLblY4iUbvop34p+eoU6VbtumE/veehDSUc0RuIxDH94f87ipwZcRS/niz9S0eGg==}
+    peerDependencies:
+      '@json-render/react': '*'
+      '@neynar/ui': '*'
+      lucide-react: '*'
+      react: ^18.0.0 || ^19.0.0
+      zod: ^4.0.0
+    peerDependenciesMeta:
+      '@json-render/react':
+        optional: true
+      '@neynar/ui':
+        optional: true
+      lucide-react:
+        optional: true
+      react:
+        optional: true
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -6613,6 +6639,53 @@ snapshots:
       '@noble/curves': 2.0.1
       typescript: 5.9.3
       viem: 2.47.6(typescript@5.9.3)(zod@4.3.6)
+
+  '@farcaster/snap-hono@1.4.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(hono@4.12.9)(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@farcaster/snap': 1.6.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
+      '@resvg/resvg-wasm': 2.6.2
+      hono: 4.12.9
+      satori: 0.10.14
+    transitivePeerDependencies:
+      - '@json-render/react'
+      - '@neynar/ui'
+      - bufferutil
+      - lucide-react
+      - react
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@farcaster/snap-upstash@1.0.4(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@farcaster/snap': 1.6.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
+      '@upstash/lock': 0.2.1(typescript@5.9.3)
+      '@upstash/redis': 1.37.0
+    transitivePeerDependencies:
+      - '@json-render/react'
+      - '@neynar/ui'
+      - bufferutil
+      - lucide-react
+      - react
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@farcaster/snap@1.6.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@farcaster/jfs': 0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+      '@json-render/core': 0.15.0(zod@4.3.6)
+      viem: 2.47.6(typescript@5.9.3)(zod@4.3.6)
+      zod: 4.3.6
+    optionalDependencies:
+      '@json-render/react': 0.15.0(react@19.2.4)(zod@4.3.6)
+      '@neynar/ui': 1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2)
+      lucide-react: 1.7.0(react@19.2.4)
+      react: 19.2.4
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
 
   '@floating-ui/core@1.7.5':
     dependencies:
