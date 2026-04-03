@@ -43,13 +43,12 @@ const styles = StyleSheet.create({
   },
   sep: {
     height: 1,
-    marginHorizontal: 12,
   },
   itemPadded: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   itemSepOnly: {
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
 });

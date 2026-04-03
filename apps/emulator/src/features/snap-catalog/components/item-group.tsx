@@ -33,7 +33,7 @@ export function SnapItemGroup({
       {items.map((child, i) => (
         <Fragment key={i}>
           {separator && i > 0 && (
-            <div className="h-px bg-border mx-3" />
+            <div className="h-px bg-border" />
           )}
           <div className={cn(
             (border || separator) && "px-3 py-2.5",
