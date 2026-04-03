@@ -25,7 +25,7 @@ export function SnapBadge({
       ]}
     >
       {Icon && (
-        <Icon size={10} color={isAccent ? "#fff" : resolvedColor} />
+        <Icon size={12} color={isAccent ? "#fff" : resolvedColor} />
       )}
       <Text
         style={[

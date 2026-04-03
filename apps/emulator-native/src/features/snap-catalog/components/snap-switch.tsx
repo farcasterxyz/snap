@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   label: {
-    fontSize: 15,
+    fontSize: 14,
+    fontWeight: "400",
     flex: 1,
   },
 });

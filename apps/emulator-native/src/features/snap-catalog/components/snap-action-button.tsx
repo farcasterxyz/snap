@@ -35,7 +35,7 @@ export function SnapActionButton({
   })();
 
   const textColor = variant === "default" ? "#fff" : variant === "secondary" ? accentHex : colors.text;
-  const iconColor = variant === "default" ? "#fff" : variant === "secondary" ? accentHex : colors.textSecondary;
+  const iconColor = variant === "default" ? "#fff" : variant === "secondary" ? accentHex : colors.text;
 
   return (
     <View style={styles.outer}>

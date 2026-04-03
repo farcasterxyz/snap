@@ -55,10 +55,11 @@ export function SnapToggleGroup({
 
   return (
     <View style={styles.wrap}>
-      {label ? <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: colors.text }]}>{label}</Text> : null}
       <View
         style={[
           styles.group,
+          { backgroundColor: colors.muted },
           isVertical ? styles.groupVertical : styles.groupHorizontal,
         ]}
       >
@@ -69,8 +70,7 @@ export function SnapToggleGroup({
               key={index}
               style={({ pressed }) => [
                 styles.option,
-                { borderColor: colors.border, backgroundColor: colors.inputBg },
-                isSelected && { backgroundColor: accentHex, borderColor: accentHex },
+                isSelected && { backgroundColor: accentHex },
                 pressed && styles.pressed,
                 !isVertical && styles.optionHorizontal,
               ]}
@@ -95,22 +95,22 @@ export function SnapToggleGroup({
 
 const styles = StyleSheet.create({
   wrap: { width: "100%", gap: 6 },
-  label: { fontSize: 14, fontWeight: "500" },
+  label: { fontSize: 13, fontWeight: "500" },
   group: {
+    padding: 4,
+    borderRadius: 8,
     gap: 4,
   },
   groupHorizontal: {
     flexDirection: "row",
-    flexWrap: "wrap",
   },
   groupVertical: {
     flexDirection: "column",
   },
   option: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    borderWidth: StyleSheet.hairlineWidth,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.88 },
   optionText: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "500",
   },
   optionTextSelected: {

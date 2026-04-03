@@ -1,17 +1,20 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { StyleSheet, View } from "react-native";
+import { useTheme } from "../../../ThemeContext";
 
 export function SnapSeparator({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
+  const { colors } = useTheme();
   const orientation = String(props.orientation ?? "horizontal");
   const isVertical = orientation === "vertical";
 
   return (
     <View
-      style={
-        isVertical ? styles.vertical : styles.horizontal
-      }
+      style={[
+        isVertical ? styles.vertical : styles.horizontal,
+        { backgroundColor: colors.border },
+      ]}
     />
   );
 }
@@ -19,13 +22,11 @@ export function SnapSeparator({
 const styles = StyleSheet.create({
   horizontal: {
     width: "100%",
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#e5e7eb",
+    height: 1,
   },
   vertical: {
     height: "100%",
-    width: StyleSheet.hairlineWidth,
-    backgroundColor: "#e5e7eb",
+    width: 1,
     alignSelf: "stretch",
   },
 });

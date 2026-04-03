@@ -23,7 +23,7 @@ export function SnapProgress({
           </Text>
         </View>
       ) : null}
-      <View style={[styles.track, { backgroundColor: colors.border }]}>
+      <View style={[styles.track, { backgroundColor: colors.muted }]}>
         <View style={[styles.fill, { width: `${percent}%`, backgroundColor: accentHex }]} />
       </View>
     </View>
@@ -31,21 +31,21 @@ export function SnapProgress({
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: "100%", gap: 6 },
+  wrap: { width: "100%", gap: 4 },
   labelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  label: { fontSize: 12 },
-  percent: { fontSize: 12 },
+  label: { fontSize: 13 },
+  percent: { fontSize: 13 },
   track: {
-    height: 8,
-    borderRadius: 4,
+    height: 10,
+    borderRadius: 9999,
     overflow: "hidden",
   },
   fill: {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 9999,
   },
 });

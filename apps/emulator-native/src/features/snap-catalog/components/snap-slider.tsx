@@ -47,7 +47,7 @@ export function SnapSlider({
         value={clamped}
         onValueChange={(v) => set(path, v)}
         minimumTrackTintColor={accentHex}
-        maximumTrackTintColor={colors.border}
+        maximumTrackTintColor={colors.muted}
         thumbTintColor={accentHex}
       />
       {minLabel != null || maxLabel != null ? (
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  label: { fontSize: 14, flex: 1 },
-  valueText: { fontSize: 14 },
+  label: { fontSize: 13, fontWeight: "500", flex: 1 },
+  valueText: { fontSize: 13 },
   slider: { width: "100%", height: 40 },
   minMaxRow: {
     flexDirection: "row",

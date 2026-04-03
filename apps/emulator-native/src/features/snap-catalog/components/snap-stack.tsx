@@ -2,11 +2,18 @@ import type { ComponentRenderProps } from "@json-render/react-native";
 import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
-const GAP_MAP: Record<string, number> = {
+const VGAP: Record<string, number> = {
+  none: 0,
+  sm: 8,
+  md: 16,
+  lg: 24,
+};
+
+const HGAP: Record<string, number> = {
   none: 0,
   sm: 4,
   md: 8,
-  lg: 16,
+  lg: 12,
 };
 
 export function SnapStack({
@@ -15,13 +22,14 @@ export function SnapStack({
 }: ComponentRenderProps<Record<string, unknown>> & { children?: ReactNode }) {
   const direction = String(props.direction ?? "vertical");
   const rawGap = props.gap;
+  const isHorizontal = direction === "horizontal";
+  const gapMap = isHorizontal ? HGAP : VGAP;
   const gap =
     typeof rawGap === "number"
       ? rawGap
-      : typeof rawGap === "string" && rawGap in GAP_MAP
-        ? GAP_MAP[rawGap]!
-        : GAP_MAP.md;
-  const isHorizontal = direction === "horizontal";
+      : typeof rawGap === "string" && rawGap in gapMap
+        ? gapMap[rawGap]!
+        : isHorizontal ? HGAP.md! : VGAP.md!;
 
   return (
     <View

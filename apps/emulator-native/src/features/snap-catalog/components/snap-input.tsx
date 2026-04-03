@@ -21,7 +21,7 @@ export function SnapInput({
 
   return (
     <View style={styles.wrap}>
-      {label ? <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: colors.text }]}>{label}</Text> : null}
       <TextInput
         style={[
           styles.input,
@@ -45,13 +45,13 @@ export function SnapInput({
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: "100%", gap: 6 },
-  label: { fontSize: 14, fontWeight: "500" },
+  wrap: { width: "100%", gap: 4 },
+  label: { fontSize: 13, fontWeight: "500" },
   input: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 10,
+    borderWidth: 1,
+    borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontSize: 15,
+    fontSize: 14,
   },
 });

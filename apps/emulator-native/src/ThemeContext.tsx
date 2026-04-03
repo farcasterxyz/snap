@@ -8,6 +8,7 @@ const LIGHT = {
   textSecondary: "#6b7280",
   border: "#e5e7eb",
   inputBg: "#f9fafb",
+  muted: "#f9fafb",
 };
 
 const DARK = {
@@ -17,6 +18,7 @@ const DARK = {
   textSecondary: "#a1a1aa",
   border: "#27272a",
   inputBg: "#18181b",
+  muted: "#27272a",
 };
 
 export type ThemeColors = typeof LIGHT;

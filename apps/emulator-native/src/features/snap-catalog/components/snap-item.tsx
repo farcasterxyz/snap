@@ -16,9 +16,9 @@ export function SnapItem({
 
   const containerVariant =
     variant === "outline"
-      ? { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, borderRadius: 10 }
+      ? { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 12 }
       : variant === "muted"
-        ? { backgroundColor: colors.surface, borderRadius: 10 }
+        ? { backgroundColor: colors.muted, borderRadius: 8, padding: 12 }
         : {};
 
   return (
@@ -40,14 +40,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    gap: 12,
   },
   content: {
     flex: 1,
-    gap: 2,
   },
   title: {
     fontSize: 15,
@@ -55,10 +50,13 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 13,
+    marginTop: 2,
   },
   actions: {
+    marginLeft: "auto",
+    paddingLeft: 12,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 4,
   },
 });

@@ -4,8 +4,8 @@ import { useTheme } from "../../../ThemeContext";
 
 const SIZE_STYLES: Record<string, { fontSize: number; lineHeight?: number; fontWeight?: "400" | "500" | "600" | "700" }> = {
   lg: { fontSize: 20, fontWeight: "700" },
-  md: { fontSize: 16, lineHeight: 22 },
-  sm: { fontSize: 13, lineHeight: 18 },
+  md: { fontSize: 16, lineHeight: 24 },
+  sm: { fontSize: 13 },
 };
 
 const WEIGHT_MAP: Record<string, "400" | "500" | "600" | "700"> = {
