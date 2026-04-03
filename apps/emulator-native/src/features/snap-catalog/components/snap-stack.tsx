@@ -16,6 +16,13 @@ const HGAP: Record<string, number> = {
   lg: 12,
 };
 
+const JUSTIFY: Record<string, "flex-start" | "center" | "flex-end" | "space-between"> = {
+  start: "flex-start",
+  center: "center",
+  end: "flex-end",
+  between: "space-between",
+};
+
 export function SnapStack({
   element: { props },
   children,
@@ -30,6 +37,7 @@ export function SnapStack({
       : typeof rawGap === "string" && rawGap in gapMap
         ? gapMap[rawGap]!
         : isHorizontal ? HGAP.md! : VGAP.md!;
+  const justify = props.justify ? JUSTIFY[String(props.justify)] : undefined;
 
   return (
     <View
@@ -37,6 +45,7 @@ export function SnapStack({
         styles.stack,
         isHorizontal ? styles.horizontal : undefined,
         { gap },
+        justify ? { justifyContent: justify } : undefined,
       ]}
     >
       {children}

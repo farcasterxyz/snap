@@ -17,6 +17,13 @@ const HGAP: Record<string, string> = {
   lg: "gap-3",
 };
 
+const JUSTIFY: Record<string, string> = {
+  start: "justify-start",
+  center: "justify-center",
+  end: "justify-end",
+  between: "justify-between",
+};
+
 export function SnapStack({
   element: { props },
   children,
@@ -30,6 +37,7 @@ export function SnapStack({
   const gap = isHorizontal
     ? (HGAP[gapKey] ?? "gap-2")
     : (VGAP[gapKey] ?? "gap-4");
+  const justify = props.justify ? JUSTIFY[String(props.justify)] : undefined;
 
   return (
     <div
@@ -37,6 +45,7 @@ export function SnapStack({
         "flex w-full",
         isHorizontal ? "flex-row items-center flex-wrap" : "flex-col",
         gap,
+        justify,
       )}
     >
       {children}

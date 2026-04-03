@@ -84,7 +84,7 @@ function nav(base: string, current: View): Record<string, object> {
   return {
     nav: {
       type: "stack",
-      props: { direction: "horizontal" },
+      props: { direction: "horizontal", justify: "between" },
       children,
     },
     ...elements,
