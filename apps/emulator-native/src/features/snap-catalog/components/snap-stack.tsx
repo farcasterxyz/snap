@@ -16,11 +16,12 @@ const HGAP: Record<string, number> = {
   lg: 12,
 };
 
-const JUSTIFY: Record<string, "flex-start" | "center" | "flex-end" | "space-between"> = {
+const JUSTIFY: Record<string, "flex-start" | "center" | "flex-end" | "space-between" | "space-around"> = {
   start: "flex-start",
   center: "center",
   end: "flex-end",
   between: "space-between",
+  around: "space-around",
 };
 
 export function SnapStack({
