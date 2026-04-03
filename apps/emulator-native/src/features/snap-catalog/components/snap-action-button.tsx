@@ -62,7 +62,7 @@ export function SnapActionButton({
         {iconName && ICON_MAP[iconName] ? (
           (() => { const I = ICON_MAP[iconName]!; return <I size={16} color={iconColor} />; })()
         ) : null}
-        <Text style={{ color: textColor, fontSize: 16, fontWeight: "600" }}>
+        <Text style={{ color: textColor, fontSize: 14, fontWeight: "600" }}>
           {label}
         </Text>
       </Pressable>

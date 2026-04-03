@@ -27,17 +27,17 @@ export function SnapPreview({
   const frameRingStyle = useMemo(
     () => ({
       backgroundColor: "transparent",
-      borderColor: colors.border,
+      borderColor: "transparent",
     }),
-    [colors.border],
+    [],
   );
 
   const cardStyle = useMemo(
     () => ({
-      borderColor: colors.border,
-      backgroundColor: colors.surface,
+      borderColor: "transparent",
+      backgroundColor: "transparent",
     }),
-    [colors.border, colors.surface],
+    [],
   );
 
   const { spec } = snap;
