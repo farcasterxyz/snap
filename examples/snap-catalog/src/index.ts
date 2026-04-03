@@ -223,7 +223,7 @@ function imagesPage(base: string): SnapHandlerResult {
         },
         "label-sq-43": {
           type: "stack",
-          props: { direction: "horizontal", justify: "around" },
+          props: { direction: "horizontal" },
           children: ["lbl-sq", "lbl-43"],
         },
         "lbl-sq": { type: "text", props: { content: "1:1", size: "sm", align: "center" } },
@@ -250,7 +250,7 @@ function imagesPage(base: string): SnapHandlerResult {
         },
         "label-34-916": {
           type: "stack",
-          props: { direction: "horizontal", justify: "around" },
+          props: { direction: "horizontal" },
           children: ["lbl-34", "lbl-916"],
         },
         "lbl-34": { type: "text", props: { content: "3:4", size: "sm", align: "center" } },

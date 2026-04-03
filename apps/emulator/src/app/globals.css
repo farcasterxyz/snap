@@ -3,6 +3,7 @@
 @import "@neynar/ui/themes/purple-dawn";
 
 @source "../**/*.{js,jsx,ts,tsx}";
+@source "../../../../pkgs/snap/src/react/**/*.{ts,tsx}";
 
 /* ── Theme variables ── */
 
