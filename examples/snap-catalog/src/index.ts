@@ -6,6 +6,7 @@ type View =
   | "welcome"
   | "typography"
   | "images"
+  | "icons"
   | "content"
   | "items"
   | "layout"
@@ -17,6 +18,7 @@ const FLOW: View[] = [
   "welcome",
   "typography",
   "images",
+  "icons",
   "content",
   "items",
   "layout",
@@ -39,6 +41,7 @@ registerSnapHandler(app, async (ctx) => {
   switch (view) {
     case "typography": return typographyPage(base);
     case "images": return imagesPage(base);
+    case "icons": return iconsPage(base);
     case "content": return contentPage(base);
     case "items": return itemsPage(base);
     case "layout": return layoutPage(base);
@@ -257,6 +260,77 @@ function imagesPage(base: string): SnapHandlerResult {
         "lbl-916": { type: "text", props: { content: "9:16", size: "sm", align: "center" } },
         sep3: { type: "separator", props: {} },
         ...nav(base, "images"),
+      },
+    },
+  };
+}
+
+function iconsPage(base: string): SnapHandlerResult {
+  return {
+    version: "1.0",
+    theme: { accent: "amber" },
+    spec: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["step", "heading", "sep1", "label-nav", "row-nav", "label-status", "row-status", "label-social", "row-social", "label-content", "row-content", "label-media", "row-media", "label-commerce", "row-commerce", "label-actions", "row-actions", "label-feedback", "row-feedback", "sep2", "nav"],
+        },
+        step: { type: "badge", props: { label: `Icons \u00b7 ${step("icons")}` } },
+        heading: { type: "text", props: { content: "34 curated Lucide icons across 8 categories.", size: "sm" } },
+        sep1: { type: "separator", props: {} },
+        "label-nav": { type: "text", props: { content: "Navigation", size: "sm", weight: "medium" } },
+        "row-nav": { type: "stack", props: { direction: "horizontal" }, children: ["i-arrow-right", "i-arrow-left", "i-external-link", "i-chevron-right"] },
+        "i-arrow-right": { type: "icon", props: { name: "arrow-right" } },
+        "i-arrow-left": { type: "icon", props: { name: "arrow-left" } },
+        "i-external-link": { type: "icon", props: { name: "external-link" } },
+        "i-chevron-right": { type: "icon", props: { name: "chevron-right" } },
+        "label-status": { type: "text", props: { content: "Status", size: "sm", weight: "medium" } },
+        "row-status": { type: "stack", props: { direction: "horizontal" }, children: ["i-check", "i-x", "i-alert", "i-info", "i-clock"] },
+        "i-check": { type: "icon", props: { name: "check", color: "green" } },
+        "i-x": { type: "icon", props: { name: "x", color: "red" } },
+        "i-alert": { type: "icon", props: { name: "alert-triangle", color: "amber" } },
+        "i-info": { type: "icon", props: { name: "info", color: "blue" } },
+        "i-clock": { type: "icon", props: { name: "clock", color: "gray" } },
+        "label-social": { type: "text", props: { content: "Social", size: "sm", weight: "medium" } },
+        "row-social": { type: "stack", props: { direction: "horizontal" }, children: ["i-heart", "i-msg", "i-repeat", "i-share", "i-user", "i-users"] },
+        "i-heart": { type: "icon", props: { name: "heart", color: "red" } },
+        "i-msg": { type: "icon", props: { name: "message-circle", color: "blue" } },
+        "i-repeat": { type: "icon", props: { name: "repeat", color: "green" } },
+        "i-share": { type: "icon", props: { name: "share" } },
+        "i-user": { type: "icon", props: { name: "user" } },
+        "i-users": { type: "icon", props: { name: "users" } },
+        "label-content": { type: "text", props: { content: "Content", size: "sm", weight: "medium" } },
+        "row-content": { type: "stack", props: { direction: "horizontal" }, children: ["i-star", "i-trophy", "i-zap", "i-flame", "i-gift"] },
+        "i-star": { type: "icon", props: { name: "star", color: "amber" } },
+        "i-trophy": { type: "icon", props: { name: "trophy", color: "amber" } },
+        "i-zap": { type: "icon", props: { name: "zap", color: "purple" } },
+        "i-flame": { type: "icon", props: { name: "flame", color: "red" } },
+        "i-gift": { type: "icon", props: { name: "gift", color: "pink" } },
+        "label-media": { type: "text", props: { content: "Media", size: "sm", weight: "medium" } },
+        "row-media": { type: "stack", props: { direction: "horizontal" }, children: ["i-image", "i-play", "i-pause"] },
+        "i-image": { type: "icon", props: { name: "image" } },
+        "i-play": { type: "icon", props: { name: "play", color: "green" } },
+        "i-pause": { type: "icon", props: { name: "pause" } },
+        "label-commerce": { type: "text", props: { content: "Commerce", size: "sm", weight: "medium" } },
+        "row-commerce": { type: "stack", props: { direction: "horizontal" }, children: ["i-wallet", "i-coins"] },
+        "i-wallet": { type: "icon", props: { name: "wallet" } },
+        "i-coins": { type: "icon", props: { name: "coins", color: "amber" } },
+        "label-actions": { type: "text", props: { content: "Actions", size: "sm", weight: "medium" } },
+        "row-actions": { type: "stack", props: { direction: "horizontal" }, children: ["i-plus", "i-minus", "i-refresh", "i-bookmark"] },
+        "i-plus": { type: "icon", props: { name: "plus" } },
+        "i-minus": { type: "icon", props: { name: "minus" } },
+        "i-refresh": { type: "icon", props: { name: "refresh-cw" } },
+        "i-bookmark": { type: "icon", props: { name: "bookmark" } },
+        "label-feedback": { type: "text", props: { content: "Feedback", size: "sm", weight: "medium" } },
+        "row-feedback": { type: "stack", props: { direction: "horizontal" }, children: ["i-thumbs-up", "i-thumbs-down", "i-trending-up", "i-trending-down"] },
+        "i-thumbs-up": { type: "icon", props: { name: "thumbs-up", color: "green" } },
+        "i-thumbs-down": { type: "icon", props: { name: "thumbs-down", color: "red" } },
+        "i-trending-up": { type: "icon", props: { name: "trending-up", color: "green" } },
+        "i-trending-down": { type: "icon", props: { name: "trending-down", color: "red" } },
+        sep2: { type: "separator", props: {} },
+        ...nav(base, "icons"),
       },
     },
   };
