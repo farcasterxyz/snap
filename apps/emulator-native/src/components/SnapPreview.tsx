@@ -26,30 +26,18 @@ export function SnapPreview({
 
   const frameRingStyle = useMemo(
     () => ({
-      backgroundColor: hexToRgba(accentHex, 0.14),
-      borderColor: hexToRgba(accentHex, 0.38),
-      ...Platform.select({
-        ios: {
-          shadowColor: accentHex,
-          shadowOffset: { width: 0, height: 10 },
-          shadowOpacity: 0.14,
-          shadowRadius: 24,
-        },
-        android: {
-          elevation: 6,
-        },
-        default: {},
-      }),
+      backgroundColor: "transparent",
+      borderColor: colors.border,
     }),
-    [accentHex],
+    [colors.border],
   );
 
   const cardStyle = useMemo(
     () => ({
-      borderColor: hexToRgba(accentHex, 0.22),
-      backgroundColor: mode === "dark" ? "#1a1a2a" : "#fff",
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
     }),
-    [accentHex, mode],
+    [colors.border, colors.surface],
   );
 
   const { spec } = snap;
@@ -178,12 +166,9 @@ const FRAME_PAD = 16;
 const styles = StyleSheet.create({
   frameRing: {
     alignSelf: "stretch",
-    borderRadius: 22,
-    padding: 3,
-    borderWidth: 1,
   },
   card: {
-    borderRadius: 18,
+    borderRadius: 16,
     overflow: "hidden",
     borderWidth: 1,
     minHeight: 120,

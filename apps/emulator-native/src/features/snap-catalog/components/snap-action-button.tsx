@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   btnDefault: {
-    paddingVertical: 14,
+    paddingVertical: 12,
   },
   btnOther: {
     paddingVertical: 10,
