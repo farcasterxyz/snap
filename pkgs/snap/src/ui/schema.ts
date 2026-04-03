@@ -29,9 +29,9 @@ export const snapJsonRenderSchema = defineSchema(
   }),
   {
     defaultRules: [
-      "You are generating auxiliary UI for a Farcaster Snap. Prefer components matching snap element types (Text, Image, ButtonGroup, …).",
-      "Snap pages use a Stack root with at most 5 body children and 1 media element (Image or Grid); keep generated trees small.",
-      "Bottom-of-card snap buttons are ActionButton components; use actions post / link / mini_app / client.",
+      "You are generating auxiliary UI for a Farcaster Snap. Prefer components matching snap element types (Item, Badge, ButtonGroup, Input, Switch, ToggleGroup, Slider, Progress, Image, Separator).",
+      "Snap pages use a Stack root with at most 6 body children and 1 media element (Image); keep generated trees small.",
+      "Bottom-of-card snap buttons are Button components; use actions post / link / mini_app / sdk per SPEC.md.",
     ],
   },
 );

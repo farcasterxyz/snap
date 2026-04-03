@@ -20,7 +20,7 @@ export function SnapSlider({
   const min = Number(props.min ?? 0);
   const max = Number(props.max ?? 100);
   const step = props.step != null ? Number(props.step) : 1;
-  const fallback = props.value != null ? Number(props.value) : (min + max) / 2;
+  const fallback = props.defaultValue != null ? Number(props.defaultValue) : (min + max) / 2;
   const raw = get(path);
   const value = raw === undefined || raw === null ? fallback : Number(raw);
 

@@ -4,6 +4,7 @@ import {
   validateSnapResponse,
   snapResponseSchema,
 } from "@farcaster/snap";
+import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 
 type PayloadToResponseOptions = {
   resourcePath: string;
@@ -19,20 +20,17 @@ export function payloadToResponse(
   const resourcePath = options.resourcePath ?? "/";
   const mediaTypes = options.mediaTypes ?? [...DEFAULT_LINK_MEDIA_TYPES];
 
+  // Validate snap envelope (version, theme, effects, spec shape)
   const validation = validateSnapResponse(payload);
   if (!validation.valid) {
-    return new Response(
-      JSON.stringify({
-        error: "invalid snap page",
-        issues: validation.issues,
-      }),
-      {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-      },
-    );
+    return errorResponse("invalid snap page", validation.issues);
+  }
+
+  // Validate spec against catalog (element types, props, actions)
+  const catalogResult = snapJsonRenderCatalog.validate(payload.spec);
+  if (!catalogResult.success) {
+    const issues = catalogResult.error?.issues ?? [];
+    return errorResponse("invalid snap spec", issues);
   }
 
   const finalized = snapResponseSchema.parse(payload);
@@ -42,6 +40,16 @@ export function payloadToResponse(
       ...snapHeaders(resourcePath, MEDIA_TYPE, mediaTypes),
     },
   });
+}
+
+function errorResponse(error: string, issues: unknown[]): Response {
+  return new Response(
+    JSON.stringify({ error, issues }),
+    {
+      status: 400,
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+    },
+  );
 }
 
 export function snapHeaders(

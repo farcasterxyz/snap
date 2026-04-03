@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { snapPreviewPrimaryCssProperties } from "@/lib/snapPreviewPrimaryCss";
 import { useColorMode } from "@neynar/ui/color-mode";
 import { SnapPreviewAccentProvider } from "@/features/snap-catalog/SnapPreviewAccentContext";
 import { SnapCatalogView } from "./snapCatalogRenderer";
-import { snapPageToJsonRenderSpec } from "../lib/snapPageToJsonRenderSpec";
 
 type JsonValue =
   | string
@@ -18,13 +18,9 @@ type JsonValue =
 
 export type SnapPage = {
   version: string;
-  page: {
-    theme?: { accent?: string };
-    effects?: string[];
-    elements: { type: string; children: Array<Record<string, JsonValue>> };
-    buttons?: Array<Record<string, JsonValue>>;
-    button_layout?: "stack" | "row" | "grid";
-  };
+  theme?: { accent?: string };
+  effects?: string[];
+  spec: Spec;
 };
 
 const CONFETTI_COLORS = [
@@ -50,8 +46,6 @@ function ConfettiOverlay() {
           CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
         size: 6 + Math.random() * 8,
         rotation: Math.random() * 360,
-        drift: (Math.random() - 0.5) * 80,
-        shape: Math.random() > 0.5 ? "rect" : "circle",
       })),
     [],
   );
@@ -66,71 +60,54 @@ function ConfettiOverlay() {
         zIndex: 20,
       }}
     >
-      {pieces.map((p) => (
+      {pieces.map(({ id, left, delay, duration, color, size, rotation }) => (
         <div
-          key={p.id}
+          key={id}
           style={{
             position: "absolute",
-            left: `${p.left}%`,
-            top: -12,
-            width: p.size,
-            height: p.shape === "circle" ? p.size : p.size * 0.5,
-            backgroundColor: p.color,
-            borderRadius: p.shape === "circle" ? "50%" : 2,
-            transform: `rotate(${p.rotation}deg)`,
-            animation: `confetti-fall-${p.id % 3} ${
-              p.duration
-            }s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${p.delay}s forwards`,
-            opacity: 0,
+            left: `${left}%`,
+            top: -20,
+            width: size,
+            height: size * 0.6,
+            backgroundColor: color,
+            borderRadius: 2,
+            transform: `rotate(${rotation}deg)`,
+            animation: `confettiFall ${duration}s ease-in ${delay}s forwards`,
           }}
         />
       ))}
-      <style>{`
-        @keyframes confetti-fall-0 {
-          0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
-          50% { opacity: 1; }
-          100% { transform: translateY(600px) translateX(40px) rotate(540deg); opacity: 0; }
-        }
-        @keyframes confetti-fall-1 {
-          0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
-          50% { opacity: 1; }
-          100% { transform: translateY(550px) translateX(-50px) rotate(720deg); opacity: 0; }
-        }
-        @keyframes confetti-fall-2 {
-          0% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: 1; }
-          30% { opacity: 1; transform: translateY(150px) translateX(20px) rotate(200deg) scale(1.1); }
-          100% { transform: translateY(500px) translateX(-30px) rotate(900deg) scale(0.6); opacity: 0; }
-        }
-      `}</style>
+      <style>{`@keyframes confettiFall{0%{top:-20px;opacity:1;transform:rotate(0deg) translateX(0)}50%{opacity:1}100%{top:110%;opacity:0;transform:rotate(720deg) translateX(${Math.random() > 0.5 ? "" : "-"}40px)}}`}</style>
     </div>
   );
 }
 
 function applyStatePaths(
   model: Record<string, unknown>,
-  changes: Array<{ path: string; value: unknown }>,
+  changes: { path: string; value: unknown }[] | Record<string, unknown>,
 ): void {
-  for (const { path, value } of changes) {
-    const trimmed = path.replace(/^\//, "");
+  const entries = Array.isArray(changes)
+    ? changes.map((c) => [c.path, c.value] as const)
+    : Object.entries(changes);
+  for (const [path, value] of entries) {
+    const trimmed = path.startsWith("/") ? path : `/${path}`;
     const parts = trimmed.split("/").filter(Boolean);
     if (parts.length < 2) continue;
     const [top, ...rest] = parts;
-    let cursor: Record<string, unknown> = model;
     if (top === "inputs") {
-      if (typeof cursor.inputs !== "object" || cursor.inputs === null) {
-        cursor.inputs = {};
+      if (typeof model.inputs !== "object" || model.inputs === null) {
+        model.inputs = {};
       }
-      const inputs = cursor.inputs as Record<string, unknown>;
+      const inputs = model.inputs as Record<string, unknown>;
       if (rest.length === 1) {
         inputs[rest[0]!] = value;
       }
       continue;
     }
     if (top === "theme") {
-      if (typeof cursor.theme !== "object" || cursor.theme === null) {
-        cursor.theme = {};
+      if (typeof model.theme !== "object" || model.theme === null) {
+        model.theme = {};
       }
-      const theme = cursor.theme as Record<string, unknown>;
+      const theme = model.theme as Record<string, unknown>;
       if (rest.length === 1) {
         theme[rest[0]!] = value;
       }
@@ -146,20 +123,16 @@ export function SnapRenderer({
 }: {
   snap: SnapPage;
   onPostButton: (
-    button_index: number,
-    button: Record<string, JsonValue>,
+    target: string,
     inputs: Record<string, JsonValue>,
   ) => void;
-  /**
-   * When set, link buttons call this instead of opening a new tab immediately.
-   * The emulator uses this to try loading the URL as a snap first.
-   */
   onLinkButton?: (target: string) => void | Promise<void>;
   loading: boolean;
 }) {
-  const { spec, initialState } = useMemo(
-    () => snapPageToJsonRenderSpec(snap),
-    [snap],
+  const { spec } = snap;
+  const initialState = useMemo(
+    () => spec.state ?? { inputs: {} },
+    [spec],
   );
 
   const stateRef = useRef<Record<string, unknown>>(initialState);
@@ -179,63 +152,34 @@ export function SnapRenderer({
     const result = snapJsonRenderCatalog.validate(spec);
     if (!result.success) {
       // eslint-disable-next-line no-console
-      console.warn(
-        "[emulator] json-render spec validation failed",
-        result.error,
-      );
+      console.warn("[SnapRenderer] catalog validation issues:", result.error);
     }
   }, [spec]);
 
-  const pageKey = useMemo(() => JSON.stringify(snap.page), [snap.page]);
+  const [pageKey, setPageKey] = useState(0);
+  useEffect(() => {
+    setPageKey((k) => k + 1);
+  }, [spec]);
 
-  const { mode: appearance } = useColorMode();
-  const accentName = snap.page.theme?.accent;
+  const showConfetti = snap.effects?.includes("confetti");
+
+  const { mode } = useColorMode();
   const previewSurfaceStyle = useMemo(
-    () => ({
-      padding: 16,
-      display: "grid" as const,
-      gap: 12,
-      ...(accentName
-        ? snapPreviewPrimaryCssProperties(accentName, appearance)
-        : {}),
-    }),
-    [accentName, appearance],
+    () =>
+      ({
+        ...snapPreviewPrimaryCssProperties(snap.theme?.accent ?? "purple", mode),
+      }) as React.CSSProperties,
+    [snap.theme?.accent, mode],
   );
 
-  const hasConfetti = snap.page.effects?.includes("confetti") ?? false;
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  useEffect(() => {
-    if (hasConfetti) {
-      setShowConfetti(true);
-      const timer = setTimeout(() => setShowConfetti(false), 5000);
-      return () => clearTimeout(timer);
-    } else {
-      setShowConfetti(false);
-    }
-  }, [pageKey, hasConfetti]);
-
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 480,
-        border: "1px solid var(--border)",
-        borderRadius: 14,
-        background: "var(--snap-card-bg)",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
+    <div style={{ position: "relative", width: "100%" }}>
       {showConfetti && <ConfettiOverlay />}
-
       {loading && (
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "var(--snap-card-bg, rgba(255,255,255,0.7))",
-            opacity: 0.85,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -249,7 +193,7 @@ export function SnapRenderer({
       )}
 
       <div style={previewSurfaceStyle}>
-        <SnapPreviewAccentProvider pageAccent={snap.page.theme?.accent}>
+        <SnapPreviewAccentProvider pageAccent={snap.theme?.accent}>
           <SnapCatalogView
             key={pageKey}
             spec={spec}
@@ -264,15 +208,12 @@ export function SnapRenderer({
                 JsonValue
               >;
               switch (name) {
-                case "snap_post": {
-                  const idx = Number(params?.button_index ?? 0);
-                  const btn =
-                    (snap.page.buttons?.[idx] as Record<string, JsonValue>) ??
-                    {};
-                  onPostButton(idx, btn, inputs);
+                case "submit": {
+                  const target = String(params?.target ?? "");
+                  onPostButton(target, inputs);
                   break;
                 }
-                case "snap_link": {
+                case "open_url": {
                   const target = String(params?.target ?? "");
                   if (!target) break;
                   if (onLinkButton) {
@@ -282,8 +223,13 @@ export function SnapRenderer({
                   }
                   break;
                 }
-                case "snap_mini_app":
-                case "snap_client": {
+                case "open_mini_app":
+                case "view_cast":
+                case "view_profile":
+                case "compose_cast":
+                case "view_token":
+                case "send_token":
+                case "swap_token": {
                   // eslint-disable-next-line no-console
                   console.info(`[emulator] ${name}`, params);
                   break;

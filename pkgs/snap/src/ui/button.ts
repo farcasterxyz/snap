@@ -1,16 +1,13 @@
 import { z } from "zod";
-import { BUTTON_ACTION_VALUES, BUTTON_STYLE_VALUES } from "../constants.js";
+import { ICON_NAMES } from "./icon.js";
 
-export const actionButtonProps = z.object({
-  label: z.string(),
-  action: z.enum(BUTTON_ACTION_VALUES),
-  target: z.string().optional(),
-  client_action: z.record(z.string(), z.unknown()).optional(),
-  style: z.enum(BUTTON_STYLE_VALUES).optional(),
+export const BUTTON_VARIANTS = ["default", "secondary", "outline", "ghost"] as const;
+export const BUTTON_MAX_LABEL_CHARS = 30;
+
+export const buttonProps = z.object({
+  label: z.string().min(1).max(BUTTON_MAX_LABEL_CHARS),
+  variant: z.enum(BUTTON_VARIANTS).optional(),
+  icon: z.enum(ICON_NAMES).optional(),
 });
 
-export type ActionButtonProps = z.infer<typeof actionButtonProps>;
-
-/** Same schema as `actionButtonProps` (legacy export name). */
-export const buttonProps = actionButtonProps;
-export type ButtonProps = ActionButtonProps;
+export type ButtonProps = z.infer<typeof buttonProps>;

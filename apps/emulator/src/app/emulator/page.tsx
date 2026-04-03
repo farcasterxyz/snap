@@ -649,15 +649,9 @@ export default function EmulatorPage() {
   );
 
   const handlePostButton = async (
-    button_index: number,
-    button: Record<string, unknown>,
+    target: string,
     inputs: Record<string, unknown>,
   ) => {
-    const action = String(button.action ?? "");
-    if (action !== "post") {
-      return;
-    }
-
     if (!currentSourceUrl) {
       setError("Missing current source URL");
       return;
@@ -673,7 +667,7 @@ export default function EmulatorPage() {
       return;
     }
 
-    const target = String(button.target ?? currentSourceUrl);
+    if (!target) target = currentSourceUrl;
     const nextSourceUrl = coerceUpstreamUrlToMatchCurrentSnap(
       new URL(toAbsoluteSnapTarget(currentSourceUrl, target)),
       new URL(currentSourceUrl),
@@ -685,7 +679,7 @@ export default function EmulatorPage() {
     const requestBody = {
       currentUrl: currentSourceUrl,
       target,
-      button_index,
+      button_index: 0,
       inputs,
       fid: fidParsed,
     };

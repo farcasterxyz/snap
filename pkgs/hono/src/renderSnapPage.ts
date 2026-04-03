@@ -1,6 +1,7 @@
 import type {
-  SnapPageElementInput,
   SnapHandlerResult,
+  SnapSpec,
+  SnapUIElement,
   PaletteColor,
 } from "@farcaster/snap";
 import {
@@ -9,17 +10,11 @@ import {
   PALETTE_COLOR_ACCENT,
 } from "@farcaster/snap";
 
-type SnapPage = SnapHandlerResult["page"];
-type SnapPageButton = NonNullable<SnapPage["buttons"]>[number];
-
 // ─── OG meta ────────────────────────────────────────────
 
 export type RenderSnapPageOptions = {
-  /** Absolute URL of the /~/og-image PNG route. */
   ogImageUrl?: string;
-  /** Canonical pathname + search of the snap page (e.g. "/snap" or "/"). */
   resourcePath?: string;
-  /** Optional og:site_name value (e.g. from SNAP_OG_SITE_NAME env). */
   siteName?: string;
 };
 
@@ -30,29 +25,25 @@ type PageMeta = {
   imageAlt?: string;
 };
 
-export function extractPageMeta(page: SnapPage): PageMeta {
+export function extractPageMeta(spec: SnapSpec): PageMeta {
   let title = "Farcaster Snap";
   let description = "";
   let imageUrl: string | undefined;
   let imageAlt: string | undefined;
 
-  for (const el of page.elements.children) {
-    if (el.type === "text") {
-      const style = el.style;
-      const content = el.content;
-      if (style === "title" && title === "Farcaster Snap" && content) {
-        title = content;
-      } else if (
-        (style === "body" || style === "caption") &&
-        !description &&
-        content
-      ) {
-        description = content;
+  for (const el of Object.values(spec.elements)) {
+    const e = el as SnapUIElement;
+    if (e.type === "item") {
+      if (title === "Farcaster Snap" && e.props?.title) {
+        title = String(e.props.title);
+      }
+      if (!description && e.props?.description) {
+        description = String(e.props.description);
       }
     }
-    if (el.type === "image" && !imageUrl) {
-      imageUrl = el.url;
-      imageAlt = el.alt;
+    if (e.type === "image" && !imageUrl) {
+      imageUrl = e.props?.url ? String(e.props.url) : undefined;
+      imageAlt = e.props?.alt ? String(e.props.alt) : undefined;
     }
   }
 
@@ -73,7 +64,6 @@ function buildOgMeta(opts: {
   siteName?: string;
 }): string {
   const { title, description, pageUrl, ogImageUrl, imageAlt, siteName } = opts;
-
   const imgUrl = ogImageUrl ?? undefined;
   const twitterCard = imgUrl ? "summary_large_image" : "summary";
 
@@ -89,24 +79,18 @@ function buildOgMeta(opts: {
   if (siteName) {
     lines.push(`<meta property="og:site_name" content="${esc(siteName)}">`);
   }
-
   if (imgUrl) {
     lines.push(`<meta property="og:image" content="${esc(imgUrl)}">`);
-    lines.push(
-      `<meta property="og:image:alt" content="${esc(imageAlt ?? title)}">`,
-    );
+    lines.push(`<meta property="og:image:alt" content="${esc(imageAlt ?? title)}">`);
   }
-
   lines.push(
     `<meta name="twitter:card" content="${twitterCard}">`,
     `<meta name="twitter:title" content="${esc(title)}">`,
     `<meta name="twitter:description" content="${esc(description)}">`,
   );
-
   if (imgUrl) {
     lines.push(`<meta name="twitter:image" content="${esc(imgUrl)}">`);
   }
-
   return lines.join("\n");
 }
 
@@ -127,295 +111,164 @@ function accentHex(accent: PaletteColor | undefined): string {
 }
 
 function colorHex(
-  color: PaletteColor | typeof PALETTE_COLOR_ACCENT | undefined,
+  color: string | undefined,
   accent: string,
 ): string {
   if (!color || color === PALETTE_COLOR_ACCENT) return accent;
-  return PALETTE_LIGHT_HEX[color] ?? accent;
+  return (PALETTE_LIGHT_HEX as Record<string, string>)[color] ?? accent;
 }
 
 // ─── Element renderers ──────────────────────────────────
 
-function renderElement(el: SnapPageElementInput, accent: string): string {
+function renderElement(
+  key: string,
+  spec: SnapSpec,
+  accent: string,
+): string {
+  const el = spec.elements[key] as SnapUIElement | undefined;
+  if (!el) return "";
+  const p = el.props ?? {};
+
   switch (el.type) {
-    case "text":
-      return renderText(el, accent);
-    case "image":
-      return renderImage(el);
-    case "grid":
-      return renderGrid(el);
-    case "progress":
-      return renderProgress(el, accent);
-    case "bar_chart":
-      return renderBarChart(el, accent);
-    case "list":
-      return renderList(el);
-    case "button_group":
-      return renderButtonGroup(el, accent);
-    case "slider":
-      return renderSlider(el, accent);
-    case "text_input":
-      return renderTextInput(el);
-    case "toggle":
-      return renderToggle(el, accent);
-    case "group":
-      return renderGroup(el, accent);
-    case "divider":
+    case "icon": {
+      const color = colorHex(p.color as string | undefined, accent);
+      const size = String(p.size ?? "md") === "sm" ? 16 : 20;
+      // Simplified inline SVG for common icons; falls back to a circle for unknown
+      const name = String(p.name ?? "info");
+      const iconSvgs: Record<string, string> = {
+        check: `<polyline points="20 6 9 17 4 12"/>`,
+        x: `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
+        heart: `<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>`,
+        star: `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
+        info: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`,
+        "arrow-right": `<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>`,
+        "chevron-right": `<polyline points="9 18 15 12 9 6"/>`,
+        "external-link": `<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>`,
+        zap: `<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>`,
+        user: `<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>`,
+        clock: `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+      };
+      const inner = iconSvgs[name] ?? `<circle cx="12" cy="12" r="4"/>`;
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle">${inner}</svg>`;
+    }
+    case "badge": {
+      const color = colorHex(p.color as string | undefined, accent);
+      return `<span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:1.5;background:${color};color:#fff">${esc(String(p.label ?? ""))}</span>`;
+    }
+    case "image": {
+      const url = esc(String(p.url ?? ""));
+      const aspect = String(p.aspect ?? "16:9");
+      const [w, h] = aspect.split(":").map(Number);
+      const ratio = w && h ? `${w}/${h}` : "16/9";
+      return `<div style="aspect-ratio:${ratio};border-radius:8px;overflow:hidden;background:#F3F4F6"><img src="${url}" alt="${esc(String(p.alt ?? ""))}" style="width:100%;height:100%;object-fit:cover"></div>`;
+    }
+    case "item": {
+      const variant = String(p.variant ?? "default");
+      const variantStyles: Record<string, string> = {
+        default: "",
+        outline: "border:1px solid #E5E7EB;border-radius:8px;padding:12px;",
+        muted: "background:#F9FAFB;border-radius:8px;padding:12px;",
+      };
+      const descHtml = p.description ? `<div style="font-size:13px;color:#6B7280;margin-top:2px">${esc(String(p.description))}</div>` : "";
+      const childIds = el.children ?? [];
+      const actionsHtml = childIds.length > 0
+        ? `<div style="margin-left:auto;padding-left:12px;display:flex;align-items:center;gap:4px">${childIds.map((id) => renderElement(id, spec, accent)).join("")}</div>`
+        : "";
+      return `<div style="display:flex;align-items:flex-start;${variantStyles[variant] ?? ""}"><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:500;color:#111">${esc(String(p.title ?? ""))}</div>${descHtml}</div>${actionsHtml}</div>`;
+    }
+    case "item_group": {
+      const childIds = el.children ?? [];
+      let html = `<div style="display:flex;flex-direction:column;gap:2px">`;
+      for (const childKey of childIds) {
+        html += renderElement(childKey, spec, accent);
+      }
+      html += `</div>`;
+      return html;
+    }
+    case "progress": {
+      const value = Number(p.value ?? 0);
+      const max = Number(p.max ?? 100);
+      const color = accent;
+      const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
+      const labelHtml = p.label ? `<div style="font-size:13px;color:#6B7280;margin-bottom:4px">${esc(String(p.label))}</div>` : "";
+      return `<div>${labelHtml}<div style="height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:4px"></div></div></div>`;
+    }
+    case "separator": {
+      const orientation = String(p.orientation ?? "horizontal");
+      if (orientation === "vertical") return `<div style="width:1px;background:#E5E7EB;align-self:stretch;min-height:16px"></div>`;
       return `<hr style="border:none;border-top:1px solid #E5E7EB;margin:4px 0">`;
-    case "spacer":
-      return renderSpacer(el);
+    }
+    case "slider": {
+      const min = Number(p.min ?? 0);
+      const max = Number(p.max ?? 100);
+      const value = p.defaultValue !== undefined ? Number(p.defaultValue) : (min + max) / 2;
+      const labelHtml = p.label ? `<div style="font-size:13px;font-weight:500;color:#374151;margin-bottom:4px">${esc(String(p.label))}</div>` : "";
+      return `<div>${labelHtml}<input type="range" min="${min}" max="${max}" value="${value}" disabled style="width:100%;accent-color:${accent};opacity:0.7"></div>`;
+    }
+    case "switch": {
+      const checked = Boolean(p.defaultChecked);
+      const bg = checked ? accent : "#D1D5DB";
+      const tx = checked ? "20px" : "2px";
+      return `<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:14px;color:#374151">${esc(String(p.label ?? ""))}</span><div style="width:44px;height:24px;background:${bg};border-radius:12px;position:relative;opacity:0.7"><div style="width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:${tx}"></div></div></div>`;
+    }
+    case "input": {
+      const labelHtml = p.label ? `<label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:4px">${esc(String(p.label))}</label>` : "";
+      return `<div>${labelHtml}<input type="text" placeholder="${esc(String(p.placeholder ?? ""))}" disabled style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#F9FAFB;font-size:14px;color:#9CA3AF;font-family:inherit;box-sizing:border-box"></div>`;
+    }
+    case "toggle_group": {
+      const options = Array.isArray(p.options) ? p.options as string[] : [];
+      const orientation = String(p.orientation ?? "horizontal");
+      const dir = orientation === "vertical" ? "column" : "row";
+      const labelHtml = p.label ? `<div style="font-size:13px;font-weight:500;color:#374151;margin-bottom:4px">${esc(String(p.label))}</div>` : "";
+      let html = `<div>${labelHtml}<div style="display:flex;flex-direction:${dir};gap:4px;padding:4px;background:#F3F4F6;border-radius:8px">`;
+      for (const opt of options) {
+        html += `<button onclick="showModal()" style="flex:1;padding:8px 12px;border-radius:6px;border:none;background:#F3F4F6;font-size:13px;color:#374151;cursor:pointer;font-family:inherit">${esc(opt)}</button>`;
+      }
+      html += `</div></div>`;
+      return html;
+    }
+    case "button": {
+      const variant = String(p.variant ?? "default");
+      const bg = variant === "default" ? accent : "transparent";
+      const color = variant === "default" ? "#fff" : accent;
+      const border = variant === "default" ? "none" : `2px solid ${accent}`;
+      const pad = variant === "default" ? "18px 16px" : "10px 16px";
+      const minH = variant === "default" ? "min-height:52px;" : "";
+      return `<button onclick="showModal()" style="width:100%;${minH}padding:${pad};border-radius:10px;background:${bg};color:${color};border:${border};font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-sizing:border-box">${esc(String(p.label ?? ""))}</button>`;
+    }
+    case "text": {
+      const size = String(p.size ?? "md");
+      const weight = String(p.weight ?? (size === "lg" ? "bold" : "normal"));
+      const align = String(p.align ?? "left");
+      const styles: Record<string, string> = {
+        lg: "font-size:20px",
+        md: "font-size:15px;line-height:1.5",
+        sm: "font-size:13px",
+      };
+      const weights: Record<string, string> = {
+        bold: "font-weight:700",
+        medium: "font-weight:500",
+        normal: "font-weight:400",
+      };
+      return `<div style="${styles[size] ?? styles.md};${weights[weight] ?? weights.normal};color:#374151;text-align:${align}">${esc(String(p.content ?? ""))}</div>`;
+    }
+    case "stack": {
+      const direction = String(p.direction ?? "vertical");
+      const gap: Record<string, string> = { none: "0", sm: "4px", md: "8px", lg: "16px" };
+      const gapVal = gap[String(p.gap ?? "md")] ?? "8px";
+      const dir = direction === "horizontal" ? "row" : "column";
+      const childIds = el.children ?? [];
+      let html = `<div style="display:flex;flex-direction:${dir};gap:${gapVal}">`;
+      for (const childKey of childIds) {
+        const flex = direction === "horizontal" ? "flex:1;" : "";
+        html += `<div style="${flex}">${renderElement(childKey, spec, accent)}</div>`;
+      }
+      html += `</div>`;
+      return html;
+    }
     default:
       return "";
   }
-}
-
-function renderText(
-  el: Extract<SnapPageElementInput, { type: "text" }>,
-  _accent: string,
-): string {
-  const style = el.style;
-  const content = esc(el.content);
-  const align = el.align ?? "left";
-  const styles: Record<string, string> = {
-    title: "font-size:20px;font-weight:700;color:#111",
-    body: "font-size:15px;line-height:1.5;color:#374151",
-    caption: "font-size:13px;color:#9CA3AF",
-    label:
-      "font-size:13px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px",
-  };
-  return `<div style="${
-    styles[style] ?? styles.body
-  };text-align:${align}">${content}</div>`;
-}
-
-function renderImage(
-  el: Extract<SnapPageElementInput, { type: "image" }>,
-): string {
-  const url = esc(el.url);
-  const aspect = el.aspect ?? "16:9";
-  const [w, h] = aspect.split(":").map(Number);
-  const ratio = w && h ? `${w}/${h}` : "16/9";
-  return `<div style="aspect-ratio:${ratio};border-radius:8px;overflow:hidden;background:#F3F4F6"><img src="${url}" alt="${esc(
-    el.alt ?? "",
-  )}" style="width:100%;height:100%;object-fit:cover"></div>`;
-}
-
-function renderGrid(
-  el: Extract<SnapPageElementInput, { type: "grid" }>,
-): string {
-  const { cols, rows, cells } = el;
-  const cellSize = el.cellSize ?? "auto";
-  const gap = el.gap ?? "small";
-  const gapPx: Record<string, string> = {
-    none: "0",
-    small: "2px",
-    medium: "4px",
-  };
-  const cellMap = new Map<string, (typeof cells)[0]>();
-  for (const c of cells) cellMap.set(`${c.row},${c.col}`, c);
-
-  let cellsHtml = "";
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const cell = cellMap.get(`${r},${c}`);
-      const bg = cell?.color ?? "transparent";
-      const content = cell?.content ? esc(cell.content) : "";
-      const sq = cellSize === "square" ? "aspect-ratio:1;" : "";
-      cellsHtml += `<div style="${sq}background:${bg};display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;border-radius:2px">${content}</div>`;
-    }
-  }
-
-  return `<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${
-    gapPx[gap] ?? "2px"
-  }">${cellsHtml}</div>`;
-}
-
-function renderProgress(
-  el: Extract<SnapPageElementInput, { type: "progress" }>,
-  accent: string,
-): string {
-  const { value, max, label } = el;
-  const color = colorHex(el.color, accent);
-  const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
-  const labelHtml = label
-    ? `<div style="font-size:13px;color:#6B7280;margin-bottom:4px">${esc(
-        label,
-      )}</div>`
-    : "";
-  return `<div>${labelHtml}<div style="height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:4px"></div></div></div>`;
-}
-
-function renderBarChart(
-  el: Extract<SnapPageElementInput, { type: "bar_chart" }>,
-  accent: string,
-): string {
-  const { bars } = el;
-  const max =
-    el.max ?? Math.max(...bars.map((b: { value: number }) => b.value), 1);
-  const defaultColor = colorHex(el.color, accent);
-
-  let html = `<div style="display:flex;align-items:flex-end;gap:12px;height:120px">`;
-  for (const bar of bars) {
-    const color = colorHex(bar.color, defaultColor);
-    const pct = max > 0 ? (bar.value / max) * 100 : 0;
-    html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end">`;
-    html += `<div style="font-size:11px;color:#6B7280;margin-bottom:4px">${bar.value}</div>`;
-    html += `<div style="width:100%;height:${pct}%;background:${color};border-radius:4px 4px 0 0;min-height:4px"></div>`;
-    html += `<div style="font-size:11px;color:#9CA3AF;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${esc(
-      bar.label,
-    )}</div>`;
-    html += `</div>`;
-  }
-  html += `</div>`;
-  return html;
-}
-
-function renderList(
-  el: Extract<SnapPageElementInput, { type: "list" }>,
-): string {
-  const style = el.style ?? "ordered";
-  const { items } = el;
-
-  let html = "";
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i]!;
-    const prefix =
-      style === "ordered"
-        ? `<span style="color:#9CA3AF;min-width:20px">${i + 1}.</span>`
-        : style === "unordered"
-        ? `<span style="color:#9CA3AF;min-width:20px">&bull;</span>`
-        : "";
-    const trailing = item.trailing
-      ? `<span style="color:#9CA3AF;font-size:13px;white-space:nowrap">${esc(
-          item.trailing,
-        )}</span>`
-      : "";
-    html += `<div style="display:flex;align-items:center;gap:8px;padding:6px 0">${prefix}<span style="flex:1;font-size:14px;color:#374151">${esc(
-      item.content,
-    )}</span>${trailing}</div>`;
-  }
-  return `<div>${html}</div>`;
-}
-
-function renderButtonGroup(
-  el: Extract<SnapPageElementInput, { type: "button_group" }>,
-  accent: string,
-): string {
-  const { options } = el;
-  const layout = el.style ?? "row";
-  const dir = layout === "stack" ? "column" : "row";
-  let html = `<div style="display:flex;flex-direction:${dir};gap:8px">`;
-  for (const opt of options) {
-    html += `<button onclick="showModal()" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;font-size:14px;color:#374151;cursor:pointer;font-family:inherit">${esc(
-      opt,
-    )}</button>`;
-  }
-  html += `</div>`;
-  return html;
-}
-
-function renderSlider(
-  el: Extract<SnapPageElementInput, { type: "slider" }>,
-  accent: string,
-): string {
-  const { label, min, max, minLabel, maxLabel } = el;
-  const value = el.value ?? (min + max) / 2;
-
-  const labelHtml = label
-    ? `<div style="font-size:13px;color:#6B7280;margin-bottom:4px">${esc(
-        label,
-      )}</div>`
-    : "";
-  const minL = minLabel
-    ? `<span style="font-size:11px;color:#9CA3AF">${esc(minLabel)}</span>`
-    : "";
-  const maxL = maxLabel
-    ? `<span style="font-size:11px;color:#9CA3AF">${esc(maxLabel)}</span>`
-    : "";
-
-  return `<div>${labelHtml}<div style="display:flex;align-items:center;gap:8px">${minL}<input type="range" min="${min}" max="${max}" value="${value}" disabled style="flex:1;accent-color:${accent};opacity:0.7">${maxL}</div></div>`;
-}
-
-function renderTextInput(
-  el: Extract<SnapPageElementInput, { type: "text_input" }>,
-): string {
-  const placeholder = esc(el.placeholder ?? "");
-  return `<input type="text" placeholder="${placeholder}" disabled style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#F9FAFB;font-size:14px;color:#9CA3AF;font-family:inherit;box-sizing:border-box">`;
-}
-
-function renderToggle(
-  el: Extract<SnapPageElementInput, { type: "toggle" }>,
-  accent: string,
-): string {
-  const label = esc(el.label);
-  const { value } = el;
-  const bg = value ? accent : "#D1D5DB";
-  const tx = value ? "20px" : "2px";
-  return `<div style="display:flex;align-items:center;justify-content:space-between">
-<span style="font-size:14px;color:#374151">${label}</span>
-<div style="width:44px;height:24px;background:${bg};border-radius:12px;position:relative;opacity:0.7"><div style="width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:${tx};transition:left .2s"></div></div>
-</div>`;
-}
-
-function renderSpacer(
-  el: Extract<SnapPageElementInput, { type: "spacer" }>,
-): string {
-  const sizes: Record<string, string> = {
-    small: "8px",
-    medium: "16px",
-    large: "24px",
-  };
-  return `<div style="height:${sizes[el.size ?? "medium"] ?? "16px"}"></div>`;
-}
-
-function renderGroup(
-  el: Extract<SnapPageElementInput, { type: "group" }>,
-  accent: string,
-): string {
-  let html = `<div style="display:flex;gap:12px">`;
-  for (const child of el.children) {
-    html += `<div style="flex:1">${renderElement(child, accent)}</div>`;
-  }
-  html += `</div>`;
-  return html;
-}
-
-// ─── Buttons ────────────────────────────────────────────
-
-function renderButtons(
-  buttons: SnapPage["buttons"],
-  layout: SnapPage["button_layout"],
-  accent: string,
-): string {
-  if (!buttons || buttons.length === 0) return "";
-
-  const dir =
-    layout === "row"
-      ? "flex-direction:row"
-      : layout === "grid"
-      ? "display:grid;grid-template-columns:1fr 1fr"
-      : "flex-direction:column";
-  const wrap =
-    layout === "row"
-      ? "display:flex;"
-      : layout === "grid"
-      ? ""
-      : "display:flex;";
-
-  let html = `<div style="${wrap}${dir};gap:8px;margin-top:12px">`;
-  for (let i = 0; i < buttons.length; i++) {
-    const btn: SnapPageButton = buttons[i]!;
-    const label = esc(btn.label);
-    const style = btn.style ?? (i === 0 ? "primary" : "secondary");
-    const bg = style === "primary" ? accent : "transparent";
-    const color = style === "primary" ? "#fff" : accent;
-    const border = style === "primary" ? "none" : `2px solid ${accent}`;
-    const pad = style === "primary" ? "18px 16px" : "10px 16px";
-    const minH = style === "primary" ? "min-height:52px;" : "";
-    html += `<button onclick="showModal()" style="flex:1;${minH}padding:${pad};border-radius:10px;background:${bg};color:${color};border:${border};font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-sizing:border-box">${label}</button>`;
-  }
-  html += `</div>`;
-  return html;
 }
 
 // ─── Main renderer ──────────────────────────────────────
@@ -425,10 +278,10 @@ export function renderSnapPage(
   snapOrigin: string,
   opts?: RenderSnapPageOptions,
 ): string {
-  const page = snap.page;
-  const accent = accentHex(page.theme?.accent);
+  const spec = snap.spec as unknown as SnapSpec;
+  const accent = accentHex(snap.theme?.accent);
 
-  const meta = extractPageMeta(page);
+  const meta = extractPageMeta(spec);
   const pageTitle = esc(meta.title);
   const resourcePath = opts?.resourcePath ?? "/";
   const pageUrl = snapOrigin.replace(/\/$/, "") + resourcePath;
@@ -442,18 +295,7 @@ export function renderSnapPage(
   });
 
   const snapUrl = encodeURIComponent(snapOrigin + "/");
-
-  // Render elements
-  let elementsHtml = "";
-  for (const el of page.elements.children) {
-    elementsHtml += `<div style="margin-bottom:12px">${renderElement(
-      el,
-      accent,
-    )}</div>`;
-  }
-
-  // Render buttons
-  const buttonsHtml = renderButtons(page.buttons, page.button_layout, accent);
+  const bodyHtml = renderElement(spec.root, spec, accent);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -484,8 +326,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 </head>
 <body>
 <div class="card">
-${elementsHtml}
-${buttonsHtml}
+${bodyHtml}
 </div>
 <div class="foot">
 <a href="https://farcaster.xyz">${FC_ICON} Farcaster</a>

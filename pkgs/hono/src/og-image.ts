@@ -1,4 +1,4 @@
-import type { SnapHandlerResult } from "@farcaster/snap";
+import type { SnapHandlerResult, SnapSpec } from "@farcaster/snap";
 import { DEFAULT_THEME_ACCENT, PALETTE_LIGHT_HEX } from "@farcaster/snap";
 import satori from "satori";
 import { Resvg, initWasm } from "@resvg/resvg-wasm";
@@ -542,7 +542,7 @@ function mapElement(
       return mapProgress(el, accent);
     case "list":
       return mapList(el);
-    case "button_group":
+    case "toggle_group":
       return mapButtonGroup(el, accent);
     case "bar_chart":
       return mapBarChart(el, accent);
@@ -696,7 +696,7 @@ function estimateElementHeight(el: El, imageMap: Map<string, string>): number {
       return estimateProgressHeight(el);
     case "list":
       return estimateListHeight(el);
-    case "button_group":
+    case "toggle_group":
       return estimateButtonGroupHeight(el);
     case "bar_chart":
       return 100;
@@ -765,17 +765,41 @@ function estimateDefaultOgHeight(
   );
 }
 
+// ─── Spec helpers ─────────────────────────────────────
+
+/** Walk the flat spec from root and collect top-level children as El objects for the OG renderer. */
+function specToElementList(spec: SnapSpec): El[] {
+  const rootEl = spec.elements[spec.root];
+  if (!rootEl?.children) return [];
+  return rootEl.children
+    .map((key) => {
+      const el = spec.elements[key];
+      if (!el) return null;
+      return { type: el.type, ...el.props } as El;
+    })
+    .filter((el): el is El => el != null);
+}
+
+/** Extract button elements (type: "button") from the spec. */
+function specToButtons(spec: SnapSpec): El[] {
+  return Object.values(spec.elements)
+    .filter((el) => el.type === "button")
+    .map((el) => ({ type: "button", ...el.props }) as El);
+}
+
 // ─── Main PNG renderer ─────────────────────────────────────
 
 export async function renderSnapPageToPng(
   snap: SnapHandlerResult,
   options?: OgOptions,
 ): Promise<Uint8Array> {
-  const page = snap.page;
-  const accent = accentHex(page.theme?.accent as string | undefined);
+  const accent = accentHex(snap.theme?.accent as string | undefined);
+  const spec = snap.spec as unknown as SnapSpec;
+  const elements = specToElementList(spec);
+  const pageButtons = specToButtons(spec);
 
   // Pre-fetch all image URLs (SSRF-safe)
-  const imageUrls = (page.elements.children as El[])
+  const imageUrls = elements
     .filter((el) => el.type === "image")
     .map((el) => el.url as string);
   const unique = [...new Set(imageUrls)];
@@ -786,20 +810,19 @@ export async function renderSnapPageToPng(
     fetched.filter(([, v]) => v != null) as [string, string][],
   );
 
-  const buttonLayout = page.button_layout as string | undefined;
-  const pageButtons = (page.buttons as El[] | undefined) ?? [];
   const W = options?.width ?? DEFAULT_OG_WIDTH_PX;
   const H =
     options?.height ??
     estimateDefaultOgHeight(
-      page.elements.children as El[],
+      elements,
       imageMap,
       pageButtons,
-      buttonLayout,
+      "column",
     );
 
-  // Build element VNodes
-  const elementNodes = (page.elements.children as El[])
+  // Build element VNodes (skip buttons — handled separately)
+  const elementNodes = elements
+    .filter((el) => el.type !== "button")
     .map((el) => mapElement(el, accent, imageMap))
     .filter((n): n is VNode => n != null);
 
@@ -824,7 +847,7 @@ export async function renderSnapPageToPng(
             "div",
             {
               display: "flex",
-              flexDirection: buttonLayout === "row" ? "row" : "column",
+              flexDirection: "column" as const,
               gap: 8,
               marginTop: 12,
               width: OG_CARD_INNER_WIDTH_PX,

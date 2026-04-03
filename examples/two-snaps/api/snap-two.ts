@@ -1,50 +1,58 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
+import type { SnapHandlerResult } from "@farcaster/snap";
 
 const app = new Hono();
 
-registerSnapHandler(app, async () => {
+registerSnapHandler(app, async (): Promise<SnapHandlerResult> => {
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "green" },
-      button_layout: "stack",
+    theme: { accent: "green" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Snap two",
-          },
-          {
-            type: "text",
-            style: "body",
-            content:
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "body1", "body2", "caption", "btn-snap-one"],
+        },
+        title: {
+          type: "item",
+          props: { title: "Snap two" },
+        },
+        body1: {
+          type: "item",
+          props: {
+            description:
               "You are viewing snap two. The words snap two are in the title and here so you always know which snap you are viewing.",
           },
-          {
-            type: "text",
-            style: "body",
-            content:
+        },
+        body2: {
+          type: "item",
+          props: {
+            description:
               "In the emulator, the Snap URL field updates when you follow a link: it now shows this snap's URL (snap two), not snap one's.",
           },
-          {
-            type: "text",
-            style: "caption",
+        },
+        caption: {
+          type: "badge",
+          props: {
             content:
               "Green accent = snap two; blue = snap one. Button below returns to snap one.",
           },
-        ],
-      },
-      buttons: [
-        {
-          label: "Back to snap one",
-          action: "link",
-          target: firstSnapTargetUrl(),
         },
-      ],
+        "btn-snap-one": {
+          type: "button",
+          props: { label: "Back to snap one" },
+          on: {
+            press: {
+              action: "open_url",
+              params: { target: firstSnapTargetUrl() },
+            },
+          },
+        },
+      },
     },
   };
 });

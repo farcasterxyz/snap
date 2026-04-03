@@ -1,49 +1,61 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
+import type { SnapHandlerResult } from "@farcaster/snap";
 
 const app = new Hono();
 
-registerSnapHandler(app, async () => {
+registerSnapHandler(app, async (): Promise<SnapHandlerResult> => {
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "blue" },
-      button_layout: "stack",
+    theme: { accent: "blue" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Snap one",
-          },
-          {
-            type: "text",
-            style: "body",
-            content:
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "body", "caption", "btn-grin", "btn-snap-two"],
+        },
+        title: {
+          type: "item",
+          props: { title: "Snap one" },
+        },
+        body: {
+          type: "item",
+          props: {
+            description:
               "This is snap one. The words snap one appear in the title and here so you always know which snap you are viewing.",
           },
-          {
-            type: "text",
-            style: "caption",
+        },
+        caption: {
+          type: "badge",
+          props: {
             content:
               "Snap one: two links below — grin.io (browser) and snap two (same emulator).",
           },
-        ],
+        },
+        "btn-grin": {
+          type: "button",
+          props: { label: "Open grin.io" },
+          on: {
+            press: {
+              action: "open_url",
+              params: { target: "https://grin.io/" },
+            },
+          },
+        },
+        "btn-snap-two": {
+          type: "button",
+          props: { label: "Go to the second snap" },
+          on: {
+            press: {
+              action: "open_url",
+              params: { target: secondSnapTargetUrl() },
+            },
+          },
+        },
       },
-      buttons: [
-        {
-          label: "Open grin.io",
-          action: "link",
-          target: "https://grin.io/",
-        },
-        {
-          label: "Go to the second snap",
-          action: "link",
-          target: secondSnapTargetUrl(),
-        },
-      ],
     },
   };
 });
