@@ -1,5 +1,5 @@
 import type { Spec } from "@json-render/core";
-import { snapJsonRenderCatalog } from "../ui/index.js";
+import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./catalog-renderer";
 import { SnapThemeProvider, useSnapTheme, type SnapNativeColors } from "./theme";
 import { hexToRgba } from "./use-snap-palette";

@@ -1,5 +1,5 @@
 import { createRenderer } from "@json-render/react-native";
-import { snapJsonRenderCatalog } from "../ui/index.js";
+import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapActionButton } from "./components/snap-action-button";
 import { SnapBadge } from "./components/snap-badge";
 import { SnapIcon } from "./components/snap-icon";
