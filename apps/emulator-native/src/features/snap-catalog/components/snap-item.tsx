@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexShrink: 0,
+    flexGrow: 0,
     gap: 4,
   },
 });
