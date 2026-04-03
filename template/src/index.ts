@@ -23,7 +23,7 @@ const snap: SnapFunction = async (ctx) => {
   return {
     version: "1.0",
     theme: { accent: "purple" },
-    spec: {
+    ui: {
       root: "page",
       elements: {
         page: {

@@ -20,17 +20,17 @@ export function payloadToResponse(
   const resourcePath = options.resourcePath ?? "/";
   const mediaTypes = options.mediaTypes ?? [...DEFAULT_LINK_MEDIA_TYPES];
 
-  // Validate snap envelope (version, theme, effects, spec shape)
+  // Validate snap envelope (version, theme, effects, ui shape)
   const validation = validateSnapResponse(payload);
   if (!validation.valid) {
     return errorResponse("invalid snap page", validation.issues);
   }
 
-  // Validate spec against catalog (element types, props, actions)
-  const catalogResult = snapJsonRenderCatalog.validate(payload.spec);
+  // Validate ui against catalog (element types, props, actions)
+  const catalogResult = snapJsonRenderCatalog.validate(payload.ui);
   if (!catalogResult.success) {
     const issues = catalogResult.error?.issues ?? [];
-    return errorResponse("invalid snap spec", issues);
+    return errorResponse("invalid snap ui", issues);
   }
 
   const finalized = snapResponseSchema.parse(payload);

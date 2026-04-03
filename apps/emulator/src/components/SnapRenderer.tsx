@@ -21,7 +21,7 @@ export type SnapPage = {
   version: string;
   theme?: { accent?: string };
   effects?: string[];
-  spec: Spec;
+  ui: Spec;
 };
 
 const CONFETTI_COLORS = [
@@ -137,7 +137,7 @@ export function SnapRenderer({
   handlers: SnapActionHandlers;
   loading: boolean;
 }) {
-  const { spec } = snap;
+  const spec = snap.ui;
   const initialState = useMemo(
     () => spec.state ?? { inputs: {} },
     [spec],

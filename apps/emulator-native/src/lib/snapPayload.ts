@@ -17,13 +17,13 @@ export type SnapPageResponse = {
   version: string;
   theme?: { accent?: string };
   effects?: string[];
-  spec: Spec;
+  ui: Spec;
 };
 
 /** Validate that the response has the expected spec shape. */
 function validateSpec(
   spec: unknown,
-): spec is SnapPageResponse["spec"] {
+): spec is SnapPageResponse["ui"] {
   if (!spec || typeof spec !== "object") return false;
   const s = spec as Record<string, unknown>;
   return (
@@ -46,9 +46,9 @@ export function parseSnapPayload(payload: unknown): SnapPageResponse {
     throw new Error("Snap response must include version");
   }
 
-  if (!validateSpec(candidate.spec)) {
+  if (!validateSpec(candidate.ui)) {
     throw new Error(
-      'Snap response must include spec: { root: "...", elements: { ... } }',
+      'Snap response must include ui: { root: "...", elements: { ... } }',
     );
   }
 
@@ -56,7 +56,7 @@ export function parseSnapPayload(payload: unknown): SnapPageResponse {
     version: candidate.version,
     theme: candidate.theme as SnapPageResponse["theme"],
     effects: candidate.effects as SnapPageResponse["effects"],
-    spec: candidate.spec as SnapPageResponse["spec"],
+    ui: candidate.ui as SnapPageResponse["ui"],
   };
 }
 

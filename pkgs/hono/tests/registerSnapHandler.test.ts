@@ -20,7 +20,7 @@ const SNAP_CONTENT_TYPE = `${MEDIA_TYPE}; charset=utf-8`;
 const minimalSnapFn: SnapFunction = async () => ({
   version: "1.0",
   theme: { accent: DEFAULT_THEME_ACCENT },
-  spec: {
+  ui: {
     root: "page",
     elements: {
       page: { type: "stack", props: {}, children: ["title", "go"] },
@@ -156,9 +156,9 @@ describe("registerSnapHandler content type", () => {
       headers: { Accept: MEDIA_TYPE },
     });
 
-    const json = (await res.json()) as { version: string; spec: unknown };
+    const json = (await res.json()) as { version: string; ui: unknown };
     expect(json.version).toBe("1.0");
-    expect(json.spec).toBeDefined();
+    expect(json.ui).toBeDefined();
   });
 });
 

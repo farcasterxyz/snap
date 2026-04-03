@@ -14,7 +14,7 @@ The UI is defined using a [json-render](https://json-render.dev/) spec — a fla
   "version": "1.0",
   "theme": { "accent": "purple" },
   "effects": ["confetti"],
-  "spec": {
+  "ui": {
     "root": "page",
     "elements": {
       "page": { "type": "stack", "props": {}, "children": ["title", "input", "go"] },
@@ -38,23 +38,23 @@ The UI is defined using a [json-render](https://json-render.dev/) spec — a fla
 | `theme` | object | No | `{ accent: "purple" }` | Theme configuration |
 | `theme.accent` | PaletteColor | No | `"purple"` | Accent color for buttons, progress bars, etc. |
 | `effects` | string[] | No | | Visual effects applied on render |
-| `spec` | json-render Spec | Yes | | The UI tree |
+| `ui` | json-render Spec | Yes | | The UI tree |
 
 **Effects:** `"confetti"`
 
-### The Spec
+### The UI
 
-The `spec` field is a standard [json-render Spec](https://json-render.dev/):
+The `ui` field is a standard [json-render Spec](https://json-render.dev/):
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `spec.root` | string | Yes | ID of the root element |
-| `spec.elements` | Record<string, UIElement> | Yes | Flat map of all elements by ID |
-| `spec.state` | Record<string, unknown> | No | Initial state for the json-render state store |
+| `ui.root` | string | Yes | ID of the root element |
+| `ui.elements` | Record<string, UIElement> | Yes | Flat map of all elements by ID |
+| `ui.state` | Record<string, unknown> | No | Initial state for the json-render state store |
 
 ### Element Structure
 
-Every element in `spec.elements` follows the json-render UIElement shape:
+Every element in `ui.elements` follows the json-render UIElement shape:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -67,7 +67,7 @@ Every element in `spec.elements` follows the json-render UIElement shape:
 
 1. Client sends GET with `Accept: application/vnd.farcaster.snap+json`
 2. Server returns snap response JSON
-3. Client renders the spec using the component catalog
+3. Client renders the UI using the component catalog
 4. User interacts with field components (input, slider, switch, toggle_group) — values stored locally
 5. User presses a button with `on.press: { action: "submit", params: { target: "..." } }`
 6. Client collects all field values and POSTs to `target` with signed payload

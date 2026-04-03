@@ -285,7 +285,7 @@ export function renderSnapPage(
   snapOrigin: string,
   opts?: RenderSnapPageOptions,
 ): string {
-  const spec = snap.spec as unknown as SnapSpec;
+  const spec = snap.ui as unknown as SnapSpec;
   const accent = accentHex(snap.theme?.accent);
 
   const meta = extractPageMeta(spec);

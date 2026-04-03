@@ -40,7 +40,7 @@ export function SnapPreview({
     [colors.border, colors.surface],
   );
 
-  const { spec } = snap;
+  const spec = snap.ui;
   const initialState = useMemo(
     () => ({
       ...(spec.state ?? {}),
