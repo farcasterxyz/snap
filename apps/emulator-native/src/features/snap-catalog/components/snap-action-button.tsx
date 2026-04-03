@@ -42,6 +42,7 @@ export function SnapActionButton({
       <Pressable
         style={({ pressed }) => [
           styles.btn,
+          variant === "default" ? styles.btnDefault : styles.btnOther,
           variantStyle,
           pressed && styles.pressed,
         ]}
@@ -73,13 +74,19 @@ const styles = StyleSheet.create({
   outer: { flex: 1, minWidth: 0 },
   btn: {
     width: "100%",
-    paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
     gap: 8,
+  },
+  btnDefault: {
+    paddingVertical: 16,
+    minHeight: 52,
+  },
+  btnOther: {
+    paddingVertical: 10,
   },
   pressed: { opacity: 0.88 },
 });
