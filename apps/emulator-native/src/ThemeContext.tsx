@@ -12,8 +12,8 @@ const LIGHT = {
 };
 
 const DARK = {
-  bg: "#1a1d24",
-  surface: "#23262f",
+  bg: "#111318",
+  surface: "#1a1d24",
   text: "#fafafa",
   textSecondary: "#a1a1aa",
   border: "#374151",

@@ -35,9 +35,9 @@ export function SnapPreview({
   const cardStyle = useMemo(
     () => ({
       borderColor: colors.border,
-      backgroundColor: colors.bg,
+      backgroundColor: colors.surface,
     }),
-    [colors.border, colors.bg],
+    [colors.border, colors.surface],
   );
 
   const { spec } = snap;
