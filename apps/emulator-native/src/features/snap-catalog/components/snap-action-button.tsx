@@ -28,9 +28,9 @@ export function SnapActionButton({
       case "secondary":
         return { backgroundColor: "transparent", borderWidth: 1.5, borderColor: accentHex };
       case "outline":
-        return { backgroundColor: "transparent", borderWidth: 1, borderColor: colors.border };
+        return { backgroundColor: "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: colors.border };
       case "ghost":
-        return { backgroundColor: "transparent" };
+        return { backgroundColor: "rgba(255,255,255,0.04)" };
     }
   })();
 
