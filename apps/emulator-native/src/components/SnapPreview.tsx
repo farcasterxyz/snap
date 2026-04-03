@@ -35,15 +35,22 @@ export function SnapPreview({
   const cardStyle = useMemo(
     () => ({
       borderColor: colors.border,
-      backgroundColor: colors.surface,
+      backgroundColor: colors.bg,
     }),
-    [colors.border, colors.surface],
+    [colors.border, colors.bg],
   );
 
   const { spec } = snap;
   const initialState = useMemo(
-    () => spec.state ?? { inputs: {} },
-    [spec],
+    () => ({
+      ...(spec.state ?? {}),
+      inputs: { ...((spec.state?.inputs ?? {}) as Record<string, unknown>) },
+      theme: {
+        ...((spec.state?.theme ?? {}) as Record<string, unknown>),
+        ...(snap.theme ? { accent: snap.theme.accent } : {}),
+      },
+    }),
+    [spec, snap.theme],
   );
 
   const stateRef = useRef<Record<string, unknown>>(initialState);
