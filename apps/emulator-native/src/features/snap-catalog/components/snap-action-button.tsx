@@ -82,10 +82,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   btnDefault: {
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   btnOther: {
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   pressed: { opacity: 0.88 },
 });
