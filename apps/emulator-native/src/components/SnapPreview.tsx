@@ -34,10 +34,10 @@ export function SnapPreview({
 
   const cardStyle = useMemo(
     () => ({
-      borderColor: "transparent",
-      backgroundColor: "transparent",
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
     }),
-    [],
+    [colors.border, colors.surface],
   );
 
   const { spec } = snap;
