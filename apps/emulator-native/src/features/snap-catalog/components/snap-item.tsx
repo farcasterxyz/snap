@@ -16,10 +16,10 @@ export function SnapItem({
 
   const containerVariant =
     variant === "outline"
-      ? { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 12 }
+      ? { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 10 }
       : variant === "muted"
-        ? { backgroundColor: colors.muted, borderRadius: 8, padding: 12 }
-        : { padding: 12 };
+        ? { backgroundColor: colors.muted, borderRadius: 8, padding: 10 }
+        : { paddingVertical: 6, paddingHorizontal: 4 };
 
   return (
     <View style={[styles.container, containerVariant]}>
