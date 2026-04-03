@@ -3,7 +3,7 @@
 import { useStateStore } from "@json-render/react";
 import { Label } from "@neynar/ui/label";
 import { cn } from "@neynar/ui/utils";
-import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
+import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 
 export function SnapToggleGroup({
   element: { props },

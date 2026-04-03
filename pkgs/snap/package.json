@@ -26,80 +26,80 @@
       "import": "./dist/ui/index.js",
       "default": "./dist/ui/index.js"
     },
-    "./ui/text": {
-      "types": "./dist/ui/text.d.ts",
-      "import": "./dist/ui/text.js",
-      "default": "./dist/ui/text.js"
+    "./ui/badge": {
+      "types": "./dist/ui/badge.d.ts",
+      "import": "./dist/ui/badge.js",
+      "default": "./dist/ui/badge.js"
+    },
+    "./ui/button": {
+      "types": "./dist/ui/button.d.ts",
+      "import": "./dist/ui/button.js",
+      "default": "./dist/ui/button.js"
+    },
+    "./ui/icon": {
+      "types": "./dist/ui/icon.d.ts",
+      "import": "./dist/ui/icon.js",
+      "default": "./dist/ui/icon.js"
     },
     "./ui/image": {
       "types": "./dist/ui/image.d.ts",
       "import": "./dist/ui/image.js",
       "default": "./dist/ui/image.js"
     },
-    "./ui/divider": {
-      "types": "./dist/ui/divider.d.ts",
-      "import": "./dist/ui/divider.js",
-      "default": "./dist/ui/divider.js"
+    "./ui/input": {
+      "types": "./dist/ui/input.d.ts",
+      "import": "./dist/ui/input.js",
+      "default": "./dist/ui/input.js"
     },
-    "./ui/spacer": {
-      "types": "./dist/ui/spacer.d.ts",
-      "import": "./dist/ui/spacer.js",
-      "default": "./dist/ui/spacer.js"
+    "./ui/item": {
+      "types": "./dist/ui/item.d.ts",
+      "import": "./dist/ui/item.js",
+      "default": "./dist/ui/item.js"
+    },
+    "./ui/item-group": {
+      "types": "./dist/ui/item-group.d.ts",
+      "import": "./dist/ui/item-group.js",
+      "default": "./dist/ui/item-group.js"
     },
     "./ui/progress": {
       "types": "./dist/ui/progress.d.ts",
       "import": "./dist/ui/progress.js",
       "default": "./dist/ui/progress.js"
     },
-    "./ui/list": {
-      "types": "./dist/ui/list.d.ts",
-      "import": "./dist/ui/list.js",
-      "default": "./dist/ui/list.js"
-    },
-    "./ui/grid": {
-      "types": "./dist/ui/grid.d.ts",
-      "import": "./dist/ui/grid.js",
-      "default": "./dist/ui/grid.js"
-    },
-    "./ui/text-input": {
-      "types": "./dist/ui/text-input.d.ts",
-      "import": "./dist/ui/text-input.js",
-      "default": "./dist/ui/text-input.js"
+    "./ui/separator": {
+      "types": "./dist/ui/separator.d.ts",
+      "import": "./dist/ui/separator.js",
+      "default": "./dist/ui/separator.js"
     },
     "./ui/slider": {
       "types": "./dist/ui/slider.d.ts",
       "import": "./dist/ui/slider.js",
       "default": "./dist/ui/slider.js"
     },
-    "./ui/button-group": {
-      "types": "./dist/ui/button-group.d.ts",
-      "import": "./dist/ui/button-group.js",
-      "default": "./dist/ui/button-group.js"
-    },
-    "./ui/toggle": {
-      "types": "./dist/ui/toggle.d.ts",
-      "import": "./dist/ui/toggle.js",
-      "default": "./dist/ui/toggle.js"
-    },
-    "./ui/bar-chart": {
-      "types": "./dist/ui/bar-chart.d.ts",
-      "import": "./dist/ui/bar-chart.js",
-      "default": "./dist/ui/bar-chart.js"
-    },
-    "./ui/group": {
-      "types": "./dist/ui/group.d.ts",
-      "import": "./dist/ui/group.js",
-      "default": "./dist/ui/group.js"
-    },
     "./ui/stack": {
       "types": "./dist/ui/stack.d.ts",
       "import": "./dist/ui/stack.js",
       "default": "./dist/ui/stack.js"
     },
-    "./ui/button": {
-      "types": "./dist/ui/button.d.ts",
-      "import": "./dist/ui/button.js",
-      "default": "./dist/ui/button.js"
+    "./ui/switch": {
+      "types": "./dist/ui/switch.d.ts",
+      "import": "./dist/ui/switch.js",
+      "default": "./dist/ui/switch.js"
+    },
+    "./ui/text": {
+      "types": "./dist/ui/text.d.ts",
+      "import": "./dist/ui/text.js",
+      "default": "./dist/ui/text.js"
+    },
+    "./ui/toggle-group": {
+      "types": "./dist/ui/toggle-group.d.ts",
+      "import": "./dist/ui/toggle-group.js",
+      "default": "./dist/ui/toggle-group.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js",
+      "default": "./dist/react/index.js"
     }
   },
   "files": [
@@ -122,10 +122,22 @@
     "viem": "^2.21.0"
   },
   "peerDependencies": {
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "@json-render/react": "*",
+    "@neynar/ui": "*",
+    "lucide-react": "*"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "@json-render/react": { "optional": true },
+    "@neynar/ui": { "optional": true },
+    "lucide-react": { "optional": true }
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.0.0",
     "typescript": "^5.4.0",

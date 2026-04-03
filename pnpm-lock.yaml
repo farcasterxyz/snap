@@ -452,6 +452,15 @@ importers:
       '@json-render/core':
         specifier: ^0.15.0
         version: 0.15.0(zod@4.3.6)
+      '@json-render/react':
+        specifier: '*'
+        version: 0.15.0(react@19.2.4)(zod@4.3.6)
+      '@neynar/ui':
+        specifier: '*'
+        version: 1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2)
+      lucide-react:
+        specifier: '*'
+        version: 1.7.0(react@19.2.4)
       viem:
         specifier: ^2.21.0
         version: 2.47.6(typescript@5.9.3)(zod@4.3.6)
@@ -459,6 +468,12 @@ importers:
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16

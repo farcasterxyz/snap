@@ -2,7 +2,7 @@
 
 import { Button } from "@neynar/ui/button";
 import { cn } from "@neynar/ui/utils";
-import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
+import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 import { ICON_MAP } from "./icon";
 
 const VARIANT_MAP: Record<string, "default" | "outline" | "ghost" | "secondary"> = {
