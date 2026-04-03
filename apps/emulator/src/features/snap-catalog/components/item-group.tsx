@@ -35,11 +35,7 @@ export function SnapItemGroup({
           {separator && i > 0 && (
             <div className="h-px bg-border" />
           )}
-          <div className={cn(
-            (border || separator) && "px-3 py-2.5",
-          )}>
-            {child}
-          </div>
+          {child}
         </Fragment>
       ))}
     </div>

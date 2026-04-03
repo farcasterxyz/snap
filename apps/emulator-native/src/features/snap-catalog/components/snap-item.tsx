@@ -19,7 +19,7 @@ export function SnapItem({
       ? { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 12 }
       : variant === "muted"
         ? { backgroundColor: colors.muted, borderRadius: 8, padding: 12 }
-        : { paddingVertical: 4 };
+        : { padding: 12 };
 
   return (
     <View style={[styles.container, containerVariant]}>
