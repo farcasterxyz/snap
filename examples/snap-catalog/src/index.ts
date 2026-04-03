@@ -290,7 +290,7 @@ function contentPage(base: string): SnapHandlerResult {
         sep2: { type: "separator", props: {} },
         items: {
           type: "item_group",
-          props: { separator: true },
+          props: { separator: true, gap: "sm" },
           children: ["i1", "i2", "i3"],
         },
         i1: {
@@ -378,7 +378,7 @@ function layoutPage(base: string): SnapHandlerResult {
         sep2: { type: "separator", props: {} },
         leaderboard: {
           type: "item_group",
-          props: { separator: true },
+          props: { separator: true, gap: "sm" },
           children: ["lb1", "lb2", "lb3", "lb4"],
         },
         lb1: { type: "item", props: { title: "dwr.eth", description: "2,847 pts" }, children: ["lb1-r"] },
@@ -484,7 +484,7 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
         sep: { type: "separator", props: {} },
         results: {
           type: "item_group",
-          props: { separator: true },
+          props: { separator: true, gap: "sm" },
           children: ["r1", "r2", "r3", "r4", "r5", "r6", "r7"],
         },
         r1: { type: "item", props: { title: "Name" }, children: ["r1v"] },
@@ -543,7 +543,7 @@ function actionsPage(base: string): SnapHandlerResult {
         "nav-label": { type: "text", props: { content: "Navigation", weight: "bold" } },
         "nav-actions": {
           type: "item_group",
-          props: { separator: true },
+          props: { separator: true, gap: "sm" },
           children: ["a-url", "a-miniapp"],
         },
         "a-url": {
@@ -570,7 +570,7 @@ function actionsPage(base: string): SnapHandlerResult {
         "social-label": { type: "text", props: { content: "Social", weight: "bold" } },
         "social-actions": {
           type: "item_group",
-          props: { separator: true },
+          props: { separator: true, gap: "sm" },
           children: ["a-profile", "a-cast", "a-compose"],
         },
         "a-profile": {
@@ -607,7 +607,7 @@ function actionsPage(base: string): SnapHandlerResult {
         "token-label": { type: "text", props: { content: "Tokens", weight: "bold" } },
         "token-actions": {
           type: "item_group",
-          props: { separator: true },
+          props: { separator: true, gap: "sm" },
           children: ["a-token", "a-send", "a-swap"],
         },
         "a-token": {
