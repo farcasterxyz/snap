@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
   horizontal: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    flexWrap: "wrap",
   },
 });
