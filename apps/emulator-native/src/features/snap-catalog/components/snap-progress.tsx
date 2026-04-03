@@ -31,7 +31,7 @@ export function SnapProgress({
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: "100%", gap: 4 },
+  wrap: { flex: 1, width: "100%", gap: 4 },
   labelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
