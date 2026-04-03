@@ -64,7 +64,8 @@ export function SnapToggleGroup({
             key={index}
             value={opt}
             className={cn(
-              "flex-1 justify-center px-3 py-2.5 hover:!bg-[var(--snap-action-outline-hover)] aria-pressed:!bg-primary aria-pressed:!text-primary-foreground hover:aria-pressed:!bg-primary/90",
+              "justify-center px-3 py-2.5 hover:!bg-[var(--snap-action-outline-hover)] aria-pressed:!bg-primary aria-pressed:!text-primary-foreground hover:aria-pressed:!bg-primary/90",
+              orientation !== "vertical" && "flex-1",
             )}
           >
             {opt}

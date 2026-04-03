@@ -36,7 +36,6 @@ export default function EmulatorPage() {
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(
     () => new Set(),
   );
-  const [logCollapsed, setLogCollapsed] = useState(true);
 
   useEffect(() => {
     const p = readEmulatorFormFromStorage();
@@ -432,7 +431,7 @@ export default function EmulatorPage() {
         height: "100%",
         maxHeight: "100%",
         display: "grid",
-        gridTemplateRows: "auto 1fr auto",
+        gridTemplateRows: "auto 1fr",
         gridTemplateColumns: "1fr",
         background: "var(--bg-primary)",
         overflow: "hidden",
@@ -448,7 +447,7 @@ export default function EmulatorPage() {
         loading={loading}
       />
 
-      {/* Middle: two-column — snap preview (left) + spec viewer (right) */}
+      {/* Main: two columns — left (snap + log) | right (spec) */}
       <div
         style={{
           minHeight: 0,
@@ -457,96 +456,104 @@ export default function EmulatorPage() {
           overflow: "hidden",
         }}
       >
-        {/* Left: snap preview */}
+        {/* Left: snap preview + exchange log in one scroll container */}
         <section
           style={{
             minHeight: 0,
-            display: "grid",
-            placeItems: "center",
-            alignContent: "center",
             overflowY: "auto",
             overflowX: "hidden",
             borderRight: "1px solid var(--border)",
             background: "var(--emu-preview-bg)",
-            padding: 20,
           }}
         >
-          {error ? (
-            <div
-              style={{
-                color: "var(--log-error-color)",
-                fontWeight: 600,
-                whiteSpace: "pre-wrap",
-                fontFamily:
-                  'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                fontSize: 12,
-                maxWidth: "100%",
-                textAlign: "left",
-                justifySelf: "stretch",
-              }}
-            >
-              {error}
-            </div>
-          ) : snap ? (
-            <div
-              style={{
-                display: "grid",
-                gap: 10,
-                width: "100%",
-                maxWidth: 480,
-                minWidth: 0,
-                justifySelf: "stretch",
-                justifyItems: "stretch",
-              }}
-            >
-              <SnapRenderer
-                snap={snap}
-                handlers={{
-                  submit: handlePostButton,
-                  open_url: handleLinkButton,
-                  open_mini_app: (target) => {
-                    window.alert(`open_mini_app\n\n${target}`);
-                  },
-                  view_cast: (params) => {
-                    window.alert(
-                      `view_cast\n\n${JSON.stringify(params, null, 2)}`,
-                    );
-                  },
-                  view_profile: (params) => {
-                    window.alert(
-                      `view_profile\n\n${JSON.stringify(params, null, 2)}`,
-                    );
-                  },
-                  compose_cast: (params) => {
-                    window.alert(
-                      `compose_cast\n\n${JSON.stringify(params, null, 2)}`,
-                    );
-                  },
-                  view_token: (params) => {
-                    window.alert(
-                      `view_token\n\n${JSON.stringify(params, null, 2)}`,
-                    );
-                  },
-                  send_token: (params) => {
-                    window.alert(
-                      `send_token\n\n${JSON.stringify(params, null, 2)}`,
-                    );
-                  },
-                  swap_token: (params) => {
-                    window.alert(
-                      `swap_token\n\n${JSON.stringify(params, null, 2)}`,
-                    );
-                  },
+          <div style={{ padding: 20 }}>
+            {error ? (
+              <div
+                style={{
+                  color: "var(--log-error-color)",
+                  fontWeight: 600,
+                  whiteSpace: "pre-wrap",
+                  fontFamily:
+                    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                  fontSize: 12,
+                  maxWidth: "100%",
+                  textAlign: "left",
                 }}
-                loading={loading}
-              />
-              <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                {activeUrl ? `Loaded: ${activeUrl}` : ""}
+              >
+                {error}
               </div>
-            </div>
-          ) : (
-            <div style={{ color: "var(--text-secondary)", fontSize: 14 }}>
-              Load a snap URL to render it here.
+            ) : snap ? (
+              <div
+                style={{
+                  display: "grid",
+                  gap: 10,
+                  width: "100%",
+                  maxWidth: 480,
+                  minWidth: 0,
+                }}
+              >
+                <SnapRenderer
+                  snap={snap}
+                  handlers={{
+                    submit: handlePostButton,
+                    open_url: handleLinkButton,
+                    open_mini_app: (target) => {
+                      window.alert(`open_mini_app\n\n${target}`);
+                    },
+                    view_cast: (params) => {
+                      window.alert(
+                        `view_cast\n\n${JSON.stringify(params, null, 2)}`,
+                      );
+                    },
+                    view_profile: (params) => {
+                      window.alert(
+                        `view_profile\n\n${JSON.stringify(params, null, 2)}`,
+                      );
+                    },
+                    compose_cast: (params) => {
+                      window.alert(
+                        `compose_cast\n\n${JSON.stringify(params, null, 2)}`,
+                      );
+                    },
+                    view_token: (params) => {
+                      window.alert(
+                        `view_token\n\n${JSON.stringify(params, null, 2)}`,
+                      );
+                    },
+                    send_token: (params) => {
+                      window.alert(
+                        `send_token\n\n${JSON.stringify(params, null, 2)}`,
+                      );
+                    },
+                    swap_token: (params) => {
+                      window.alert(
+                        `swap_token\n\n${JSON.stringify(params, null, 2)}`,
+                      );
+                    },
+                  }}
+                  loading={loading}
+                />
+              </div>
+            ) : (
+              <div style={{ color: "var(--text-secondary)", fontSize: 14 }}>
+                Load a snap URL to render it here.
+              </div>
+            )}
+          </div>
+
+          {/* Exchange log directly below snap */}
+          {log.length > 0 && (
+            <div
+              style={{
+                borderTop: "1px solid var(--border)",
+                padding: "12px 20px 20px",
+              }}
+            >
+              <ExchangeLog
+                log={log}
+                expandedLogIds={expandedLogIds}
+                onToggleExpand={toggleLogExpanded}
+              />
             </div>
           )}
         </section>
@@ -555,81 +562,11 @@ export default function EmulatorPage() {
         <section
           style={{
             minHeight: 0,
-            overflow: "hidden",
+            overflow: "auto",
           }}
         >
           <SpecViewer spec={snap?.spec ?? null} />
         </section>
-      </div>
-
-      {/* Bottom: collapsible exchange log */}
-      <div
-        style={{
-          borderTop: "1px solid var(--border)",
-          background: "var(--bg-surface)",
-          display: "flex",
-          flexDirection: "column",
-          maxHeight: logCollapsed ? 40 : "40vh",
-          transition: "max-height 0.2s ease",
-          overflow: "hidden",
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setLogCollapsed((p) => !p)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "8px 16px",
-            border: "none",
-            background: "transparent",
-            cursor: "pointer",
-            fontSize: 12,
-            fontWeight: 600,
-            color: "var(--text-secondary)",
-            flexShrink: 0,
-          }}
-        >
-          <svg
-            width={12}
-            height={12}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-            style={{
-              transform: logCollapsed ? "rotate(0deg)" : "rotate(90deg)",
-              transition: "transform 0.15s ease",
-            }}
-          >
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-          Exchange Log ({log.length})
-        </button>
-        {!logCollapsed && (
-          <div
-            style={{
-              flex: 1,
-              minHeight: 0,
-              overflowY: "auto",
-              padding: 12,
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-              background: "var(--bg-primary)",
-            }}
-          >
-            <ExchangeLog
-              log={log}
-              expandedLogIds={expandedLogIds}
-              onToggleExpand={toggleLogExpanded}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

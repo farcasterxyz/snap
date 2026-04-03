@@ -386,10 +386,9 @@ function formPage(base: string): SnapHandlerResult {
           type: "toggle_group",
           props: {
             name: "skills",
-            label: "Skills",
+            label: "Skills (select multiple)",
             multiple: true,
-            orientation: "vertical",
-            options: ["Solidity", "TypeScript", "Design", "Product", "Community"],
+            options: ["Solidity", "TypeScript", "Design", "Product"],
           },
         },
         sep4: { type: "separator", props: {} },

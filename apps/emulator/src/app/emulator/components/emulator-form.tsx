@@ -1,5 +1,7 @@
 "use client";
 
+import { ColorModeToggle } from "@neynar/ui/color-mode";
+
 export type EmulatorFormProps = {
   urlInput: string;
   onUrlChange: (url: string) => void;
@@ -115,6 +117,7 @@ export function EmulatorForm({
       >
         {loading ? "Loading\u2026" : "Load"}
       </button>
+      <ColorModeToggle variant="ghost" size="sm" />
     </div>
   );
 }
