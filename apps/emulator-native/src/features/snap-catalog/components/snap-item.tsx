@@ -31,11 +31,7 @@ export function SnapItem({
           </Text>
         ) : null}
       </View>
-      {children ? (
-        <View style={styles.actions}>
-          <View style={styles.actionInner}>{children}</View>
-        </View>
-      ) : null}
+      {children ? <View style={styles.actions}>{children}</View> : null}
     </View>
   );
 }
@@ -60,12 +56,10 @@ const styles = StyleSheet.create({
   actions: {
     marginLeft: "auto",
     paddingLeft: 12,
-    flexShrink: 0,
-    flexGrow: 0,
-  },
-  actionInner: {
     flexDirection: "row",
     alignItems: "center",
+    flexShrink: 0,
+    flexGrow: 0,
     gap: 4,
   },
 });
