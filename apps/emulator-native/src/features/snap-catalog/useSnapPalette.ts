@@ -1,11 +1,20 @@
 import {
   DEFAULT_THEME_ACCENT,
   PALETTE_COLOR_VALUES,
+  PALETTE_LIGHT_HEX,
+  PALETTE_DARK_HEX,
   type PaletteColor,
-  resolveSnapPaletteHex,
 } from "@farcaster/snap";
 import { useStateStore } from "@json-render/react-native";
 import { useColorScheme } from "react-native";
+
+function resolveHex(name: string, appearance: "light" | "dark"): string {
+  const map = appearance === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
+  if (Object.hasOwn(map, name)) {
+    return map[name as PaletteColor];
+  }
+  return map.purple;
+}
 
 function isPaletteColor(s: string): s is PaletteColor {
   return (PALETTE_COLOR_VALUES as readonly string[]).includes(s);
@@ -19,19 +28,14 @@ function themeAccentFromStore(get: (path: string) => unknown): PaletteColor {
   return DEFAULT_THEME_ACCENT;
 }
 
-/**
- * Theme accent from json-render state (`/theme/accent`) plus palette resolution for the current color scheme.
- */
 export function useSnapPalette() {
   const appearance = useColorScheme() === "dark" ? "dark" : "light";
   const { get } = useStateStore();
   const accentName = themeAccentFromStore(get);
-  const accentHex = resolveSnapPaletteHex(accentName, appearance);
+  const accentHex = resolveHex(accentName, appearance);
 
   const hex = (semantic: string) =>
-    semantic === "accent"
-      ? accentHex
-      : resolveSnapPaletteHex(semantic, appearance);
+    semantic === "accent" ? accentHex : resolveHex(semantic, appearance);
 
   return { appearance, accentName, accentHex, hex };
 }
@@ -49,15 +53,12 @@ export function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-/**
- * Accent for chrome outside json-render state (preview frame, spinner). Pass `snap.page.theme?.accent`.
- */
 export function useSnapPreviewChromePalette(themeAccent: string | undefined) {
   const appearance = useColorScheme() === "dark" ? "dark" : "light";
   const accentName =
     typeof themeAccent === "string" && isPaletteColor(themeAccent)
       ? themeAccent
       : DEFAULT_THEME_ACCENT;
-  const accentHex = resolveSnapPaletteHex(accentName, appearance);
+  const accentHex = resolveHex(accentName, appearance);
   return { appearance, accentName, accentHex };
 }

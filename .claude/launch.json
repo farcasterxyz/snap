@@ -1,0 +1,59 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "emulator",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@farcaster/snap-emulator", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "snap-catalog",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "snap-catalog", "dev"],
+      "port": 3020
+    },
+    {
+      "name": "template",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "snap-template", "dev"],
+      "port": 3003
+    },
+    {
+      "name": "shared-games",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "shared-games", "dev"],
+      "port": 3011
+    },
+    {
+      "name": "element-showcase",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "element-showcase", "dev"],
+      "port": 3012
+    },
+    {
+      "name": "snap-expression",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "snap-expression", "dev"],
+      "port": 3013
+    },
+    {
+      "name": "current-time",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "current-time", "dev"],
+      "port": 3014
+    },
+    {
+      "name": "ui-catalog-elements",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "ui-catalog-elements", "dev"],
+      "port": 3015
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@farcaster/snap-docs", "dev"],
+      "port": 3001
+    }
+  ]
+}
