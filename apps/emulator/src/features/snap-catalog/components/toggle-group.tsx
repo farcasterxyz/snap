@@ -53,7 +53,7 @@ export function SnapToggleGroup({
         }}
         orientation={orientation === "vertical" ? "vertical" : "horizontal"}
         variant="outline"
-        spacing={8}
+        spacing={4}
         className={cn(
           "flex w-full items-stretch",
           orientation === "vertical" ? "flex-col" : "flex-row",

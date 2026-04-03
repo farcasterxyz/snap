@@ -456,17 +456,25 @@ export default function EmulatorPage() {
           overflow: "hidden",
         }}
       >
-        {/* Left: snap preview + exchange log in one scroll container */}
+        {/* Left: snap (fixed top) + log (scrollable bottom) */}
         <section
           style={{
             minHeight: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
+            display: "flex",
+            flexDirection: "column",
             borderRight: "1px solid var(--border)",
-            background: "var(--emu-preview-bg)",
+            overflow: "hidden",
           }}
         >
-          <div style={{ padding: 20 }}>
+          {/* Snap preview — scrolls internally if too tall, takes at most 60% */}
+          <div
+            style={{
+              maxHeight: "60%",
+              overflowY: "auto",
+              padding: 20,
+              background: "var(--emu-preview-bg)",
+            }}
+          >
             {error ? (
               <div
                 style={{
@@ -496,7 +504,9 @@ export default function EmulatorPage() {
                   snap={snap}
                   handlers={{
                     submit: handlePostButton,
-                    open_url: handleLinkButton,
+                    open_url: (target) => {
+                      if (target) window.open(target, "_blank", "noopener,noreferrer");
+                    },
                     open_mini_app: (target) => {
                       window.alert(`open_mini_app\n\n${target}`);
                     },
@@ -541,21 +551,36 @@ export default function EmulatorPage() {
             )}
           </div>
 
-          {/* Exchange log directly below snap */}
-          {log.length > 0 && (
-            <div
-              style={{
-                borderTop: "1px solid var(--border)",
-                padding: "12px 20px 20px",
-              }}
-            >
-              <ExchangeLog
-                log={log}
-                expandedLogIds={expandedLogIds}
-                onToggleExpand={toggleLogExpanded}
-              />
-            </div>
-          )}
+          {/* Log — scrolls independently */}
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: "auto",
+              borderTop: "1px solid var(--border)",
+              background: "var(--bg-surface)",
+            }}
+          >
+            {log.length > 0 ? (
+              <div style={{ padding: "12px 20px 20px" }}>
+                <ExchangeLog
+                  log={log}
+                  expandedLogIds={expandedLogIds}
+                  onToggleExpand={toggleLogExpanded}
+                />
+              </div>
+            ) : (
+              <div
+                style={{
+                  padding: 20,
+                  fontSize: 12,
+                  color: "var(--text-secondary)",
+                }}
+              >
+                Exchange log will appear here.
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Right: spec viewer */}
@@ -565,7 +590,7 @@ export default function EmulatorPage() {
             overflow: "auto",
           }}
         >
-          <SpecViewer spec={snap?.spec ?? null} />
+          <SpecViewer data={(snap as Record<string, unknown> | null) ?? null} />
         </section>
       </div>
     </div>

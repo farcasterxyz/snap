@@ -22,9 +22,10 @@ export function SnapBadge({
       <Badge
         variant={isAccent ? "default" : "outline"}
         className="gap-1"
+        // TODO: fix outline badge border color in @neynar/ui — too bright in dark mode
         style={
           !isAccent
-            ? { borderColor: `var(--snap-color-${color}, currentColor)`, color: `var(--snap-color-${color}, currentColor)` }
+            ? { borderColor: `var(--snap-color-${color})`, color: `var(--snap-color-${color})` }
             : undefined
         }
       >

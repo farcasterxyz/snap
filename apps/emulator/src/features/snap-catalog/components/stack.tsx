@@ -35,7 +35,7 @@ export function SnapStack({
     <div
       className={cn(
         "flex w-full",
-        isHorizontal ? "flex-row items-center [&>*]:flex-1 [&>*]:min-w-0" : "flex-col",
+        isHorizontal ? "flex-row items-center justify-between" : "flex-col",
         gap,
       )}
     >

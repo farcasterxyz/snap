@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { snapPreviewPrimaryCssProperties } from "@/lib/snapPreviewPrimaryCss";
+import { resolveSnapPaletteHex } from "@/lib/resolveSnapPaletteHex";
 import { useColorMode } from "@neynar/ui/color-mode";
 import { SnapPreviewAccentProvider } from "@/features/snap-catalog/SnapPreviewAccentContext";
 import { SnapCatalogView } from "./snapCatalogRenderer";
@@ -171,13 +172,15 @@ export function SnapRenderer({
   const showConfetti = snap.effects?.includes("confetti");
 
   const { mode } = useColorMode();
-  const previewSurfaceStyle = useMemo(
-    () =>
-      ({
-        ...snapPreviewPrimaryCssProperties(snap.theme?.accent ?? "purple", mode),
-      }) as React.CSSProperties,
-    [snap.theme?.accent, mode],
-  );
+  const PALETTE = ["gray", "blue", "red", "amber", "green", "teal", "purple", "pink"] as const;
+  const previewSurfaceStyle = useMemo(() => {
+    const vars: Record<string, string> = {};
+    for (const c of PALETTE) vars[`--snap-color-${c}`] = resolveSnapPaletteHex(c, mode);
+    return {
+      ...snapPreviewPrimaryCssProperties(snap.theme?.accent ?? "purple", mode),
+      ...vars,
+    } as React.CSSProperties;
+  }, [snap.theme?.accent, mode]);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
@@ -193,6 +196,8 @@ export function SnapRenderer({
             zIndex: 10,
             fontSize: 14,
             color: "var(--text-muted)",
+            background: "var(--bg-primary, rgba(0,0,0,0.6))",
+            backdropFilter: "blur(4px)",
           }}
         >
           Loading...

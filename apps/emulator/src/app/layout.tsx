@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ColorModeInitializer } from "@neynar/ui/color-mode";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,6 +12,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ColorModeInitializer />
+      </head>
       <body>{children}</body>
     </html>
   );

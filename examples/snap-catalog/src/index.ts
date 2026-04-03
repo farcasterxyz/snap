@@ -2,9 +2,25 @@ import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import type { SnapHandlerResult } from "@farcaster/snap";
 
-type View = "welcome" | "display" | "layout" | "form" | "results" | "actions";
+type View =
+  | "welcome"
+  | "typography"
+  | "images"
+  | "content"
+  | "layout"
+  | "form"
+  | "results"
+  | "actions";
 
-const VIEWS: View[] = ["welcome", "display", "layout", "form", "actions"];
+const FLOW: View[] = [
+  "welcome",
+  "typography",
+  "images",
+  "content",
+  "layout",
+  "form",
+  "actions",
+];
 
 const app = new Hono();
 
@@ -14,68 +30,64 @@ registerSnapHandler(app, async (ctx) => {
   const base = snapBaseUrl(ctx.request);
 
   if (ctx.action.type === "get") return welcomePage(base);
-
   if (view === "results" && ctx.action.type === "post") {
     return resultsPage(base, ctx.action.inputs);
   }
 
   switch (view) {
-    case "display":
-      return displayPage(base);
-    case "layout":
-      return layoutPage(base);
-    case "form":
-      return formPage(base);
-    case "actions":
-      return actionsPage(base);
-    default:
-      return welcomePage(base);
+    case "typography": return typographyPage(base);
+    case "images": return imagesPage(base);
+    case "content": return contentPage(base);
+    case "layout": return layoutPage(base);
+    case "form": return formPage(base);
+    case "actions": return actionsPage(base);
+    default: return welcomePage(base);
   }
 });
 
 export default app;
 
-// ─── Helpers ────────────────────────────────────────────
+// ─── Navigation ─────────────────────────────────────────
 
 function nav(base: string, current: View): Record<string, object> {
-  const idx = VIEWS.indexOf(current);
-  const prev = idx > 0 ? VIEWS[idx - 1] : null;
-  const next = idx < VIEWS.length - 1 ? VIEWS[idx + 1] : null;
+  const idx = FLOW.indexOf(current);
+  const prev = idx > 0 ? FLOW[idx - 1] : null;
+  const next = idx < FLOW.length - 1 ? FLOW[idx + 1] : null;
+
+  const children: string[] = [];
+  const elements: Record<string, object> = {};
+
+  if (prev) {
+    children.push("nav-prev");
+    elements["nav-prev"] = {
+      type: "button",
+      props: { label: "Back", variant: "ghost", icon: "arrow-left" },
+      on: { press: { action: "submit", params: { target: `${base}/?view=${prev}` } } },
+    };
+  }
+
+  if (next) {
+    children.push("nav-next");
+    elements["nav-next"] = {
+      type: "button",
+      props: { label: "Next", variant: "outline", icon: "arrow-right" },
+      on: { press: { action: "submit", params: { target: `${base}/?view=${next}` } } },
+    };
+  }
 
   return {
     nav: {
       type: "stack",
-      props: { direction: "horizontal", gap: "sm" },
-      children: [
-        ...(prev ? ["nav-prev"] : []),
-        "nav-home",
-        ...(next ? ["nav-next"] : []),
-      ],
+      props: { direction: "horizontal" },
+      children,
     },
-    ...(prev
-      ? {
-          "nav-prev": {
-            type: "button",
-            props: { label: "Back", variant: "ghost", icon: "arrow-left" },
-            on: { press: { action: "submit", params: { target: `${base}/?view=${prev}` } } },
-          },
-        }
-      : {}),
-    "nav-home": {
-      type: "button",
-      props: { label: "Home", variant: "ghost", icon: "star" },
-      on: { press: { action: "submit", params: { target: `${base}/` } } },
-    },
-    ...(next
-      ? {
-          "nav-next": {
-            type: "button",
-            props: { label: "Next", variant: "ghost", icon: "arrow-right" },
-            on: { press: { action: "submit", params: { target: `${base}/?view=${next}` } } },
-          },
-        }
-      : {}),
+    ...elements,
   };
+}
+
+function step(current: View): string {
+  const idx = FLOW.indexOf(current) + 1;
+  return `${idx} / ${FLOW.length}`;
 }
 
 // ─── Pages ──────────────────────────────────────────────
@@ -89,8 +101,8 @@ function welcomePage(base: string): SnapHandlerResult {
       elements: {
         page: {
           type: "stack",
-          props: { gap: "md" },
-          children: ["heading", "tagline", "hero", "stats", "sep", "cta-row"],
+          props: {},
+          children: ["heading", "tagline", "hero", "stats", "sep", "start"],
         },
         heading: {
           type: "text",
@@ -98,59 +110,35 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         tagline: {
           type: "text",
-          props: {
-            content: "Interactive feed cards powered by json-render. 14 components, 9 actions, infinite possibilities.",
-            size: "sm",
-            align: "center",
-          },
+          props: { content: "Interactive feed cards. 14 components, 9 actions, one spec.", size: "sm", align: "center" },
         },
         hero: {
           type: "image",
           props: {
             url: "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800&h=450&fit=crop&auto=format",
             aspect: "16:9",
-            alt: "Abstract purple gradient",
           },
         },
         stats: {
           type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
-          children: ["stat-components", "stat-actions", "stat-version"],
+          props: { direction: "horizontal" },
+          children: ["s1", "s2", "s3"],
         },
-        "stat-components": {
-          type: "badge",
-          props: { label: "14 Components", icon: "zap" },
-        },
-        "stat-actions": {
-          type: "badge",
-          props: { label: "9 Actions", color: "blue", icon: "trending-up" },
-        },
-        "stat-version": {
-          type: "badge",
-          props: { label: "v1.0", color: "green", icon: "check" },
-        },
+        s1: { type: "badge", props: { label: "14 Components", icon: "zap" } },
+        s2: { type: "badge", props: { label: "9 Actions", color: "blue", icon: "trending-up" } },
+        s3: { type: "badge", props: { label: "v1.0", color: "green", icon: "check" } },
         sep: { type: "separator", props: {} },
-        "cta-row": {
-          type: "stack",
-          props: { gap: "sm" },
-          children: ["cta-explore", "cta-form"],
-        },
-        "cta-explore": {
+        start: {
           type: "button",
-          props: { label: "Explore Components" },
-          on: { press: { action: "submit", params: { target: `${base}/?view=display` } } },
-        },
-        "cta-form": {
-          type: "button",
-          props: { label: "Try the Form Demo", variant: "outline", icon: "arrow-right" },
-          on: { press: { action: "submit", params: { target: `${base}/?view=form` } } },
+          props: { label: "Get Started", icon: "arrow-right" },
+          on: { press: { action: "submit", params: { target: `${base}/?view=typography` } } },
         },
       },
     },
   };
 }
 
-function displayPage(base: string): SnapHandlerResult {
+function typographyPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "blue" },
@@ -160,84 +148,32 @@ function displayPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["heading", "subtitle", "sep1", "content-list", "sep2", "progress-section", "sep3", "icon-row", "nav"],
+          children: ["step", "heading", "sep1", "t-lg", "t-md", "t-sm", "sep2", "t-bold", "t-medium", "t-normal", "sep3", "t-center", "t-right", "sep4", "nav"],
         },
+        step: { type: "badge", props: { label: `Typography \u00b7 ${step("typography")}` } },
         heading: {
           type: "text",
-          props: { content: "Display Components", size: "lg" },
-        },
-        subtitle: {
-          type: "text",
-          props: { content: "Content primitives for building rich feed cards.", size: "sm" },
+          props: { content: "Text sizes, weights, and alignment.", size: "sm" },
         },
         sep1: { type: "separator", props: {} },
-        "content-list": {
-          type: "item_group",
-          props: {},
-          children: ["item-trending", "item-digest", "item-update"],
-        },
-        "item-trending": {
-          type: "item",
-          props: { title: "Trending Cast", description: "842 likes in the last hour" },
-          children: ["trending-badge"],
-        },
-        "trending-badge": {
-          type: "badge",
-          props: { label: "Hot", color: "red", icon: "flame" },
-        },
-        "item-digest": {
-          type: "item",
-          props: { title: "Weekly Digest", description: "Your personalized feed summary", variant: "outline" },
-          children: ["digest-icon"],
-        },
-        "digest-icon": {
-          type: "icon",
-          props: { name: "chevron-right", color: "gray" },
-        },
-        "item-update": {
-          type: "item",
-          props: { title: "Community Update", description: "3 new proposals to review", variant: "muted" },
-          children: ["update-badge"],
-        },
-        "update-badge": {
-          type: "badge",
-          props: { label: "3 New", color: "blue", icon: "info" },
-        },
+        "t-lg": { type: "text", props: { content: "Large \u2014 headings and titles", size: "lg" } },
+        "t-md": { type: "text", props: { content: "Medium \u2014 body text and descriptions. This is the default size for most content in a snap." } },
+        "t-sm": { type: "text", props: { content: "Small \u2014 captions, metadata, timestamps", size: "sm" } },
         sep2: { type: "separator", props: {} },
-        "progress-section": {
-          type: "stack",
-          props: { gap: "sm" },
-          children: ["prog-engagement", "prog-completion"],
-        },
-        "prog-engagement": {
-          type: "progress",
-          props: { value: 78, max: 100, label: "Engagement Score" },
-        },
-        "prog-completion": {
-          type: "progress",
-          props: { value: 45, max: 100, label: "Quest Completion" },
-        },
+        "t-bold": { type: "text", props: { content: "Bold weight", weight: "bold" } },
+        "t-medium": { type: "text", props: { content: "Medium weight", weight: "medium" } },
+        "t-normal": { type: "text", props: { content: "Normal weight", weight: "normal" } },
         sep3: { type: "separator", props: {} },
-        "icon-row": {
-          type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
-          children: ["ic1", "ic2", "ic3", "ic4", "ic5", "ic6", "ic7", "ic8"],
-        },
-        ic1: { type: "icon", props: { name: "heart", color: "red" } },
-        ic2: { type: "icon", props: { name: "star", color: "amber" } },
-        ic3: { type: "icon", props: { name: "zap", color: "purple" } },
-        ic4: { type: "icon", props: { name: "trophy", color: "amber" } },
-        ic5: { type: "icon", props: { name: "flame", color: "red" } },
-        ic6: { type: "icon", props: { name: "thumbs-up", color: "blue" } },
-        ic7: { type: "icon", props: { name: "trending-up", color: "green" } },
-        ic8: { type: "icon", props: { name: "gift", color: "pink" } },
-        ...nav(base, "display"),
+        "t-center": { type: "text", props: { content: "Center aligned", align: "center" } },
+        "t-right": { type: "text", props: { content: "Right aligned", align: "right" } },
+        sep4: { type: "separator", props: {} },
+        ...nav(base, "typography"),
       },
     },
   };
 }
 
-function layoutPage(base: string): SnapHandlerResult {
+function imagesPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "teal" },
@@ -247,91 +183,164 @@ function layoutPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["heading", "subtitle", "sep1", "side-by-side", "sep2", "leaderboard", "sep3", "metric-row", "nav"],
+          children: ["step", "heading", "sep1", "img-wide", "label-wide", "row-sq-43", "label-sq-43", "sep2", "row-34-916", "label-34-916", "sep3", "nav"],
         },
+        step: { type: "badge", props: { label: `Images \u00b7 ${step("images")}` } },
         heading: {
           type: "text",
-          props: { content: "Layout & Containers", size: "lg" },
-        },
-        subtitle: {
-          type: "text",
-          props: { content: "Stacks, groups, and composition patterns.", size: "sm" },
+          props: { content: "All five aspect ratios.", size: "sm" },
         },
         sep1: { type: "separator", props: {} },
-        "side-by-side": {
-          type: "stack",
-          props: { direction: "horizontal", gap: "md" },
-          children: ["left-card", "right-card"],
+        "img-wide": {
+          type: "image",
+          props: {
+            url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=450&fit=crop&auto=format",
+            aspect: "16:9",
+          },
         },
-        "left-card": {
-          type: "item",
-          props: { title: "Protocol", description: "12 proposals", variant: "outline" },
-          children: ["left-icon"],
-        },
-        "left-icon": {
-          type: "icon",
-          props: { name: "trending-up", color: "green" },
-        },
-        "right-card": {
-          type: "item",
-          props: { title: "Governance", description: "3 active votes", variant: "outline" },
-          children: ["right-icon"],
-        },
-        "right-icon": {
-          type: "icon",
-          props: { name: "users", color: "blue" },
-        },
-        sep2: { type: "separator", props: {} },
-        leaderboard: {
-          type: "item_group",
-          props: {},
-          children: ["lb-1", "lb-2", "lb-3", "lb-4"],
-        },
-        "lb-1": {
-          type: "item",
-          props: { title: "dwr.eth", description: "2,847 points" },
-          children: ["lb-1-rank"],
-        },
-        "lb-1-rank": { type: "badge", props: { label: "#1", color: "amber", icon: "trophy" } },
-        "lb-2": {
-          type: "item",
-          props: { title: "v.eth", description: "2,103 points" },
-          children: ["lb-2-rank"],
-        },
-        "lb-2-rank": { type: "badge", props: { label: "#2", color: "gray" } },
-        "lb-3": {
-          type: "item",
-          props: { title: "horsefacts.eth", description: "1,892 points" },
-          children: ["lb-3-rank"],
-        },
-        "lb-3-rank": { type: "badge", props: { label: "#3", color: "gray" } },
-        "lb-4": {
-          type: "item",
-          props: { title: "les.eth", description: "1,654 points" },
-          children: ["lb-4-rank"],
-        },
-        "lb-4-rank": { type: "badge", props: { label: "#4", color: "gray" } },
-        sep3: { type: "separator", props: {} },
-        "metric-row": {
+        "label-wide": { type: "text", props: { content: "16:9", size: "sm", align: "center" } },
+        "row-sq-43": {
           type: "stack",
           props: { direction: "horizontal" },
-          children: ["metric-1", "metric-2"],
+          children: ["img-sq", "img-43"],
         },
-        "metric-1": {
-          type: "progress",
-          props: { value: 89, max: 100, label: "Uptime" },
+        "img-sq": {
+          type: "image",
+          props: {
+            url: "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=400&h=400&fit=crop&auto=format",
+            aspect: "1:1",
+          },
         },
-        "metric-2": {
-          type: "progress",
-          props: { value: 67, max: 100, label: "Adoption" },
+        "img-43": {
+          type: "image",
+          props: {
+            url: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&h=450&fit=crop&auto=format",
+            aspect: "4:3",
+          },
         },
-        ...nav(base, "layout"),
+        "label-sq-43": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["lbl-sq", "lbl-43"],
+        },
+        "lbl-sq": { type: "text", props: { content: "1:1", size: "sm", align: "center" } },
+        "lbl-43": { type: "text", props: { content: "4:3", size: "sm", align: "center" } },
+        sep2: { type: "separator", props: {} },
+        "row-34-916": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["img-34", "img-916"],
+        },
+        "img-34": {
+          type: "image",
+          props: {
+            url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=450&h=600&fit=crop&auto=format",
+            aspect: "3:4",
+          },
+        },
+        "img-916": {
+          type: "image",
+          props: {
+            url: "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=360&h=640&fit=crop&auto=format",
+            aspect: "9:16",
+          },
+        },
+        "label-34-916": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["lbl-34", "lbl-916"],
+        },
+        "lbl-34": { type: "text", props: { content: "3:4", size: "sm", align: "center" } },
+        "lbl-916": { type: "text", props: { content: "9:16", size: "sm", align: "center" } },
+        sep3: { type: "separator", props: {} },
+        ...nav(base, "images"),
       },
     },
   };
 }
 
-function formPage(base: string): SnapHandlerResult {
+function contentPage(base: string): SnapHandlerResult {
+  return {
+    version: "1.0",
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["step", "heading", "sep1", "badges", "sep2", "items", "sep3", "progress-row", "sep4", "icons", "sep5", "nav"],
+        },
+        step: { type: "badge", props: { label: `Content \u00b7 ${step("content")}` } },
+        heading: {
+          type: "text",
+          props: { content: "Badges, items, progress bars, and icons.", size: "sm" },
+        },
+        sep1: { type: "separator", props: {} },
+        badges: {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["b1", "b2", "b3", "b4", "b5"],
+        },
+        b1: { type: "badge", props: { label: "Default" } },
+        b2: { type: "badge", props: { label: "Blue", color: "blue" } },
+        b3: { type: "badge", props: { label: "Red", color: "red", icon: "flame" } },
+        b4: { type: "badge", props: { label: "Green", color: "green", icon: "check" } },
+        b5: { type: "badge", props: { label: "Gray", color: "gray" } },
+        sep2: { type: "separator", props: {} },
+        items: {
+          type: "item_group",
+          props: {},
+          children: ["i1", "i2", "i3"],
+        },
+        i1: {
+          type: "item",
+          props: { title: "Trending Cast", description: "842 likes in the last hour" },
+          children: ["i1-badge"],
+        },
+        "i1-badge": { type: "badge", props: { label: "Hot", color: "red", icon: "flame" } },
+        i2: {
+          type: "item",
+          props: { title: "Weekly Digest", description: "Your personalized summary", variant: "outline" },
+          children: ["i2-icon"],
+        },
+        "i2-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        i3: {
+          type: "item",
+          props: { title: "Community Update", description: "3 new proposals", variant: "muted" },
+          children: ["i3-badge"],
+        },
+        "i3-badge": { type: "badge", props: { label: "3 New", color: "blue", icon: "info" } },
+        sep3: { type: "separator", props: {} },
+        "progress-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["p1", "p2"],
+        },
+        p1: { type: "progress", props: { value: 78, max: 100, label: "Engagement" } },
+        p2: { type: "progress", props: { value: 45, max: 100, label: "Completion" } },
+        sep4: { type: "separator", props: {} },
+        icons: {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["ic1", "ic2", "ic3", "ic4", "ic5", "ic6", "ic7", "ic8"],
+        },
+        ic1: { type: "icon", props: { name: "heart", color: "red" } },
+        ic2: { type: "icon", props: { name: "star", color: "amber" } },
+        ic3: { type: "icon", props: { name: "zap", color: "purple" } },
+        ic4: { type: "icon", props: { name: "trophy", color: "amber" } },
+        ic5: { type: "icon", props: { name: "thumbs-up", color: "blue" } },
+        ic6: { type: "icon", props: { name: "trending-up", color: "green" } },
+        ic7: { type: "icon", props: { name: "gift", color: "pink" } },
+        ic8: { type: "icon", props: { name: "bookmark", color: "gray" } },
+        sep5: { type: "separator", props: {} },
+        ...nav(base, "content"),
+      },
+    },
+  };
+}
+
+function layoutPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
     theme: { accent: "amber" },
@@ -341,20 +350,81 @@ function formPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["heading", "subtitle", "sep1", "name-input", "tip-input", "frequency", "sep2", "collab-switch", "discovery-switch", "sep3", "interest-group", "skills-group", "sep4", "save-btn", "nav"],
+          children: ["step", "heading", "sep1", "row", "sep2", "leaderboard", "sep3", "metrics", "sep4", "nav"],
         },
+        step: { type: "badge", props: { label: `Layout \u00b7 ${step("layout")}` } },
         heading: {
           type: "text",
-          props: { content: "Profile Setup", size: "lg" },
+          props: { content: "Horizontal stacks, item groups, and composition.", size: "sm" },
         },
-        subtitle: {
+        sep1: { type: "separator", props: {} },
+        row: {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["card-l", "card-r"],
+        },
+        "card-l": {
+          type: "item",
+          props: { title: "Protocol", description: "12 proposals", variant: "outline" },
+          children: ["card-l-icon"],
+        },
+        "card-l-icon": { type: "icon", props: { name: "trending-up", color: "green" } },
+        "card-r": {
+          type: "item",
+          props: { title: "Governance", description: "3 active votes", variant: "outline" },
+          children: ["card-r-icon"],
+        },
+        "card-r-icon": { type: "icon", props: { name: "users", color: "blue" } },
+        sep2: { type: "separator", props: {} },
+        leaderboard: {
+          type: "item_group",
+          props: {},
+          children: ["lb1", "lb2", "lb3", "lb4"],
+        },
+        lb1: { type: "item", props: { title: "dwr.eth", description: "2,847 pts" }, children: ["lb1-r"] },
+        "lb1-r": { type: "badge", props: { label: "#1", color: "amber", icon: "trophy" } },
+        lb2: { type: "item", props: { title: "v.eth", description: "2,103 pts" }, children: ["lb2-r"] },
+        "lb2-r": { type: "badge", props: { label: "#2", color: "gray" } },
+        lb3: { type: "item", props: { title: "horsefacts.eth", description: "1,892 pts" }, children: ["lb3-r"] },
+        "lb3-r": { type: "badge", props: { label: "#3", color: "gray" } },
+        lb4: { type: "item", props: { title: "les.eth", description: "1,654 pts" }, children: ["lb4-r"] },
+        "lb4-r": { type: "badge", props: { label: "#4", color: "gray" } },
+        sep3: { type: "separator", props: {} },
+        metrics: {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["m1", "m2"],
+        },
+        m1: { type: "progress", props: { value: 89, max: 100, label: "Uptime" } },
+        m2: { type: "progress", props: { value: 67, max: 100, label: "Adoption" } },
+        sep4: { type: "separator", props: {} },
+        ...nav(base, "layout"),
+      },
+    },
+  };
+}
+
+function formPage(base: string): SnapHandlerResult {
+  return {
+    version: "1.0",
+    theme: { accent: "teal" },
+    spec: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["step", "heading", "sep1", "name-input", "tip-input", "frequency", "sep2", "collab", "discovery", "sep3", "interest", "skills", "sep4", "submit", "nav"],
+        },
+        step: { type: "badge", props: { label: `Form \u00b7 ${step("form")}` } },
+        heading: {
           type: "text",
-          props: { content: "Customize your Farcaster profile. All fields are interactive.", size: "sm" },
+          props: { content: "Every input type. Fill it out and submit.", size: "sm" },
         },
         sep1: { type: "separator", props: {} },
         "name-input": {
           type: "input",
-          props: { name: "displayName", type: "text", label: "Display Name", placeholder: "Enter your name" },
+          props: { name: "displayName", label: "Display Name", placeholder: "Enter your name" },
         },
         "tip-input": {
           type: "input",
@@ -362,37 +432,22 @@ function formPage(base: string): SnapHandlerResult {
         },
         frequency: {
           type: "slider",
-          props: { name: "frequency", label: "Content Frequency", min: 1, max: 10, step: 1, defaultValue: 5 },
+          props: { name: "frequency", label: "Content Frequency", min: 1, max: 10, defaultValue: 5 },
         },
         sep2: { type: "separator", props: {} },
-        "collab-switch": {
-          type: "switch",
-          props: { name: "collaborations", label: "Open to collaborations" },
-        },
-        "discovery-switch": {
-          type: "switch",
-          props: { name: "discovery", label: "Show in discovery", defaultChecked: true },
-        },
+        collab: { type: "switch", props: { name: "collaborations", label: "Open to collaborations" } },
+        discovery: { type: "switch", props: { name: "discovery", label: "Show in discovery", defaultChecked: true } },
         sep3: { type: "separator", props: {} },
-        "interest-group": {
+        interest: {
           type: "toggle_group",
-          props: {
-            name: "interest",
-            label: "Primary Interest",
-            options: ["Protocol", "Apps", "Culture", "Art"],
-          },
+          props: { name: "interest", label: "Primary Interest", options: ["Protocol", "Apps", "Culture", "Art"] },
         },
-        "skills-group": {
+        skills: {
           type: "toggle_group",
-          props: {
-            name: "skills",
-            label: "Skills (select multiple)",
-            multiple: true,
-            options: ["Solidity", "TypeScript", "Design", "Product"],
-          },
+          props: { name: "skills", label: "Skills (select multiple)", multiple: true, options: ["Solidity", "TypeScript", "Design", "Product"] },
         },
         sep4: { type: "separator", props: {} },
-        "save-btn": {
+        submit: {
           type: "button",
           props: { label: "Save Profile", icon: "check" },
           on: { press: { action: "submit", params: { target: `${base}/?view=results` } } },
@@ -422,51 +477,45 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
         page: {
           type: "stack",
           props: {},
-          children: ["heading", "subtitle", "sep", "results-group", "sep2", "btn-row"],
+          children: ["heading", "subtitle", "sep", "results", "sep2", "btns"],
         },
-        heading: {
-          type: "text",
-          props: { content: "Profile Saved!", size: "lg", align: "center" },
-        },
-        subtitle: {
-          type: "text",
-          props: { content: `Welcome to Farcaster, ${displayName}!`, size: "sm", align: "center" },
-        },
+        heading: { type: "text", props: { content: "Profile Saved!", size: "lg", align: "center" } },
+        subtitle: { type: "text", props: { content: `Welcome, ${displayName}!`, size: "sm", align: "center" } },
         sep: { type: "separator", props: {} },
-        "results-group": {
+        results: {
           type: "item_group",
           props: {},
-          children: ["r-name", "r-tip", "r-freq", "r-collab", "r-disc", "r-interest", "r-skills"],
+          children: ["r1", "r2", "r3", "r4", "r5", "r6", "r7"],
         },
-        "r-name": { type: "item", props: { title: "Display Name" }, children: ["r-name-v"] },
-        "r-name-v": { type: "badge", props: { label: displayName, icon: "user" } },
-        "r-tip": { type: "item", props: { title: "Default Tip" }, children: ["r-tip-v"] },
-        "r-tip-v": { type: "badge", props: { label: `$${tipAmount}`, color: "green", icon: "coins" } },
-        "r-freq": { type: "item", props: { title: "Content Frequency" }, children: ["r-freq-v"] },
-        "r-freq-v": { type: "badge", props: { label: `${frequency}/10`, color: "blue" } },
-        "r-collab": { type: "item", props: { title: "Collaborations" }, children: ["r-collab-v"] },
-        "r-collab-v": { type: "badge", props: { label: collaborations, color: collaborations === "Yes" ? "green" : "gray", icon: collaborations === "Yes" ? "check" : "x" } },
-        "r-disc": { type: "item", props: { title: "Discovery" }, children: ["r-disc-v"] },
-        "r-disc-v": { type: "badge", props: { label: discovery, color: discovery === "Yes" ? "green" : "gray", icon: discovery === "Yes" ? "check" : "x" } },
-        "r-interest": { type: "item", props: { title: "Primary Interest" }, children: ["r-interest-v"] },
-        "r-interest-v": { type: "badge", props: { label: interest, color: "amber", icon: "star" } },
-        "r-skills": { type: "item", props: { title: "Skills" }, children: ["r-skills-v"] },
-        "r-skills-v": { type: "badge", props: { label: skills || "None", color: "teal", icon: "zap" } },
+        r1: { type: "item", props: { title: "Name" }, children: ["r1v"] },
+        r1v: { type: "badge", props: { label: displayName, icon: "user" } },
+        r2: { type: "item", props: { title: "Tip" }, children: ["r2v"] },
+        r2v: { type: "badge", props: { label: `$${tipAmount}`, color: "green", icon: "coins" } },
+        r3: { type: "item", props: { title: "Frequency" }, children: ["r3v"] },
+        r3v: { type: "badge", props: { label: `${frequency}/10`, color: "blue" } },
+        r4: { type: "item", props: { title: "Collaborations" }, children: ["r4v"] },
+        r4v: { type: "badge", props: { label: collaborations, color: collaborations === "Yes" ? "green" : "gray", icon: collaborations === "Yes" ? "check" : "x" } },
+        r5: { type: "item", props: { title: "Discovery" }, children: ["r5v"] },
+        r5v: { type: "badge", props: { label: discovery, color: discovery === "Yes" ? "green" : "gray", icon: discovery === "Yes" ? "check" : "x" } },
+        r6: { type: "item", props: { title: "Interest" }, children: ["r6v"] },
+        r6v: { type: "badge", props: { label: interest, color: "amber", icon: "star" } },
+        r7: { type: "item", props: { title: "Skills" }, children: ["r7v"] },
+        r7v: { type: "badge", props: { label: skills || "None", color: "teal", icon: "zap" } },
         sep2: { type: "separator", props: {} },
-        "btn-row": {
+        btns: {
           type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
-          children: ["btn-edit", "btn-profile"],
+          props: { direction: "horizontal" },
+          children: ["btn-edit", "btn-next"],
         },
         "btn-edit": {
           type: "button",
-          props: { label: "Edit Profile", variant: "outline", icon: "arrow-left" },
+          props: { label: "Edit", variant: "outline", icon: "arrow-left" },
           on: { press: { action: "submit", params: { target: `${base}/?view=form` } } },
         },
-        "btn-profile": {
+        "btn-next": {
           type: "button",
-          props: { label: "View Profile", icon: "user" },
-          on: { press: { action: "view_profile", params: { fid: 3 } } },
+          props: { label: "Continue", icon: "arrow-right" },
+          on: { press: { action: "submit", params: { target: `${base}/?view=actions` } } },
         },
       },
     },
@@ -483,31 +532,16 @@ function actionsPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: [
-            "heading", "subtitle", "sep1",
-            "nav-label", "action-nav",
-            "sep2",
-            "social-label", "action-social",
-            "sep3",
-            "token-label", "action-tokens",
-            "sep4",
-            "nav",
-          ],
+          children: ["step", "heading", "sep1", "nav-label", "nav-actions", "sep2", "social-label", "social-actions", "sep3", "token-label", "token-actions", "sep4", "nav"],
         },
+        step: { type: "badge", props: { label: `Actions \u00b7 ${step("actions")}` } },
         heading: {
           type: "text",
-          props: { content: "Actions & Integrations", size: "lg" },
-        },
-        subtitle: {
-          type: "text",
-          props: { content: "Every action the spec supports — navigation, social, and tokens.", size: "sm" },
+          props: { content: "9 action types. Navigation, social, and tokens.", size: "sm" },
         },
         sep1: { type: "separator", props: {} },
-        "nav-label": {
-          type: "text",
-          props: { content: "Navigation", size: "md", weight: "bold" },
-        },
-        "action-nav": {
+        "nav-label": { type: "text", props: { content: "Navigation", weight: "bold" } },
+        "nav-actions": {
           type: "item_group",
           props: {},
           children: ["a-url", "a-miniapp"],
@@ -524,7 +558,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-miniapp": {
           type: "item",
-          props: { title: "Launch Mini App", description: "Opens as an in-app experience" },
+          props: { title: "Launch Mini App", description: "In-app experience" },
           children: ["a-miniapp-btn"],
         },
         "a-miniapp-btn": {
@@ -533,18 +567,15 @@ function actionsPage(base: string): SnapHandlerResult {
           on: { press: { action: "open_mini_app", params: { target: "https://farcaster.xyz" } } },
         },
         sep2: { type: "separator", props: {} },
-        "social-label": {
-          type: "text",
-          props: { content: "Social", size: "md", weight: "bold" },
-        },
-        "action-social": {
+        "social-label": { type: "text", props: { content: "Social", weight: "bold" } },
+        "social-actions": {
           type: "item_group",
           props: {},
           children: ["a-profile", "a-cast", "a-compose"],
         },
         "a-profile": {
           type: "item",
-          props: { title: "View @dwr's Profile", description: "Navigate to a user profile" },
+          props: { title: "View Profile", description: "Navigate to @dwr" },
           children: ["a-profile-btn"],
         },
         "a-profile-btn": {
@@ -554,7 +585,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-cast": {
           type: "item",
-          props: { title: "View a Cast", description: "Navigate to a specific cast" },
+          props: { title: "View Cast", description: "Open a specific cast" },
           children: ["a-cast-btn"],
         },
         "a-cast-btn": {
@@ -564,37 +595,34 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-compose": {
           type: "item",
-          props: { title: "Share this Snap", description: "Pre-fill the cast composer" },
+          props: { title: "Share this Snap", description: "Pre-fill the composer" },
           children: ["a-compose-btn"],
         },
         "a-compose-btn": {
           type: "button",
           props: { label: "Share", variant: "outline", icon: "share" },
-          on: { press: { action: "compose_cast", params: { text: "Check out the Snap Component Catalog! Built with 14 components and 9 action types." } } },
+          on: { press: { action: "compose_cast", params: { text: "Check out the Snap Component Catalog!" } } },
         },
         sep3: { type: "separator", props: {} },
-        "token-label": {
-          type: "text",
-          props: { content: "Tokens", size: "md", weight: "bold" },
-        },
-        "action-tokens": {
+        "token-label": { type: "text", props: { content: "Tokens", weight: "bold" } },
+        "token-actions": {
           type: "item_group",
           props: {},
-          children: ["a-view-token", "a-send", "a-swap"],
+          children: ["a-token", "a-send", "a-swap"],
         },
-        "a-view-token": {
+        "a-token": {
           type: "item",
-          props: { title: "View USDC on Base", description: "Open token details in wallet" },
-          children: ["a-view-token-btn"],
+          props: { title: "View USDC", description: "Open in wallet" },
+          children: ["a-token-btn"],
         },
-        "a-view-token-btn": {
+        "a-token-btn": {
           type: "button",
           props: { label: "View", variant: "outline", icon: "wallet" },
           on: { press: { action: "view_token", params: { token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" } } },
         },
         "a-send": {
           type: "item",
-          props: { title: "Send USDC", description: "Open send flow with pre-filled amount" },
+          props: { title: "Send USDC", description: "Pre-filled amount" },
           children: ["a-send-btn"],
         },
         "a-send-btn": {
@@ -604,7 +632,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-swap": {
           type: "item",
-          props: { title: "Swap ETH to USDC", description: "Open swap interface" },
+          props: { title: "Swap ETH \u2192 USDC", description: "Open swap interface" },
           children: ["a-swap-btn"],
         },
         "a-swap-btn": {
@@ -613,7 +641,21 @@ function actionsPage(base: string): SnapHandlerResult {
           on: { press: { action: "swap_token", params: { sellToken: "eip155:8453/slip44:60", buyToken: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" } } },
         },
         sep4: { type: "separator", props: {} },
-        ...nav(base, "actions"),
+        nav: {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["nav-back", "nav-start"],
+        },
+        "nav-back": {
+          type: "button",
+          props: { label: "Back", variant: "ghost", icon: "arrow-left" },
+          on: { press: { action: "submit", params: { target: `${base}/?view=form` } } },
+        },
+        "nav-start": {
+          type: "button",
+          props: { label: "Start Over", variant: "outline", icon: "refresh-cw" },
+          on: { press: { action: "submit", params: { target: `${base}/` } } },
+        },
       },
     },
   };

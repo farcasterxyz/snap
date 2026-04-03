@@ -27,7 +27,7 @@ export function SnapActionButton({
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
 
   return (
-    <div className="w-full min-w-0" style={accentStyle}>
+    <div className="w-full min-w-0 flex-1" style={accentStyle}>
       <Button
         type="button"
         variant={variant}
