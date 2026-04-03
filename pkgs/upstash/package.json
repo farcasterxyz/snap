@@ -1,6 +1,6 @@
 {
   "name": "@farcaster/snap-upstash",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Upstash Redis data store adapter for Farcaster Snaps",
   "repository": {
     "type": "git",
