@@ -1,7 +1,6 @@
 "use client";
 
 import { useStateStore } from "@json-render/react";
-import { ToggleGroup, ToggleGroupItem } from "@neynar/ui/toggle-group";
 import { Label } from "@neynar/ui/label";
 import { cn } from "@neynar/ui/utils";
 import { useSnapAccentScopeStyle } from "../hooks/useSnapAccent";
@@ -37,41 +36,50 @@ export function SnapToggleGroup({
     return [];
   })();
 
+  const toggle = (opt: string) => {
+    if (isMultiple) {
+      const current = Array.isArray(raw) ? (raw as string[]) : [];
+      if (current.includes(opt)) {
+        set(path, current.filter((v) => v !== opt));
+      } else {
+        set(path, [...current, opt]);
+      }
+    } else {
+      set(path, opt);
+    }
+  };
+
+  const isVertical = orientation === "vertical";
+
   return (
     <div className="w-full space-y-1.5" style={accentStyle}>
       {label && <Label>{label}</Label>}
-      <ToggleGroup
-        multiple={isMultiple}
-        value={selected}
-        onValueChange={(v) => {
-          if (isMultiple) {
-            set(path, v);
-          } else {
-            const next = v[0];
-            if (typeof next === "string" && next) set(path, next);
-          }
-        }}
-        orientation={orientation === "vertical" ? "vertical" : "horizontal"}
-        variant="outline"
-        spacing={4}
+      <div
         className={cn(
-          "flex w-full items-stretch",
-          orientation === "vertical" ? "flex-col" : "flex-row",
+          "flex gap-1 rounded-lg bg-border/20 p-1",
+          isVertical ? "flex-col" : "flex-row",
         )}
       >
-        {options.map((opt, index) => (
-          <ToggleGroupItem
-            key={index}
-            value={opt}
-            className={cn(
-              "justify-center px-3 py-2.5 hover:!bg-[var(--snap-action-outline-hover)] aria-pressed:!bg-primary aria-pressed:!text-primary-foreground hover:aria-pressed:!bg-primary/90",
-              orientation !== "vertical" && "flex-1",
-            )}
-          >
-            {opt}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+        {options.map((opt) => {
+          const isSelected = selected.includes(opt);
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => toggle(opt)}
+              className={cn(
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                isVertical ? "w-full" : "flex-1",
+                isSelected
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:bg-border/30",
+              )}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
