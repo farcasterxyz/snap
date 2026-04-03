@@ -16,7 +16,7 @@ export function SnapItem({
 
   const containerVariant =
     variant === "outline"
-      ? { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 10 }
+      ? { borderWidth: 1, borderColor: colors.border + "80", borderRadius: 8, padding: 10 }
       : variant === "muted"
         ? { backgroundColor: colors.muted, borderRadius: 8, padding: 10 }
         : { paddingVertical: 8, paddingHorizontal: 10 };
