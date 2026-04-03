@@ -13,7 +13,7 @@ export function SnapSeparator({
     <View
       style={[
         isVertical ? styles.vertical : styles.horizontal,
-        { backgroundColor: colors.border },
+        { backgroundColor: colors.border + "80" },
       ]}
     />
   );

@@ -26,7 +26,7 @@ export function SnapItemGroup({
       {items.map((child, i) => (
         <Fragment key={i}>
           {separator && i > 0 && (
-            <View style={{ height: 1, backgroundColor: colors.border }} />
+            <View style={{ height: 1, backgroundColor: colors.border + "80" }} />
           )}
           {child}
         </Fragment>
