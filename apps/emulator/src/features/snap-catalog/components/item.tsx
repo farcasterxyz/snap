@@ -23,9 +23,9 @@ export function SnapItem({
 
   return (
     <Item variant={variant}>
-      <ItemContent>
+      <ItemContent className="gap-0.5">
         <ItemTitle>{title}</ItemTitle>
-        {description && <ItemDescription>{description}</ItemDescription>}
+        {description && <ItemDescription className="mt-0">{description}</ItemDescription>}
       </ItemContent>
       {children && <ItemActions>{children}</ItemActions>}
     </Item>

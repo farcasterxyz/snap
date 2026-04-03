@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 13,
-    marginTop: 2,
+    marginTop: 1,
   },
   actions: {
     marginLeft: "auto",
