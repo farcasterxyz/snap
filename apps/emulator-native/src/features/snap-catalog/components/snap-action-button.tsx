@@ -26,16 +26,16 @@ export function SnapActionButton({
       case "default":
         return { backgroundColor: accentHex };
       case "secondary":
-        return { backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border };
+        return { backgroundColor: "transparent", borderWidth: 1.5, borderColor: accentHex };
       case "outline":
-        return { backgroundColor: "transparent", borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border };
+        return { backgroundColor: "transparent", borderWidth: 1, borderColor: colors.border };
       case "ghost":
         return { backgroundColor: "transparent" };
     }
   })();
 
-  const textColor = variant === "default" ? "#fff" : colors.text;
-  const iconColor = variant === "default" ? "#fff" : colors.textSecondary;
+  const textColor = variant === "default" ? "#fff" : variant === "secondary" ? accentHex : colors.text;
+  const iconColor = variant === "default" ? "#fff" : variant === "secondary" ? accentHex : colors.textSecondary;
 
   return (
     <View style={styles.outer}>
