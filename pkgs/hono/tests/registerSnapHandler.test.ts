@@ -19,17 +19,18 @@ const SNAP_CONTENT_TYPE = `${MEDIA_TYPE}; charset=utf-8`;
 
 const minimalSnapFn: SnapFunction = async () => ({
   version: "1.0",
-  page: {
-    theme: { accent: DEFAULT_THEME_ACCENT },
-    button_layout: "stack",
+  theme: { accent: DEFAULT_THEME_ACCENT },
+  spec: {
+    root: "page",
     elements: {
-      type: "stack",
-      children: [
-        { type: "text", style: "title", content: "Hello" },
-        { type: "text", style: "body", content: "A test snap." },
-      ],
+      page: { type: "stack", props: {}, children: ["title", "go"] },
+      title: { type: "item", props: { title: "Hello", description: "A test snap." } },
+      go: {
+        type: "button",
+        props: { label: "Go" },
+        on: { press: { action: "submit", params: { target: "http://localhost/" } } },
+      },
     },
-    buttons: [{ label: "Go", action: "post", target: "http://localhost/" }],
   },
 });
 
@@ -155,9 +156,9 @@ describe("registerSnapHandler content type", () => {
       headers: { Accept: MEDIA_TYPE },
     });
 
-    const json = (await res.json()) as { version: string; page: unknown };
+    const json = (await res.json()) as { version: string; spec: unknown };
     expect(json.version).toBe("1.0");
-    expect(json.page).toBeDefined();
+    expect(json.spec).toBeDefined();
   });
 });
 

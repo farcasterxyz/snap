@@ -1,34 +1,41 @@
 import { describe, expect, it } from "vitest";
 import { snapJsonRenderCatalog } from "../src/ui/index.js";
 
-/** Same module graph as the `@farcaster/snap/ui` export; catches missing ui barrel wiring. */
 describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
-  it("exports validate and expected component names", () => {
-    expect(typeof snapJsonRenderCatalog.validate).toBe("function");
+  it("exports expected component names", () => {
     expect([...snapJsonRenderCatalog.componentNames].sort()).toEqual(
       [
-        "ActionButton",
-        "BarChart",
-        "ButtonGroup",
-        "Divider",
-        "Grid",
-        "Group",
-        "Image",
-        "List",
-        "Progress",
-        "Slider",
-        "Spacer",
-        "Stack",
-        "Text",
-        "TextInput",
-        "Toggle",
+        "badge",
+        "button",
+        "icon",
+        "image",
+        "input",
+        "item",
+        "item_group",
+        "progress",
+        "separator",
+        "slider",
+        "stack",
+        "switch",
+        "text",
+        "toggle_group",
       ].sort(),
     );
   });
 
   it("exports expected snap action names", () => {
     expect([...snapJsonRenderCatalog.actionNames].sort()).toEqual(
-      ["snap_link", "snap_mini_app", "snap_post", "snap_client"].sort(),
+      [
+        "compose_cast",
+        "send_token",
+        "open_url",
+        "open_mini_app",
+        "submit",
+        "swap_token",
+        "view_cast",
+        "view_profile",
+        "view_token",
+      ].sort(),
     );
   });
 });

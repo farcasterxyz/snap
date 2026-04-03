@@ -20,7 +20,7 @@ export function SnapImage({
   return (
     <AspectRatio
       ratio={ratio}
-      className="relative w-full overflow-hidden rounded-lg"
+      className="relative w-full flex-1 overflow-hidden rounded-lg"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

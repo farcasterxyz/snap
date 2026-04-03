@@ -1,21 +1,15 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import type { SnapResponse } from "@farcaster/snap";
+import type { SnapHandlerResult } from "@farcaster/snap";
 
 const app = new Hono();
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CEO Spectrum  ·  /ceo-spectrum
-//
-// Cast: "peacetime CEO = abundance mindset / wartime CEO = scarcity mindset / discuss"
-// The snap turns the cast's open question into a live community vote.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Seeded distribution: 847 votes spread across four buckets (0–25, 25–50, 50–75, 75–100)
 const CEO_SEED = [182, 389, 178, 98] as const;
-/** Bar chart colors must use the snap theme palette (not raw hex). */
-const CEO_BUCKET_COLORS = ["blue", "purple", "amber", "red"] as const;
 const CEO_BUCKETS = [
   { label: "Very peaceful", min: 0, max: 25 },
   { label: "Leaning peace", min: 25, max: 50 },
@@ -27,7 +21,7 @@ const ceoVotes: number[] = [];
 
 registerSnapHandler(
   app,
-  async (ctx): Promise<SnapResponse> => {
+  async (ctx): Promise<SnapHandlerResult> => {
     if (ctx.action.type === "post") {
       const rawPos = ctx.action.inputs["position"];
       const position = typeof rawPos === "number" ? Math.round(rawPos) : null;
@@ -35,16 +29,14 @@ registerSnapHandler(
       if (position !== null) {
         ceoVotes.push(position);
 
-        const bars = CEO_BUCKETS.map((b, i) => ({
-          label: b.label,
-          value:
+        const bucketValues = CEO_BUCKETS.map(
+          (b, i) =>
             CEO_SEED[i]! +
             ceoVotes.filter((v) => v >= b.min && v < b.max).length,
-          color: CEO_BUCKET_COLORS[i]!,
-        }));
+        );
 
         const total = 847 + ceoVotes.length;
-        const peacetimeVotes = bars[0]!.value + bars[1]!.value;
+        const peacetimeVotes = bucketValues[0]! + bucketValues[1]!;
         const peacePct = Math.round((peacetimeVotes / total) * 100);
         const posLabel =
           position <= 25
@@ -55,37 +47,90 @@ registerSnapHandler(
             ? "leaning wartime"
             : "full wartime";
 
+        // Convert bar_chart to progress bars
+        const maxBucket = Math.max(...bucketValues);
+
         return {
           version: "1.0",
-          page: {
-            theme: { accent: "purple" },
-            button_layout: "stack",
+          theme: { accent: "purple" },
+          spec: {
+            root: "page",
             elements: {
-              type: "stack",
-              children: [
-                { type: "text", style: "title", content: "Community Results" },
-                { type: "bar_chart", bars },
-                {
-                  type: "text",
-                  style: "body",
-                  content: `${peacePct}% lean peacetime · ${
+              page: {
+                type: "stack",
+                props: {},
+                children: [
+                  "title",
+                  "bar-0",
+                  "bar-1",
+                  "bar-2",
+                  "bar-3",
+                  "summary",
+                  "your-vote",
+                  "btn-vote-again",
+                ],
+              },
+              title: {
+                type: "item",
+                props: { title: "Community Results" },
+              },
+              "bar-0": {
+                type: "progress",
+                props: {
+                  value: bucketValues[0]!,
+                  max: maxBucket,
+                  label: CEO_BUCKETS[0].label,
+                },
+              },
+              "bar-1": {
+                type: "progress",
+                props: {
+                  value: bucketValues[1]!,
+                  max: maxBucket,
+                  label: CEO_BUCKETS[1].label,
+                },
+              },
+              "bar-2": {
+                type: "progress",
+                props: {
+                  value: bucketValues[2]!,
+                  max: maxBucket,
+                  label: CEO_BUCKETS[2].label,
+                },
+              },
+              "bar-3": {
+                type: "progress",
+                props: {
+                  value: bucketValues[3]!,
+                  max: maxBucket,
+                  label: CEO_BUCKETS[3].label,
+                },
+              },
+              summary: {
+                type: "item",
+                props: {
+                  description: `${peacePct}% lean peacetime · ${
                     100 - peacePct
                   }% lean wartime · ${total} votes`,
                 },
-                {
-                  type: "text",
-                  style: "caption",
+              },
+              "your-vote": {
+                type: "badge",
+                props: {
                   content: `You placed yourself: ${posLabel} (${position}/100)`,
                 },
-              ],
-            },
-            buttons: [
-              {
-                label: "Vote again",
-                action: "post",
-                target: `${snapBaseUrl()}/ceo-spectrum`,
               },
-            ],
+              "btn-vote-again": {
+                type: "button",
+                props: { label: "Vote again" },
+                on: {
+                  press: {
+                    action: "submit",
+                    params: { target: `${snapBaseUrl()}/ceo-spectrum` },
+                  },
+                },
+              },
+            },
           },
         };
       }
@@ -93,25 +138,29 @@ registerSnapHandler(
 
     return {
       version: "1.0",
-      page: {
-        theme: { accent: "purple" },
-        button_layout: "stack",
+      theme: { accent: "purple" },
+      spec: {
+        root: "page",
         elements: {
-          type: "stack",
-          children: [
-            {
-              type: "text",
-              style: "title",
-              content: "Where do you fall on the spectrum?",
-            },
-            {
-              type: "text",
-              style: "body",
-              content:
+          page: {
+            type: "stack",
+            props: {},
+            children: ["title", "body", "slider", "btn-vote"],
+          },
+          title: {
+            type: "item",
+            props: { title: "Where do you fall on the spectrum?" },
+          },
+          body: {
+            type: "item",
+            props: {
+              description:
                 "peacetime CEO = abundance mindset · wartime CEO = scarcity mindset",
             },
-            {
-              type: "slider",
+          },
+          slider: {
+            type: "slider",
+            props: {
               name: "position",
               min: 0,
               max: 100,
@@ -120,15 +169,18 @@ registerSnapHandler(
               minLabel: "Peacetime",
               maxLabel: "Wartime",
             },
-          ],
-        },
-        buttons: [
-          {
-            label: "Vote",
-            action: "post",
-            target: `${snapBaseUrl()}/ceo-spectrum`,
           },
-        ],
+          "btn-vote": {
+            type: "button",
+            props: { label: "Vote" },
+            on: {
+              press: {
+                action: "submit",
+                params: { target: `${snapBaseUrl()}/ceo-spectrum` },
+              },
+            },
+          },
+        },
       },
     };
   },
@@ -139,10 +191,6 @@ registerSnapHandler(
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VCX Explorer  ·  /vcx-explorer
-//
-// Cast: "The Anthropic mini IPO is unfolding and you already missed a 15x return
-// The stock is named VCX by Fundrise and just went up 1,500% in 5 days..."
-// The snap turns the data-heavy cast into an interactive fund explorer + return calc.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const NAV_PER_SHARE = 19;
@@ -150,17 +198,17 @@ const CURRENT_PRICE = 312;
 const PREMIUM = CURRENT_PRICE / NAV_PER_SHARE;
 
 const HOLDINGS = [
-  { label: "Anthropic", value: 21, color: "purple" },
-  { label: "Databricks", value: 18, color: "blue" },
-  { label: "OpenAI", value: 10, color: "green" },
-  { label: "Anduril", value: 7, color: "amber" },
-  { label: "SpaceX", value: 5, color: "red" },
-  { label: "Other", value: 39, color: "gray" },
+  { label: "Anthropic", value: 21 },
+  { label: "Databricks", value: 18 },
+  { label: "OpenAI", value: 10 },
+  { label: "Anduril", value: 7 },
+  { label: "SpaceX", value: 5 },
+  { label: "Other", value: 39 },
 ] as const;
 
 registerSnapHandler(
   app,
-  async (ctx): Promise<SnapResponse> => {
+  async (ctx): Promise<SnapHandlerResult> => {
     if (ctx.action.type === "post") {
       const rawAmount = ctx.action.inputs["amount"];
       const amountStr =
@@ -174,44 +222,63 @@ registerSnapHandler(
           currentValue,
         )} today (+${returnPct.toLocaleString()}%)`;
 
+        // Convert bar_chart (holdings) to progress bars
+        const holdingIds = HOLDINGS.map((_, i) => `holding-${i}`);
+
+        const elements: Record<string, unknown> = {
+          page: {
+            type: "stack",
+            props: {},
+            children: [
+              "title",
+              "result-body",
+              ...holdingIds,
+              "caption",
+              "btn-try-again",
+            ],
+          },
+          title: {
+            type: "item",
+            props: { title: "$VCX Return Calculator" },
+          },
+          "result-body": {
+            type: "item",
+            props: { description: body },
+          },
+          caption: {
+            type: "badge",
+            props: {
+              content: `$650M fund at $5.4B market cap — investors paying ${PREMIUM.toFixed(
+                1,
+              )}x NAV for pre-IPO access`,
+            },
+          },
+          "btn-try-again": {
+            type: "button",
+            props: { label: "Try another amount" },
+            on: {
+              press: {
+                action: "submit",
+                params: { target: `${snapBaseUrl()}/vcx-explorer` },
+              },
+            },
+          },
+        };
+
+        for (let i = 0; i < HOLDINGS.length; i++) {
+          const h = HOLDINGS[i]!;
+          elements[`holding-${i}`] = {
+            type: "progress",
+            props: { value: h.value, max: 100, label: `${h.label} (${h.value}%)` },
+          };
+        }
+
         return {
           version: "1.0",
-          page: {
-            theme: { accent: "green" },
-            button_layout: "stack",
-            elements: {
-              type: "stack",
-              children: [
-                {
-                  type: "text",
-                  style: "title",
-                  content: "$VCX Return Calculator",
-                },
-                { type: "text", style: "body", content: body },
-                {
-                  type: "bar_chart",
-                  bars: HOLDINGS.map((h) => ({
-                    label: h.label,
-                    value: h.value,
-                    color: h.color,
-                  })),
-                },
-                {
-                  type: "text",
-                  style: "caption",
-                  content: `$650M fund at $5.4B market cap — investors paying ${PREMIUM.toFixed(
-                    1,
-                  )}x NAV for pre-IPO access`,
-                },
-              ],
-            },
-            buttons: [
-              {
-                label: "Try another amount",
-                action: "post",
-                target: `${snapBaseUrl()}/vcx-explorer`,
-              },
-            ],
+          theme: { accent: "green" },
+          spec: {
+            root: "page",
+            elements: elements as any,
           },
         };
       }
@@ -219,44 +286,70 @@ registerSnapHandler(
 
     return {
       version: "1.0",
-      page: {
-        theme: { accent: "green" },
-        button_layout: "stack",
+      theme: { accent: "green" },
+      spec: {
+        root: "page",
         elements: {
-          type: "stack",
-          children: [
-            { type: "text", style: "title", content: "$VCX Fund Explorer" },
-            {
-              type: "text",
-              style: "body",
-              content: `NAV $${NAV_PER_SHARE} · Market $${CURRENT_PRICE} · ${PREMIUM.toFixed(
+          page: {
+            type: "stack",
+            props: {},
+            children: [
+              "title",
+              "nav-info",
+              "holding-anthropic",
+              "holding-databricks",
+              "holding-openai",
+              "holding-others",
+              "amount-input",
+              "btn-calculate",
+            ],
+          },
+          title: {
+            type: "item",
+            props: { title: "$VCX Fund Explorer" },
+          },
+          "nav-info": {
+            type: "item",
+            props: {
+              description: `NAV $${NAV_PER_SHARE} · Market $${CURRENT_PRICE} · ${PREMIUM.toFixed(
                 1,
               )}x premium`,
             },
-            {
-              type: "list",
-              style: "plain",
-              items: [
-                { content: "Anthropic", trailing: "21%" },
-                { content: "Databricks", trailing: "18%" },
-                { content: "OpenAI", trailing: "10%" },
-                { content: "Anduril, SpaceX & others", trailing: "51%" },
-              ],
-            },
-            {
-              type: "text_input",
-              name: "amount",
-              placeholder: "Investment at NAV ($)",
-            },
-          ],
-        },
-        buttons: [
-          {
-            label: "Calculate Return",
-            action: "post",
-            target: `${snapBaseUrl()}/vcx-explorer`,
           },
-        ],
+          "holding-anthropic": {
+            type: "item",
+            props: { title: "Anthropic", description: "21%" },
+          },
+          "holding-databricks": {
+            type: "item",
+            props: { title: "Databricks", description: "18%" },
+          },
+          "holding-openai": {
+            type: "item",
+            props: { title: "OpenAI", description: "10%" },
+          },
+          "holding-others": {
+            type: "item",
+            props: {
+              title: "Anduril, SpaceX & others",
+              description: "51%",
+            },
+          },
+          "amount-input": {
+            type: "input",
+            props: { name: "amount", placeholder: "Investment at NAV ($)" },
+          },
+          "btn-calculate": {
+            type: "button",
+            props: { label: "Calculate Return" },
+            on: {
+              press: {
+                action: "submit",
+                params: { target: `${snapBaseUrl()}/vcx-explorer` },
+              },
+            },
+          },
+        },
       },
     };
   },

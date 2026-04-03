@@ -1,51 +1,62 @@
 import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
+import type { SnapHandlerResult } from "@farcaster/snap";
 
-const BUTTON_GROUP_NAME = "display" as const;
+const TOGGLE_GROUP_NAME = "display" as const;
 const OPT_ISO = "ISO (UTC)";
 const OPT_LOCAL = "Local";
 
 const app = new Hono();
 
-registerSnapHandler(app, async (ctx) => {
+registerSnapHandler(app, async (ctx): Promise<SnapHandlerResult> => {
   const pref =
     ctx.action.type === "post" &&
-    typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
-      ? (ctx.action.inputs[BUTTON_GROUP_NAME] as string)
+    typeof ctx.action.inputs[TOGGLE_GROUP_NAME] === "string"
+      ? (ctx.action.inputs[TOGGLE_GROUP_NAME] as string)
       : undefined;
   const body = timeBody(pref);
   const base = snapBaseUrlFromRequest(ctx.request);
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "blue" },
-      button_layout: "stack",
+    theme: { accent: "blue" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack" as const,
-        children: [
-          { type: "text", style: "title", content: "Server time" },
-          { type: "text", style: "body", content: body },
-          {
-            type: "button_group",
-            name: BUTTON_GROUP_NAME,
-            options: [OPT_ISO, OPT_LOCAL],
-            style: "row",
-          },
-          {
-            type: "text",
-            style: "caption",
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "time-display", "format-picker", "caption", "btn-refresh"],
+        },
+        title: {
+          type: "item",
+          props: { title: "Server time" },
+        },
+        "time-display": {
+          type: "item",
+          props: { description: body },
+        },
+        "format-picker": {
+          type: "toggle_group",
+          props: { name: TOGGLE_GROUP_NAME, options: [{ value: "iso_utc", label: OPT_ISO }, { value: "local", label: OPT_LOCAL }] },
+        },
+        caption: {
+          type: "badge",
+          props: {
             content:
               "Choose format, then refresh. Time is from this server when it responds.",
           },
-        ],
-      },
-      buttons: [
-        {
-          label: "Refresh",
-          action: "post",
-          target: `${base}/`,
         },
-      ],
+        "btn-refresh": {
+          type: "button",
+          props: { label: "Refresh" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/` },
+            },
+          },
+        },
+      },
     },
   };
 });
@@ -67,7 +78,7 @@ function snapBaseUrlFromRequest(request: Request): string {
 
 function timeBody(pref: string | undefined): string {
   const now = new Date();
-  if (pref === OPT_LOCAL) {
+  if (pref === "local") {
     const s = now.toLocaleString(undefined, {
       dateStyle: "medium",
       timeStyle: "medium",

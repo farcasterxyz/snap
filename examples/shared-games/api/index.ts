@@ -1,23 +1,9 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import {
-  POST_GRID_TAP_KEY,
-  DEFAULT_THEME_ACCENT,
-  type SnapAction,
-  type SnapResponse,
-} from "@farcaster/snap";
+import type { SnapHandlerResult, SnapAction } from "@farcaster/snap";
 
 const SPEC_VERSION = "1.0" as const;
-
-const BUTTONS = {
-  homeOpen: "open_game",
-  wordleSubmit: "wordle_submit",
-  canvasPaint: "canvas_paint",
-  storyPropose: "story_propose",
-  estimateLock: "estimate_lock",
-  predictionVote: "prediction_vote",
-} as const;
 
 type GameView =
   | "home"
@@ -60,43 +46,6 @@ function isSnapPostAction(action: SnapAction): action is SnapPostAction {
   return action.type === "post";
 }
 
-function getGridTap(
-  action: SnapPostAction,
-): { row: number; col: number } | undefined {
-  const raw = action.inputs[POST_GRID_TAP_KEY];
-  if (!raw || typeof raw !== "object") return undefined;
-  const maybe = raw as { row?: unknown; col?: unknown };
-  if (typeof maybe.row !== "number" || typeof maybe.col !== "number")
-    return undefined;
-  return { row: maybe.row, col: maybe.col };
-}
-
-function buildResponse(page: SnapResponse["page"]): SnapResponse {
-  return {
-    version: SPEC_VERSION,
-    page,
-  };
-}
-
-function snapTheme(): SnapResponse["page"]["theme"] {
-  return { accent: DEFAULT_THEME_ACCENT };
-}
-
-function textEl(style: "title" | "body" | "caption", content: string) {
-  return { type: "text" as const, style, content };
-}
-
-function stackElements(children: SnapResponse["page"]["elements"]["children"]) {
-  return { type: "stack" as const, children };
-}
-
-function clampInt(n: number, min: number, max: number): number {
-  const v = Math.floor(n);
-  if (v < min) return min;
-  if (v > max) return max;
-  return v;
-}
-
 function normalizeWhitespace(s: string): string {
   return s.trim().replace(/\s+/g, " ");
 }
@@ -129,7 +78,6 @@ function getWordleTileColors(guess: string): TileColor[] {
   const answerArr = wordle.answer.split("");
   const guessArr = guess.toUpperCase().split("");
 
-  // First pass: greens (correct position)
   for (let i = 0; i < 5; i++) {
     if (guessArr[i] === answerArr[i]) {
       result[i] = "green";
@@ -137,7 +85,6 @@ function getWordleTileColors(guess: string): TileColor[] {
     }
   }
 
-  // Second pass: yellows (present, wrong position)
   for (let i = 0; i < 5; i++) {
     if (result[i] === "green") continue;
     const idx = answerArr.indexOf(guessArr[i]);
@@ -150,57 +97,17 @@ function getWordleTileColors(guess: string): TileColor[] {
   return result;
 }
 
-function tileColorToHex(c: TileColor): string {
-  if (c === "green") return "#22C55E";
-  if (c === "yellow") return "#F59E0B";
-  return "#6B7280";
+function tileColorEmoji(c: TileColor): string {
+  if (c === "green") return "G";
+  if (c === "yellow") return "Y";
+  return "_";
 }
 
-const CANVAS_COLS = 8;
-const CANVAS_ROWS = 8;
-const CANVAS_EMPTY = "#F3F4F6";
-
 const PAINT_COLOR_OPTIONS = ["Accent", "Green", "Orange", "Eraser"] as const;
-const PAINT_COLOR_TO_HEX: Record<
-  (typeof PAINT_COLOR_OPTIONS)[number],
-  string | null
-> = {
-  Accent: "#8B5CF6",
-  Green: "#22C55E",
-  Orange: "#F97316",
-  Eraser: null,
-};
 
 let canvas = makeCanvasState();
 function makeCanvasState() {
-  const pixels = new Map<number, string>();
-  const set = (r: number, c: number, color: string) => {
-    if (r < 0 || r >= CANVAS_ROWS || c < 0 || c >= CANVAS_COLS) return;
-    pixels.set(r * CANVAS_COLS + c, color);
-  };
-
-  // Smiley-ish seed (roughly inspired by the original 16x16)
-  const YELLOW = "#EAB308";
-  const BLUE = "#3B82F6";
-  const RED = "#EF4444";
-
-  [2, 3, 4, 5].forEach((c) => set(1, c, YELLOW));
-  [1, 6].forEach((c) => set(2, c, YELLOW));
-  [1, 6].forEach((c) => set(5, c, YELLOW));
-  [2, 3, 4, 5].forEach((c) => set(6, c, YELLOW));
-  [2, 5].forEach((c) => [2, 3].forEach((r) => set(r, c, BLUE)));
-
-  [3, 4].forEach((c) => set(4, c, RED));
-  set(3, 3, RED);
-  set(4, 4, RED);
-
-  // Scatter a few art pixels
-  set(0, 0, "#8B5CF6");
-  set(0, 7, "#F97316");
-  set(7, 0, "#22C55E");
-  set(7, 7, "#06B6D4");
-
-  return { pixels };
+  return { paintCount: 0 };
 }
 
 function resetCanvas() {
@@ -231,7 +138,6 @@ const STORY_SEED: StoryLine[] = [
 
 let story = makeStoryState();
 function makeStoryState() {
-  // Use small vote counts so the user can see state changes immediately.
   return {
     lines: STORY_SEED,
     proposals: new Map<string, number>([
@@ -277,7 +183,6 @@ function resetEstimate() {
 let prediction = makePredictionState();
 function makePredictionState() {
   const votesByFid = new Map<number, "yes" | "no">();
-  // Seed with the same rough split as the UI.
   const YES = 72;
   const total = 100;
   for (let i = 0; i < total; i++) {
@@ -304,92 +209,63 @@ function getPredictionCounts() {
 // Page builders
 // -----------------------------
 
-function buildHomePage(args: {
-  snapBaseUrl: string;
-  selection?: { row: number; col: number };
-}): SnapResponse {
-  const gridCols = 3;
-  const gridRows = 2;
-
-  const cellToView: Array<Array<GameView | null>> = [
-    ["wordle", "canvas", "story"],
-    ["estimate", "prediction", null],
-  ];
-
-  const cells = [] as Array<{
-    row: number;
-    col: number;
-    color?: string;
-    content?: string;
-  }>;
-  for (let row = 0; row < gridRows; row++) {
-    for (let col = 0; col < gridCols; col++) {
-      const view = cellToView[row]?.[col] ?? null;
-      const label =
-        view === "wordle"
-          ? "Wordle"
-          : view === "canvas"
-          ? "Canvas"
-          : view === "story"
-          ? "Story"
-          : view === "estimate"
-          ? "Estimate"
-          : view === "prediction"
-          ? "Predict"
-          : "";
-      cells.push({
-        row,
-        col,
-        color: label ? DEFAULT_THEME_ACCENT : CANVAS_EMPTY,
-        content: label || undefined,
-      });
-    }
-  }
-
-  const subtitle =
-    args.selection && args.selection.col >= 0
-      ? "Selection made. Tap Open to enter."
-      : "Tap a game tile, then press Open.";
-
-  return buildResponse({
-    theme: snapTheme(),
-    button_layout: "stack",
-    elements: stackElements([
-      textEl("title", "Shared Games"),
-      textEl("body", subtitle),
-      {
-        type: "grid",
-        cols: gridCols,
-        rows: gridRows,
-        interactive: true,
-        cellSize: "square",
-        gap: "small",
-        cells,
+function buildHomePage(args: { snapBaseUrl: string }): SnapHandlerResult {
+  return {
+    version: SPEC_VERSION,
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: [
+            "title",
+            "subtitle",
+            "game-select",
+            "caption",
+            "btn-open",
+          ],
+        },
+        title: {
+          type: "item",
+          props: { title: "Shared Games" },
+        },
+        subtitle: {
+          type: "item",
+          props: { description: "Pick a game to play, then press Open." },
+        },
+        "game-select": {
+          type: "toggle_group",
+          props: {
+            name: "game_choice",
+            options: [{ value: "wordle", label: "Wordle" }, { value: "canvas", label: "Canvas" }, { value: "story", label: "Story" }, { value: "estimate", label: "Estimate" }, { value: "predict", label: "Predict" }],
+          },
+        },
+        caption: {
+          type: "badge",
+          props: { content: "All games update from shared server state." },
+        },
+        "btn-open": {
+          type: "button",
+          props: { label: "Open" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${args.snapBaseUrl}/?view=home` },
+            },
+          },
+        },
       },
-      textEl("caption", "All games update from shared server state."),
-    ]),
-    buttons: [
-      {
-        label: "Open",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=home`,
-      },
-    ],
-  });
+    },
+  };
 }
 
 function buildWordlePage(args: {
   snapBaseUrl: string;
   feedback?: string;
-}): SnapResponse {
+}): SnapHandlerResult {
   const timelineGuesses = wordle.timeline.map((t) => t.guess).slice(0, 6);
-  const filledGuesses = [
-    ...timelineGuesses,
-    ...Array.from(
-      { length: Math.max(0, 6 - timelineGuesses.length) },
-      () => "",
-    ),
-  ].slice(0, 6);
 
   const counts = new Map<string, number>();
   for (const g of timelineGuesses) counts.set(g, (counts.get(g) ?? 0) + 1);
@@ -400,155 +276,203 @@ function buildWordlePage(args: {
     args.feedback ??
     `Most popular guess: ${popular}. Submit a new 5-letter word.`;
 
-  const cells = [] as Array<{
-    row: number;
-    col: number;
-    color?: string;
-    content?: string;
-  }>;
-  for (let row = 0; row < 6; row++) {
-    const guess = filledGuesses[row] || "";
-    if (!guess) {
-      for (let col = 0; col < 5; col++) {
-        cells.push({ row, col });
-      }
-      continue;
-    }
-    const colors = getWordleTileColors(guess);
-    const letters = guess.toUpperCase().split("");
-    for (let col = 0; col < 5; col++) {
-      const tc = colors[col]!;
-      cells.push({
-        row,
-        col,
-        content: letters[col],
-        color: tileColorToHex(tc),
-      });
-    }
+  // Represent wordle guesses as items with color-coded letters
+  const guessIds: string[] = [];
+  for (let i = 0; i < Math.min(timelineGuesses.length, 6); i++) {
+    guessIds.push(`guess-${i}`);
   }
 
-  return buildResponse({
-    theme: snapTheme(),
-    button_layout: "row",
-    elements: stackElements([
-      textEl("title", "Crowd Wordle"),
-      {
-        type: "text_input",
-        name: "guess",
-        placeholder: "e.g. CLASS",
-        maxLength: 5,
-      },
-      {
-        type: "grid",
-        cols: 5,
-        rows: 6,
-        cellSize: "square",
-        gap: "none",
-        cells,
-      },
-      textEl(
+  const elements: Record<string, unknown> = {
+    page: {
+      type: "stack",
+      props: {},
+      children: [
+        "title",
+        "guess-input",
+        ...guessIds,
         "caption",
-        caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
-      ),
-    ]),
-    buttons: [
-      {
-        label: "Submit",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=wordle`,
+        "btn-row",
+      ],
+    },
+    title: {
+      type: "item",
+      props: { title: "Crowd Wordle" },
+    },
+    "guess-input": {
+      type: "input",
+      props: { name: "guess", placeholder: "e.g. CLASS", maxLength: 5 },
+    },
+    caption: {
+      type: "badge",
+      props: {
+        content:
+          caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
       },
-      {
-        label: "Home",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=home`,
+    },
+    "btn-row": {
+      type: "stack",
+      props: { direction: "horizontal" },
+      children: ["btn-submit", "btn-home", "btn-reset"],
+    },
+    "btn-submit": {
+      type: "button",
+      props: { label: "Submit" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=wordle` },
+        },
       },
-      {
-        label: "Reset",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=wordle&reset=1`,
+    },
+    "btn-home": {
+      type: "button",
+      props: { label: "Home", variant: "secondary" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=home` },
+        },
       },
-    ],
-  });
+    },
+    "btn-reset": {
+      type: "button",
+      props: { label: "Reset", variant: "secondary" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=wordle&reset=1` },
+        },
+      },
+    },
+  };
+
+  // Add guess rows as items showing the letter pattern
+  for (let i = 0; i < guessIds.length; i++) {
+    const guess = timelineGuesses[i]!;
+    const colors = getWordleTileColors(guess);
+    const pattern = colors.map((c, j) => `${guess[j]}${tileColorEmoji(c)}`).join(" ");
+    elements[guessIds[i]!] = {
+      type: "item",
+      props: { title: guess, description: pattern },
+    };
+  }
+
+  return {
+    version: SPEC_VERSION,
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
+      elements: elements as any,
+    },
+  };
 }
 
 function buildCanvasPage(args: {
   snapBaseUrl: string;
   feedback?: string;
-}): SnapResponse {
-  const cells = [] as Array<{
-    row: number;
-    col: number;
-    color?: string;
-    content?: string;
-  }>;
-  for (let row = 0; row < CANVAS_ROWS; row++) {
-    for (let col = 0; col < CANVAS_COLS; col++) {
-      const key = row * CANVAS_COLS + col;
-      const color = canvas.pixels.get(key);
-      cells.push({
-        row,
-        col,
-        color: color ?? CANVAS_EMPTY,
-      });
-    }
-  }
+}): SnapHandlerResult {
+  const caption =
+    args.feedback ?? `Canvas has ${canvas.paintCount} paint actions so far.`;
 
-  const caption = args.feedback ?? "Tap a pixel tile, then press Paint.";
-
-  return buildResponse({
-    theme: snapTheme(),
-    button_layout: "row",
-    elements: stackElements([
-      textEl("title", "Pixel Canvas"),
-      {
-        type: "button_group",
-        name: "paint_color",
-        options: [...PAINT_COLOR_OPTIONS],
-        style: "row",
+  return {
+    version: SPEC_VERSION,
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: [
+            "title",
+            "body",
+            "color-picker",
+            "canvas-image",
+            "caption",
+            "btn-row",
+          ],
+        },
+        title: {
+          type: "item",
+          props: { title: "Pixel Canvas" },
+        },
+        body: {
+          type: "item",
+          props: {
+            description:
+              "Pick a color and paint! The canvas is a shared pixel art board.",
+          },
+        },
+        "color-picker": {
+          type: "toggle_group",
+          props: {
+            name: "paint_color",
+            options: [{ value: "accent", label: "Accent" }, { value: "green", label: "Green" }, { value: "orange", label: "Orange" }, { value: "eraser", label: "Eraser" }],
+          },
+        },
+        "canvas-image": {
+          type: "image",
+          props: {
+            url: "https://placehold.co/400x400.png?text=Pixel+Canvas",
+            aspect: "1:1",
+          },
+        },
+        caption: {
+          type: "badge",
+          props: {
+            content:
+              caption.length > 100
+                ? caption.slice(0, 97) + "..."
+                : caption,
+          },
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-paint", "btn-home", "btn-clear"],
+        },
+        "btn-paint": {
+          type: "button",
+          props: { label: "Paint" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${args.snapBaseUrl}/?view=canvas` },
+            },
+          },
+        },
+        "btn-home": {
+          type: "button",
+          props: { label: "Home", variant: "secondary" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${args.snapBaseUrl}/?view=home` },
+            },
+          },
+        },
+        "btn-clear": {
+          type: "button",
+          props: { label: "Clear", variant: "secondary" },
+          on: {
+            press: {
+              action: "submit",
+              params: {
+                target: `${args.snapBaseUrl}/?view=canvas&reset=1`,
+              },
+            },
+          },
+        },
       },
-      {
-        type: "grid",
-        cols: CANVAS_COLS,
-        rows: CANVAS_ROWS,
-        interactive: true,
-        cellSize: "square",
-        gap: "none",
-        cells,
-      },
-      textEl(
-        "caption",
-        caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
-      ),
-    ]),
-    buttons: [
-      {
-        label: "Paint",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=canvas`,
-      },
-      {
-        label: "Home",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=home`,
-      },
-      {
-        label: "Clear",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=canvas&reset=1`,
-      },
-    ],
-  });
+    },
+  };
 }
 
 function buildStoryPage(args: {
   snapBaseUrl: string;
   feedback?: string;
-}): SnapResponse {
+}): SnapHandlerResult {
   const lastLines = story.lines.slice(-4);
-  const listItems = lastLines.map((l) => ({
-    content: l.text.length > 100 ? l.text.slice(0, 97) + "..." : l.text,
-    trailing: l.author.length > 40 ? l.author.slice(0, 37) + "..." : l.author,
-  }));
 
   const top = getTopProposal();
   const captionBase =
@@ -560,51 +484,102 @@ function buildStoryPage(args: {
 
   const caption = args.feedback ?? captionBase;
 
-  return buildResponse({
-    theme: snapTheme(),
-    button_layout: "stack",
-    elements: stackElements([
-      textEl("title", "Crowd Story"),
-      {
-        type: "list",
-        style: "unordered",
-        items: listItems.length ? listItems : [{ content: "No lines yet." }],
-      },
-      {
-        type: "text_input",
+  const lineIds = lastLines.map((_, i) => `line-${i}`);
+
+  const elements: Record<string, unknown> = {
+    page: {
+      type: "stack",
+      props: {},
+      children: [
+        "title",
+        ...lineIds,
+        "proposal-input",
+        "caption",
+        "btn-row",
+      ],
+    },
+    title: {
+      type: "item",
+      props: { title: "Crowd Story" },
+    },
+    "proposal-input": {
+      type: "input",
+      props: {
         name: "proposal_line",
         placeholder: "Propose a short next line",
         maxLength: 80,
       },
-      textEl(
-        "caption",
-        caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
-      ),
-    ]),
-    buttons: [
-      {
-        label: "Propose",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=story`,
+    },
+    caption: {
+      type: "badge",
+      props: {
+        content:
+          caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
       },
-      {
-        label: "Home",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=home`,
+    },
+    "btn-row": {
+      type: "stack",
+      props: {},
+      children: ["btn-propose", "btn-home", "btn-reset"],
+    },
+    "btn-propose": {
+      type: "button",
+      props: { label: "Propose" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=story` },
+        },
       },
-      {
-        label: "Reset",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=story&reset=1`,
+    },
+    "btn-home": {
+      type: "button",
+      props: { label: "Home", variant: "secondary" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=home` },
+        },
       },
-    ],
-  });
+    },
+    "btn-reset": {
+      type: "button",
+      props: { label: "Reset", variant: "secondary" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=story&reset=1` },
+        },
+      },
+    },
+  };
+
+  for (let i = 0; i < lastLines.length; i++) {
+    const l = lastLines[i]!;
+    elements[lineIds[i]!] = {
+      type: "item",
+      props: {
+        title: l.text.length > 100 ? l.text.slice(0, 97) + "..." : l.text,
+        description:
+          l.author.length > 40 ? l.author.slice(0, 37) + "..." : l.author,
+      },
+    };
+  }
+
+  return {
+    version: SPEC_VERSION,
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
+      elements: elements as any,
+    },
+  };
 }
 
 function buildEstimatePage(args: {
   snapBaseUrl: string;
   feedback?: string;
-}): SnapResponse {
+}): SnapHandlerResult {
   const guesses = [...estimate.guessesByFid.entries()].map(([fid, value]) => ({
     fid,
     value,
@@ -614,14 +589,6 @@ function buildEstimatePage(args: {
 
   const sliderDefaultValue = (estimate.min + estimate.max) / 2;
 
-  const listItems =
-    guesses.length > 0
-      ? guesses.slice(0, 4).map((g) => ({
-          content: `Guess ${g.value.toLocaleString()}`,
-          trailing: `diff ${g.diff.toLocaleString()}`,
-        }))
-      : [{ content: "Be the first to estimate." }];
-
   const closest = guesses[0];
   const caption =
     args.feedback ??
@@ -629,17 +596,37 @@ function buildEstimatePage(args: {
       ? `Closest so far: ${closest.value.toLocaleString()} (diff ${closest.diff.toLocaleString()}).`
       : "Slide to your estimate, then lock it in.");
 
-  return buildResponse({
-    theme: snapTheme(),
-    button_layout: "row",
-    elements: stackElements([
-      textEl("title", "Estimate Challenge"),
-      textEl(
+  const guessItemIds = guesses.length > 0
+    ? guesses.slice(0, 4).map((_, i) => `guess-${i}`)
+    : ["guess-empty"];
+
+  const elements: Record<string, unknown> = {
+    page: {
+      type: "stack",
+      props: {},
+      children: [
+        "title",
         "body",
-        "How many daily active users does Farcaster have? Guess a number.",
-      ),
-      {
-        type: "slider",
+        "slider",
+        ...guessItemIds,
+        "caption",
+        "btn-row",
+      ],
+    },
+    title: {
+      type: "item",
+      props: { title: "Estimate Challenge" },
+    },
+    body: {
+      type: "item",
+      props: {
+        description:
+          "How many daily active users does Farcaster have? Guess a number.",
+      },
+    },
+    slider: {
+      type: "slider",
+      props: {
         name: "estimate_guess",
         min: estimate.min,
         max: estimate.max,
@@ -649,102 +636,191 @@ function buildEstimatePage(args: {
         minLabel: "0",
         maxLabel: "500K",
       },
-      {
-        type: "list",
-        style: "plain",
-        items: listItems,
+    },
+    caption: {
+      type: "badge",
+      props: {
+        content:
+          caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
       },
-      textEl(
-        "caption",
-        caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
-      ),
-    ]),
-    buttons: [
-      {
-        label: "Lock in",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=estimate`,
+    },
+    "btn-row": {
+      type: "stack",
+      props: { direction: "horizontal" },
+      children: ["btn-lock", "btn-home", "btn-reset"],
+    },
+    "btn-lock": {
+      type: "button",
+      props: { label: "Lock in" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=estimate` },
+        },
       },
-      {
-        label: "Home",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=home`,
+    },
+    "btn-home": {
+      type: "button",
+      props: { label: "Home", variant: "secondary" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=home` },
+        },
       },
-      {
-        label: "Reset",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=estimate&reset=1`,
+    },
+    "btn-reset": {
+      type: "button",
+      props: { label: "Reset", variant: "secondary" },
+      on: {
+        press: {
+          action: "submit",
+          params: { target: `${args.snapBaseUrl}/?view=estimate&reset=1` },
+        },
       },
-    ],
-  });
+    },
+  };
+
+  if (guesses.length > 0) {
+    for (let i = 0; i < Math.min(guesses.length, 4); i++) {
+      const g = guesses[i]!;
+      elements[`guess-${i}`] = {
+        type: "item",
+        props: {
+          title: `Guess ${g.value.toLocaleString()}`,
+          description: `diff ${g.diff.toLocaleString()}`,
+        },
+      };
+    }
+  } else {
+    elements["guess-empty"] = {
+      type: "item",
+      props: { description: "Be the first to estimate." },
+    };
+  }
+
+  return {
+    version: SPEC_VERSION,
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
+      elements: elements as any,
+    },
+  };
 }
 
 function buildPredictionPage(args: {
   snapBaseUrl: string;
   feedback?: string;
-}): SnapResponse {
+}): SnapHandlerResult {
   const { yes, no } = getPredictionCounts();
   const total = yes + no;
+  const maxVote = Math.max(yes, no, 1);
   const caption =
     args.feedback ??
     (total > 0
       ? `Current split: Yes ${yes} · No ${no}`
       : "Vote to start the tournament.");
 
-  return buildResponse({
-    theme: snapTheme(),
-    button_layout: "row",
-    elements: stackElements([
-      textEl("title", "Prediction Tournament"),
-      textEl("body", "Will GPT-5 launch before July 2026?"),
-      {
-        type: "button_group",
-        name: "prediction_vote",
-        options: ["Yes", "No"],
-        style: "row",
+  return {
+    version: SPEC_VERSION,
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: [
+            "title",
+            "body",
+            "vote-group",
+            "bar-yes",
+            "bar-no",
+            "caption",
+            "btn-row",
+          ],
+        },
+        title: {
+          type: "item",
+          props: { title: "Prediction Tournament" },
+        },
+        body: {
+          type: "item",
+          props: { description: "Will GPT-5 launch before July 2026?" },
+        },
+        "vote-group": {
+          type: "toggle_group",
+          props: { name: "prediction_vote", options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }] },
+        },
+        "bar-yes": {
+          type: "progress",
+          props: { value: yes, max: maxVote, label: `Yes (${yes})` },
+        },
+        "bar-no": {
+          type: "progress",
+          props: { value: no, max: maxVote, label: `No (${no})` },
+        },
+        caption: {
+          type: "badge",
+          props: {
+            content:
+              caption.length > 100
+                ? caption.slice(0, 97) + "..."
+                : caption,
+          },
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-vote", "btn-home", "btn-reset"],
+        },
+        "btn-vote": {
+          type: "button",
+          props: { label: "Vote" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${args.snapBaseUrl}/?view=prediction` },
+            },
+          },
+        },
+        "btn-home": {
+          type: "button",
+          props: { label: "Home", variant: "secondary" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${args.snapBaseUrl}/?view=home` },
+            },
+          },
+        },
+        "btn-reset": {
+          type: "button",
+          props: { label: "Reset", variant: "secondary" },
+          on: {
+            press: {
+              action: "submit",
+              params: {
+                target: `${args.snapBaseUrl}/?view=prediction&reset=1`,
+              },
+            },
+          },
+        },
       },
-      {
-        type: "bar_chart",
-        bars: [
-          { label: "Yes", value: yes },
-          { label: "No", value: no },
-        ],
-        color: "accent",
-      },
-      textEl(
-        "caption",
-        caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
-      ),
-    ]),
-    buttons: [
-      {
-        label: "Vote",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=prediction`,
-      },
-      {
-        label: "Home",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=home`,
-      },
-      {
-        label: "Reset",
-        action: "post",
-        target: `${args.snapBaseUrl}/?view=prediction&reset=1`,
-      },
-    ],
-  });
+    },
+  };
 }
 
-function viewFromHomeSelection(sel: {
-  row: number;
-  col: number;
-}): Exclude<GameView, "home"> {
-  if (sel.row === 0 && sel.col === 0) return "wordle";
-  if (sel.row === 0 && sel.col === 1) return "canvas";
-  if (sel.row === 0 && sel.col === 2) return "story";
-  if (sel.row === 1 && sel.col === 0) return "estimate";
-  if (sel.row === 1 && sel.col === 1) return "prediction";
+function viewFromGameChoice(
+  choice: string,
+): Exclude<GameView, "home"> {
+  const lower = choice.toLowerCase();
+  if (lower === "wordle") return "wordle";
+  if (lower === "canvas") return "canvas";
+  if (lower === "story") return "story";
+  if (lower === "estimate") return "estimate";
+  if (lower === "predict") return "prediction";
   return "wordle";
 }
 
@@ -769,16 +845,16 @@ registerSnapHandler(app, async (ctx) => {
   const snapBaseUrl = snapBaseUrlFromRequest(ctx.request);
 
   if (view === "home") {
-    let selection: { row: number; col: number } | undefined;
+    // Check if user selected a game via toggle_group
     if (isSnapPostAction(ctx.action)) {
-      selection = getGridTap(ctx.action);
+      const gameChoice = ctx.action.inputs["game_choice"];
+      if (typeof gameChoice === "string" && gameChoice) {
+        return pageForView(viewFromGameChoice(gameChoice), {
+          snapBaseUrl,
+        });
+      }
     }
-    if (isSnapPostAction(ctx.action) && selection) {
-      return pageForView(viewFromHomeSelection(selection), {
-        snapBaseUrl,
-      });
-    }
-    return buildHomePage({ snapBaseUrl, selection });
+    return buildHomePage({ snapBaseUrl });
   }
 
   if (view === "wordle") {
@@ -809,30 +885,12 @@ registerSnapHandler(app, async (ctx) => {
     } else if (isSnapPostAction(ctx.action)) {
       const colorRaw = ctx.action.inputs.paint_color;
       const selected = typeof colorRaw === "string" ? colorRaw : undefined;
-      const tap = getGridTap(ctx.action);
 
-      if (!tap) {
-        feedback = "Tap a pixel tile first, then press Paint.";
-      } else if (!selected) {
+      if (!selected) {
         feedback = "Pick a paint color first.";
       } else {
-        const paintHex =
-          PAINT_COLOR_TO_HEX[selected as keyof typeof PAINT_COLOR_TO_HEX];
-        const key = tap.row * CANVAS_COLS + tap.col;
-        if (
-          tap.row < 0 ||
-          tap.row >= CANVAS_ROWS ||
-          tap.col < 0 ||
-          tap.col >= CANVAS_COLS
-        ) {
-          feedback = "That pixel is out of bounds.";
-        } else if (paintHex === undefined) {
-          feedback = "Pick a valid paint color.";
-        } else if (paintHex === null) {
-          canvas.pixels.delete(key);
-        } else {
-          canvas.pixels.set(key, paintHex);
-        }
+        canvas.paintCount++;
+        feedback = `Painted with ${selected}! Total: ${canvas.paintCount} actions.`;
       }
     }
     return buildCanvasPage({ snapBaseUrl, feedback });
@@ -904,7 +962,7 @@ registerSnapHandler(app, async (ctx) => {
   } else if (isSnapPostAction(ctx.action)) {
     const raw = ctx.action.inputs.prediction_vote;
     const vote = typeof raw === "string" ? raw : "";
-    const nextVote = vote === "Yes" ? "yes" : vote === "No" ? "no" : undefined;
+    const nextVote = vote === "yes" ? "yes" : vote === "no" ? "no" : undefined;
     if (!nextVote) {
       feedback = "Pick Yes or No first.";
     } else {
@@ -923,7 +981,7 @@ export const POST = handle(app);
 function pageForView(
   view: Exclude<GameView, "home">,
   args: { snapBaseUrl: string },
-): SnapResponse {
+): SnapHandlerResult {
   switch (view) {
     case "wordle":
       return buildWordlePage({ snapBaseUrl: args.snapBaseUrl });

@@ -11,8 +11,8 @@
   "dependencies": {
     "@hono/node-server": "^1.0.0",
     "hono": "^4.0.0",
-    "@farcaster/snap": "^1.2.0",
-    "@farcaster/snap-hono": "^1.1.0",
+    "@farcaster/snap": "workspace:*",
+    "@farcaster/snap-hono": "workspace:*",
     "zod": "^4.0.0"
   },
   "devDependencies": {

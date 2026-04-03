@@ -4,16 +4,6 @@ import type { SnapHandlerResult } from "@farcaster/snap";
 
 type View = "home" | "text" | "inputs" | "inputs_result" | "dataviz" | "grid";
 
-const PALETTE_HEX = [
-  "#8B5CF6",
-  "#006BFF",
-  "#00AC96",
-  "#28A948",
-  "#FFAE00",
-  "#FC0036",
-  "#F32782",
-];
-
 const app = new Hono();
 
 registerSnapHandler(app, async (ctx) => {
@@ -53,63 +43,81 @@ export default app;
 // ─── Pages ──────────────────────────────────────────────
 
 function homePage(base: string): SnapHandlerResult {
-  const cells: { row: number; col: number; color: string }[] = [];
-  for (let r = 0; r < 2; r++)
-    for (let c = 0; c < 7; c++)
-      cells.push({
-        row: r,
-        col: c,
-        color: PALETTE_HEX[(c + r) % PALETTE_HEX.length]!,
-      });
-
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "purple" },
-      button_layout: "grid",
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Snap Element Showcase",
-            align: "center",
-          },
-          {
-            type: "text",
-            style: "body",
-            content:
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "description", "showcase-image", "btn-row"],
+        },
+        title: {
+          type: "item",
+          props: { title: "Snap Element Showcase" },
+        },
+        description: {
+          type: "item",
+          props: {
+            description:
               "Every snap element type in one place. Tap a category to explore.",
           },
-          {
-            type: "grid",
-            cols: 7,
-            rows: 2,
-            cells,
-            cellSize: "square",
-            gap: "small",
+        },
+        "showcase-image": {
+          type: "image",
+          props: {
+            url: "https://placehold.co/600x200.png?text=Element+Showcase",
+            aspect: "3:1",
           },
-        ],
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-text", "btn-inputs", "btn-dataviz", "btn-grid"],
+        },
+        "btn-text": {
+          type: "button",
+          props: { label: "Text & Layout" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=text` },
+            },
+          },
+        },
+        "btn-inputs": {
+          type: "button",
+          props: { label: "Inputs" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=inputs` },
+            },
+          },
+        },
+        "btn-dataviz": {
+          type: "button",
+          props: { label: "Data Viz" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=dataviz` },
+            },
+          },
+        },
+        "btn-grid": {
+          type: "button",
+          props: { label: "Grid & FX" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=grid` },
+            },
+          },
+        },
       },
-      buttons: [
-        {
-          label: "Text & Layout",
-          action: "post",
-          target: `${base}/?view=text`,
-        },
-        { label: "Inputs", action: "post", target: `${base}/?view=inputs` },
-        {
-          label: "Data Viz",
-          action: "post",
-          target: `${base}/?view=dataviz`,
-        },
-        {
-          label: "Grid & FX",
-          action: "post",
-          target: `${base}/?view=grid`,
-        },
-      ],
     },
   };
 }
@@ -117,49 +125,84 @@ function homePage(base: string): SnapHandlerResult {
 function textPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "blue" },
-      button_layout: "row",
+    theme: { accent: "blue" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Text & Layout",
-            align: "center",
-          },
-          {
-            type: "group",
-            layout: "row",
-            children: [
-              { type: "text", style: "label", content: "42 pts" },
-              { type: "text", style: "label", content: "Rank #1" },
-              { type: "text", style: "label", content: "Level 5" },
-            ],
-          },
-          {
-            type: "text",
-            style: "body",
-            content:
+        page: {
+          type: "stack",
+          props: {},
+          children: [
+            "title",
+            "badges-row",
+            "body",
+            "sep",
+            "caption",
+            "btn-row",
+          ],
+        },
+        title: {
+          type: "item",
+          props: { title: "Text & Layout" },
+        },
+        "badges-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["badge-pts", "badge-rank", "badge-level"],
+        },
+        "badge-pts": {
+          type: "badge",
+          props: { content: "42 pts", variant: "secondary" },
+        },
+        "badge-rank": {
+          type: "badge",
+          props: { content: "Rank #1", variant: "secondary" },
+        },
+        "badge-level": {
+          type: "badge",
+          props: { content: "Level 5", variant: "secondary" },
+        },
+        body: {
+          type: "item",
+          props: {
+            description:
               "Body text: max 160 chars. Great for descriptions. Groups arrange children side by side in a row.",
           },
-          { type: "divider" },
-          {
-            type: "text",
-            style: "caption",
-            content: "Caption (100 chars) — timestamps, attribution, metadata",
-          },
-        ],
-      },
-      buttons: [
-        { label: "← Home", action: "post", target: `${base}/?view=home` },
-        {
-          label: "Inputs →",
-          action: "post",
-          target: `${base}/?view=inputs`,
         },
-      ],
+        sep: { type: "separator", props: {} },
+        caption: {
+          type: "badge",
+          props: {
+            content:
+              "Caption (100 chars) — timestamps, attribution, metadata",
+          },
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-home", "btn-inputs"],
+        },
+        "btn-home": {
+          type: "button",
+          props: { label: "← Home" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=home` },
+            },
+          },
+        },
+        "btn-inputs": {
+          type: "button",
+          props: { label: "Inputs →" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=inputs` },
+            },
+          },
+        },
+      },
     },
   };
 }
@@ -167,26 +210,33 @@ function textPage(base: string): SnapHandlerResult {
 function inputsPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "teal" },
-      button_layout: "row",
+    theme: { accent: "teal" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Input Elements",
-            align: "center",
-          },
-          {
-            type: "button_group",
-            name: "pick",
-            options: ["Alpha", "Beta", "Gamma"],
-            style: "row",
-          },
-          {
-            type: "slider",
+        page: {
+          type: "stack",
+          props: {},
+          children: [
+            "title",
+            "pick-group",
+            "rating-slider",
+            "comment-input",
+            "notify-switch",
+            "btn-row",
+          ],
+        },
+        title: {
+          type: "item",
+          props: { title: "Input Elements" },
+        },
+        "pick-group": {
+          type: "toggle_group",
+          props: { name: "pick", options: [{ value: "alpha", label: "Alpha" }, { value: "beta", label: "Beta" }, { value: "gamma", label: "Gamma" }] },
+        },
+        "rating-slider": {
+          type: "slider",
+          props: {
             name: "rating",
             min: 0,
             max: 10,
@@ -196,34 +246,55 @@ function inputsPage(base: string): SnapHandlerResult {
             minLabel: "0",
             maxLabel: "10",
           },
-          {
-            type: "text_input",
+        },
+        "comment-input": {
+          type: "input",
+          props: {
             name: "comment",
             placeholder: "Type something here...",
             maxLength: 100,
           },
-          {
-            type: "toggle",
-            name: "notify",
-            label: "Enable notifications",
-            value: false,
+        },
+        "notify-switch": {
+          type: "switch",
+          props: { name: "notify", label: "Enable notifications" },
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-text", "btn-submit", "btn-dataviz"],
+        },
+        "btn-text": {
+          type: "button",
+          props: { label: "← Text" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=text` },
+            },
           },
-        ],
+        },
+        "btn-submit": {
+          type: "button",
+          props: { label: "Submit" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=inputs_result` },
+            },
+          },
+        },
+        "btn-dataviz": {
+          type: "button",
+          props: { label: "Data Viz →" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=dataviz` },
+            },
+          },
+        },
       },
-      buttons: [
-        { label: "← Text", action: "post", target: `${base}/?view=text` },
-        {
-          label: "Submit",
-          action: "post",
-          target: `${base}/?view=inputs_result`,
-          style: "primary",
-        },
-        {
-          label: "Data Viz →",
-          action: "post",
-          target: `${base}/?view=dataviz`,
-        },
-      ],
     },
   };
 }
@@ -243,50 +314,81 @@ function inputsResultPage(
 
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "green" },
-      button_layout: "row",
+    theme: { accent: "green" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Submitted!",
-            align: "center",
+        page: {
+          type: "stack",
+          props: {},
+          children: [
+            "title",
+            "result-group",
+            "result-rating",
+            "result-comment",
+            "result-notify",
+            "caption",
+            "btn-row",
+          ],
+        },
+        title: {
+          type: "item",
+          props: { title: "Submitted!" },
+        },
+        "result-group": {
+          type: "item",
+          props: { title: `Group: ${pick}`, description: "toggle_group" },
+        },
+        "result-rating": {
+          type: "item",
+          props: { title: `Rating: ${rating}`, description: "slider" },
+        },
+        "result-comment": {
+          type: "item",
+          props: {
+            title: `Comment: ${clamp(String(comment), 60)}`,
+            description: "text_input",
           },
-          {
-            type: "list",
-            style: "plain",
-            items: [
-              { content: `Group: ${pick}`, trailing: "button_group" },
-              { content: `Rating: ${rating}`, trailing: "slider" },
-              {
-                content: `Comment: ${clamp(String(comment), 60)}`,
-                trailing: "text_input",
-              },
-              { content: `Notifications: ${notify}`, trailing: "toggle" },
-            ],
+        },
+        "result-notify": {
+          type: "item",
+          props: {
+            title: `Notifications: ${notify}`,
+            description: "toggle",
           },
-          {
-            type: "text",
-            style: "caption",
+        },
+        caption: {
+          type: "badge",
+          props: {
             content: `Button index: ${button_index}. All input values sent via POST.`,
           },
-        ],
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-try-again", "btn-dataviz"],
+        },
+        "btn-try-again": {
+          type: "button",
+          props: { label: "← Try Again" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=inputs` },
+            },
+          },
+        },
+        "btn-dataviz": {
+          type: "button",
+          props: { label: "Data Viz →" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=dataviz` },
+            },
+          },
+        },
       },
-      buttons: [
-        {
-          label: "← Try Again",
-          action: "post",
-          target: `${base}/?view=inputs`,
-        },
-        {
-          label: "Data Viz →",
-          action: "post",
-          target: `${base}/?view=dataviz`,
-        },
-      ],
     },
   };
 }
@@ -294,154 +396,152 @@ function inputsResultPage(
 function dataVizPage(base: string): SnapHandlerResult {
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "amber" },
-      button_layout: "row",
+    theme: { accent: "amber" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Data Visualization",
-            align: "center",
+        page: {
+          type: "stack",
+          props: {},
+          children: [
+            "title",
+            "completion-progress",
+            "bar-apples",
+            "bar-bananas",
+            "bar-grapes",
+            "bar-mango",
+            "sep",
+            "leader-1",
+            "leader-2",
+            "leader-3",
+            "btn-row",
+          ],
+        },
+        title: {
+          type: "item",
+          props: { title: "Data Visualization" },
+        },
+        "completion-progress": {
+          type: "progress",
+          props: { value: 72, max: 100, label: "72% Complete" },
+        },
+        "bar-apples": {
+          type: "progress",
+          props: { value: 42, max: 50, label: "Apples" },
+        },
+        "bar-bananas": {
+          type: "progress",
+          props: { value: 28, max: 50, label: "Bananas" },
+        },
+        "bar-grapes": {
+          type: "progress",
+          props: { value: 15, max: 50, label: "Grapes" },
+        },
+        "bar-mango": {
+          type: "progress",
+          props: { value: 35, max: 50, label: "Mango" },
+        },
+        sep: { type: "separator", props: {} },
+        "leader-1": {
+          type: "item",
+          props: { title: "1. @alice", description: "950 pts" },
+        },
+        "leader-2": {
+          type: "item",
+          props: { title: "2. @bob", description: "820 pts" },
+        },
+        "leader-3": {
+          type: "item",
+          props: { title: "3. @charlie", description: "710 pts" },
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-inputs", "btn-grid"],
+        },
+        "btn-inputs": {
+          type: "button",
+          props: { label: "← Inputs" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=inputs` },
+            },
           },
-          {
-            type: "progress",
-            value: 72,
-            max: 100,
-            label: "72% Complete",
-            color: "green",
+        },
+        "btn-grid": {
+          type: "button",
+          props: { label: "Grid & FX →" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=grid` },
+            },
           },
-          {
-            type: "bar_chart",
-            bars: [
-              { label: "Apples", value: 42, color: "red" },
-              { label: "Bananas", value: 28, color: "amber" },
-              { label: "Grapes", value: 15, color: "purple" },
-              { label: "Mango", value: 35, color: "green" },
-            ],
-            max: 50,
-          },
-          {
-            type: "list",
-            style: "ordered",
-            items: [
-              { content: "@alice", trailing: "950 pts" },
-              { content: "@bob", trailing: "820 pts" },
-              { content: "@charlie", trailing: "710 pts" },
-            ],
-          },
-        ],
+        },
       },
-      buttons: [
-        {
-          label: "← Inputs",
-          action: "post",
-          target: `${base}/?view=inputs`,
-        },
-        {
-          label: "Grid & FX →",
-          action: "post",
-          target: `${base}/?view=grid`,
-        },
-      ],
     },
   };
 }
 
 function gridPage(base: string): SnapHandlerResult {
-  const BG = "#1E1E2E";
-  const YL = "#FACC15";
-  const BK = "#0F172A";
-  const RD = "#FC0036";
-
-  const face = new Map<string, string>([
-    ["1,2", YL],
-    ["1,3", YL],
-    ["1,4", YL],
-    ["1,5", YL],
-    ["2,1", YL],
-    ["2,2", YL],
-    ["2,3", YL],
-    ["2,4", YL],
-    ["2,5", YL],
-    ["2,6", YL],
-    ["3,1", YL],
-    ["3,2", BK],
-    ["3,3", YL],
-    ["3,4", YL],
-    ["3,5", BK],
-    ["3,6", YL],
-    ["4,1", YL],
-    ["4,2", YL],
-    ["4,3", YL],
-    ["4,4", YL],
-    ["4,5", YL],
-    ["4,6", YL],
-    ["5,1", YL],
-    ["5,2", RD],
-    ["5,3", YL],
-    ["5,4", YL],
-    ["5,5", RD],
-    ["5,6", YL],
-    ["6,1", YL],
-    ["6,2", YL],
-    ["6,3", RD],
-    ["6,4", RD],
-    ["6,5", YL],
-    ["6,6", YL],
-  ]);
-
-  const cells: { row: number; col: number; color: string }[] = [];
-  for (let r = 0; r < 8; r++)
-    for (let c = 0; c < 8; c++)
-      cells.push({ row: r, col: c, color: face.get(`${r},${c}`) ?? BG });
-
+  // Grid doesn't exist in the new format — show the pixel art as an image instead
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "pink" },
-      button_layout: "row",
-      effects: ["confetti"],
+    theme: { accent: "pink" },
+    effects: ["confetti"],
+    spec: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          {
-            type: "text",
-            style: "title",
-            content: "Grid & Effects",
-            align: "center",
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "body", "pixel-art", "btn-row"],
+        },
+        title: {
+          type: "item",
+          props: { title: "Grid & Effects" },
+        },
+        body: {
+          type: "item",
+          props: {
+            description:
+              "Grids are replaced by images in the new format. This page triggers confetti!",
           },
-          {
-            type: "text",
-            style: "body",
-            content:
-              "Grids render pixel art and game boards. This page triggers confetti!",
+        },
+        "pixel-art": {
+          type: "image",
+          props: {
+            url: "https://placehold.co/400x400.png?text=Pixel+Art+Smiley",
+            aspect: "1:1",
           },
-          {
-            type: "grid",
-            cols: 8,
-            rows: 8,
-            cells,
-            cellSize: "square",
-            gap: "none",
+        },
+        "btn-row": {
+          type: "stack",
+          props: { direction: "horizontal" },
+          children: ["btn-dataviz", "btn-home"],
+        },
+        "btn-dataviz": {
+          type: "button",
+          props: { label: "← Data Viz" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=dataviz` },
+            },
           },
-        ],
+        },
+        "btn-home": {
+          type: "button",
+          props: { label: "Home" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=home` },
+            },
+          },
+        },
       },
-      buttons: [
-        {
-          label: "← Data Viz",
-          action: "post",
-          target: `${base}/?view=dataviz`,
-        },
-        {
-          label: "Home",
-          action: "post",
-          target: `${base}/?view=home`,
-          style: "primary",
-        },
-      ],
     },
   };
 }

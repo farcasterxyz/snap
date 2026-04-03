@@ -1,132 +1,152 @@
 import { defineCatalog } from "@json-render/core";
 import { z } from "zod";
-import { BUTTON_STYLE_VALUES } from "../constants.js";
 import { snapJsonRenderSchema } from "./schema.js";
-import { textProps } from "./text.js";
+import { badgeProps } from "./badge.js";
+import { buttonProps } from "./button.js";
+import { switchProps } from "./switch.js";
+import { toggleGroupProps } from "./toggle-group.js";
+import { iconProps } from "./icon.js";
+import { inputProps } from "./input.js";
+import { itemProps } from "./item.js";
+import { itemGroupProps } from "./item-group.js";
 import { imageProps } from "./image.js";
-import { dividerProps } from "./divider.js";
-import { spacerProps } from "./spacer.js";
 import { progressProps } from "./progress.js";
-import { listProps } from "./list.js";
-import { gridProps } from "./grid.js";
-import { textInputProps } from "./text-input.js";
+import { separatorProps } from "./separator.js";
 import { sliderProps } from "./slider.js";
-import { buttonGroupProps } from "./button-group.js";
-import { toggleProps } from "./toggle.js";
-import { barChartProps } from "./bar-chart.js";
-import { groupProps } from "./group.js";
 import { stackProps } from "./stack.js";
-import { actionButtonProps } from "./button.js";
-
-const snapPostParams = z.object({
-  button_index: z.number().int().nonnegative(),
-  target: z.string(),
-  label: z.string().optional(),
-  style: z.enum(BUTTON_STYLE_VALUES).optional(),
-});
-
-const snapTargetParams = z.object({
-  target: z.string(),
-});
+import { textProps } from "./text.js";
 
 const snapClientParams = z.object({
   client_action: z.record(z.string(), z.unknown()),
 });
 
 /**
- * Basic catalog: one json-render component per snap element type, plus ActionButton for snap buttons.
- * Does not validate cross-field rules (media count, height budget); snap JSON still goes through `@farcaster/snap` validation.
+ * json-render catalog for snap elements.
+ *
+ * Component keys match the snap wire-format `type` strings.
+ * Action names are used directly in `on.press` bindings.
  */
 export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
   components: {
-    Text: {
-      props: textProps,
+    badge: {
+      props: badgeProps,
       description:
-        "Snap text block — style: title | body | caption | label; optional align.",
+        "Inline label — variant: default | secondary | destructive | outline.",
     },
-    Image: {
+    button: {
+      props: buttonProps,
+      description:
+        "Action button — use with on.press to bind snap or client actions.",
+    },
+    switch: {
+      props: switchProps,
+      description:
+        "Boolean toggle; `name` becomes POST inputs key. Optional label.",
+    },
+    toggle_group: {
+      props: toggleGroupProps,
+      description:
+        "Single or multi-select choice group; `name` becomes POST inputs key. mode: single (default) | multiple. Optional label.",
+    },
+    input: {
+      props: inputProps,
+      description:
+        "Text input; `name` becomes POST inputs key. Optional label and placeholder.",
+    },
+    item: {
+      props: itemProps,
+      description:
+        "Content row with title and optional description. Children render in the actions slot (right side) — use badge, button, or text elements.",
+    },
+    item_group: {
+      props: itemGroupProps,
+      description:
+        "Groups item children into a styled list. Optional border around the group and separator lines between items.",
+    },
+    icon: {
+      props: iconProps,
+      description:
+        "Inline icon from the curated set. Optional color (palette) and size (sm | md).",
+    },
+    image: {
       props: imageProps,
       description: "HTTPS image with fixed aspect ratio.",
     },
-    Divider: {
-      props: dividerProps,
-      description: "Horizontal rule between blocks.",
-    },
-    Spacer: {
-      props: spacerProps,
-      description: "Vertical whitespace — size small | medium | large.",
-    },
-    Progress: {
+    progress: {
       props: progressProps,
       description:
         "Horizontal progress bar (value/max, optional label and color).",
     },
-    List: {
-      props: listProps,
+    separator: {
+      props: separatorProps,
       description:
-        "Ordered / unordered / plain list; max 4 items per snap spec.",
+        "Visual divider — orientation: horizontal (default) | vertical.",
     },
-    Grid: {
-      props: gridProps,
-      description:
-        "Rows×cols cell grid; optional interactive empty cells for games.",
-    },
-    TextInput: {
-      props: textInputProps,
-      description: "Single-line input; `name` becomes POST inputs key.",
-    },
-    Slider: {
+    slider: {
       props: sliderProps,
-      description: "Numeric slider; `name` becomes POST inputs key.",
-    },
-    ButtonGroup: {
-      props: buttonGroupProps,
       description:
-        "Exclusive choice; `name` and selected option go into POST inputs.",
+        "Numeric slider; `name` becomes POST inputs key. Optional label.",
     },
-    Toggle: {
-      props: toggleProps,
-      description: "Boolean toggle; `name` becomes POST inputs key.",
-    },
-    BarChart: {
-      props: barChartProps,
-      description:
-        "Vertical bar chart for labeled values — poll results, rankings, breakdowns.",
-    },
-    Group: {
-      props: groupProps,
-      description:
-        "Button row (`layout: row`) or 2-column grid (`layout: grid`); use `children` element ids only (no nested JSON objects).",
-    },
-    Stack: {
+    stack: {
       props: stackProps,
       description:
-        "Vertical stack for snap page body; maps from snap `page.elements` (`type: stack`). Children are element ids in order top to bottom.",
+        "Layout container — direction: vertical (default) | horizontal. Children are element ids in order.",
     },
-    ActionButton: {
-      props: actionButtonProps,
+    text: {
+      props: textProps,
       description:
-        "Snap action button: post (next page), link (browser), mini_app, client — target is HTTPS URL or client_action object.",
+        "Text block — size: lg (heading), md (body, default), sm (caption). Optional weight and align.",
     },
   },
   actions: {
-    snap_post: {
+    submit: {
       description:
-        "POST to snap `target` with signed body (fid, inputs, button_index, timestamp, signature); response is next snap page JSON.",
-      params: snapPostParams,
+        "POST to snap server with signed body (fid, inputs, timestamp, signature); response is next snap page.",
+      params: z.object({ target: z.string() }),
     },
-    snap_link: {
-      description: "Open `target` in the system browser; no server round-trip.",
-      params: snapTargetParams,
+    open_url: {
+      description: "Open target URL in the system browser.",
+      params: z.object({ target: z.string() }),
     },
-    snap_mini_app: {
-      description: "Open `target` as an in-app Farcaster mini app.",
-      params: snapTargetParams,
+    open_mini_app: {
+      description: "Open target URL as a Farcaster mini app.",
+      params: z.object({ target: z.string() }),
     },
-    snap_client: {
-      description:
-        "Trigger a Farcaster client action (view_cast, view_profile, compose_cast, …).",
-      params: snapClientParams,
+    view_cast: {
+      description: "Navigate to a cast by hash.",
+      params: z.object({ hash: z.string() }),
+    },
+    view_profile: {
+      description: "Navigate to a user profile by FID.",
+      params: z.object({ fid: z.number() }),
+    },
+    compose_cast: {
+      description: "Open the cast composer with optional pre-filled content.",
+      params: z.object({
+        text: z.string().optional(),
+        channelKey: z.string().optional(),
+        embeds: z.array(z.string()).optional(),
+      }),
+    },
+    view_token: {
+      description: "View a token in the wallet. Token is a CAIP-19 identifier.",
+      params: z.object({ token: z.string() }),
+    },
+    send_token: {
+      description: "Open send flow for a token. Token is CAIP-19.",
+      params: z.object({
+        token: z.string(),
+        amount: z.string().optional(),
+        recipientFid: z.number().optional(),
+        recipientAddress: z.string().optional(),
+      }),
+    },
+    swap_token: {
+      description: "Open swap flow between two tokens. Tokens are CAIP-19.",
+      params: z.object({
+        sellToken: z.string().optional(),
+        buyToken: z.string().optional(),
+      }),
     },
   },
 });

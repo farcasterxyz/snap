@@ -5,47 +5,63 @@ import { SnapFunction, useMiddleware } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import { withUpstash } from "@farcaster/snap-upstash";
 
-const BUTTON_GROUP_NAME = "topic" as const;
-const OPT_OVERVIEW = "Overview";
-const OPT_HTTP = "HTTP";
-const OPT_LOCAL = "Local";
-const OPT_DEPLOY = "Deploy";
+const TOPIC_NAME = "topic" as const;
+const OPT_OVERVIEW = "overview";
+const OPT_HTTP = "http";
+const OPT_LOCAL = "local";
+const OPT_DEPLOY = "deploy";
 
 const snap: SnapFunction = async (ctx) => {
   const pref =
     ctx.action.type === "post" &&
-    typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
-      ? (ctx.action.inputs[BUTTON_GROUP_NAME] as string)
+    typeof ctx.action.inputs[TOPIC_NAME] === "string"
+      ? (ctx.action.inputs[TOPIC_NAME] as string)
       : undefined;
   const body = onboardingBody(pref);
   const caption = onboardingCaption(pref, ctx.action.type === "post");
   const base = snapBaseUrlFromRequest(ctx.request);
   return {
     version: "1.0",
-    page: {
-      theme: { accent: "purple" },
-      button_layout: "stack",
+    theme: { accent: "purple" },
+    spec: {
+      root: "page",
       elements: {
-        type: "stack" as const,
-        children: [
-          { type: "text", style: "title", content: "Snap starter" },
-          { type: "text", style: "body", content: body },
-          {
-            type: "button_group",
-            name: BUTTON_GROUP_NAME,
-            options: [OPT_OVERVIEW, OPT_HTTP, OPT_LOCAL, OPT_DEPLOY],
-            style: "row",
-          },
-          { type: "text", style: "caption", content: caption },
-        ],
-      },
-      buttons: [
-        {
-          label: "Refresh",
-          action: "post",
-          target: `${base}/`,
+        page: {
+          type: "stack",
+          props: {},
+          children: ["header", "topics", "caption", "refresh"],
         },
-      ],
+        header: {
+          type: "item",
+          props: { title: "Snap starter", description: body },
+        },
+        topics: {
+          type: "toggle_group",
+          props: {
+            name: TOPIC_NAME,
+            options: [
+              { value: OPT_OVERVIEW, label: "Overview" },
+              { value: OPT_HTTP, label: "HTTP" },
+              { value: OPT_LOCAL, label: "Local" },
+              { value: OPT_DEPLOY, label: "Deploy" },
+            ],
+          },
+        },
+        caption: {
+          type: "badge",
+          props: { content: caption },
+        },
+        refresh: {
+          type: "button",
+          props: { label: "Refresh" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/` },
+            },
+          },
+        },
+      },
     },
   };
 };
@@ -94,41 +110,25 @@ function snapBaseUrlFromRequest(request: Request): string {
 function onboardingBody(pref: string | undefined): string {
   switch (pref) {
     case OPT_HTTP:
-      return clampBody(
-        "GET with Accept: application/vnd.farcaster.snap+json. POSTs send a JFS-shaped body; return the next page from your handler.",
-      );
+      return clamp("GET with Accept: application/vnd.farcaster.snap+json. POSTs send a JFS-shaped body; return the next page from your handler.", 160);
     case OPT_LOCAL:
-      return clampBody(
-        "Run pnpm dev. Point the Farcaster snap emulator at this URL. SKIP_JFS_VERIFICATION skips signature checks when NODE_ENV is not production.",
-      );
+      return clamp("Run pnpm dev. Point the Farcaster snap emulator at this URL. SKIP_JFS_VERIFICATION skips signature checks when NODE_ENV is not production.", 160);
     case OPT_DEPLOY:
-      return clampBody(
-        "Set SNAP_PUBLIC_BASE_URL to your public HTTPS origin (no trailing slash) so post targets match what clients call. Ship as Hono on Vercel.",
-      );
+      return clamp("Set SNAP_PUBLIC_BASE_URL to your public HTTPS origin (no trailing slash) so post targets match what clients call. Ship as Hono on Vercel.", 160);
     case OPT_OVERVIEW:
-      return clampBody(
-        "Snaps are feed cards driven by your JSON. registerSnapHandler validates requests and runs your callback to build each SnapResponse.",
-      );
+      return clamp("Snaps are feed cards driven by your JSON. registerSnapHandler validates requests and runs your callback to build each SnapResponse.", 160);
     default:
-      return clampBody(
-        "Pick a topic, tap Refresh. Replace this file with your own pages, buttons, and POST handling.",
-      );
+      return clamp("Pick a topic, tap Refresh. Replace this file with your own pages, buttons, and POST handling.", 160);
   }
 }
 
 function onboardingCaption(pref: string | undefined, isPost: boolean): string {
   if (isPost && pref === undefined) {
-    return clampCaption("Choose a topic, then Refresh.");
+    return clamp("Choose a topic, then Refresh.", 30);
   }
-  return clampCaption(
-    "Clone template → edit src/index.ts → validate with the emulator.",
-  );
+  return clamp("Clone → edit → validate.", 30);
 }
 
-function clampBody(s: string): string {
-  return s.length <= 160 ? s : s.slice(0, 157) + "...";
-}
-
-function clampCaption(s: string): string {
-  return s.length <= 100 ? s : s.slice(0, 97) + "...";
+function clamp(s: string, max: number): string {
+  return s.length <= max ? s : s.slice(0, max - 3) + "...";
 }

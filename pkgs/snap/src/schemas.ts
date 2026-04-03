@@ -1,18 +1,16 @@
 import { z } from "zod";
+import type { Spec } from "@json-render/core";
 import {
-  BUTTON_LAYOUT_VALUES,
-  DEFAULT_BUTTON_LAYOUT,
   EFFECT_VALUES,
-  ELEMENT_TYPE,
-  INTERACTIVE_ELEMENT_TYPES,
-  LIMITS,
-  MEDIA_ELEMENT_TYPES,
   SPEC_VERSION,
-  TEXT_STYLE,
 } from "./constants";
-import { DEFAULT_THEME_ACCENT, PALETTE_COLOR_VALUES } from "./colors";
+import {
+  DEFAULT_THEME_ACCENT,
+  PALETTE_COLOR_VALUES,
+} from "./colors";
 import { type SnapDataStore } from "./dataStore";
-import { elementsSchema, buttonSchema } from "./elements";
+
+// ─── Theme ─────────────────────────────────────────────
 
 const themeAccentSchema = z.enum(PALETTE_COLOR_VALUES, {
   message: `accent must be a palette color: ${PALETTE_COLOR_VALUES.join(", ")}`,
@@ -24,93 +22,36 @@ const themeSchema = z
   })
   .strict();
 
+// ─── Snap response ─────────────────────────────────────
+// `spec` is a json-render Spec — validated by the catalog at runtime,
+// typed here via the json-render Spec type.
+
 export const snapResponseSchema = z
   .object({
     version: z.literal(SPEC_VERSION),
-    page: z
-      .object({
-        theme: themeSchema.optional().default({ accent: DEFAULT_THEME_ACCENT }),
-        button_layout: z
-          .enum(BUTTON_LAYOUT_VALUES)
-          .default(DEFAULT_BUTTON_LAYOUT),
-        effects: z.array(z.enum(EFFECT_VALUES)).optional(),
-        elements: elementsSchema,
-        buttons: z
-          .array(buttonSchema)
-          .max(LIMITS.maxButtonsPerPage, {
-            message: `cannot have more than ${LIMITS.maxButtonsPerPage} buttons`,
-          })
-          .optional(),
-      })
-      .strict()
-      .superRefine((page, ctx) => {
-        const mediaCount = page.elements.children.filter((el) => {
-          return MEDIA_ELEMENT_TYPES.includes(el.type);
-        }).length;
-        if (mediaCount > 1) {
-          ctx.addIssue({
-            code: "custom",
-            message: `cannot have more than 1 media element (image or grid)`,
-            path: ["elements", "children"],
-          });
-        }
-      }),
+    theme: themeSchema.optional().default({ accent: DEFAULT_THEME_ACCENT }),
+    effects: z.array(z.enum(EFFECT_VALUES)).optional(),
+    spec: z.custom<Spec>(
+      (val) =>
+        val != null &&
+        typeof val === "object" &&
+        "root" in val &&
+        "elements" in val,
+      { message: "spec must be a json-render Spec with root and elements" },
+    ),
   })
   .strict();
 
-// canonical snap response type
 export type SnapResponse = z.infer<typeof snapResponseSchema>;
-// what snap handlers may return (keeps optional fields optional)
 export type SnapHandlerResult = z.input<typeof snapResponseSchema>;
 
-// extra constraints for the first page to make it look nicer
-export const firstPageResponseSchema = snapResponseSchema.superRefine(
-  (response, ctx) => {
-    const elements = response.page.elements.children;
-
-    const hasTextTitleOrBody = elements.some(
-      (el) =>
-        el.type === ELEMENT_TYPE.text &&
-        (el.style === TEXT_STYLE.title || el.style === TEXT_STYLE.body),
-    );
-    if (!hasTextTitleOrBody) {
-      ctx.addIssue({
-        code: "custom",
-        message:
-          'first page must have at least one text element with style "title" or "body"',
-        path: ["page", "elements", "children"],
-      });
-    }
-
-    const hasInteractive = elements.some((el) =>
-      INTERACTIVE_ELEMENT_TYPES.includes(el.type),
-    );
-    const hasMedia = elements.some((el) =>
-      MEDIA_ELEMENT_TYPES.includes(el.type),
-    );
-    if (!hasInteractive && !hasMedia) {
-      ctx.addIssue({
-        code: "custom",
-        message:
-          "first page must have at least one interactive element (button_group, slider, text_input, toggle) or media element (image, grid)",
-        path: ["page", "elements", "children"],
-      });
-    }
-  },
-);
-
-export type FirstPageResponse = z.infer<typeof firstPageResponseSchema>;
+// ─── POST payload ──────────────────────────────────────
 
 const postInputValueSchema = z.union([
   z.string(),
   z.number(),
   z.boolean(),
-  z
-    .object({
-      row: z.number().int().nonnegative(),
-      col: z.number().int().nonnegative(),
-    })
-    .strict(),
+  z.array(z.string()),
 ]);
 
 export const payloadSchema = z
@@ -118,7 +59,6 @@ export const payloadSchema = z
     fid: z.number().int().nonnegative(),
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     button_index: z.number().int().nonnegative(),
-    /** Unix time in seconds (wire format matches spec examples). */
     timestamp: z.number().int(),
   })
   .strict();

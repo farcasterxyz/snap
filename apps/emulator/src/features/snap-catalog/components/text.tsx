@@ -2,48 +2,39 @@
 
 import { Text, Title } from "@neynar/ui/typography";
 
+const SIZE_MAP = {
+  lg: { component: "title", textSize: undefined, order: 3 },
+  md: { component: "text", textSize: "base" as const, order: undefined },
+  sm: { component: "text", textSize: "sm" as const, order: undefined },
+} as const;
+
+const WEIGHT_MAP = {
+  bold: "bold",
+  medium: "medium",
+  normal: "normal",
+} as const;
+
 export function SnapText({
   element: { props },
 }: {
   element: { props: Record<string, unknown> };
 }) {
-  const style = String(props.style ?? "body");
   const content = String(props.content ?? "");
-  const align =
-    (props.align as "left" | "center" | "right" | undefined) ?? "left";
-  const alignClass =
-    align === "center"
-      ? "text-center"
-      : align === "right"
-      ? "text-right"
-      : "text-left";
+  const size = String(props.size ?? "md") as "lg" | "md" | "sm";
+  const weight = props.weight ? String(props.weight) as "bold" | "medium" | "normal" : undefined;
+  const align = (props.align as "left" | "center" | "right") ?? undefined;
+  const config = SIZE_MAP[size] ?? SIZE_MAP.md;
 
-  if (style === "title") {
+  if (config.component === "title") {
     return (
-      <Title order={3} className={alignClass}>
+      <Title order={config.order} weight={weight ?? "bold"} className={align === "center" ? "text-center" : align === "right" ? "text-right" : ""}>
         {content}
       </Title>
     );
   }
 
-  if (style === "caption") {
-    return (
-      <Text size="sm" color="muted" align={align}>
-        {content}
-      </Text>
-    );
-  }
-
-  if (style === "label") {
-    return (
-      <Text weight="semibold" size="sm" align={align}>
-        {content}
-      </Text>
-    );
-  }
-
   return (
-    <Text size="base" align={align}>
+    <Text size={config.textSize} weight={weight} align={align}>
       {content}
     </Text>
   );

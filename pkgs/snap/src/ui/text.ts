@@ -1,10 +1,15 @@
 import { z } from "zod";
-import { TEXT_ALIGN_VALUES, TEXT_STYLE_VALUES } from "../constants.js";
+
+export const TEXT_SIZES = ["lg", "md", "sm"] as const;
+export const TEXT_WEIGHTS = ["bold", "medium", "normal"] as const;
+export const TEXT_ALIGNS = ["left", "center", "right"] as const;
+export const TEXT_MAX_CONTENT_CHARS = 320;
 
 export const textProps = z.object({
-  style: z.enum(TEXT_STYLE_VALUES),
-  content: z.string(),
-  align: z.enum(TEXT_ALIGN_VALUES).optional(),
+  content: z.string().min(1).max(TEXT_MAX_CONTENT_CHARS),
+  size: z.enum(TEXT_SIZES).optional(),
+  weight: z.enum(TEXT_WEIGHTS).optional(),
+  align: z.enum(TEXT_ALIGNS).optional(),
 });
 
 export type TextProps = z.infer<typeof textProps>;
