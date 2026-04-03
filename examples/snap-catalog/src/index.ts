@@ -544,11 +544,11 @@ function formPage(base: string): SnapHandlerResult {
         sep3: { type: "separator", props: {} },
         interest: {
           type: "toggle_group",
-          props: { name: "interest", label: "Primary Interest", options: ["Protocol", "Apps", "Culture", "Art"] },
+          props: { name: "interest", label: "Primary Interest", options: ["Protocol", "Apps", "Culture"] },
         },
         skills: {
           type: "toggle_group",
-          props: { name: "skills", label: "Skills (select multiple)", multiple: true, options: ["Solidity", "TypeScript", "Design", "Product"] },
+          props: { name: "skills", label: "Skills (select multiple)", multiple: true, orientation: "vertical", options: ["Solidity", "TypeScript", "Design", "Product"] },
         },
         sep4: { type: "separator", props: {} },
         submit: {
