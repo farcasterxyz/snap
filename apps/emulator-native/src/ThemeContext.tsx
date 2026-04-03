@@ -2,22 +2,22 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from "re
 import { useColorScheme } from "react-native";
 
 const LIGHT = {
-  bg: "#ffffff",
-  surface: "#f5f5f5",
+  bg: "#dfe3e8",
+  surface: "#ffffff",
   text: "#111111",
   textSecondary: "#6b7280",
-  border: "#e5e7eb",
-  inputBg: "#f9fafb",
+  border: "#d1d5db",
+  inputBg: "#ffffff",
   muted: "#f9fafb",
 };
 
 const DARK = {
-  bg: "#0a0a0a",
-  surface: "#1a1a1a",
+  bg: "#1a1d24",
+  surface: "#23262f",
   text: "#fafafa",
   textSecondary: "#a1a1aa",
-  border: "#27272a",
-  inputBg: "#18181b",
+  border: "#374151",
+  inputBg: "#1a1d24",
   muted: "#27272a",
 };
 
