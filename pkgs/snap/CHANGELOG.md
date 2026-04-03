@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 2.0.0
+
+### Major Changes
+
+- [`825e265`](https://github.com/farcasterxyz/snap/commit/825e26597a955835579b64393cc90a6266f69784) Thanks [@lyoshenka](https://github.com/lyoshenka)! - switch to json-render syntax
+
 ## 1.5.2
 
 ### Patch Changes
