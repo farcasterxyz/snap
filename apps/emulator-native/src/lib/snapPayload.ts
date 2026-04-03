@@ -3,6 +3,8 @@
  * Duplicated here so the native emulator stays self-contained.
  */
 
+import type { Spec } from "@json-render/core";
+
 export type JsonValue =
   | string
   | number
@@ -15,11 +17,7 @@ export type SnapPageResponse = {
   version: string;
   theme?: { accent?: string };
   effects?: string[];
-  spec: {
-    root: string;
-    elements: Record<string, Record<string, JsonValue>>;
-    state?: Record<string, JsonValue>;
-  };
+  spec: Spec;
 };
 
 /** Validate that the response has the expected spec shape. */
