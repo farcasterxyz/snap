@@ -1,19 +1,20 @@
 # Building a Snap
 
-There are several ways to create a Farcaster Snap, from AI-assisted generation to manual implementation.
+There are several ways to create a Farcaster Snap, from AI-assisted generation to manual
+implementation.
 
 ## Claude Code Skill
 
-If you use [Claude Code](https://claude.ai/code), you can install a custom slash command that generates snaps from natural language:
+If you use [Claude Code](https://claude.ai/code), you can install a custom slash command
+that generates snaps from natural language:
 
 ```bash
-# Install the skill into your project
-mkdir -p .claude/commands
-curl -sS -o .claude/commands/create-farcaster-snap.md \
-  https://raw.githubusercontent.com/farcasterxyz/snap/main/agent-skills/create-farcaster-snap/SKILL.md
+mkdir -p $HOME/.claude/skills/create-farcaster-snap
+curl -sS -o $HOME/.claude/skills/create-farcaster-snap/SKILL.md https://snap.farcaster.xyz/SKILL.md
 ```
 
-You can also [view the skill source on GitHub](https://github.com/farcasterxyz/snap/blob/main/agent-skills/create-farcaster-snap/SKILL.md).
+You can also
+[view the skill source on GitHub](https://github.com/farcasterxyz/snap/blob/main/agent-skills/create-farcaster-snap/SKILL.md).
 
 Then run it:
 
@@ -30,11 +31,14 @@ The skill will:
 
 This is the fastest way to go from idea to working snap.
 
-> **Note:** The skill works best when run from within the [snap](https://github.com/farcasterxyz/snap) repo, since it references the spec docs and template locally.
+> **Note:** The skill works best when run from within the
+> [snap](https://github.com/farcasterxyz/snap) repo, since it references the spec docs
+> and template locally.
 
 ## Template (Hono)
 
-The `snap-template/` directory is a starter project using [Hono](https://hono.dev) with the `@farcaster/snap-hono` package:
+The `snap-template/` directory is a starter project using [Hono](https://hono.dev) with
+the `@farcaster/snap-hono` package:
 
 ```bash
 # From the repo root
@@ -88,7 +92,9 @@ SKIP_JFS_VERIFICATION=1 pnpm dev  # http://localhost:3003
 
 ## Testing
 
-Use the [Emulator](https://farcaster.xyz/~/developers/snaps) to test your snap. Enter your snap's URL and interact with it -- the emulator signs messages automatically, so no signature bypass is needed.
+Use the [Emulator](https://farcaster.xyz/~/developers/snaps) to test your snap. Enter
+your snap's URL and interact with it -- the emulator signs messages automatically, so no
+signature bypass is needed.
 
 ## Deploying
 
@@ -97,7 +103,8 @@ Snaps can be deployed anywhere that serves HTTP. Common options:
 - **Vercel** -- works with the Hono template out of the box
 - **Any Node.js host** -- the Hono template includes a standalone server
 
-Set `SNAP_PUBLIC_BASE_URL` to your deployment origin (no trailing slash) so button target URLs resolve correctly.
+Set `SNAP_PUBLIC_BASE_URL` to your deployment origin (no trailing slash) so button
+target URLs resolve correctly.
 
 After deploying, verify your snap works:
 

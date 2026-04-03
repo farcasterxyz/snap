@@ -17,10 +17,8 @@ The full docs are available in machine-readable form:
 The fastest path is the Claude Code skill:
 
 ```bash
-# Install into your project
-mkdir -p .claude/commands
-curl -sS -o .claude/commands/create-farcaster-snap.md \
-  https://raw.githubusercontent.com/farcasterxyz/snap/main/agent-skills/create-farcaster-snap/SKILL.md
+mkdir -p $HOME/.claude/skills/create-farcaster-snap
+curl -sS -o $HOME/.claude/skills/create-farcaster-snap/SKILL.md https://snap.farcaster.xyz/SKILL.md
 ```
 
 Then run:
