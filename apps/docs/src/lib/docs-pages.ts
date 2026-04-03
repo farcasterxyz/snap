@@ -49,6 +49,7 @@ export const DOC_SECTIONS: DocSection[] = [
       { pathname: "/theme", title: "Theme & Styling" },
       { pathname: "/colors", title: "Color Palette" },
       { pathname: "/auth", title: "Authentication" },
+      { pathname: "/data-store", title: "Data Store" },
     ],
   },
   {

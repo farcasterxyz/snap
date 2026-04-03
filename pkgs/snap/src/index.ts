@@ -46,3 +46,4 @@ export {
   validateFirstPageResponse,
   type ValidationResult,
 } from "./validator";
+export { type Middleware, useMiddleware } from "./middleware";

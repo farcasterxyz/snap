@@ -1,7 +1,7 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
-import { SnapContext, SnapResponse } from "@farcaster/snap";
+import { SnapFunction } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import { withUpstash } from "@farcaster/snap-upstash";
 
@@ -11,7 +11,7 @@ const OPT_HTTP = "HTTP";
 const OPT_LOCAL = "Local";
 const OPT_DEPLOY = "Deploy";
 
-async function snap(ctx: SnapContext): Promise<SnapResponse> {
+const snap: SnapFunction = async (ctx) => {
   const pref =
     ctx.action.type === "post" &&
     typeof ctx.action.inputs[BUTTON_GROUP_NAME] === "string"
@@ -48,14 +48,20 @@ async function snap(ctx: SnapContext): Promise<SnapResponse> {
       ],
     },
   };
-}
+};
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const fontsDir = join(__dir, "../assets/fonts");
 
 const app = new Hono();
 
-registerSnapHandler(app, withUpstash(snap), {
+const plugins: ((fn: SnapFunction) => SnapFunction)[] = [
+  withUpstash, // optional. use this if you want persistent data storage.
+];
+
+const snapWithPlugins = plugins.reduce((acc, plugin) => plugin(acc), snap);
+
+registerSnapHandler(app, snapWithPlugins, {
   og: {
     fonts: [
       { path: join(fontsDir, "inter-latin-400-normal.woff"), weight: 400 },
