@@ -8,6 +8,7 @@ import {
   DEFAULT_THEME_ACCENT,
   PALETTE_COLOR_VALUES,
 } from "./colors";
+import { type SnapDataStore } from "./dataStore";
 
 // ─── Theme ─────────────────────────────────────────────
 
@@ -87,42 +88,6 @@ export const snapActionSchema = z.discriminatedUnion("type", [
 ]);
 
 export type SnapAction = z.infer<typeof snapActionSchema>;
-
-export type DataStoreValue =
-  | string
-  | number
-  | boolean
-  | null
-  | DataStoreValue[]
-  | { [key: string]: DataStoreValue };
-
-export type SnapDataStoreOperations = {
-  get(key: string): Promise<DataStoreValue | null>;
-  set(key: string, value: DataStoreValue): Promise<void>;
-};
-
-export type SnapDataStore = SnapDataStoreOperations & {
-  withLock<T>(fn: (store: SnapDataStoreOperations) => Promise<T>): Promise<T>;
-};
-
-export function createDefaultDataStore(): SnapDataStore {
-  const err = new Error(
-    "Data store is not configured. Use withUpstash() from @farcaster/snap-upstash or provide a data store implementation.",
-  );
-  return {
-    get(_key: string): Promise<never> {
-      return Promise.reject(err);
-    },
-    set(_key: string, _value: DataStoreValue): Promise<never> {
-      return Promise.reject(err);
-    },
-    withLock<T>(
-      _fn: (store: SnapDataStoreOperations) => Promise<T>,
-    ): Promise<never> {
-      return Promise.reject(err);
-    },
-  };
-}
 
 export type SnapContext = {
   action: SnapAction;

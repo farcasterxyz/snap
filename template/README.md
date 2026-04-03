@@ -17,7 +17,7 @@ Then set dependencies in `package.json` to published versions of `@farcaster/sna
 
 - Hono app in **`src/index.ts`** with `@farcaster/snap-hono` (`registerSnapHandler`) for GET/POST handling and validation
 - Local server: **`src/server.ts`** (default port **3003**)
-- `registerSnapHandler` verifies JFS signatures. For local developopment, use SKIP_JFS_VERIFICATION=true. 
+- `registerSnapHandler` verifies JFS signatures. For local developopment, use SKIP_JFS_VERIFICATION=true.
 
 ## What this starter shows
 
@@ -41,4 +41,4 @@ The server runs on `http://localhost:3003` by default.
 
 ## Deploying
 
-The fastest way to deploy is using https://host.neynar.app. Tell your agent to read [SKILL.md](https://github.com/neynarxyz/neynar-deploy/blob/main/SKILL.md) and then deploy with `framework=hono`.
+The fastest way to deploy is using https://host.neynar.app. Tell your agent to read [SKILL.md](https://snap.farcaster.xyz/SKILL.md) and then deploy with `framework=hono`.

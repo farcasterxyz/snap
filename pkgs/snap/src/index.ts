@@ -18,18 +18,22 @@ export {
   ACTION_TYPE_POST,
   snapResponseSchema,
   payloadSchema,
-  createDefaultDataStore,
   type SnapAction,
   type SnapContext,
   type SnapResponse,
   type SnapHandlerResult,
   type SnapFunction,
   type SnapPayload,
-  type DataStoreValue,
-  type SnapDataStore,
-  type SnapDataStoreOperations,
 } from "./schemas";
 export {
   validateSnapResponse,
   type ValidationResult,
 } from "./validator";
+export {
+  type DataStoreValue,
+  type SnapDataStore,
+  type SnapDataStoreOperations,
+  createDefaultDataStore,
+  createInMemoryDataStore,
+} from "./dataStore";
+export { type Middleware, useMiddleware } from "./middleware";

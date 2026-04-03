@@ -1,7 +1,7 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
-import { SnapContext, SnapResponse } from "@farcaster/snap";
+import { SnapFunction, useMiddleware } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import { withUpstash } from "@farcaster/snap-upstash";
 
@@ -11,7 +11,7 @@ const OPT_HTTP = "http";
 const OPT_LOCAL = "local";
 const OPT_DEPLOY = "deploy";
 
-async function snap(ctx: SnapContext): Promise<SnapResponse> {
+const snap: SnapFunction = async (ctx) => {
   const pref =
     ctx.action.type === "post" &&
     typeof ctx.action.inputs[TOPIC_NAME] === "string"
@@ -64,14 +64,18 @@ async function snap(ctx: SnapContext): Promise<SnapResponse> {
       },
     },
   };
-}
+};
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const fontsDir = join(__dir, "../assets/fonts");
 
 const app = new Hono();
 
-registerSnapHandler(app, withUpstash(snap), {
+const snapWithMiddleware = useMiddleware(snap, [
+  withUpstash, // optional. use this if you want persistent data storage.
+]);
+
+registerSnapHandler(app, snapWithMiddleware, {
   og: {
     fonts: [
       { path: join(fontsDir, "inter-latin-400-normal.woff"), weight: 400 },

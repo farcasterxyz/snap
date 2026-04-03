@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.5.2
+
+### Patch Changes
+
+- [`7bc09f8`](https://github.com/farcasterxyz/snap/commit/7bc09f884ce6d8c1eb3c7e7163a184ef4618f363) Thanks [@lyoshenka](https://github.com/lyoshenka)! - add middleware
+
 ## 1.5.1
 
 ### Patch Changes
