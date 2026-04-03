@@ -1,5 +1,5 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 const VGAP: Record<string, number> = {
@@ -39,6 +39,10 @@ export function SnapStack({
         : isHorizontal ? HGAP.md! : VGAP.md!;
   const justify = props.justify ? JUSTIFY[String(props.justify)] : undefined;
 
+  // When horizontal with justify:between, children stay content-width.
+  // Otherwise, wrap children in flex:1 views so they share space evenly.
+  const shouldStretchChildren = isHorizontal && justify !== "space-between";
+
   return (
     <View
       style={[
@@ -48,7 +52,11 @@ export function SnapStack({
         justify ? { justifyContent: justify } : undefined,
       ]}
     >
-      {children}
+      {isHorizontal && shouldStretchChildren
+        ? Children.map(children, (child) => (
+            <View style={styles.hChild}>{child}</View>
+          ))
+        : children}
     </View>
   );
 }
@@ -61,5 +69,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
+  },
+  hChild: {
+    flex: 1,
+    minWidth: 0,
   },
 });
