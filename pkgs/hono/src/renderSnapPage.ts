@@ -178,9 +178,16 @@ function renderElement(
     }
     case "item_group": {
       const childIds = el.children ?? [];
-      let html = `<div style="display:flex;flex-direction:column;gap:2px">`;
-      for (const childKey of childIds) {
-        html += renderElement(childKey, spec, accent);
+      const border = Boolean(p.border);
+      const separator = Boolean(p.separator);
+      const outerStyle = border ? "border:1px solid #E5E7EB;border-radius:8px;overflow:hidden" : "";
+      let html = `<div style="display:flex;flex-direction:column;${outerStyle}">`;
+      for (let i = 0; i < childIds.length; i++) {
+        if (separator && i > 0) {
+          html += `<hr style="border:none;border-top:1px solid #E5E7EB;margin:0 12px">`;
+        }
+        const pad = border ? "padding:8px 12px;" : separator ? "padding:8px 0;" : "";
+        html += `<div style="${pad}">${renderElement(childIds[i]!, spec, accent)}</div>`;
       }
       html += `</div>`;
       return html;

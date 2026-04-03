@@ -61,7 +61,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     item_group: {
       props: itemGroupProps,
       description:
-        "Groups item children into a styled list with consistent spacing. Children should be item elements.",
+        "Groups item children into a styled list. Optional border around the group and separator lines between items.",
     },
     icon: {
       props: iconProps,
