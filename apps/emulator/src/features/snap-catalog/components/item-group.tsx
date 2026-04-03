@@ -19,7 +19,7 @@ export function SnapItemGroup({
 }) {
   const border = Boolean(props.border);
   const separator = Boolean(props.separator);
-  const gap = GAP_MAP[String(props.gap ?? "none")] ?? "gap-0";
+  const gap = GAP_MAP[String(props.gap ?? "sm")] ?? "gap-1";
   const items = Children.toArray(children);
 
   return (
@@ -27,7 +27,7 @@ export function SnapItemGroup({
       className={cn(
         "flex flex-col",
         border && "rounded-lg border",
-        !separator && gap,
+        gap,
       )}
     >
       {items.map((child, i) => (

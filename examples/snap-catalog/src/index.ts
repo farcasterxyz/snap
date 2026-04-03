@@ -7,6 +7,7 @@ type View =
   | "typography"
   | "images"
   | "content"
+  | "items"
   | "layout"
   | "form"
   | "results"
@@ -17,6 +18,7 @@ const FLOW: View[] = [
   "typography",
   "images",
   "content",
+  "items",
   "layout",
   "form",
   "actions",
@@ -38,6 +40,7 @@ registerSnapHandler(app, async (ctx) => {
     case "typography": return typographyPage(base);
     case "images": return imagesPage(base);
     case "content": return contentPage(base);
+    case "items": return itemsPage(base);
     case "layout": return layoutPage(base);
     case "form": return formPage(base);
     case "actions": return actionsPage(base);
@@ -335,6 +338,107 @@ function contentPage(base: string): SnapHandlerResult {
         ic8: { type: "icon", props: { name: "bookmark", color: "gray" } },
         sep5: { type: "separator", props: {} },
         ...nav(base, "content"),
+      },
+    },
+  };
+}
+
+function itemsPage(base: string): SnapHandlerResult {
+  return {
+    version: "1.0",
+    theme: { accent: "green" },
+    spec: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["step", "heading", "sep1", "label-plain", "group-plain", "sep2", "label-sep", "group-sep", "sep3", "label-border", "group-border", "sep4", "label-both", "group-both", "sep5", "nav"],
+        },
+        step: { type: "badge", props: { label: `Items & Groups \u00b7 ${step("items")}` } },
+        heading: {
+          type: "text",
+          props: { content: "Item groups with border, separator, and gap options.", size: "sm" },
+        },
+        sep1: { type: "separator", props: {} },
+        "label-plain": { type: "text", props: { content: "Plain (gap: sm)", size: "sm", weight: "medium" } },
+        "group-plain": {
+          type: "item_group",
+          props: { gap: "sm" },
+          children: ["p1", "p2", "p3"],
+        },
+        p1: { type: "item", props: { title: "Alice", description: "Online now" } },
+        p2: { type: "item", props: { title: "Bob", description: "Last seen 2h ago" } },
+        p3: { type: "item", props: { title: "Charlie", description: "Away" } },
+        sep2: { type: "separator", props: {} },
+        "label-sep": { type: "text", props: { content: "Separator", size: "sm", weight: "medium" } },
+        "group-sep": {
+          type: "item_group",
+          props: { separator: true },
+          children: ["s1", "s2", "s3"],
+        },
+        s1: {
+          type: "item",
+          props: { title: "Notifications" },
+          children: ["s1-icon"],
+        },
+        "s1-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        s2: {
+          type: "item",
+          props: { title: "Privacy" },
+          children: ["s2-icon"],
+        },
+        "s2-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        s3: {
+          type: "item",
+          props: { title: "Account" },
+          children: ["s3-icon"],
+        },
+        "s3-icon": { type: "icon", props: { name: "chevron-right", color: "gray" } },
+        sep3: { type: "separator", props: {} },
+        "label-border": { type: "text", props: { content: "Border", size: "sm", weight: "medium" } },
+        "group-border": {
+          type: "item_group",
+          props: { border: true, gap: "sm" },
+          children: ["b1", "b2"],
+        },
+        b1: {
+          type: "item",
+          props: { title: "Pro Plan", description: "$9/month" },
+          children: ["b1-badge"],
+        },
+        "b1-badge": { type: "badge", props: { label: "Active", color: "green", icon: "check" } },
+        b2: {
+          type: "item",
+          props: { title: "Free Plan", description: "$0/month" },
+        },
+        sep4: { type: "separator", props: {} },
+        "label-both": { type: "text", props: { content: "Border + Separator", size: "sm", weight: "medium" } },
+        "group-both": {
+          type: "item_group",
+          props: { border: true, separator: true },
+          children: ["bs1", "bs2", "bs3"],
+        },
+        bs1: {
+          type: "item",
+          props: { title: "Cast #1" },
+          children: ["bs1-badge"],
+        },
+        "bs1-badge": { type: "badge", props: { label: "842", color: "red", icon: "heart" } },
+        bs2: {
+          type: "item",
+          props: { title: "Cast #2" },
+          children: ["bs2-badge"],
+        },
+        "bs2-badge": { type: "badge", props: { label: "631", color: "red", icon: "heart" } },
+        bs3: {
+          type: "item",
+          props: { title: "Cast #3" },
+          children: ["bs3-badge"],
+        },
+        "bs3-badge": { type: "badge", props: { label: "427", color: "red", icon: "heart" } },
+        sep5: { type: "separator", props: {} },
+        ...nav(base, "items"),
       },
     },
   };
