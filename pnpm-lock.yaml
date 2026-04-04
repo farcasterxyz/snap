@@ -490,17 +490,14 @@ importers:
         specifier: ^4.0.0
         version: 4.3.6
 
-  pkgs/upstash:
+  pkgs/turso:
     dependencies:
       '@farcaster/snap':
         specifier: workspace:*
         version: link:../snap
-      '@upstash/lock':
-        specifier: ^0.2.1
-        version: 0.2.1(typescript@5.9.3)
-      '@upstash/redis':
-        specifier: ^1.37.0
-        version: 1.37.0
+      '@tursodatabase/serverless':
+        specifier: ^0.2.0
+        version: 0.2.4
     devDependencies:
       '@types/node':
         specifier: ^25.5.0
@@ -2380,6 +2377,9 @@ packages:
     resolution: {integrity: sha512-95tMA/ZbIidJFUUtkmqioQ1gf3n3I1YbRP3ZgVdWTVn2qVbkodcIdGXBKRHHrIbRsLRl99SiHi/L7IxhpZDagQ==}
     cpu: [arm64]
     os: [win32]
+
+  '@tursodatabase/serverless@0.2.4':
+    resolution: {integrity: sha512-kqf3FINvTGx8N1iH/4e1Dkbr/om5q9qitshzvljtQXwZFQIsVP/mDE76mGg9U2dg/ElOZKFKtT1VXDgd39Dr1w==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -7543,6 +7543,8 @@ snapshots:
 
   '@turbo/windows-arm64@2.8.21':
     optional: true
+
+  '@tursodatabase/serverless@0.2.4': {}
 
   '@types/babel__core@7.20.5':
     dependencies:

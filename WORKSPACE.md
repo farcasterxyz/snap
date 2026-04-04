@@ -30,13 +30,13 @@ Use **pnpm**. Do not use npm.
 
 ## Environment variables
 
-| Variable                   | Where                     | Description                                                                                  |
-| -------------------------- | ------------------------- | -------------------------------------------------------------------------------------------- |
-| `SNAP_PUBLIC_BASE_URL`     | Snap server               | Canonical HTTPS origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly |
-| `SKIP_JFS_VERIFICATION`    | Snap server               | `yes`/`1` to bypass JFS verification; do not use in production                               |
-| `FARCASTER_HUB_URL`        | Snap server               | Hub URL with port, e.g. `https://rho.farcaster.xyz:3381`                                     |
-| `UPSTASH_REDIS_REST_URL`   | `@farcaster/snap-upstash` | Upstash Redis REST URL                                                                       |
-| `UPSTASH_REDIS_REST_TOKEN` | `@farcaster/snap-upstash` | Upstash Redis REST token                                                                     |
+| Variable                | Where                   | Description                                                                                  |
+| ----------------------- | ----------------------- | -------------------------------------------------------------------------------------------- |
+| `SNAP_PUBLIC_BASE_URL`  | Snap server             | Canonical HTTPS origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly |
+| `SKIP_JFS_VERIFICATION` | Snap server             | `yes`/`1` to bypass JFS verification; do not use in production                               |
+| `FARCASTER_HUB_URL`     | Snap server             | Hub URL with port, e.g. `https://rho.farcaster.xyz:3381`                                     |
+| `TURSO_DATABASE_URL`    | `@farcaster/snap-turso` | Turso database URL (e.g. `libsql://…`)                                                       |
+| `TURSO_AUTH_TOKEN`      | `@farcaster/snap-turso` | Turso database auth token                                                                    |
 
 ## Hub connectivity
 
@@ -62,18 +62,14 @@ The json-render catalog for snaps lives in `pkgs/snap/src/ui/`. It is exported a
 
 `SnapContext.data` is a required `SnapDataStore` field.
 
-- `@farcaster/snap` exports: `SnapDataStore`, `SnapDataStoreOperations`, `DataStoreValue` (recursive JSON-serializable type), `createDefaultDataStore()` (stub that throws on access)
-- `SnapDataStore` extends operations with `withLock<T>(fn: (store: SnapDataStoreOperations) => Promise<T>)` for concurrency-safe reads/writes
-- `SnapDataStoreOperations` intentionally omits `withLock` to prevent deadlocks inside the callback
+- `@farcaster/snap` exports: `SnapDataStore`, `DataStoreValue` (recursive JSON-serializable type), `createDefaultDataStore()` (stub that throws on access), `createInMemoryDataStore()` (in-memory store for tests)
 - `@farcaster/snap-hono` always injects the default stub at all `snapFn` call sites
 
-## `@farcaster/snap-upstash`
+## `@farcaster/snap-turso`
 
-Package at `pkgs/upstash/`. Exports `withUpstash(snapFn, options?)` — a `SnapFunction` wrapper that injects an Upstash Redis-backed `SnapDataStore` into the context.
+Package at `pkgs/turso/`. Exports `withTursoServerless(snapFn, options?)` — a `SnapFunction` wrapper that injects a Turso serverless-backed `SnapDataStore` into the context.
 
-- Reads `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` at call time; if either is absent, warns and returns the original `snapFn` unchanged
-- `WithUpstashOptions.lockTimeout` controls lock-acquisition timeout (default 10 000 ms)
-- Distributed lock key is `"snap:lock"` (one lock per snap instance)
+- Reads `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` at call time; if either is absent, warns and returns the original `snapFn` unchanged
 
 ## JFS request-body verification
 

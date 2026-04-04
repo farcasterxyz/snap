@@ -109,7 +109,7 @@ The docs site is the canonical prose documentation. It covers the protocol overv
 pkgs/
   snap/        @farcaster/snap       — Zod schemas, validation, JFS verification
   hono/        @farcaster/snap-hono  — Hono registerSnapHandler integration
-  upstash/     @farcaster/snap-upstash — Upstash Redis-backed SnapDataStore
+  turso/       @farcaster/snap-turso — Turso serverless-backed SnapDataStore
 apps/
   docs/                              — Next.js docs site (snap.farcaster.xyz)
   emulator/    @farcaster/snap-emulator — Local snap emulator (port 3000)
@@ -165,9 +165,9 @@ Core library: Zod schemas and types for snap JSON, runtime validation of pages a
 
 Hono integration: `registerSnapHandler` wires GET and POST routes, validates responses, and handles JFS verification.
 
-### `@farcaster/snap-upstash`
+### `@farcaster/snap-turso`
 
-Optional `SnapDataStore` backed by Upstash Redis. Wraps your snap function with `withUpstash(snapFn)`.
+Optional `SnapDataStore` backed by [Turso](https://turso.tech) serverless. Wraps your snap function with `withTursoServerless(snapFn)`.
 
 ### `@farcaster/snap/ui`
 

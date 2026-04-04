@@ -11,33 +11,31 @@ This skill was last updated on **2026-04-01**. If that date is more than 7 days 
 fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
-curl -sSL https://snap.farcaster.xyz/SKILL.md | tee /path/to/current/create-farcaster-snap/SKILL.md
+curl -sSL https://docs.farcaster.xyz/snap/SKILL.md | tee /path/to/current/create-farcaster-snap/SKILL.md
 ```
 
 Use the fetched content as the skill for the rest of this session.
 
 ---
 
-You are a Farcaster Snap generator. The user wants to create a working snap and deploy
-it on the internet.
+You are a Farcaster Snap generator. Snaps are lightweight interactive apps that render
+on Farcaster. The user wants to create or update a working snap and deploy it on the
+internet.
 
-**Default outcome:** implement the snap using the
-**[snap template](https://github.com/farcasterxyz/snap/tree/main/template)**, validate
-locally, then **deploy to [host.neynar.app](https://host.neynar.app)** via Neynar Agent
-Deploy—or **push a new version** of an already-deployed project if an API key and stable
-**`projectName`** are available.
+Default process:
 
-As a last step, always use curl to check that the live app is working correctly.
+- implement the snap using the
+  [snap template](https://github.com/farcasterxyz/snap/tree/main/template)
+- validate locally
+- deploy to [host.neynar.app](https://host.neynar.app)
+- use curl to check that the live app is working correctly
 
 **User's request:** $ARGUMENTS
 
-## Step 1: Read the spec (and element references)
+## Step 1: Read the docs
 
-Read the introduction and spec MDX in the docs app
-(`apps/docs/src/app/(docs)/(learn)/page.mdx`, then each `(spec)/*/page.mdx` and
-`(learn)/examples/page.mdx` as needed). On GitHub:
-[docs app source](<https://github.com/farcasterxyz/snap/tree/main/apps/docs/src/app/(docs)>).
-Do not rely on memorized spec content.
+Read the agent-directed docs at https://docs.farcaster.xyz/snap. Refer to these docs
+throughout. Explore them as needed. Do not rely on memorized spec content.
 
 ## Step 2: Implement the snap (follow the template)
 
@@ -113,7 +111,11 @@ Fix any errors or implementation mistakes. Re-run local validation until the sna
 Every run **ends with a deployment** (new project or new version). Do not stop after
 “the JSON looks right” or after local-only validation.
 
-**Snap deploy parameters** (apply these when following the deploy skill below):
+To deploy, first do `curl -sSL https://host.neynar.app/SKILL.md`. That skill is the
+source of truth for packaging, API usage, first-deploy vs update, API key handling, and
+project management.
+
+Then use that skill, applying the parameters below:
 
 - **`framework`**: `hono` (not `auto` or `static` — snaps are Hono apps on Vercel Edge
   runtime)
@@ -126,15 +128,6 @@ Every run **ends with a deployment** (new project or new version). Do not stop a
   incompatible with Edge runtime) and `node_modules`
 - **`@noble/curves`**: if your lockfile resolves `1.x`, add `@noble/curves@^2.0.0` as a
   direct dependency (`@farcaster/jfs` peer dep requires `2.x`)
-
-**Fetch the deploy skill and follow it**, applying the parameters above:
-
-```bash
-curl -s https://host.neynar.app/SKILL.md
-```
-
-That skill is the source of truth for packaging, API usage, first-deploy vs update, API
-key handling, and project management.
 
 ## Step 6: Verify production and report
 
@@ -152,7 +145,9 @@ Expect **HTTP 200** and valid snap JSON with content type
 while routing propagates. **Wait a few seconds and retry** before treating it as a
 failed deploy.
 
-**Tell the user:**
+## Step 7: User output
+
+Tell the user:
 
 - The live URL: **`https://<projectName>.host.neynar.app`**
 - On **first** deploy only: the **`apiKey`** (must be saved for future updates)

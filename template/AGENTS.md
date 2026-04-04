@@ -1,8 +1,8 @@
 # Snap Template — Agent Notes
 
-### IMPORTATNT Note on package versioning
+### IMPORTANT Note on package versioning
 
-The `@farcaster/snap*` dependencies of this template project must always point to public NPM package versions. NEVER use "workspace:\*". This is a template for others to copy.
+Inside the monorepo, `@farcaster/snap`, `@farcaster/snap-hono`, and `@farcaster/snap-turso` use `workspace:*` so the template typechecks against local packages. When you copy this template **outside** the monorepo, replace those with **published semver** ranges from npm (not `workspace:*`).
 
 ## Project structure
 
