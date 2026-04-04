@@ -1,4 +1,4 @@
-name: Sync snap docs to docs.farcaster.xyz
+name: Sync protocol docs to docs.farcaster.xyz
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
       cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout snap repo
+      - name: Checkout source repo
         uses: actions/checkout@v4
         with:
           path: snap
@@ -28,7 +28,7 @@ jobs:
           path: docs
           ref: main
 
-      - name: Sync snap docs to docs repo
+      - name: Sync protocol docs to docs repo
         run: |
           SNAP_DOCS="$GITHUB_WORKSPACE/snap/apps/docs/src/app/(docs)"
           SNAP_COMPONENTS="$GITHUB_WORKSPACE/snap/apps/docs/src/components/docs"
@@ -87,7 +87,7 @@ jobs:
             echo "No changes to sync"
           else
             git commit \
-              -m "chore: sync snap docs from farcasterxyz/snap" \
-              -m "Auto-synced from https://github.com/farcasterxyz/snap/commit/${{ github.sha }}"
+              -m "chore: sync protocol docs" \
+              -m "Source: ${{ github.sha }}"
             git push origin main
           fi
