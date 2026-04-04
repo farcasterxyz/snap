@@ -32,7 +32,6 @@ export {
 export {
   type DataStoreValue,
   type SnapDataStore,
-  type SnapDataStoreOperations,
   createDefaultDataStore,
   createInMemoryDataStore,
 } from "./dataStore";
