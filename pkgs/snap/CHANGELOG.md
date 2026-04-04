@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.7.1
+
+### Patch Changes
+
+- [`47bb9cb`](https://github.com/farcasterxyz/snap/commit/47bb9cb97b56c8b434a5e4787ef27bd89267513e) Thanks [@lyoshenka](https://github.com/lyoshenka)! - testing publish
+
 ## 1.6.0
 
 ### Minor Changes
