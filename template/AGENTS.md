@@ -1,6 +1,6 @@
 # Snap Template — Agent Notes
 
-### IMPORTATNT Note on package versioning
+### IMPORTANT Note on package versioning
 
 Inside the monorepo, `@farcaster/snap`, `@farcaster/snap-hono`, and `@farcaster/snap-turso` use `workspace:*` so the template typechecks against local packages. When you copy this template **outside** the monorepo, replace those with **published semver** ranges from npm (not `workspace:*`).
 
