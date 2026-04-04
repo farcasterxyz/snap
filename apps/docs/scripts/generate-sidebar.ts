@@ -16,7 +16,7 @@ type SidebarGroup = {
 };
 
 function prefixPath(pathname: string): string {
-  if (pathname === "/") return "/snap/";
+  if (pathname === "/") return "/snap";
   return `/snap${pathname}`;
 }
 
