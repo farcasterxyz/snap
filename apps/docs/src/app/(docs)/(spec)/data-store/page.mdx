@@ -25,7 +25,7 @@ type SnapContext = {
 ```
 
 If no data store implementation is configured, calling any method on `ctx.data` throws
-an error. Use a data store adapter (like `@farcaster/snap-upstash`) or provide your own
+an error. Use a data store adapter (like `@farcaster/snap-turso`) or provide your own
 implementation to enable persistence.
 
 ## Types
@@ -44,24 +44,12 @@ type DataStoreValue =
   | { [key: string]: DataStoreValue };
 ```
 
-### `SnapDataStoreOperations`
-
-The read/write interface available inside and outside of locks:
-
-```ts
-type SnapDataStoreOperations = {
-  get(key: string): Promise<DataStoreValue | null>;
-  set(key: string, value: DataStoreValue): Promise<void>;
-};
-```
-
 ### `SnapDataStore`
 
-Extends `SnapDataStoreOperations` with a concurrency-safe locking primitive:
-
 ```ts
-type SnapDataStore = SnapDataStoreOperations & {
-  withLock<T>(fn: (store: SnapDataStoreOperations) => Promise<T>): Promise<T>;
+type SnapDataStore = {
+  get(key: string): Promise<DataStoreValue | null>;
+  set(key: string, value: DataStoreValue): Promise<void>;
 };
 ```
 
@@ -88,32 +76,6 @@ Writes a value for a key. Overwrites any existing value.
 
 **Returns** `Promise<void>`
 
-### `withLock(fn)`
-
-Acquires an exclusive lock, runs `fn`, then releases the lock. Use this when a
-read-then-write must be atomic — for example, incrementing a counter or appending to a
-list.
-
-| Parameter | Type                                             | Description                                 |
-| --------- | ------------------------------------------------ | ------------------------------------------- |
-| `fn`      | `(store: SnapDataStoreOperations) => Promise<T>` | Callback that receives the store operations |
-
-**Returns** `Promise<T>` — the value returned by `fn`
-
-The callback receives `SnapDataStoreOperations` (not `SnapDataStore`), which
-intentionally omits `withLock` to prevent nested locks and potential deadlocks.
-
-```ts
-const snap: SnapFunction = async (ctx) => {
-  const newCount = await ctx.data.withLock(async (store) => {
-    const count = ((await store.get("votes")) as number) ?? 0;
-    await store.set("votes", count + 1);
-    return count + 1;
-  });
-  // ...
-};
-```
-
 ## Implementing a Data Store
 
 Any object that satisfies the `SnapDataStore` interface works. A minimal in-memory
@@ -131,16 +93,12 @@ function createMemoryStore(): SnapDataStore {
     async set(key, value) {
       data.set(key, value);
     },
-    async withLock(fn) {
-      return fn(this);
-    },
   };
 }
 ```
 
 This is useful for local development and testing. For production, use a persistent
-backend (Redis, a database, etc.) and a real distributed lock so concurrent requests
-don't clobber each other.
+backend (a database, etc.).
 
 ## Adapter Pattern
 
@@ -160,5 +118,5 @@ Then in your server setup:
 registerSnapHandler({ handler: withMyStore(snap) });
 ```
 
-`@farcaster/snap-upstash` follows this exact pattern. You can swap in any backend by
+`@farcaster/snap-turso` follows this exact pattern. You can swap in any backend by
 writing a thin adapter that implements `SnapDataStore`.

@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
 import { SnapFunction, useMiddleware } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import { withUpstash } from "@farcaster/snap-upstash";
+import { withTursoServerless } from "@farcaster/snap-turso";
 
 const TOPIC_NAME = "topic" as const;
 const OPT_OVERVIEW = "overview";
@@ -72,7 +72,7 @@ const fontsDir = join(__dir, "../assets/fonts");
 const app = new Hono();
 
 const snapWithMiddleware = useMiddleware(snap, [
-  withUpstash, // optional. use this if you want persistent data storage.
+  withTursoServerless, // optional. use this if you want persistent data storage.
 ]);
 
 registerSnapHandler(app, snapWithMiddleware, {

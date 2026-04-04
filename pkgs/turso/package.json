@@ -1,11 +1,11 @@
 {
-  "name": "@farcaster/snap-upstash",
-  "version": "1.0.4",
-  "description": "Upstash Redis data store adapter for Farcaster Snaps",
+  "name": "@farcaster/snap-turso",
+  "version": "1.0.0",
+  "description": "Turso serverless data store adapter for Farcaster Snaps",
   "repository": {
     "type": "git",
     "url": "https://github.com/farcasterxyz/snap.git",
-    "directory": "pkgs/upstash"
+    "directory": "pkgs/turso"
   },
   "type": "module",
   "main": "dist/index.js",
@@ -33,8 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "@farcaster/snap": "workspace:*",
-    "@upstash/lock": "^0.2.1",
-    "@upstash/redis": "^1.37.0"
+    "@tursodatabase/serverless": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

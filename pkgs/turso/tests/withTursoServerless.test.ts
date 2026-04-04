@@ -6,10 +6,6 @@ import {
   type SnapFunction,
 } from "@farcaster/snap";
 
-// We test withUpstash by controlling the environment variables directly.
-// @upstash/redis and @upstash/lock are not mocked; we just test the branching
-// logic based on env var presence.
-
 const minimalResponse = {
   version: "1.0" as const,
   page: {
@@ -50,25 +46,16 @@ describe("createDefaultDataStore", () => {
     const store = createDefaultDataStore();
     await expect(store.set("key", "value")).rejects.toThrow("not configured");
   });
-
-  it("throws on withLock()", async () => {
-    const store = createDefaultDataStore();
-    await expect(store.withLock(async () => "x")).rejects.toThrow(
-      "not configured",
-    );
-  });
 });
 
-describe("withUpstash — no env vars", () => {
+describe("withTursoServerless — no env vars", () => {
   beforeEach(() => {
-    delete process.env.UPSTASH_REDIS_REST_URL;
-    delete process.env.UPSTASH_REDIS_REST_TOKEN;
-    delete process.env.KV_REST_API_URL;
-    delete process.env.KV_REST_API_TOKEN;
+    delete process.env.TURSO_DATABASE_URL;
+    delete process.env.TURSO_AUTH_TOKEN;
   });
 
   it("returns the original snapFn and passes ctx through unchanged", async () => {
-    const { withUpstash } = await import("../src/index.js");
+    const { withTursoServerless } = await import("../src/index.js");
 
     let capturedCtx: SnapContext | undefined;
     const snapFn: SnapFunction = async (ctx) => {
@@ -76,7 +63,7 @@ describe("withUpstash — no env vars", () => {
       return minimalResponse;
     };
 
-    const wrapped = withUpstash(snapFn);
+    const wrapped = withTursoServerless(snapFn);
     expect(wrapped).toBe(snapFn);
 
     const ctx = makeCtx();
@@ -86,27 +73,23 @@ describe("withUpstash — no env vars", () => {
   });
 });
 
-describe("withUpstash — with env vars", () => {
-  const FAKE_URL = "https://fake.upstash.io";
+describe("withTursoServerless — with env vars", () => {
+  const FAKE_URL = "libsql://fake-db-fakeorg.turso.io";
   const FAKE_TOKEN = "fake-token";
 
   beforeEach(() => {
-    delete process.env.KV_REST_API_URL;
-    delete process.env.KV_REST_API_TOKEN;
-    process.env.UPSTASH_REDIS_REST_URL = FAKE_URL;
-    process.env.UPSTASH_REDIS_REST_TOKEN = FAKE_TOKEN;
+    process.env.TURSO_DATABASE_URL = FAKE_URL;
+    process.env.TURSO_AUTH_TOKEN = FAKE_TOKEN;
   });
 
   afterEach(() => {
-    delete process.env.UPSTASH_REDIS_REST_URL;
-    delete process.env.UPSTASH_REDIS_REST_TOKEN;
-    delete process.env.KV_REST_API_URL;
-    delete process.env.KV_REST_API_TOKEN;
+    delete process.env.TURSO_DATABASE_URL;
+    delete process.env.TURSO_AUTH_TOKEN;
     vi.resetModules();
   });
 
-  it("injects a store with get, set, and withLock into ctx.data", async () => {
-    const { withUpstash } = await import("../src/index.js");
+  it("injects a store with get and set into ctx.data", async () => {
+    const { withTursoServerless } = await import("../src/index.js");
 
     let capturedData: SnapContext["data"] | undefined;
     const snapFn: SnapFunction = async (ctx) => {
@@ -114,17 +97,16 @@ describe("withUpstash — with env vars", () => {
       return minimalResponse;
     };
 
-    const wrapped = withUpstash(snapFn);
+    const wrapped = withTursoServerless(snapFn);
     await wrapped(makeCtx());
 
     expect(capturedData).toBeDefined();
     expect(typeof capturedData!.get).toBe("function");
     expect(typeof capturedData!.set).toBe("function");
-    expect(typeof capturedData!.withLock).toBe("function");
   });
 
   it("does not use the default throwing stub", async () => {
-    const { withUpstash } = await import("../src/index.js");
+    const { withTursoServerless } = await import("../src/index.js");
 
     let capturedData: SnapContext["data"] | undefined;
     const snapFn: SnapFunction = async (ctx) => {
@@ -132,12 +114,9 @@ describe("withUpstash — with env vars", () => {
       return minimalResponse;
     };
 
-    const wrapped = withUpstash(snapFn);
+    const wrapped = withTursoServerless(snapFn);
     await wrapped(makeCtx());
 
-    // The real store's get() would call Redis (failing with a network error),
-    // not the "not configured" error from the default stub.
-    // We just verify the function reference is different from the default stub.
     const stub = createDefaultDataStore();
     expect(capturedData!.get).not.toBe(stub.get);
   });
