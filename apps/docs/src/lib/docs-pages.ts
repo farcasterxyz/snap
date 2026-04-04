@@ -34,7 +34,7 @@ export const DOC_SECTIONS: DocSection[] = [
     pages: [
       {
         pathname: "/existing-site",
-        title: "Adding a Snap to an Existing Website",
+        title: "On existing website",
       },
     ],
   },
