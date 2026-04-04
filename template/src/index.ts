@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
 import { SnapFunction, useMiddleware } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import { withUpstash } from "@farcaster/snap-upstash";
+import { withTursoServerless } from "@farcaster/snap-turso";
 
 const TOPIC_NAME = "topic" as const;
 const OPT_OVERVIEW = "overview";
@@ -72,7 +72,7 @@ const fontsDir = join(__dir, "../assets/fonts");
 const app = new Hono();
 
 const snapWithMiddleware = useMiddleware(snap, [
-  withUpstash, // optional. use this if you want persistent data storage.
+  withTursoServerless, // optional. use this if you want persistent data storage.
 ]);
 
 registerSnapHandler(app, snapWithMiddleware, {
@@ -100,8 +100,8 @@ function snapBaseUrlFromRequest(request: Request): string {
   const proto = forwardedProto
     ? forwardedProto.split(",")[0].trim().toLowerCase()
     : isLoopback
-    ? "http"
-    : "https";
+      ? "http"
+      : "https";
   if (host) return `${proto}://${host}`.replace(/\/$/, "");
 
   return `http://localhost:${process.env.PORT ?? "3003"}`.replace(/\/$/, "");
@@ -110,15 +110,30 @@ function snapBaseUrlFromRequest(request: Request): string {
 function onboardingBody(pref: string | undefined): string {
   switch (pref) {
     case OPT_HTTP:
-      return clamp("GET with Accept: application/vnd.farcaster.snap+json. POSTs send a JFS-shaped body; return the next page from your handler.", 160);
+      return clamp(
+        "GET with Accept: application/vnd.farcaster.snap+json. POSTs send a JFS-shaped body; return the next page from your handler.",
+        160,
+      );
     case OPT_LOCAL:
-      return clamp("Run pnpm dev. Point the Farcaster snap emulator at this URL. SKIP_JFS_VERIFICATION skips signature checks when NODE_ENV is not production.", 160);
+      return clamp(
+        "Run pnpm dev. Point the Farcaster snap emulator at this URL. SKIP_JFS_VERIFICATION skips signature checks when NODE_ENV is not production.",
+        160,
+      );
     case OPT_DEPLOY:
-      return clamp("Set SNAP_PUBLIC_BASE_URL to your public HTTPS origin (no trailing slash) so post targets match what clients call. Ship as Hono on Vercel.", 160);
+      return clamp(
+        "Set SNAP_PUBLIC_BASE_URL to your public HTTPS origin (no trailing slash) so post targets match what clients call. Ship as Hono on Vercel.",
+        160,
+      );
     case OPT_OVERVIEW:
-      return clamp("Snaps are feed cards driven by your JSON. registerSnapHandler validates requests and runs your callback to build each SnapResponse.", 160);
+      return clamp(
+        "Snaps are feed cards driven by your JSON. registerSnapHandler validates requests and runs your callback to build each SnapResponse.",
+        160,
+      );
     default:
-      return clamp("Pick a topic, tap Refresh. Replace this file with your own pages, buttons, and POST handling.", 160);
+      return clamp(
+        "Pick a topic, tap Refresh. Replace this file with your own pages, buttons, and POST handling.",
+        160,
+      );
   }
 }
 
