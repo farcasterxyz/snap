@@ -9,6 +9,9 @@ on:
 
 jobs:
   sync-docs:
+    concurrency:
+      group: sync-docs-main
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout snap repo
