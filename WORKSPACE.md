@@ -30,13 +30,13 @@ Use **pnpm**. Do not use npm.
 
 ## Environment variables
 
-| Variable                   | Where                     | Description                                                                                  |
-| -------------------------- | ------------------------- | -------------------------------------------------------------------------------------------- |
-| `SNAP_PUBLIC_BASE_URL`     | Snap server               | Canonical HTTPS origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly |
-| `SKIP_JFS_VERIFICATION`    | Snap server               | `yes`/`1` to bypass JFS verification; do not use in production                               |
-| `FARCASTER_HUB_URL`        | Snap server               | Hub URL with port, e.g. `https://rho.farcaster.xyz:3381`                                     |
-| `TURSO_DATABASE_URL` | `@farcaster/snap-turso` | Turso database URL (e.g. `libsql://…`) |
-| `TURSO_AUTH_TOKEN`     | `@farcaster/snap-turso` | Turso database auth token               |
+| Variable                | Where                   | Description                                                                                  |
+| ----------------------- | ----------------------- | -------------------------------------------------------------------------------------------- |
+| `SNAP_PUBLIC_BASE_URL`  | Snap server             | Canonical HTTPS origin (no trailing slash) so `page.buttons[].target` URLs resolve correctly |
+| `SKIP_JFS_VERIFICATION` | Snap server             | `yes`/`1` to bypass JFS verification; do not use in production                               |
+| `FARCASTER_HUB_URL`     | Snap server             | Hub URL with port, e.g. `https://rho.farcaster.xyz:3381`                                     |
+| `TURSO_DATABASE_URL`    | `@farcaster/snap-turso` | Turso database URL (e.g. `libsql://…`)                                                       |
+| `TURSO_AUTH_TOKEN`      | `@farcaster/snap-turso` | Turso database auth token                                                                    |
 
 ## Hub connectivity
 
