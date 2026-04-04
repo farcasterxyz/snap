@@ -1,0 +1,77 @@
+name: Sync snap docs to docs.farcaster.xyz
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/docs/src/app/(docs)/**"
+      - "apps/docs/src/components/docs/**"
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout snap repo
+        uses: actions/checkout@v4
+        with:
+          path: snap
+
+      - name: Checkout docs repo
+        uses: actions/checkout@v4
+        with:
+          repository: farcasterxyz/docs
+          token: ${{ secrets.DOCS_SYNC_TOKEN }}
+          path: docs
+          ref: main
+
+      - name: Sync snap docs to docs repo
+        run: |
+          SNAP_DOCS="snap/apps/docs/src/app/(docs)"
+          SNAP_COMPONENTS="snap/apps/docs/src/components/docs"
+          DOCS_DEST="docs/src/app/(docs)/snap"
+          DOCS_COMPONENTS="docs/src/components/docs"
+
+          # Clean destination
+          rm -rf "$DOCS_DEST"
+          mkdir -p "$DOCS_DEST"
+
+          # Copy MDX pages, flattening route groups like (learn), (create), (spec), (integrate)
+          cd "$SNAP_DOCS"
+          find . -name "page.mdx" | while read -r file; do
+            # Strip route group dirs from path: ./(learn)/examples/page.mdx → examples/page.mdx
+            dest=$(echo "$file" | sed 's|/([^)]*)/|/|g' | sed 's|^\./||')
+            dest_dir=$(dirname "$dest")
+            mkdir -p "../../../../$DOCS_DEST/$dest_dir"
+            cp "$file" "../../../../$DOCS_DEST/$dest"
+          done
+          cd ../../../..
+
+          # Copy interactive components
+          rm -rf "$DOCS_COMPONENTS"
+          mkdir -p "$DOCS_COMPONENTS"
+          cp "$SNAP_COMPONENTS"/*.tsx "$DOCS_COMPONENTS/" 2>/dev/null || true
+
+          # Fix internal links: prefix root-level snap paths with /snap
+          # Matches markdown links like [text](/building) or [text](/elements#anchor)
+          find "$DOCS_DEST" -name "page.mdx" | while read -r file; do
+            sed -i -E \
+              's|\]\(/((examples|building|existing-site|elements|buttons|actions|effects|constraints|theme|colors|auth|data-store|agents|snap)([#?/][^)]*)?)\)|\](/snap/\1)|g' \
+              "$file"
+            # Also fix bare root link [text](/) to [text](/snap)
+            sed -i 's|\](/)|](/snap)|g' "$file"
+          done
+
+      - name: Push changes
+        working-directory: docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to sync"
+          else
+            git commit -m "chore: sync snap docs from farcasterxyz/snap
+
+          Auto-synced from https://github.com/farcasterxyz/snap/commit/${{ github.sha }}"
+            git push origin main
+          fi
