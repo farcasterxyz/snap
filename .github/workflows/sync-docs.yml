@@ -61,12 +61,14 @@ jobs:
           fi
 
           # Rewrite internal absolute markdown links to live under /snap,
-          # while leaving existing /snap links untouched.
+          # while leaving existing /snap links and root-level file endpoints
+          # like /llms.txt untouched.
           find "$DOCS_DEST" -name "page.mdx" | while read -r file; do
             # Fix bare root link [text](/) to [text](/snap)
             sed -i 's|\](/)|](/snap)|g' "$file"
-            # Rewrite all other absolute links, skipping those already under /snap
-            perl -0pi -e 's{\]\(/(?!snap(?:/|[#?]|$))([^)]+)\)}{](/snap/$1)}g' "$file"
+            # Rewrite docs-style absolute links, skipping those already under /snap
+            # and machine-readable/file endpoints with an extension in the first segment.
+            perl -0pi -e 's{\]\(/(?!snap(?:/|[#?]|$))([A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*)([?#][^)]+)?\)}{](/snap/$1$2)}g' "$file"
           done
 
           # Copy sidebar JSON for docs nav
