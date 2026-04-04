@@ -7,7 +7,6 @@ on:
       - "apps/docs/src/app/(docs)/**"
       - "apps/docs/src/components/docs/**"
       - "apps/docs/snap-sidebar.json"
-      - "apps/docs/src/app/(docs)/snap-layout.tsx"
 
 jobs:
   sync-docs:
@@ -52,11 +51,10 @@ jobs:
           done
 
           # Copy snap-layout.tsx as layout.tsx for the snap section
-          if [ -f "$SNAP_DOCS/snap-layout.tsx" ]; then
-            cp "$SNAP_DOCS/snap-layout.tsx" "$DOCS_DEST/layout.tsx"
-          fi
+          cp "$SNAP_DOCS/snap-layout.tsx" "$DOCS_DEST/layout.tsx"
 
-          # Copy interactive components
+          # Copy interactive components (clean up stale subdirectory from earlier workflow versions)
+          rm -rf "$DOCS_COMPONENTS/snap"
           mkdir -p "$DOCS_COMPONENTS"
           shopt -s nullglob
           snap_component_files=("$SNAP_COMPONENTS"/*.tsx)
