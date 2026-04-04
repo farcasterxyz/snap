@@ -52,17 +52,20 @@ jobs:
           # Copy interactive components into snap-scoped subdirectory
           rm -rf "$DOCS_COMPONENTS"
           mkdir -p "$DOCS_COMPONENTS"
-          cp "$SNAP_COMPONENTS"/*.tsx "$DOCS_COMPONENTS/" 2>/dev/null || true
+          shopt -s nullglob
+          snap_component_files=("$SNAP_COMPONENTS"/*.tsx)
+          shopt -u nullglob
+          if [ ${#snap_component_files[@]} -gt 0 ]; then
+            cp "${snap_component_files[@]}" "$DOCS_COMPONENTS/"
+          fi
 
-          # Fix internal links: prefix root-level snap paths with /snap
-          # Matches markdown links like [text](/building) or [text](/elements#anchor),
-          # but does not rewrite links already under /snap.
+          # Rewrite internal absolute markdown links to live under /snap,
+          # while leaving existing /snap links untouched.
           find "$DOCS_DEST" -name "page.mdx" | while read -r file; do
-            sed -i -E \
-              's|\]\(/((examples|building|existing-site|elements|buttons|actions|effects|constraints|theme|colors|auth|data-store|agents)([#?/][^)]*)?)\)|\](/snap/\1)|g' \
-              "$file"
-            # Also fix bare root link [text](/) to [text](/snap)
+            # Fix bare root link [text](/) to [text](/snap)
             sed -i 's|\](/)|](/snap)|g' "$file"
+            # Rewrite all other absolute links, skipping those already under /snap
+            perl -0pi -e 's{\]\(/(?!snap(?:/|[#?]|$))([^)]+)\)}{](/snap/$1)}g' "$file"
           done
 
       - name: Push changes
@@ -74,8 +77,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to sync"
           else
-            git commit -m "chore: sync snap docs from farcasterxyz/snap
-
-          Auto-synced from https://github.com/farcasterxyz/snap/commit/${{ github.sha }}"
+            git commit \
+              -m "chore: sync snap docs from farcasterxyz/snap" \
+              -m "Auto-synced from https://github.com/farcasterxyz/snap/commit/${{ github.sha }}"
             git push origin main
           fi
