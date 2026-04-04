@@ -7,6 +7,7 @@ on:
       - "apps/docs/src/app/(docs)/**"
       - "apps/docs/src/components/docs/**"
       - "apps/docs/snap-sidebar.json"
+      - "apps/docs/src/app/(docs)/snap-layout.tsx"
 
 jobs:
   sync-docs:
@@ -33,7 +34,7 @@ jobs:
           SNAP_DOCS="$GITHUB_WORKSPACE/snap/apps/docs/src/app/(docs)"
           SNAP_COMPONENTS="$GITHUB_WORKSPACE/snap/apps/docs/src/components/docs"
           DOCS_DEST="$GITHUB_WORKSPACE/docs/src/app/(docs)/snap"
-          DOCS_COMPONENTS="$GITHUB_WORKSPACE/docs/src/components/docs/snap"
+          DOCS_COMPONENTS="$GITHUB_WORKSPACE/docs/src/components/docs"
 
           # Clean destination
           rm -rf "$DOCS_DEST"
@@ -50,8 +51,12 @@ jobs:
             cp "$file" "$DOCS_DEST/$dest"
           done
 
-          # Copy interactive components into snap-scoped subdirectory
-          rm -rf "$DOCS_COMPONENTS"
+          # Copy snap-layout.tsx as layout.tsx for the snap section
+          if [ -f "$SNAP_DOCS/snap-layout.tsx" ]; then
+            cp "$SNAP_DOCS/snap-layout.tsx" "$DOCS_DEST/layout.tsx"
+          fi
+
+          # Copy interactive components
           mkdir -p "$DOCS_COMPONENTS"
           shopt -s nullglob
           snap_component_files=("$SNAP_COMPONENTS"/*.tsx)
