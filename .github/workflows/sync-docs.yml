@@ -6,6 +6,7 @@ on:
     paths:
       - "apps/docs/src/app/(docs)/**"
       - "apps/docs/src/components/docs/**"
+      - "apps/docs/snap-sidebar.json"
 
 jobs:
   sync-docs:
@@ -67,6 +68,12 @@ jobs:
             # Rewrite all other absolute links, skipping those already under /snap
             perl -0pi -e 's{\]\(/(?!snap(?:/|[#?]|$))([^)]+)\)}{](/snap/$1)}g' "$file"
           done
+
+          # Copy sidebar JSON for docs nav
+          SNAP_SIDEBAR="$GITHUB_WORKSPACE/snap/apps/docs/snap-sidebar.json"
+          if [ -f "$SNAP_SIDEBAR" ]; then
+            cp "$SNAP_SIDEBAR" "$GITHUB_WORKSPACE/docs/src/lib/snap-sidebar.json"
+          fi
 
       - name: Push changes
         working-directory: docs

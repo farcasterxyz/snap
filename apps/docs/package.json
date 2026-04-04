@@ -7,7 +7,8 @@
     "dev": "next dev -p 3001 --webpack",
     "format": "prettier --write \"src/**/*.mdx\"",
     "start": "next start -p 3001",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate-sidebar": "npx tsx scripts/generate-sidebar.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
