@@ -10,6 +10,7 @@ export function SnapBadge({
   element: { props: Record<string, unknown> };
 }) {
   const content = String(props.label ?? "");
+  const variant = String(props.variant ?? "default") as "default" | "outline";
   const color = props.color ? String(props.color) : undefined;
   const iconName = props.icon ? String(props.icon) : undefined;
   const accentStyle = useSnapAccentScopeStyle();
@@ -20,11 +21,10 @@ export function SnapBadge({
   return (
     <span style={isAccent ? accentStyle : undefined}>
       <Badge
-        variant={isAccent ? "default" : "outline"}
+        variant={variant}
         className="gap-1"
-        // TODO: fix outline badge border color in @neynar/ui — too bright in dark mode
         style={
-          !isAccent
+          variant === "outline" && !isAccent
             ? { borderColor: `var(--snap-color-${color})`, color: `var(--snap-color-${color})` }
             : undefined
         }

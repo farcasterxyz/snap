@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const IMAGE_ASPECTS = ["1:1", "16:9", "4:3", "3:4", "9:16"] as const;
+export const IMAGE_ASPECTS = ["1:1", "16:9", "4:3", "9:16"] as const;
 
 export const imageProps = z.object({
   url: z.string(),

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const TEXT_SIZES = ["lg", "md", "sm"] as const;
-export const TEXT_WEIGHTS = ["bold", "medium", "normal"] as const;
+export const TEXT_SIZES = ["md", "sm"] as const;
+export const TEXT_WEIGHTS = ["bold", "normal"] as const;
 export const TEXT_ALIGNS = ["left", "center", "right"] as const;
 export const TEXT_MAX_CONTENT_CHARS = 320;
 

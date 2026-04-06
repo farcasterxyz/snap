@@ -8,10 +8,12 @@ export function SnapBadge({
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { accentHex, hex } = useSnapPalette();
   const label = String(props.label ?? "");
+  const variant = String(props.variant ?? "default");
   const color = props.color ? String(props.color) : undefined;
   const iconName = props.icon ? String(props.icon) : undefined;
   const isAccent = !color || color === "accent";
   const resolvedColor = isAccent ? accentHex : hex(color);
+  const isFilled = variant === "default";
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
 
@@ -19,18 +21,18 @@ export function SnapBadge({
     <View
       style={[
         styles.badge,
-        isAccent
+        isFilled
           ? { backgroundColor: resolvedColor, borderColor: resolvedColor }
           : { borderColor: resolvedColor },
       ]}
     >
       {Icon && (
-        <Icon size={12} color={isAccent ? "#fff" : resolvedColor} />
+        <Icon size={12} color={isFilled ? "#fff" : resolvedColor} />
       )}
       <Text
         style={[
           styles.label,
-          { color: isAccent ? "#fff" : resolvedColor },
+          { color: isFilled ? "#fff" : resolvedColor },
         ]}
       >
         {label}

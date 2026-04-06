@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ICON_NAMES } from "./icon.js";
 
-export const BUTTON_VARIANTS = ["default", "secondary", "outline", "ghost"] as const;
+export const BUTTON_VARIANTS = ["secondary", "primary"] as const;
 export const BUTTON_MAX_LABEL_CHARS = 30;
 
 export const buttonProps = z.object({

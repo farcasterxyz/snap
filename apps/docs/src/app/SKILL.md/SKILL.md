@@ -51,34 +51,24 @@ Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
-- Conform to the published spec (same content as the docs app introduction + spec pages)
-  for overall snap/page shape and behavior.
-- Put elements under the page `elements` tree (`page.elements.type` +
-  `elements.children`) per the spec.
-- Ensure first page rules are satisfied (title/body text + interactive/media
-  requirement).
-- Ensure button schemas/targets match the
-  [Buttons](https://docs.farcaster.xyz/snap/buttons) spec page (URL/action rules).
-- For `client` action buttons, include a `client_action` object (not `target`). See docs
-  for all client action types.
+- Conform to the published spec for overall snap response shape and behavior.
+- Use the `ui.root` / `ui.elements` format: a flat map of named elements with `type`,
+  `props`, optional `children` (element IDs), and optional `on` (event bindings).
+- Button actions are bound via `on.press` with an `action` and `params` object.
+- Target URLs must be HTTPS in production; `http://` only on loopback for local dev.
 
 Design guidance:
 
-- Pick a coherent `theme.accent`.
-- Prefer `style: "title"` for the main heading, `body` for main copy, `caption` for
-  metadata.
-- Keep strings within current text caps (title/body/caption/label/button/list, etc.).
-- Keep page height-safe: max 5 root elements, max 1 media element, max 4 buttons.
-- Four button action types: `post` (server round-trip), `link` (open URL), `mini_app`
-  (open Farcaster mini app), `client` (trigger client-side action like view_cast,
-  view_profile, view_token, send_token, swap_token, compose_cast).
-- Use `"post"` buttons with absolute targets for server navigation. In production, use
-  HTTPS.
-- Use `"client"` buttons with `client_action` for navigation/wallet actions that don't
-  need a server call (e.g. `{ "type": "view_cast", "hash": "0x..." }` or
-  `{ "type": "send_token", "token": "eip155:8453/erc20:0x...", "recipientFid": 3 }`).
-- For local dev/emulator, HTTP is only valid on loopback (`localhost`, `127.0.0.1`,
-  `[::1]`, `::1`).
+- Pick a coherent `theme.accent` from the palette: gray, blue, red, amber, green, teal,
+  purple, pink.
+- Use `text` with `weight: "bold"` for headings, default size `"md"` for body,
+  `size: "sm"` for captions/metadata.
+- Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
+  default to `"secondary"`.
+- 9 action types: `submit` (server round-trip), `open_url` (browser), `open_mini_app`
+  (in-app), and client actions: `view_cast`, `view_profile`, `compose_cast`,
+  `view_token`, `send_token`, `swap_token`.
+- Keep strings within component char limits (see [Constraints](https://docs.farcaster.xyz/snap/constraints)).
 
 ## Optional: Persistent storage
 

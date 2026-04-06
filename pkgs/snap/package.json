@@ -1,6 +1,6 @@
 {
   "name": "@farcaster/snap",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Farcaster Snaps 🫰",
   "repository": {
     "type": "git",
@@ -109,7 +109,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "llms.txt"
   ],
   "publishConfig": {
     "access": "public"

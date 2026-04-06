@@ -6,11 +6,9 @@ import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
 import { ICON_MAP } from "./snap-icon";
 
-const VARIANT_MAP: Record<string, "default" | "secondary" | "outline" | "ghost"> = {
-  default: "default",
+const VARIANT_MAP: Record<string, "primary" | "secondary"> = {
+  primary: "primary",
   secondary: "secondary",
-  outline: "outline",
-  ghost: "ghost",
 };
 
 export function SnapActionButton({
@@ -20,31 +18,27 @@ export function SnapActionButton({
   const { accentHex } = useSnapPalette();
   const { colors } = useSnapTheme();
   const label = String(props.label ?? "Action");
-  const variant = VARIANT_MAP[String(props.variant ?? "default")] ?? "default";
+  const variant = VARIANT_MAP[String(props.variant ?? "secondary")] ?? "secondary";
   const iconName = props.icon ? String(props.icon) : undefined;
 
   const variantStyle = (() => {
     switch (variant) {
-      case "default":
+      case "primary":
         return { backgroundColor: accentHex };
       case "secondary":
         return { backgroundColor: "transparent", borderWidth: 1.5, borderColor: accentHex };
-      case "outline":
-        return { backgroundColor: "rgba(255,255,255,0.04)", borderWidth: 1, borderColor: colors.border };
-      case "ghost":
-        return { backgroundColor: "transparent" };
     }
   })();
 
-  const textColor = variant === "default" ? "#fff" : variant === "secondary" ? accentHex : colors.text;
-  const iconColor = variant === "default" ? "#fff" : variant === "secondary" ? accentHex : colors.text;
+  const textColor = variant === "primary" ? "#fff" : accentHex;
+  const iconColor = variant === "primary" ? "#fff" : accentHex;
 
   return (
     <View style={styles.outer}>
       <Pressable
         style={({ pressed }) => [
           styles.btn,
-          variant === "default" ? styles.btnDefault : styles.btnOther,
+          variant === "primary" ? styles.btnDefault : styles.btnOther,
           variantStyle,
           pressed && styles.pressed,
         ]}
