@@ -27,4 +27,3 @@ export {
   type SnapPayload,
 } from "./schemas";
 export { validateSnapResponse, type ValidationResult } from "./validator";
-export { type Middleware, useMiddleware } from "./middleware";

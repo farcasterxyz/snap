@@ -430,7 +430,7 @@ importers:
     devDependencies:
       '@farcaster/jfs':
         specifier: ^0.2.2
-        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))
+        version: 0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.10(typescript@5.9.3)(zod@4.3.6))
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
@@ -518,14 +518,14 @@ importers:
   template:
     dependencies:
       '@farcaster/snap':
-        specifier: workspace:*
-        version: link:../pkgs/snap
+        specifier: '*'
+        version: 1.10.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/snap-hono':
-        specifier: workspace:*
-        version: link:../pkgs/hono
+        specifier: '*'
+        version: 1.4.3(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(hono@4.12.9)(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
       '@farcaster/snap-turso':
-        specifier: workspace:*
-        version: link:../pkgs/turso
+        specifier: '*'
+        version: 1.0.1(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
       '@hono/node-server':
         specifier: ^1.0.0
         version: 1.19.12(hono@4.12.9)
@@ -1421,6 +1421,32 @@ packages:
     peerDependencies:
       typescript: '>= 5.8.3'
       viem: 2.x
+
+  '@farcaster/snap-hono@1.4.3':
+    resolution: {integrity: sha512-io2mRAMdWonyfhzv4ygx1W8mtObejnz35jqYwcIl5yGAk/JwDb8NKYgijxnbBeZFpzHz+6mz9aTziuELTJTQWA==}
+    peerDependencies:
+      hono: '>=4.0.0'
+
+  '@farcaster/snap-turso@1.0.1':
+    resolution: {integrity: sha512-K+Km0jgSB3HUhisXZ/ZdvebCnEbaTue0A8+lXo9gEObKl87BiXQM0lbrA7Svls4QTe52kR8leBmpxRY8hKdfZg==}
+
+  '@farcaster/snap@1.10.0':
+    resolution: {integrity: sha512-rRG6q/tu3d2Ns90zBdCYo/24yLylch/ADEl1Z+Feron8PyJnWCMnCKy63B9irR0VnjNy0CySAuoL52VmzohVbA==}
+    peerDependencies:
+      '@json-render/react': '*'
+      '@neynar/ui': '*'
+      lucide-react: '*'
+      react: ^18.0.0 || ^19.0.0
+      zod: ^4.0.0
+    peerDependenciesMeta:
+      '@json-render/react':
+        optional: true
+      '@neynar/ui':
+        optional: true
+      lucide-react:
+        optional: true
+      react:
+        optional: true
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -5215,6 +5241,14 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
+  viem@2.47.10:
+    resolution: {integrity: sha512-D+l6SDDZWB5bh8u9hgICzMX2/egMrgEQ+Pef/QkZgmOl6bOTyCQMSgWAH8jZTWJ/218J9QNv7s/9BH6Wu5oPDg==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   viem@2.47.6:
     resolution: {integrity: sha512-zExmbI99NGvMdYa7fmqSTLgkwh48dmhgEqFrUgkpL4kfG4XkVefZ8dZqIKVUhZo6Uhf0FrrEXOsHm9LUyIvI2Q==}
     peerDependencies:
@@ -6594,17 +6628,75 @@ snapshots:
       chalk: 4.1.2
       js-yaml: 4.1.1
 
+  '@farcaster/jfs@0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.10(typescript@5.9.3)(zod@4.3.6))':
+    dependencies:
+      '@noble/curves': 2.0.1
+      typescript: 5.9.3
+      viem: 2.47.10(typescript@5.9.3)(zod@4.3.6)
+
   '@farcaster/jfs@0.2.2(@noble/curves@2.0.1)(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))':
     dependencies:
       '@noble/curves': 2.0.1
       typescript: 5.9.3
       viem: 2.47.6(typescript@5.9.3)(zod@4.3.6)
 
+  '@farcaster/jfs@0.3.0(typescript@5.9.3)(viem@2.47.10(typescript@5.9.3)(zod@4.3.6))':
+    dependencies:
+      '@noble/curves': 2.0.1
+      typescript: 5.9.3
+      viem: 2.47.10(typescript@5.9.3)(zod@4.3.6)
+
   '@farcaster/jfs@0.3.0(typescript@5.9.3)(viem@2.47.6(typescript@5.9.3)(zod@4.3.6))':
     dependencies:
       '@noble/curves': 2.0.1
       typescript: 5.9.3
       viem: 2.47.6(typescript@5.9.3)(zod@4.3.6)
+
+  '@farcaster/snap-hono@1.4.3(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(hono@4.12.9)(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@farcaster/snap': 1.10.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
+      '@resvg/resvg-wasm': 2.6.2
+      hono: 4.12.9
+      satori: 0.10.14
+    transitivePeerDependencies:
+      - '@json-render/react'
+      - '@neynar/ui'
+      - bufferutil
+      - lucide-react
+      - react
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@farcaster/snap-turso@1.0.1(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@farcaster/snap': 1.10.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
+      '@tursodatabase/serverless': 0.2.4
+    transitivePeerDependencies:
+      - '@json-render/react'
+      - '@neynar/ui'
+      - bufferutil
+      - lucide-react
+      - react
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@farcaster/snap@1.10.0(@json-render/react@0.15.0(react@19.2.4)(zod@4.3.6))(@neynar/ui@1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2))(lucide-react@1.7.0(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)':
+    dependencies:
+      '@farcaster/jfs': 0.3.0(typescript@5.9.3)(viem@2.47.10(typescript@5.9.3)(zod@4.3.6))
+      '@json-render/core': 0.15.0(zod@4.3.6)
+      viem: 2.47.10(typescript@5.9.3)(zod@4.3.6)
+      zod: 4.3.6
+    optionalDependencies:
+      '@json-render/react': 0.15.0(react@19.2.4)(zod@4.3.6)
+      '@neynar/ui': 1.2.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2)
+      lucide-react: 1.7.0(react@19.2.4)
+      react: 19.2.4
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
 
   '@floating-ui/core@1.7.5':
     dependencies:
@@ -10990,6 +11082,23 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
+
+  viem@2.47.10(typescript@5.9.3)(zod@4.3.6):
+    dependencies:
+      '@noble/curves': 1.9.1
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      abitype: 1.2.3(typescript@5.9.3)(zod@4.3.6)
+      isows: 1.0.7(ws@8.18.3)
+      ox: 0.14.7(typescript@5.9.3)(zod@4.3.6)
+      ws: 8.18.3
+    optionalDependencies:
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - zod
 
   viem@2.47.6(typescript@5.9.3)(zod@4.3.6):
     dependencies:

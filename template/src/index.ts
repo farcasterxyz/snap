@@ -1,7 +1,7 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
-import { SnapFunction, useMiddleware } from "@farcaster/snap";
+import { SnapFunction } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import {
   createInMemoryDataStore,
