@@ -36,7 +36,41 @@ export const snapResponseSchema = z
   .strict();
 
 export type SnapResponse = z.infer<typeof snapResponseSchema>;
-export type SnapHandlerResult = z.input<typeof snapResponseSchema>;
+
+/**
+ * Permissive element input type for snap handler authors.
+ * Allows dynamic element construction without requiring exact UIElement types.
+ */
+export type SnapElementInput = {
+  type: string;
+  props?: Record<string, unknown>;
+  children?: string[];
+  on?: Record<string, unknown>;
+  [key: string]: unknown;
+};
+
+/**
+ * Permissive input type for the `ui` field in snap handler return values.
+ * Accepts dynamically-built element maps (e.g. `Record<string, SnapElementInput>`)
+ * without requiring exact UIElement types.
+ */
+export type SnapSpecInput = {
+  root: string;
+  elements: Record<string, SnapElementInput>;
+  state?: Record<string, unknown>;
+};
+
+/**
+ * Return type for snap handler functions.
+ * Uses permissive input types so handlers can build elements dynamically
+ * without type casts. Runtime validation via the Zod schema still catches invalid shapes.
+ */
+export type SnapHandlerResult = {
+  version: typeof SPEC_VERSION;
+  theme?: { accent?: z.input<typeof themeAccentSchema> };
+  effects?: z.input<typeof snapResponseSchema>["effects"];
+  ui: SnapSpecInput;
+};
 
 // ─── POST payload ──────────────────────────────────────
 

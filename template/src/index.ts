@@ -47,17 +47,12 @@ const snap: SnapFunction = async (ctx) => {
           type: "toggle_group",
           props: {
             name: TOPIC_NAME,
-            options: [
-              { value: OPT_OVERVIEW, label: "Overview" },
-              { value: OPT_HTTP, label: "HTTP" },
-              { value: OPT_LOCAL, label: "Local" },
-              { value: OPT_DEPLOY, label: "Deploy" },
-            ],
+            options: [OPT_OVERVIEW, OPT_HTTP, OPT_LOCAL, OPT_DEPLOY],
           },
         },
         caption: {
           type: "badge",
-          props: { content: caption },
+          props: { label: caption },
         },
         refresh: {
           type: "button",

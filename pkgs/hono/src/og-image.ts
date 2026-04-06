@@ -255,40 +255,81 @@ function colorHex(color: string | undefined, accent: string): string {
 }
 
 function mapText(el: El): VNode {
-  const style = el.style as string;
+  const size = String(el.size ?? "md");
+  const weight = String(el.weight ?? "normal");
   const align = (el.align as string) ?? "left";
   let content = String(el.content ?? "");
-  // Inter WOFF subset: normalize arrows / punctuation so glyphs don't substitute badly in Satori.
-  if (style === "caption" || style === "body") {
-    content = content
-      .replace(/\u2192/g, "->")
-      .replace(/\u2190/g, "<-")
-      .replace(/\u27a1/gi, "->");
-  }
-  // Match `renderSnapPage` `renderText` (card HTML): title 20px #111, body/caption/list tones.
-  const styleMap: Record<string, Record<string, unknown>> = {
-    title: { fontSize: 20, fontWeight: 700, color: "#111111", lineHeight: 1.3 },
-    body: { fontSize: 15, color: "#374151", lineHeight: 1.5 },
-    caption: { fontSize: 13, color: "#9CA3AF", lineHeight: 1.4 },
-    label: {
-      fontSize: 13,
-      fontWeight: 600,
-      color: "#6B7280",
-      textTransform: "uppercase",
-      letterSpacing: "0.5px",
-    },
+  content = content
+    .replace(/\u2192/g, "->")
+    .replace(/\u2190/g, "<-")
+    .replace(/\u27a1/gi, "->");
+  const sizeStyles: Record<string, Record<string, unknown>> = {
+    md: { fontSize: 15, lineHeight: 1.5 },
+    sm: { fontSize: 13, lineHeight: 1.5 },
   };
-  const ts = styleMap[style] ?? styleMap["body"]!;
+  const weightStyles: Record<string, Record<string, unknown>> = {
+    bold: { fontWeight: 700 },
+    normal: { fontWeight: 400 },
+  };
   return h(
     "div",
     {
       display: "flex",
       width: OG_CARD_INNER_WIDTH_PX,
+      color: "#374151",
       textAlign: align,
-      ...ts,
+      ...(sizeStyles[size] ?? sizeStyles.md),
+      ...(weightStyles[weight] ?? weightStyles.normal),
     },
     content,
   );
+}
+
+function mapItem(el: El): VNode {
+  const title = String(el.title ?? "");
+  const description = el.description ? String(el.description) : undefined;
+  return h(
+    "div",
+    { display: "flex", flexDirection: "column", gap: 2, padding: "6px 10px" },
+    h("div", { display: "flex", fontSize: 15, fontWeight: 500, color: "#111" }, title),
+    description
+      ? h("div", { display: "flex", fontSize: 13, color: "#6B7280", lineHeight: 1.4 }, description)
+      : null,
+  );
+}
+
+function mapBadge(el: El, accent: string): VNode {
+  const label = String(el.label ?? "");
+  const color = colorHex(el.color as string | undefined, accent);
+  const variant = String(el.variant ?? "default");
+  const isFilled = variant === "default";
+  const bg = isFilled ? color : "transparent";
+  const fg = isFilled ? "#fff" : color;
+  const border = isFilled ? undefined : `1px solid ${color}`;
+  return h(
+    "div",
+    {
+      display: "flex",
+      alignItems: "center",
+      paddingTop: 2, paddingBottom: 2, paddingLeft: 10, paddingRight: 10,
+      borderRadius: 9999,
+      fontSize: 12,
+      fontWeight: 500,
+      backgroundColor: bg,
+      color: fg,
+      ...(border ? { border } : {}),
+    },
+    label,
+  );
+}
+
+function mapSeparator(): VNode {
+  return h("div", {
+    display: "flex",
+    height: 1,
+    backgroundColor: "#E5E7EB",
+    width: "100%",
+  });
 }
 
 function mapImage(el: El, imageMap: Map<string, string>): VNode {
@@ -534,16 +575,60 @@ function mapElement(
   switch (type) {
     case "text":
       return mapText(el);
+    case "item":
+      return mapItem(el);
+    case "badge":
+      return mapBadge(el, accent);
     case "image":
       return mapImage(el, imageMap);
+    case "separator":
     case "divider":
-      return mapDivider();
+      return mapSeparator();
     case "progress":
       return mapProgress(el, accent);
-    case "list":
-      return mapList(el);
     case "toggle_group":
       return mapButtonGroup(el, accent);
+    case "input": {
+      const label = el.label ? String(el.label) : "";
+      const placeholder = el.placeholder ? String(el.placeholder) : "";
+      return h(
+        "div",
+        { display: "flex", flexDirection: "column", gap: 6, width: OG_CARD_INNER_WIDTH_PX },
+        label ? h("div", { display: "flex", fontSize: 13, fontWeight: 500, color: "#374151" }, label) : null,
+        h("div", {
+          display: "flex", padding: "10px 12px", borderRadius: 8,
+          border: "1px solid #E5E7EB", backgroundColor: "#fff",
+          fontSize: 14, color: "#9CA3AF",
+        }, placeholder || " "),
+      );
+    }
+    case "switch": {
+      const label = el.label ? String(el.label) : "";
+      const checked = Boolean(el.defaultChecked);
+      const bg = checked ? accent : "#D1D5DB";
+      return h(
+        "div",
+        { display: "flex", alignItems: "center", justifyContent: "space-between", width: OG_CARD_INNER_WIDTH_PX },
+        h("div", { display: "flex", fontSize: 14, color: "#374151" }, label),
+        h("div", { display: "flex", width: 44, height: 24, borderRadius: 12, backgroundColor: bg, position: "relative" },
+          h("div", { display: "flex", width: 20, height: 20, borderRadius: 10, backgroundColor: "#fff", position: "absolute", top: 2, left: checked ? 20 : 2 }),
+        ),
+      );
+    }
+    case "slider": {
+      const label = el.label ? String(el.label) : "";
+      return h(
+        "div",
+        { display: "flex", flexDirection: "column", gap: 6, width: OG_CARD_INNER_WIDTH_PX },
+        label ? h("div", { display: "flex", fontSize: 13, fontWeight: 500, color: "#374151" }, label) : null,
+        h("div", { display: "flex", height: 10, backgroundColor: "#E5E7EB", borderRadius: 9999, width: "100%" },
+          h("div", { display: "flex", height: 10, width: "50%", backgroundColor: accent, borderRadius: 9999 }),
+        ),
+      );
+    }
+    // Legacy types kept for backward compat with older specs
+    case "list":
+      return mapList(el);
     case "bar_chart":
       return mapBarChart(el, accent);
     case "group": {
@@ -564,8 +649,8 @@ function mapElement(
 
 function mapButton(btn: El, accent: string, i: number): VNode {
   const label = String(btn.label ?? "");
-  const style = (btn.style as string) ?? (i === 0 ? "primary" : "secondary");
-  const isPrimary = style === "primary";
+  const variant = (btn.variant as string) ?? (btn.style as string) ?? "secondary";
+  const isPrimary = variant === "primary";
   // Primary CTA: generous vertical padding + minHeight so Satori/Yoga renders a tall tap target
   // (small padding deltas are easy to miss; flexBasis:0 rows can also under-measure height).
   const py = isPrimary ? 18 : 10;
@@ -606,21 +691,20 @@ function linesForWrappedText(
 }
 
 function estimateTextHeight(el: El): number {
-  const style = (el.style as string) ?? "body";
+  const size = String(el.size ?? "md");
   const content = String(el.content ?? "");
   const w = OG_CARD_INNER_WIDTH_PX;
-  switch (style) {
-    case "title":
-      return linesForWrappedText(content.length, w, 11) * 26;
-    case "body":
-      return linesForWrappedText(content.length, w, 7.5) * 23;
-    case "caption":
-      return linesForWrappedText(content.length, w, 7) * 18;
-    case "label":
-      return linesForWrappedText(content.length, w, 7) * 18;
-    default:
-      return linesForWrappedText(content.length, w, 7.5) * 23;
-  }
+  if (size === "sm") return linesForWrappedText(content.length, w, 7) * 20;
+  return linesForWrappedText(content.length, w, 7.5) * 23;
+}
+
+function estimateItemHeight(el: El): number {
+  const title = String(el.title ?? "");
+  const desc = el.description ? String(el.description) : "";
+  const w = OG_CARD_INNER_WIDTH_PX;
+  let total = linesForWrappedText(title.length, w, 7.5) * 23 + 12;
+  if (desc) total += linesForWrappedText(desc.length, w, 7) * 20;
+  return total;
 }
 
 function estimateImageHeight(el: El, imageMap: Map<string, string>): number {
@@ -688,12 +772,23 @@ function estimateElementHeight(el: El, imageMap: Map<string, string>): number {
   switch (type) {
     case "text":
       return estimateTextHeight(el);
+    case "item":
+      return estimateItemHeight(el);
+    case "badge":
+      return 24;
     case "image":
       return estimateImageHeight(el, imageMap);
+    case "separator":
     case "divider":
       return 1;
     case "progress":
       return estimateProgressHeight(el);
+    case "input":
+      return (el.label ? 20 : 0) + 42;
+    case "switch":
+      return 28;
+    case "slider":
+      return (el.label ? 20 : 0) + 16;
     case "list":
       return estimateListHeight(el);
     case "toggle_group":
@@ -767,17 +862,25 @@ function estimateDefaultOgHeight(
 
 // ─── Spec helpers ─────────────────────────────────────
 
-/** Walk the flat spec from root and collect top-level children as El objects for the OG renderer. */
+/** Walk the flat spec from root, recursing into stack containers, and collect leaf elements as El objects. */
 function specToElementList(spec: SnapSpec): El[] {
+  function collect(keys: string[]): El[] {
+    const result: El[] = [];
+    for (const key of keys) {
+      const el = spec.elements[key];
+      if (!el) continue;
+      // Recurse into stack and item_group containers
+      if ((el.type === "stack" || el.type === "item_group") && el.children?.length) {
+        result.push(...collect(el.children));
+      } else {
+        result.push({ type: el.type, ...el.props } as El);
+      }
+    }
+    return result;
+  }
   const rootEl = spec.elements[spec.root];
   if (!rootEl?.children) return [];
-  return rootEl.children
-    .map((key) => {
-      const el = spec.elements[key];
-      if (!el) return null;
-      return { type: el.type, ...el.props } as El;
-    })
-    .filter((el): el is El => el != null);
+  return collect(rootEl.children);
 }
 
 /** Extract button elements (type: "button") from the spec. */

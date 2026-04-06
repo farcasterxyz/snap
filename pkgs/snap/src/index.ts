@@ -21,6 +21,8 @@ export {
   type SnapContext,
   type SnapResponse,
   type SnapHandlerResult,
+  type SnapElementInput,
+  type SnapSpecInput,
   type SnapFunction,
   type SnapPayload,
 } from "./schemas";
