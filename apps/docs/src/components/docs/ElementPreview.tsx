@@ -149,6 +149,8 @@ function TextPreview({
   );
 }
 
+let inputCounter = 0;
+
 function InputPreview({
   label,
   placeholder = "Type here...",
@@ -156,14 +158,16 @@ function InputPreview({
   label?: string;
   placeholder?: string;
 }) {
+  const [id] = useState(() => `el-input-${++inputCounter}`);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {label && (
-        <label style={{ fontSize: 13, fontWeight: 500, color: "var(--text-secondary)" }}>
+        <label htmlFor={id} style={{ fontSize: 13, fontWeight: 500, color: "var(--text-secondary)" }}>
           {label}
         </label>
       )}
       <input
+        id={id}
         placeholder={placeholder}
         style={{
           padding: "8px 12px",

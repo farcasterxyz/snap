@@ -93,7 +93,7 @@ function SnapButton({
         fontSize: 14,
         cursor: "pointer",
         lineHeight: "20px",
-        width: "100%",
+        flex: 1,
         transition: "opacity 0.1s, transform 0.1s",
         opacity: pressed ? 0.7 : 1,
         transform: pressed ? "scale(0.97)" : "scale(1)",
@@ -105,6 +105,8 @@ function SnapButton({
   );
 }
 
+let snapInputCounter = 0;
+
 function SnapInput({
   label,
   placeholder,
@@ -112,14 +114,16 @@ function SnapInput({
   label?: string;
   placeholder?: string;
 }) {
+  const [id] = useState(() => `snap-input-${++snapInputCounter}`);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {label && (
-        <label style={{ fontSize: 13, fontWeight: 500, color: "var(--text-secondary)" }}>
+        <label htmlFor={id} style={{ fontSize: 13, fontWeight: 500, color: "var(--text-secondary)" }}>
           {label}
         </label>
       )}
       <input
+        id={id}
         placeholder={placeholder ?? ""}
         style={{
           padding: "8px 12px",
@@ -179,13 +183,15 @@ function SnapProgress({
 function SnapToggleGroup({
   options,
   accent,
+  orientation = "horizontal",
 }: {
   options: string[];
   accent: string;
+  orientation?: string;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   return (
-    <div style={{ display: "flex", gap: 8, flexDirection: (options.length > 3 ? "column" : "row") as "row" | "column" }}>
+    <div style={{ display: "flex", gap: 8, flexDirection: orientation === "vertical" ? "column" : "row" }}>
       {options.map((opt) => {
         const active = selected === opt;
         return (
@@ -287,7 +293,13 @@ function RenderElement({
         />
       );
     case "toggle_group":
-      return <SnapToggleGroup options={p.options as string[]} accent={accent} />;
+      return (
+        <SnapToggleGroup
+          options={p.options as string[]}
+          orientation={p.orientation as string}
+          accent={accent}
+        />
+      );
     case "badge":
       return <SnapBadge label={p.label as string} color={p.color as string} accent={accent} />;
     case "stack": {
