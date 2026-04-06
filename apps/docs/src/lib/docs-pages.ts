@@ -14,7 +14,7 @@ export type DocSection = {
 const SECTION_APP_FOLDER: Record<string, string> = {
   Home: "(learn)",
   Learn: "(learn)",
-  "Snap Protocol": "(reference)",
+  "Spec": "(reference)",
 };
 
 // NOTE: keep this in sync with snap-sidebar.json and apps/docs/src/app/(docs)/(learn)/page.mdx
@@ -23,7 +23,7 @@ export const DOC_SECTIONS: DocSection[] = [
     title: "Home",
     untitled: true,
     pages: [
-      { pathname: "/", title: "Home" },
+      { pathname: "/", title: "Introduction" },
       { pathname: "/agents", title: "Building Snaps with AI" },
     ],
   },
@@ -37,7 +37,7 @@ export const DOC_SECTIONS: DocSection[] = [
     ],
   },
   {
-    title: "Snap Protocol",
+    title: "Spec",
     pages: [
       { pathname: "/protocol", title: "Overview" },
       { pathname: "/elements", title: "Elements" },
