@@ -1,7 +1,6 @@
 import type { Hono } from "hono";
 import { cors } from "hono/cors";
 import {
-  createDefaultDataStore,
   MEDIA_TYPE,
   type SnapFunction,
   ACTION_TYPE_GET,
@@ -16,8 +15,6 @@ import {
   etagForPage,
   type OgOptions,
 } from "./og-image";
-
-const defaultData = createDefaultDataStore();
 
 export type SnapHandlerOptions = {
   /**
@@ -81,7 +78,6 @@ export function registerSnapHandler(
         const snap = await snapFn({
           action: { type: ACTION_TYPE_GET },
           request: stripAuthHeaders(c.req.raw),
-          data: defaultData,
         });
         const snapJson = JSON.stringify(snap);
         const etag = etagForPage(snapJson);
@@ -169,7 +165,6 @@ export function registerSnapHandler(
     const response = await snapFn({
       action: { type: ACTION_TYPE_GET },
       request: c.req.raw,
-      data: defaultData,
     });
 
     return payloadToResponse(response, {
@@ -213,7 +208,6 @@ export function registerSnapHandler(
     const response = await snapFn({
       action: parsed.action,
       request: raw,
-      data: defaultData,
     });
 
     return payloadToResponse(response, {
@@ -273,7 +267,6 @@ async function getFallbackHtml(
     const snap = await snapFn({
       action: { type: ACTION_TYPE_GET },
       request: stripAuthHeaders(request),
-      data: defaultData,
     });
     return renderSnapPage(snap, origin, { ogImageUrl, resourcePath, siteName });
   } catch {

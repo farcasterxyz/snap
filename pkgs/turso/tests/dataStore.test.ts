@@ -1,20 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  createDefaultDataStore,
-  createInMemoryDataStore,
-} from "../src/dataStore";
-
-describe("createDefaultDataStore", () => {
-  it("throws on get()", async () => {
-    const store = createDefaultDataStore();
-    await expect(store.get("key")).rejects.toThrow("not configured");
-  });
-
-  it("throws on set()", async () => {
-    const store = createDefaultDataStore();
-    await expect(store.set("key", "value")).rejects.toThrow("not configured");
-  });
-});
+import { createInMemoryDataStore } from "../src/index.js";
 
 describe("createInMemoryDataStore", () => {
   it("get returns null for missing key", async () => {

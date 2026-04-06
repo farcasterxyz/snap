@@ -1,9 +1,8 @@
-export type { Spec as SnapSpec, UIElement as SnapUIElement } from "@json-render/core";
-export {
-  SPEC_VERSION,
-  MEDIA_TYPE,
-  EFFECT_VALUES,
-} from "./constants";
+export type {
+  Spec as SnapSpec,
+  UIElement as SnapUIElement,
+} from "@json-render/core";
+export { SPEC_VERSION, MEDIA_TYPE, EFFECT_VALUES } from "./constants";
 export {
   DEFAULT_THEME_ACCENT,
   PALETTE_COLOR,
@@ -25,14 +24,5 @@ export {
   type SnapFunction,
   type SnapPayload,
 } from "./schemas";
-export {
-  validateSnapResponse,
-  type ValidationResult,
-} from "./validator";
-export {
-  type DataStoreValue,
-  type SnapDataStore,
-  createDefaultDataStore,
-  createInMemoryDataStore,
-} from "./dataStore";
+export { validateSnapResponse, type ValidationResult } from "./validator";
 export { type Middleware, useMiddleware } from "./middleware";

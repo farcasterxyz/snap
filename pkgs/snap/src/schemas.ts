@@ -1,14 +1,7 @@
 import { z } from "zod";
 import type { Spec } from "@json-render/core";
-import {
-  EFFECT_VALUES,
-  SPEC_VERSION,
-} from "./constants";
-import {
-  DEFAULT_THEME_ACCENT,
-  PALETTE_COLOR_VALUES,
-} from "./colors";
-import { type SnapDataStore } from "./dataStore";
+import { EFFECT_VALUES, SPEC_VERSION } from "./constants";
+import { DEFAULT_THEME_ACCENT, PALETTE_COLOR_VALUES } from "./colors";
 
 // ─── Theme ─────────────────────────────────────────────
 
@@ -92,7 +85,6 @@ export type SnapAction = z.infer<typeof snapActionSchema>;
 export type SnapContext = {
   action: SnapAction;
   request: Request;
-  data: SnapDataStore;
 };
 
 export type SnapFunction = (ctx: SnapContext) => Promise<SnapHandlerResult>;

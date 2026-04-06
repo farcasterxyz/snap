@@ -58,18 +58,13 @@ For apps installed or copied **outside** this monorepo, prefer **published semve
 
 The json-render catalog for snaps lives in `pkgs/snap/src/ui/`. It is exported as `@farcaster/snap/ui` and per-component sub-paths (e.g., `@farcaster/snap/ui/button`). The emulator imports `snapJsonRenderCatalog` from `@farcaster/snap/ui`.
 
-## SnapDataStore (`@farcaster/snap`)
+## Data store (`@farcaster/snap-turso`)
 
-`SnapContext.data` is a required `SnapDataStore` field.
+Opt-in data persistence lives in `@farcaster/snap-turso`:
 
-- `@farcaster/snap` exports: `SnapDataStore`, `DataStoreValue` (recursive JSON-serializable type), `createDefaultDataStore()` (stub that throws on access), `createInMemoryDataStore()` (in-memory store for tests)
-- `@farcaster/snap-hono` always injects the default stub at all `snapFn` call sites
-
-## `@farcaster/snap-turso`
-
-Package at `pkgs/turso/`. Exports `withTursoServerless(snapFn, options?)` — a `SnapFunction` wrapper that injects a Turso serverless-backed `SnapDataStore` into the context.
-
-- Reads `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` at call time; if either is absent, warns and returns the original `snapFn` unchanged
+- Types: `DataStore`, `DataStoreValue`, `SnapFunctionWithDataStore`
+- Helpers: `createInMemoryDataStore()`, `createTursoDataStore(url, token)`
+- when hosted via Neynar, uses db-backed storage; otherwise in-memory (for local dev)
 
 ## JFS request-body verification
 

@@ -1,29 +1,48 @@
 import { connect } from "@tursodatabase/serverless";
 import {
-  type DataStoreValue,
-  type SnapDataStore,
   type SnapFunction,
+  type SnapHandlerResult,
+  type SnapContext,
 } from "@farcaster/snap";
-
-/** Reserved for future options (e.g. custom table name). */
-export type WithTursoServerlessOptions = Record<string, never>;
 
 const TABLE_SQL = `CREATE TABLE IF NOT EXISTS snap_kv (key TEXT PRIMARY KEY, value TEXT NOT NULL)`;
 
-/**
- * Wraps a SnapFunction and injects a Turso serverless-backed data store into the
- * context.
- */
-export function withTursoServerless(
-  snapFn: SnapFunction,
-  _options?: WithTursoServerlessOptions,
-): SnapFunction {
+export type DataStoreValue =
+  | string
+  | number
+  | boolean
+  | null
+  | DataStoreValue[]
+  | { [key: string]: DataStoreValue };
+
+export type DataStore = {
+  get(key: string): Promise<DataStoreValue | null>;
+  set(key: string, value: DataStoreValue): Promise<void>;
+};
+
+export type SnapFunctionWithDataStore = (
+  ctx: SnapContext & { data: DataStore },
+) => Promise<SnapHandlerResult>;
+
+export function createInMemoryDataStore(): DataStore {
+  const data = new Map<string, DataStoreValue>();
+  return {
+    async get(key: string): Promise<DataStoreValue | null> {
+      return data.get(key) ?? null;
+    },
+    async set(key: string, value: DataStoreValue): Promise<void> {
+      data.set(key, value);
+    },
+  };
+}
+
+export function createTursoDataStore(): DataStore {
   const url = process.env.TURSO_DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
   if (!url || !authToken) {
-    console.warn("missing env vars -- skipping Turso data store setup");
-    return snapFn;
+    console.warn("missing Turso env vars -- using in-memory data store");
+    return createInMemoryDataStore();
   }
 
   const conn = connect({ url, authToken });
@@ -37,7 +56,7 @@ export function withTursoServerless(
     await ensureTablePromise;
   };
 
-  const store: SnapDataStore = {
+  return {
     async get(key: string): Promise<DataStoreValue | null> {
       await ensureTable();
       const stmt = await conn.prepare(
@@ -64,6 +83,4 @@ export function withTursoServerless(
       await stmt.run([key, JSON.stringify(value)]);
     },
   };
-
-  return (ctx) => snapFn({ ...ctx, data: store });
 }

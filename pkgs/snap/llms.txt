@@ -158,14 +158,14 @@ Plus the special value `"accent"` which references `theme.accent`.
 ```ts
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { parseRequest, verifyJFSRequestBody } from "@farcaster/snap/server";
-import { createInMemoryDataStore } from "@farcaster/snap";
+import { withTursoServerless, createInMemoryDataStore } from "@farcaster/snap-turso";
 ```
 
-- `@farcaster/snap` — schemas, types, validation, data store
+- `@farcaster/snap` — schemas, types, validation
 - `@farcaster/snap/ui` — json-render catalog, component schemas
 - `@farcaster/snap/server` — request parsing, JFS verification
 - `@farcaster/snap-hono` — Hono adapter (`registerSnapHandler`)
-- `@farcaster/snap-turso` — Turso data store middleware
+- `@farcaster/snap-turso` — `withTursoServerless`, `DataStore` / `DataStoreValue`, in-memory and Turso helpers
 
 ## Full Documentation
 
