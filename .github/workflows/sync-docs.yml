@@ -6,6 +6,7 @@ on:
     paths:
       - "apps/docs/src/app/(docs)/**"
       - "apps/docs/src/components/docs/**"
+      - "apps/docs/src/app/SKILL.md/**"
       - "apps/docs/snap-sidebar.json"
 
 jobs:
@@ -78,6 +79,15 @@ jobs:
           SNAP_SIDEBAR="$GITHUB_WORKSPACE/snap/apps/docs/snap-sidebar.json"
           if [ -f "$SNAP_SIDEBAR" ]; then
             cp "$SNAP_SIDEBAR" "$GITHUB_WORKSPACE/docs/src/lib/snap-sidebar.json"
+          fi
+
+          # Copy SKILL.md and its route handler
+          SNAP_SKILL="$GITHUB_WORKSPACE/snap/apps/docs/src/app/SKILL.md"
+          DOCS_SKILL="$GITHUB_WORKSPACE/docs/src/app/snap/SKILL.md"
+          if [ -d "$SNAP_SKILL" ]; then
+            mkdir -p "$DOCS_SKILL"
+            cp "$SNAP_SKILL/SKILL.md" "$DOCS_SKILL/SKILL.md"
+            cp "$SNAP_SKILL/route.ts" "$DOCS_SKILL/route.ts"
           fi
 
       - name: Push changes
