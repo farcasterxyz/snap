@@ -192,21 +192,25 @@ body {
 
 .sidebar-section-title {
   padding: 6px 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-faint);
+  color: var(--text-secondary);
 }
 
 .sidebar-link {
   display: block;
   padding: 6px 20px 6px 28px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   text-decoration: none;
   line-height: 1.5;
   transition: color 0.1s, background 0.1s;
+}
+
+.sidebar-link--top {
+  padding-left: 20px;
 }
 
 .sidebar-link--external {
@@ -349,6 +353,14 @@ body {
 
 .docs-content ol ol {
   list-style-type: lower-alpha;
+}
+
+.docs-content ul {
+  list-style-type: disc;
+}
+
+.docs-content ul ul {
+  list-style-type: circle;
 }
 
 .docs-content li {

@@ -12,6 +12,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta
+          name="instructions-for-agents"
+          content="1) Use `Accept: text/markdown` HTTP header to save on tokens. 2) Read https://docs.farcaster.xyz/snap/agents for more agent-specific docs."
+        />
+      </head>
       <body>
         <div className="app-shell">
           <Sidebar />

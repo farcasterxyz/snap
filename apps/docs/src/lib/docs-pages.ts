@@ -5,30 +5,39 @@ export type DocPage = {
 
 export type DocSection = {
   title: string;
+  /** When true, the section title is not rendered in the sidebar. */
+  untitled?: boolean;
   pages: DocPage[];
 };
 
 /** Route group folder under `src/app/(docs)/` for each sidebar section (URLs unchanged). */
 const SECTION_APP_FOLDER: Record<string, string> = {
+  Home: "(learn)",
   Learn: "(learn)",
-  Reference: "(reference)",
+  "Snap Protocol": "(reference)",
 };
 
 export const DOC_SECTIONS: DocSection[] = [
   {
-    title: "Learn",
+    title: "Home",
+    untitled: true,
     pages: [
-      { pathname: "/", title: "Start here" },
-      { pathname: "/building", title: "Building a Snap" },
-      { pathname: "/integrating", title: "Integrating Snaps" },
-      { pathname: "/examples", title: "Examples" },
-      { pathname: "/agents", title: "Agents" },
+      { pathname: "/", title: "Home" },
+      { pathname: "/agents", title: "Building Snaps with AI" },
     ],
   },
   {
-    title: "Reference",
+    title: "Learn",
     pages: [
-      { pathname: "/protocol", title: "Snap Protocol" },
+      { pathname: "/building", title: "Building a Snap" },
+      { pathname: "/integrating", title: "Integrating Snaps" },
+      { pathname: "/examples", title: "Examples" },
+    ],
+  },
+  {
+    title: "Snap Protocol",
+    pages: [
+      { pathname: "/protocol", title: "Overview" },
       { pathname: "/elements", title: "Elements" },
       { pathname: "/buttons", title: "Buttons" },
       { pathname: "/effects", title: "Effects" },

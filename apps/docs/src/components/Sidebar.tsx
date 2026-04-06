@@ -8,10 +8,11 @@ import FarcasterLogo from "./FarcasterLogo";
 import { DOC_SECTIONS } from "@/lib/docs-pages";
 
 type NavItem = { label: string; href: string; external?: boolean };
-type NavSection = { title: string; items: NavItem[] };
+type NavSection = { title: string; untitled?: boolean; items: NavItem[] };
 
 const NAV: NavSection[] = DOC_SECTIONS.map((section) => ({
   title: section.title,
+  untitled: section.untitled,
   items: section.pages.map((page) => ({
     label: page.title,
     href: page.pathname,
@@ -81,12 +82,14 @@ export default function Sidebar() {
           <div className="sidebar-nav">
             {NAV.map((section) => (
               <div key={section.title} className="sidebar-section">
-                <div className="sidebar-section-title">{section.title}</div>
+                {!section.untitled && (
+                  <div className="sidebar-section-title">{section.title}</div>
+                )}
                 {section.items.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`sidebar-link${
+                    className={`sidebar-link${section.untitled ? " sidebar-link--top" : ""}${
                       pathname === item.href ? " active" : ""
                     }`}
                   >
