@@ -17,6 +17,7 @@ const SECTION_APP_FOLDER: Record<string, string> = {
   "Snap Protocol": "(reference)",
 };
 
+// NOTE: keep this in sync with snap-sidebar.json and apps/docs/src/app/(docs)/(learn)/page.mdx
 export const DOC_SECTIONS: DocSection[] = [
   {
     title: "Home",
@@ -31,6 +32,7 @@ export const DOC_SECTIONS: DocSection[] = [
     pages: [
       { pathname: "/building", title: "Building a Snap" },
       { pathname: "/integrating", title: "Integrating Snaps" },
+      { pathname: "/persistent-state", title: "Persistent State" },
       { pathname: "/examples", title: "Examples" },
     ],
   },
@@ -46,7 +48,6 @@ export const DOC_SECTIONS: DocSection[] = [
       { pathname: "/actions", title: "Actions" },
       { pathname: "/constraints", title: "Constraints" },
       { pathname: "/auth", title: "Authentication" },
-      { pathname: "/data-store", title: "Persistent State" },
     ],
   },
 ];
