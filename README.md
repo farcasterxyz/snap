@@ -23,9 +23,9 @@ See [docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap) for more info.
 
 ### @farcaster/snap
 
-Core library for Snap servers: Zod schemas and types for snap JSON, validation of pages and POST bodies, and JFS verification for signed POST requests (`verifyJFSRequestBody`).
+Core library for Snap servers: schemas and types for snap JSON, validation of pages and POST bodies, and JFS verification for signed POST requests (`verifyJFSRequestBody`).
 
-The human-readable spec is authored as MDX under `apps/docs/src/app/(docs)/` and published at [docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap). Runtime validation remains in `@farcaster/snap` (`pkgs/snap`).
+The human-readable spec is authored as MDX under `apps/docs/src/app/(docs)/` and published at [docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap).
 
 ### @farcaster/snap-emulator
 
@@ -88,5 +88,3 @@ Pick the affected package(s) and the bump level (major / minor / patch). That wr
 - If that PR was merged and there is nothing left to version, runs **`pnpm changeset:publish`** — builds `pkgs/*` and publishes to npm.
 
 Changelogs use [@changesets/changelog-github](https://github.com/changesets/changelog-github) against this repo. GitHub Releases are created for published versions on `main`.
-
-**CI secrets** (org/repo): `NPM_TOKEN`, and `REPO_SCOPED_TOKEN` for the Changesets GitHub app token (same pattern as other Farcaster repos such as [miniapps](https://github.com/farcasterxyz/miniapps)).
