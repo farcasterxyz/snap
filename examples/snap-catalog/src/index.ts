@@ -64,7 +64,7 @@ function nav(base: string, current: View): Record<string, object> {
     children.push("nav-prev");
     elements["nav-prev"] = {
       type: "button",
-      props: { label: "Back", variant: "ghost", icon: "arrow-left" },
+      props: { label: "Back", icon: "arrow-left" },
       on: { press: { action: "submit", params: { target: `${base}/?view=${prev}` } } },
     };
   }
@@ -73,7 +73,7 @@ function nav(base: string, current: View): Record<string, object> {
     children.push("nav-next");
     elements["nav-next"] = {
       type: "button",
-      props: { label: "Next", variant: "outline", icon: "arrow-right" },
+      props: { label: "Next", icon: "arrow-right" },
       on: { press: { action: "submit", params: { target: `${base}/?view=${next}` } } },
     };
   }
@@ -109,7 +109,7 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         heading: {
           type: "text",
-          props: { content: "Farcaster Snaps", size: "lg", align: "center" },
+          props: { content: "Farcaster Snaps", size: "md", align: "center" },
         },
         tagline: {
           type: "text",
@@ -133,7 +133,7 @@ function welcomePage(base: string): SnapHandlerResult {
         sep: { type: "separator", props: {} },
         start: {
           type: "button",
-          props: { label: "Get Started", icon: "arrow-right" },
+          props: { label: "Get Started", variant: "primary", icon: "arrow-right" },
           on: { press: { action: "submit", params: { target: `${base}/?view=typography` } } },
         },
       },
@@ -151,7 +151,7 @@ function typographyPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["step", "heading", "sep1", "t-lg", "t-md", "t-sm", "sep2", "t-bold", "t-medium", "t-normal", "sep3", "t-center", "t-right", "sep4", "nav"],
+          children: ["step", "heading", "sep1", "t-md", "t-sm", "sep2", "t-bold", "t-normal", "sep3", "t-center", "t-right", "sep4", "nav"],
         },
         step: { type: "badge", props: { label: `Typography \u00b7 ${step("typography")}` } },
         heading: {
@@ -159,12 +159,10 @@ function typographyPage(base: string): SnapHandlerResult {
           props: { content: "Text sizes, weights, and alignment.", size: "sm" },
         },
         sep1: { type: "separator", props: {} },
-        "t-lg": { type: "text", props: { content: "Large \u2014 headings and titles", size: "lg" } },
         "t-md": { type: "text", props: { content: "Medium \u2014 body text and descriptions. This is the default size for most content in a snap." } },
         "t-sm": { type: "text", props: { content: "Small \u2014 captions, metadata, timestamps", size: "sm" } },
         sep2: { type: "separator", props: {} },
         "t-bold": { type: "text", props: { content: "Bold weight", weight: "bold" } },
-        "t-medium": { type: "text", props: { content: "Medium weight", weight: "medium" } },
         "t-normal": { type: "text", props: { content: "Normal weight", weight: "normal" } },
         sep3: { type: "separator", props: {} },
         "t-center": { type: "text", props: { content: "Center aligned", align: "center" } },
@@ -186,12 +184,12 @@ function imagesPage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["step", "heading", "sep1", "img-wide", "label-wide", "row-sq-43", "label-sq-43", "sep2", "row-34-916", "label-34-916", "sep3", "nav"],
+          children: ["step", "heading", "sep1", "img-wide", "label-wide", "row-sq-43", "label-sq-43", "sep2", "img-916", "label-916", "sep3", "nav"],
         },
         step: { type: "badge", props: { label: `Images \u00b7 ${step("images")}` } },
         heading: {
           type: "text",
-          props: { content: "All five aspect ratios.", size: "sm" },
+          props: { content: "All four aspect ratios.", size: "sm" },
         },
         sep1: { type: "separator", props: {} },
         "img-wide": {
@@ -229,18 +227,6 @@ function imagesPage(base: string): SnapHandlerResult {
         "lbl-sq": { type: "text", props: { content: "1:1", size: "sm", align: "center" } },
         "lbl-43": { type: "text", props: { content: "4:3", size: "sm", align: "center" } },
         sep2: { type: "separator", props: {} },
-        "row-34-916": {
-          type: "stack",
-          props: { direction: "horizontal" },
-          children: ["img-34", "img-916"],
-        },
-        "img-34": {
-          type: "image",
-          props: {
-            url: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=450&h=600&fit=crop&auto=format",
-            aspect: "3:4",
-          },
-        },
         "img-916": {
           type: "image",
           props: {
@@ -248,13 +234,7 @@ function imagesPage(base: string): SnapHandlerResult {
             aspect: "9:16",
           },
         },
-        "label-34-916": {
-          type: "stack",
-          props: { direction: "horizontal" },
-          children: ["lbl-34", "lbl-916"],
-        },
-        "lbl-34": { type: "text", props: { content: "3:4", size: "sm", align: "center" } },
-        "lbl-916": { type: "text", props: { content: "9:16", size: "sm", align: "center" } },
+        "label-916": { type: "text", props: { content: "9:16", size: "sm", align: "center" } },
         sep3: { type: "separator", props: {} },
         ...nav(base, "images"),
       },
@@ -277,7 +257,7 @@ function iconsPage(base: string): SnapHandlerResult {
         step: { type: "badge", props: { label: `Icons & Badges \u00b7 ${step("icons")}` } },
         heading: { type: "text", props: { content: "Badges with colors and icons, plus 34 curated Lucide icons.", size: "sm" } },
         sep0: { type: "separator", props: {} },
-        "label-badges": { type: "text", props: { content: "Badges", size: "sm", weight: "medium" } },
+        "label-badges": { type: "text", props: { content: "Badges", size: "sm", weight: "bold" } },
         "badge-row1": {
           type: "stack",
           props: { direction: "horizontal" },
@@ -295,20 +275,20 @@ function iconsPage(base: string): SnapHandlerResult {
         bd5: { type: "badge", props: { label: "Hot", color: "red", icon: "flame" } },
         bd6: { type: "badge", props: { label: "3 New", color: "blue", icon: "info" } },
         sep1: { type: "separator", props: {} },
-        "label-nav": { type: "text", props: { content: "Navigation", size: "sm", weight: "medium" } },
+        "label-nav": { type: "text", props: { content: "Navigation", size: "sm", weight: "bold" } },
         "row-nav": { type: "stack", props: { direction: "horizontal" }, children: ["i-arrow-right", "i-arrow-left", "i-external-link", "i-chevron-right"] },
         "i-arrow-right": { type: "icon", props: { name: "arrow-right" } },
         "i-arrow-left": { type: "icon", props: { name: "arrow-left" } },
         "i-external-link": { type: "icon", props: { name: "external-link" } },
         "i-chevron-right": { type: "icon", props: { name: "chevron-right" } },
-        "label-status": { type: "text", props: { content: "Status", size: "sm", weight: "medium" } },
+        "label-status": { type: "text", props: { content: "Status", size: "sm", weight: "bold" } },
         "row-status": { type: "stack", props: { direction: "horizontal" }, children: ["i-check", "i-x", "i-alert", "i-info", "i-clock"] },
         "i-check": { type: "icon", props: { name: "check", color: "green" } },
         "i-x": { type: "icon", props: { name: "x", color: "red" } },
         "i-alert": { type: "icon", props: { name: "alert-triangle", color: "amber" } },
         "i-info": { type: "icon", props: { name: "info", color: "blue" } },
         "i-clock": { type: "icon", props: { name: "clock", color: "gray" } },
-        "label-social": { type: "text", props: { content: "Social", size: "sm", weight: "medium" } },
+        "label-social": { type: "text", props: { content: "Social", size: "sm", weight: "bold" } },
         "row-social": { type: "stack", props: { direction: "horizontal" }, children: ["i-heart", "i-msg", "i-repeat", "i-share", "i-user", "i-users"] },
         "i-heart": { type: "icon", props: { name: "heart", color: "red" } },
         "i-msg": { type: "icon", props: { name: "message-circle", color: "blue" } },
@@ -316,29 +296,29 @@ function iconsPage(base: string): SnapHandlerResult {
         "i-share": { type: "icon", props: { name: "share" } },
         "i-user": { type: "icon", props: { name: "user" } },
         "i-users": { type: "icon", props: { name: "users" } },
-        "label-content": { type: "text", props: { content: "Content", size: "sm", weight: "medium" } },
+        "label-content": { type: "text", props: { content: "Content", size: "sm", weight: "bold" } },
         "row-content": { type: "stack", props: { direction: "horizontal" }, children: ["i-star", "i-trophy", "i-zap", "i-flame", "i-gift"] },
         "i-star": { type: "icon", props: { name: "star", color: "amber" } },
         "i-trophy": { type: "icon", props: { name: "trophy", color: "amber" } },
         "i-zap": { type: "icon", props: { name: "zap", color: "purple" } },
         "i-flame": { type: "icon", props: { name: "flame", color: "red" } },
         "i-gift": { type: "icon", props: { name: "gift", color: "pink" } },
-        "label-media": { type: "text", props: { content: "Media", size: "sm", weight: "medium" } },
+        "label-media": { type: "text", props: { content: "Media", size: "sm", weight: "bold" } },
         "row-media": { type: "stack", props: { direction: "horizontal" }, children: ["i-image", "i-play", "i-pause"] },
         "i-image": { type: "icon", props: { name: "image" } },
         "i-play": { type: "icon", props: { name: "play", color: "green" } },
         "i-pause": { type: "icon", props: { name: "pause" } },
-        "label-commerce": { type: "text", props: { content: "Commerce", size: "sm", weight: "medium" } },
+        "label-commerce": { type: "text", props: { content: "Commerce", size: "sm", weight: "bold" } },
         "row-commerce": { type: "stack", props: { direction: "horizontal" }, children: ["i-wallet", "i-coins"] },
         "i-wallet": { type: "icon", props: { name: "wallet" } },
         "i-coins": { type: "icon", props: { name: "coins", color: "amber" } },
-        "label-actions": { type: "text", props: { content: "Actions", size: "sm", weight: "medium" } },
+        "label-actions": { type: "text", props: { content: "Actions", size: "sm", weight: "bold" } },
         "row-actions": { type: "stack", props: { direction: "horizontal" }, children: ["i-plus", "i-minus", "i-refresh", "i-bookmark"] },
         "i-plus": { type: "icon", props: { name: "plus" } },
         "i-minus": { type: "icon", props: { name: "minus" } },
         "i-refresh": { type: "icon", props: { name: "refresh-cw" } },
         "i-bookmark": { type: "icon", props: { name: "bookmark" } },
-        "label-feedback": { type: "text", props: { content: "Feedback", size: "sm", weight: "medium" } },
+        "label-feedback": { type: "text", props: { content: "Feedback", size: "sm", weight: "bold" } },
         "row-feedback": { type: "stack", props: { direction: "horizontal" }, children: ["i-thumbs-up", "i-thumbs-down", "i-trending-up", "i-trending-down"] },
         "i-thumbs-up": { type: "icon", props: { name: "thumbs-up", color: "green" } },
         "i-thumbs-down": { type: "icon", props: { name: "thumbs-down", color: "red" } },
@@ -364,7 +344,7 @@ function itemsPage(base: string): SnapHandlerResult {
           props: {},
           children: [
             "step", "heading",
-            "sep1", "label-variants", "v-default", "v-outline", "v-muted",
+            "sep1", "label-variants", "v-default",
             "sep2", "label-actions", "a-badge", "a-icon", "a-button",
             "sep3", "label-groups", "label-sep", "group-sep", "label-border", "group-border",
             "sep4", "label-progress", "progress-row",
@@ -376,14 +356,12 @@ function itemsPage(base: string): SnapHandlerResult {
 
         // Item variants
         sep1: { type: "separator", props: {} },
-        "label-variants": { type: "text", props: { content: "Item Variants", size: "sm", weight: "medium" } },
+        "label-variants": { type: "text", props: { content: "Item Variants", size: "sm", weight: "bold" } },
         "v-default": { type: "item", props: { title: "Default", description: "No background, no border" } },
-        "v-outline": { type: "item", props: { title: "Outline", description: "Bordered with padding", variant: "outline" } },
-        "v-muted": { type: "item", props: { title: "Muted", description: "Subtle background", variant: "muted" } },
 
         // Items with action children
         sep2: { type: "separator", props: {} },
-        "label-actions": { type: "text", props: { content: "Action Slots", size: "sm", weight: "medium" } },
+        "label-actions": { type: "text", props: { content: "Action Slots", size: "sm", weight: "bold" } },
         "a-badge": {
           type: "item",
           props: { title: "Trending Cast", description: "842 likes in the last hour" },
@@ -392,7 +370,7 @@ function itemsPage(base: string): SnapHandlerResult {
         "a-badge-v": { type: "badge", props: { label: "Hot", color: "red", icon: "flame" } },
         "a-icon": {
           type: "item",
-          props: { title: "Weekly Digest", description: "Your personalized summary", variant: "outline" },
+          props: { title: "Weekly Digest", description: "Your personalized summary" },
           children: ["a-icon-v"],
         },
         "a-icon-v": { type: "icon", props: { name: "chevron-right", color: "gray" } },
@@ -403,13 +381,13 @@ function itemsPage(base: string): SnapHandlerResult {
         },
         "a-button-v": {
           type: "button",
-          props: { label: "Share", variant: "outline", icon: "share" },
+          props: { label: "Share", icon: "share" },
           on: { press: { action: "compose_cast", params: { text: "Check out Snaps!" } } },
         },
 
         // Group styles
         sep3: { type: "separator", props: {} },
-        "label-groups": { type: "text", props: { content: "Item Groups", size: "sm", weight: "medium" } },
+        "label-groups": { type: "text", props: { content: "Item Groups", size: "sm", weight: "bold" } },
         "label-sep": { type: "text", props: { content: "With separators", size: "sm" } },
         "group-sep": {
           type: "item_group",
@@ -437,7 +415,7 @@ function itemsPage(base: string): SnapHandlerResult {
 
         // Progress bars
         sep4: { type: "separator", props: {} },
-        "label-progress": { type: "text", props: { content: "Progress Bars", size: "sm", weight: "medium" } },
+        "label-progress": { type: "text", props: { content: "Progress Bars", size: "sm", weight: "bold" } },
         "progress-row": {
           type: "stack",
           props: { direction: "horizontal" },
@@ -478,13 +456,13 @@ function layoutPage(base: string): SnapHandlerResult {
         },
         "card-l": {
           type: "item",
-          props: { title: "Protocol", description: "12 proposals", variant: "outline" },
+          props: { title: "Protocol", description: "12 proposals" },
           children: ["card-l-icon"],
         },
         "card-l-icon": { type: "icon", props: { name: "trending-up", color: "green" } },
         "card-r": {
           type: "item",
-          props: { title: "Governance", description: "3 active votes", variant: "outline" },
+          props: { title: "Governance", description: "3 active votes" },
           children: ["card-r-icon"],
         },
         "card-r-icon": { type: "icon", props: { name: "users", color: "blue" } },
@@ -562,7 +540,7 @@ function formPage(base: string): SnapHandlerResult {
         sep4: { type: "separator", props: {} },
         submit: {
           type: "button",
-          props: { label: "Save Profile", icon: "check" },
+          props: { label: "Save Profile", variant: "primary", icon: "check" },
           on: { press: { action: "submit", params: { target: `${base}/?view=results` } } },
         },
         ...nav(base, "form"),
@@ -592,7 +570,7 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
           props: {},
           children: ["heading", "subtitle", "sep", "results", "sep2", "btns"],
         },
-        heading: { type: "text", props: { content: "Profile Saved!", size: "lg", align: "center" } },
+        heading: { type: "text", props: { content: "Profile Saved!", size: "md", align: "center" } },
         subtitle: { type: "text", props: { content: `Welcome, ${displayName}!`, size: "sm", align: "center" } },
         sep: { type: "separator", props: {} },
         results: {
@@ -622,12 +600,12 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
         },
         "btn-edit": {
           type: "button",
-          props: { label: "Edit", variant: "outline", icon: "arrow-left" },
+          props: { label: "Edit", icon: "arrow-left" },
           on: { press: { action: "submit", params: { target: `${base}/?view=form` } } },
         },
         "btn-next": {
           type: "button",
-          props: { label: "Continue", icon: "arrow-right" },
+          props: { label: "Continue", variant: "primary", icon: "arrow-right" },
           on: { press: { action: "submit", params: { target: `${base}/?view=actions` } } },
         },
       },
@@ -666,7 +644,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-url-btn": {
           type: "button",
-          props: { label: "Open", variant: "outline", icon: "external-link" },
+          props: { label: "Open", icon: "external-link" },
           on: { press: { action: "open_url", params: { target: "https://farcaster.xyz" } } },
         },
         "a-miniapp": {
@@ -676,7 +654,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-miniapp-btn": {
           type: "button",
-          props: { label: "Launch", variant: "outline", icon: "arrow-right" },
+          props: { label: "Launch", icon: "arrow-right" },
           on: { press: { action: "open_mini_app", params: { target: "https://farcaster.xyz" } } },
         },
         sep2: { type: "separator", props: {} },
@@ -693,7 +671,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-profile-btn": {
           type: "button",
-          props: { label: "View", variant: "outline", icon: "user" },
+          props: { label: "View", icon: "user" },
           on: { press: { action: "view_profile", params: { fid: 3 } } },
         },
         "a-cast": {
@@ -703,7 +681,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-cast-btn": {
           type: "button",
-          props: { label: "View", variant: "outline", icon: "message-circle" },
+          props: { label: "View", icon: "message-circle" },
           on: { press: { action: "view_cast", params: { hash: "0x0000000000000000000000000000000000000001" } } },
         },
         "a-compose": {
@@ -713,7 +691,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-compose-btn": {
           type: "button",
-          props: { label: "Share", variant: "outline", icon: "share" },
+          props: { label: "Share", icon: "share" },
           on: { press: { action: "compose_cast", params: { text: "Check out the Snap Component Catalog!" } } },
         },
         sep3: { type: "separator", props: {} },
@@ -730,7 +708,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-token-btn": {
           type: "button",
-          props: { label: "View", variant: "outline", icon: "wallet" },
+          props: { label: "View", icon: "wallet" },
           on: { press: { action: "view_token", params: { token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" } } },
         },
         "a-send": {
@@ -740,7 +718,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-send-btn": {
           type: "button",
-          props: { label: "Send", variant: "outline", icon: "coins" },
+          props: { label: "Send", icon: "coins" },
           on: { press: { action: "send_token", params: { token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", amount: "10.00", recipientFid: 3 } } },
         },
         "a-swap": {
@@ -750,7 +728,7 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "a-swap-btn": {
           type: "button",
-          props: { label: "Swap", variant: "outline", icon: "refresh-cw" },
+          props: { label: "Swap", icon: "refresh-cw" },
           on: { press: { action: "swap_token", params: { sellToken: "eip155:8453/slip44:60", buyToken: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" } } },
         },
         sep4: { type: "separator", props: {} },
@@ -761,12 +739,12 @@ function actionsPage(base: string): SnapHandlerResult {
         },
         "nav-back": {
           type: "button",
-          props: { label: "Back", variant: "ghost", icon: "arrow-left" },
+          props: { label: "Back", icon: "arrow-left" },
           on: { press: { action: "submit", params: { target: `${base}/?view=form` } } },
         },
         "nav-start": {
           type: "button",
-          props: { label: "Start Over", variant: "outline", icon: "refresh-cw" },
+          props: { label: "Start Over", icon: "refresh-cw" },
           on: { press: { action: "submit", params: { target: `${base}/` } } },
         },
       },

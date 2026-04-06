@@ -9,7 +9,7 @@ A button fires an action when tapped. Actions are bound via the `on.press` field
 ```json
 "submit-btn": {
   "type": "button",
-  "props": { "label": "Submit" },
+  "props": { "label": "Submit", "variant": "primary" },
   "on": {
     "press": {
       "action": "submit",
@@ -24,17 +24,15 @@ A button fires an action when tapped. Actions are bound via the `on.press` field
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `label` | string | Yes | | Button text. Max 30 chars |
-| `variant` | string | No | `"default"` | Visual style (see below) |
+| `variant` | string | No | `"secondary"` | Visual style (see below) |
 | `icon` | IconName | No | | Leading icon. See [icon set](/elements#icon) |
 
 ### Variants
 
 | Variant | Description |
 |---------|-------------|
-| `default` | Solid accent background, white text — use for the primary CTA |
+| `primary` | Solid accent background, white text — use for the primary CTA |
 | `secondary` | Accent-colored border, transparent fill |
-| `outline` | Light border, transparent fill |
-| `ghost` | No border, no background — text only |
 
 ## Button Layout
 
@@ -49,12 +47,12 @@ buttons, or the default `"vertical"` for a stacked column.
 },
 "btn-yes": {
   "type": "button",
-  "props": { "label": "Yes" },
+  "props": { "label": "Yes", "variant": "primary" },
   "on": { "press": { "action": "submit", "params": { "target": "https://my-snap.com/yes" } } }
 },
 "btn-no": {
   "type": "button",
-  "props": { "label": "No", "variant": "outline" },
+  "props": { "label": "No" },
   "on": { "press": { "action": "submit", "params": { "target": "https://my-snap.com/no" } } }
 }
 ```

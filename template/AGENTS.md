@@ -84,4 +84,4 @@ curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://my-snap.host.
 ```
 
 Expect valid JSON with `content-type: application/vnd.farcaster.snap+json` and
-`buttons[].target` pointing to your HTTPS origin (not `localhost`).
+button `submit` action targets pointing to your HTTPS origin (not `localhost`).

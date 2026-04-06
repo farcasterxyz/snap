@@ -3,14 +3,12 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSnapTheme } from "../theme";
 
 const SIZE_STYLES: Record<string, { fontSize: number; lineHeight?: number; fontWeight?: "400" | "500" | "600" | "700" }> = {
-  lg: { fontSize: 20, fontWeight: "700" },
   md: { fontSize: 16, lineHeight: 24 },
   sm: { fontSize: 13 },
 };
 
 const WEIGHT_MAP: Record<string, "400" | "500" | "600" | "700"> = {
   bold: "700",
-  medium: "500",
   normal: "400",
 };
 

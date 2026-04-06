@@ -5,11 +5,9 @@ import { cn } from "@neynar/ui/utils";
 import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
 import { ICON_MAP } from "./icon";
 
-const VARIANT_MAP: Record<string, "default" | "outline" | "ghost" | "secondary"> = {
-  default: "default",
+const VARIANT_MAP: Record<string, "default" | "secondary"> = {
+  primary: "default",
   secondary: "secondary",
-  outline: "outline",
-  ghost: "ghost",
 };
 
 export function SnapActionButton({
@@ -20,7 +18,7 @@ export function SnapActionButton({
   emit: (name: string) => void;
 }) {
   const label = String(props.label ?? "Action");
-  const variant = VARIANT_MAP[String(props.variant ?? "default")] ?? "default";
+  const variant = VARIANT_MAP[String(props.variant ?? "secondary")] ?? "secondary";
   const iconName = props.icon ? String(props.icon) : undefined;
   const accentStyle = useSnapAccentScopeStyle();
 

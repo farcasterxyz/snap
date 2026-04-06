@@ -14,12 +14,7 @@ export function SnapItem({
     : undefined;
   const variant = String(props.variant ?? "default");
 
-  const containerVariant =
-    variant === "outline"
-      ? { borderWidth: 1, borderColor: colors.border + "80", borderRadius: 8, padding: 10 }
-      : variant === "muted"
-        ? { backgroundColor: "rgba(255,255,255,0.04)", borderRadius: 8, padding: 10 }
-        : { paddingVertical: 8, paddingHorizontal: 10 };
+  const containerVariant = { paddingVertical: 8, paddingHorizontal: 10 };
 
   return (
     <View style={[styles.container, containerVariant]}>

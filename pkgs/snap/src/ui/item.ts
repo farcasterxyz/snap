@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ITEM_VARIANTS = ["default", "outline", "muted"] as const;
+export const ITEM_VARIANTS = ["default"] as const;
 export const ITEM_MAX_TITLE_CHARS = 100;
 export const ITEM_MAX_DESCRIPTION_CHARS = 160;
 

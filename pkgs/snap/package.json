@@ -109,7 +109,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "llms.txt"
   ],
   "publishConfig": {
     "access": "public"

@@ -45,12 +45,12 @@ function nav(base: string): Record<string, unknown> {
   return {
     [backId]: {
       type: "button",
-      props: { label: "← Back", variant: "ghost", icon: "arrow-left" },
+      props: { label: "← Back", icon: "arrow-left" },
       on: { press: { action: "submit", params: { target: `${base}/` } } },
     },
     [homeId]: {
       type: "button",
-      props: { label: "Home", variant: "ghost", icon: "star" },
+      props: { label: "Home", icon: "star" },
       on: { press: { action: "submit", params: { target: `${base}/` } } },
     },
   };
@@ -104,7 +104,7 @@ function homePage(base: string): SnapHandlerResult {
       root: "page",
       elements: {
         page: { type: "stack", props: {}, children: ["title", "desc", "menu", "sep", "actions"] },
-        title: { type: "text", props: { content: "Action Showcase", size: "lg", weight: "bold" } },
+        title: { type: "text", props: { content: "Action Showcase", size: "md", weight: "bold" } },
         desc: {
           type: "text",
           props: {
@@ -128,12 +128,12 @@ function homePage(base: string): SnapHandlerResult {
         },
         go_btn: {
           type: "button",
-          props: { label: "Go" },
+          props: { label: "Go", variant: "primary" },
           on: { press: { action: "submit", params: { target: `${base}/` } } },
         },
         mini_btn: {
           type: "button",
-          props: { label: "Open Mini App", variant: "secondary", icon: "arrow-right" },
+          props: { label: "Open Mini App", icon: "arrow-right" },
           on: { press: { action: "open_mini_app", params: { target: MINI_APP_URL } } },
         },
       },
@@ -151,7 +151,7 @@ function castPage(base: string): SnapHandlerResult {
       root: "page",
       elements: {
         page: { type: "stack", props: {}, children: ["title", "desc", "hash_badge", "sep", "btn_row", navId] },
-        title: { type: "text", props: { content: "Cast Actions", size: "lg", weight: "bold" } },
+        title: { type: "text", props: { content: "Cast Actions", size: "md", weight: "bold" } },
         desc: {
           type: "text",
           props: { content: "View a specific cast, or compose a new one with pre-filled text.", size: "sm" },
@@ -168,12 +168,12 @@ function castPage(base: string): SnapHandlerResult {
         },
         view_cast_btn: {
           type: "button",
-          props: { label: "View Cast", icon: "message-circle" },
+          props: { label: "View Cast", variant: "primary", icon: "message-circle" },
           on: { press: { action: "view_cast", params: { hash: CAST_HASH } } },
         },
         compose_btn: {
           type: "button",
-          props: { label: "Compose Cast", variant: "secondary", icon: "share" },
+          props: { label: "Compose Cast", icon: "share" },
           on: {
             press: {
               action: "compose_cast",
@@ -197,7 +197,7 @@ function profilePage(base: string): SnapHandlerResult {
       root: "page",
       elements: {
         page: { type: "stack", props: {}, children: ["title", "desc", "info", "sep", "btn_row", navId] },
-        title: { type: "text", props: { content: "Profile Actions", size: "lg", weight: "bold" } },
+        title: { type: "text", props: { content: "Profile Actions", size: "md", weight: "bold" } },
         desc: {
           type: "text",
           props: {
@@ -217,12 +217,12 @@ function profilePage(base: string): SnapHandlerResult {
         },
         view_profile_btn: {
           type: "button",
-          props: { label: "View Profile", icon: "user" },
+          props: { label: "View Profile", variant: "primary", icon: "user" },
           on: { press: { action: "view_profile", params: { fid: PROFILE_FID } } },
         },
         mini_btn: {
           type: "button",
-          props: { label: "Open Mini App", variant: "secondary", icon: "arrow-right" },
+          props: { label: "Open Mini App", icon: "arrow-right" },
           on: { press: { action: "open_mini_app", params: { target: MINI_APP_URL } } },
         },
         ...navEls,
@@ -241,7 +241,7 @@ function tokenPage(base: string): SnapHandlerResult {
       root: "page",
       elements: {
         page: { type: "stack", props: {}, children: ["title", "desc", "info_group", "sep", "btn_row", navId] },
-        title: { type: "text", props: { content: "Token Actions", size: "lg", weight: "bold" } },
+        title: { type: "text", props: { content: "Token Actions", size: "md", weight: "bold" } },
         desc: {
           type: "text",
           props: { content: "View USDC on Base in the Farcaster client.", size: "sm" },
@@ -271,12 +271,12 @@ function tokenPage(base: string): SnapHandlerResult {
         },
         view_token_btn: {
           type: "button",
-          props: { label: "View USDC", icon: "wallet" },
+          props: { label: "View USDC", variant: "primary", icon: "wallet" },
           on: { press: { action: "view_token", params: { token: USDC_BASE } } },
         },
         etherscan_btn: {
           type: "button",
-          props: { label: "Etherscan", variant: "secondary", icon: "external-link" },
+          props: { label: "Etherscan", icon: "external-link" },
           on: {
             press: {
               action: "open_url",
@@ -300,7 +300,7 @@ function sendSwapPage(base: string): SnapHandlerResult {
       root: "page",
       elements: {
         page: { type: "stack", props: {}, children: ["title", "desc", "info_group", "sep", "btn_row", navId] },
-        title: { type: "text", props: { content: "Send & Swap", size: "lg", weight: "bold" } },
+        title: { type: "text", props: { content: "Send & Swap", size: "md", weight: "bold" } },
         desc: {
           type: "text",
           props: {
@@ -333,7 +333,7 @@ function sendSwapPage(base: string): SnapHandlerResult {
         },
         send_btn: {
           type: "button",
-          props: { label: "Send USDC", icon: "coins" },
+          props: { label: "Send USDC", variant: "primary", icon: "coins" },
           on: {
             press: {
               action: "send_token",
@@ -343,7 +343,7 @@ function sendSwapPage(base: string): SnapHandlerResult {
         },
         swap_btn: {
           type: "button",
-          props: { label: "Swap to cbETH", icon: "refresh-cw" },
+          props: { label: "Swap to cbETH", variant: "primary", icon: "refresh-cw" },
           on: {
             press: {
               action: "swap_token",

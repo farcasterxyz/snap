@@ -31,7 +31,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     badge: {
       props: badgeProps,
       description:
-        "Inline label — variant: default | secondary | destructive | outline.",
+        "Inline label — variant: default (filled) or outline (bordered). Optional color and icon.",
     },
     button: {
       props: buttonProps,
@@ -95,7 +95,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     text: {
       props: textProps,
       description:
-        "Text block — size: lg (heading), md (body, default), sm (caption). Optional weight and align.",
+        "Text block — size: md (body, default), sm (caption). Optional weight and align.",
     },
   },
   actions: {

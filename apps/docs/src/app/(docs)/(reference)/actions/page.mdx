@@ -45,7 +45,7 @@ only action that triggers a server round-trip.
 ```json
 {
   "type": "button",
-  "props": { "label": "Submit" },
+  "props": { "label": "Submit", "variant": "primary" },
   "on": {
     "press": {
       "action": "submit",
@@ -71,7 +71,7 @@ Open a URL in the system browser. No server round-trip. No input collection.
 ```json
 {
   "type": "button",
-  "props": { "label": "Learn More", "variant": "outline", "icon": "external-link" },
+  "props": { "label": "Learn More", "icon": "external-link" },
   "on": {
     "press": {
       "action": "open_url",
@@ -117,7 +117,7 @@ Navigate to a cast by its hash.
 ```json
 {
   "type": "button",
-  "props": { "label": "View Cast", "variant": "outline" },
+  "props": { "label": "View Cast" },
   "on": {
     "press": {
       "action": "view_cast",

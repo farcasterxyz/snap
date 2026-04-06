@@ -153,7 +153,10 @@ function renderElement(
     }
     case "badge": {
       const color = colorHex(p.color as string | undefined, accent);
-      return `<span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:1.5;background:${color};color:#fff">${esc(String(p.label ?? ""))}</span>`;
+      const badgeVariant = String(p.variant ?? "default");
+      const isFilled = badgeVariant === "default";
+      const bgStyle = isFilled ? `background:${color};color:#fff` : `border:1px solid ${color};color:${color}`;
+      return `<span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:1.5;${bgStyle}">${esc(String(p.label ?? ""))}</span>`;
     }
     case "image": {
       const url = esc(String(p.url ?? ""));
@@ -166,8 +169,6 @@ function renderElement(
       const variant = String(p.variant ?? "default");
       const variantStyles: Record<string, string> = {
         default: "",
-        outline: "border:1px solid #E5E7EB;border-radius:8px;padding:12px;",
-        muted: "background:#F9FAFB;border-radius:8px;padding:12px;",
       };
       const descHtml = p.description ? `<div style="font-size:13px;color:#6B7280;margin-top:2px">${esc(String(p.description))}</div>` : "";
       const childIds = el.children ?? [];
@@ -235,26 +236,24 @@ function renderElement(
       return html;
     }
     case "button": {
-      const variant = String(p.variant ?? "default");
-      const bg = variant === "default" ? accent : "transparent";
-      const color = variant === "default" ? "#fff" : accent;
-      const border = variant === "default" ? "none" : `2px solid ${accent}`;
-      const pad = variant === "default" ? "18px 16px" : "10px 16px";
-      const minH = variant === "default" ? "min-height:52px;" : "";
+      const variant = String(p.variant ?? "secondary");
+      const bg = variant === "primary" ? accent : "transparent";
+      const color = variant === "primary" ? "#fff" : accent;
+      const border = variant === "primary" ? "none" : `2px solid ${accent}`;
+      const pad = variant === "primary" ? "18px 16px" : "10px 16px";
+      const minH = variant === "primary" ? "min-height:52px;" : "";
       return `<button onclick="showModal()" style="width:100%;${minH}padding:${pad};border-radius:10px;background:${bg};color:${color};border:${border};font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-sizing:border-box">${esc(String(p.label ?? ""))}</button>`;
     }
     case "text": {
       const size = String(p.size ?? "md");
-      const weight = String(p.weight ?? (size === "lg" ? "bold" : "normal"));
+      const weight = String(p.weight ?? "normal");
       const align = String(p.align ?? "left");
       const styles: Record<string, string> = {
-        lg: "font-size:20px",
         md: "font-size:15px;line-height:1.5",
         sm: "font-size:13px",
       };
       const weights: Record<string, string> = {
         bold: "font-weight:700",
-        medium: "font-weight:500",
         normal: "font-weight:400",
       };
       return `<div style="${styles[size] ?? styles.md};${weights[weight] ?? weights.normal};color:#374151;text-align:${align}">${esc(String(p.content ?? ""))}</div>`;
