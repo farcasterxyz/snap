@@ -38,6 +38,8 @@ fires.
 
 Inline label with color and optional icon. Use for metadata, status indicators, and counts alongside content. `"default"` (filled) draws attention; `"outline"` is subtler. Pair with an icon for scannability.
 
+<ElementPreview type="badge" />
+
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `label` | string | Yes | | Display text. Max 30 chars |
@@ -62,6 +64,8 @@ Inline label with color and optional icon. Use for metadata, status indicators, 
 ## button
 
 The only component that fires actions — bind them via `on.press`. Default variant is `"secondary"` (bordered); use `"primary"` (filled) for the main CTA, typically one per page. See [Actions](/actions) for the full list of action types.
+
+<ElementPreview type="button" />
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -98,6 +102,8 @@ The only component that fires actions — bind them via `on.press`. Default vari
 
 Standalone icon from the curated set. Best as a visual accent inside item action slots or horizontal stacks. Avoid using icons as standalone content — pair with text or use inside a badge.
 
+<ElementPreview type="icon" />
+
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `name` | IconName | Yes | | Icon identifier |
@@ -127,6 +133,8 @@ Standalone icon from the curated set. Best as a visual accent inside item action
 
 HTTPS image with fixed aspect ratio. Use `"16:9"` for hero and banner images, `"1:1"` for avatars or thumbnails, `"4:3"` for general photos, and `"9:16"` for tall portrait content.
 
+<ElementPreview type="image" />
+
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `url` | string | Yes | HTTPS URL. Supports jpg, png, gif, webp. GIFs autoplay and loop. |
@@ -142,6 +150,8 @@ HTTPS image with fixed aspect ratio. Use `"16:9"` for hero and banner images, `"
 ## item
 
 The go-to component for structured content rows: leaderboards, settings, key-value info. Has a title, optional description, and an actions slot on the right side. Put badges, icons, or buttons in `children` for the action slot.
+
+<ElementPreview type="item" />
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -184,6 +194,8 @@ trailing content.
 
 Wraps related items for visual grouping. Use `separator: true` for settings-style lists and `border: true` for card-like sections.
 
+<ElementPreview type="item_group" />
+
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `border` | boolean | No | `false` | Show border around the group |
@@ -209,6 +221,8 @@ Wraps related items for visual grouping. Use `separator: true` for settings-styl
 
 Horizontal progress bar for completion, scores, or any bounded numeric value. Always uses the theme accent color. The label appears above the bar — use it for context like "78%" or "Level 3 of 5".
 
+<ElementPreview type="progress" />
+
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `value` | number | Yes | Current value (0 to max, finite) |
@@ -225,6 +239,8 @@ Horizontal progress bar for completion, scores, or any bounded numeric value. Al
 
 Visual divider between logical sections of a page. Most snaps use 2-4 separators. Overusing them creates visual clutter.
 
+<ElementPreview type="separator" />
+
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `orientation` | string | No | `"horizontal"` | `"horizontal"` or `"vertical"` |
@@ -238,6 +254,8 @@ Visual divider between logical sections of a page. Most snaps use 2-4 separators
 ## stack
 
 Layout container for arranging children. Every page starts with a vertical stack as root. Use horizontal stacks for button rows, badge groups, or side-by-side cards. `justify: "between"` is useful for navigation bars.
+
+<ElementPreview type="stack" />
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -267,6 +285,8 @@ Layout container for arranging children. Every page starts with a vertical stack
 
 The primary content element. Use `weight: "bold"` for headings and emphasis. Use `size: "sm"` for captions, timestamps, and secondary info.
 
+<ElementPreview type="text" />
+
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `content` | string | Yes | | Text content. Max 320 chars |
@@ -287,6 +307,8 @@ The primary content element. Use `weight: "bold"` for headings and emphasis. Use
 ## input
 
 Text or number input field for short free-text entry. Set `type: "number"` for numeric input (changes the mobile keyboard). Always provide a `label` for accessibility. Value is collected in POST inputs under `name`.
+
+<ElementPreview type="input" />
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -309,6 +331,8 @@ POST value: string.
 
 Numeric range slider for bounded choices like ratings, quantities, or percentages. Always set meaningful `min`/`max` values and add a `label` so users know what they're adjusting. Value is collected in POST inputs under `name`.
 
+<ElementPreview type="slider" />
+
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `name` | string | Yes | | Slider name (POST inputs key) |
@@ -330,6 +354,8 @@ POST value: number.
 
 Boolean toggle for binary preferences (on/off, yes/no). Good for settings-style pages — the label should describe the enabled state ("Enable notifications", not "Notifications toggle"). Value is collected in POST inputs under `name`.
 
+<ElementPreview type="switch" />
+
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `name` | string | Yes | | Switch name (POST inputs key) |
@@ -347,6 +373,8 @@ POST value: boolean.
 ## toggle_group
 
 Choice group for selecting between 2-6 discrete options. Prefer this over multiple buttons when the choices are parallel and exclusive. Use `multiple: true` for multi-select scenarios like tags or interests. Value is collected in POST inputs under `name`.
+
+<ElementPreview type="toggle_group" />
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
