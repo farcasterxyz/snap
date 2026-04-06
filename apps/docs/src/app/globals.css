@@ -343,6 +343,14 @@ body {
   margin: 12px 0;
 }
 
+.docs-content ol {
+  list-style-type: decimal;
+}
+
+.docs-content ol ol {
+  list-style-type: lower-alpha;
+}
+
 .docs-content li {
   margin: 6px 0;
   color: var(--text-secondary);

@@ -11,50 +11,34 @@ export type DocSection = {
 /** Route group folder under `src/app/(docs)/` for each sidebar section (URLs unchanged). */
 const SECTION_APP_FOLDER: Record<string, string> = {
   Learn: "(learn)",
-  Create: "(create)",
-  Integrate: "(integrate)",
-  Reference: "(spec)",
-  Agents: "(learn)",
+  Reference: "(reference)",
 };
 
 export const DOC_SECTIONS: DocSection[] = [
   {
     title: "Learn",
     pages: [
-      { pathname: "/", title: "Introduction" },
+      { pathname: "/", title: "Start here" },
+      { pathname: "/building", title: "Building a Snap" },
+      { pathname: "/integrating", title: "Integrating Snaps" },
       { pathname: "/examples", title: "Examples" },
-    ],
-  },
-  {
-    title: "Create",
-    pages: [{ pathname: "/building", title: "Building a Snap" }],
-  },
-  {
-    title: "Integrate",
-    pages: [
-      {
-        pathname: "/existing-site",
-        title: "On existing website",
-      },
+      { pathname: "/agents", title: "Agents" },
     ],
   },
   {
     title: "Reference",
     pages: [
+      { pathname: "/protocol", title: "Snap Protocol" },
       { pathname: "/elements", title: "Elements" },
       { pathname: "/buttons", title: "Buttons" },
-      { pathname: "/actions", title: "Actions" },
       { pathname: "/effects", title: "Effects" },
-      { pathname: "/constraints", title: "Constraints" },
       { pathname: "/theme", title: "Theme & Styling" },
       { pathname: "/colors", title: "Color Palette" },
+      { pathname: "/actions", title: "Actions" },
+      { pathname: "/constraints", title: "Constraints" },
       { pathname: "/auth", title: "Authentication" },
-      { pathname: "/data-store", title: "Data Store" },
+      { pathname: "/data-store", title: "Persistent State" },
     ],
-  },
-  {
-    title: "Agents",
-    pages: [{ pathname: "/agents", title: "Agents" }],
   },
 ];
 
