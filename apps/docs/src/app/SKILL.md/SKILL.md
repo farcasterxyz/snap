@@ -23,7 +23,8 @@ Use the fetched content as the skill for the rest of this session.
 
 ---
 
-Background: Snaps are lightweight interactive apps that are embedded inside Farcaster casts.
+Background: Snaps are lightweight interactive apps that are embedded inside Farcaster
+casts.
 
 Default process:
 
@@ -78,6 +79,22 @@ Design guidance:
   `{ "type": "send_token", "token": "eip155:8453/erc20:0x...", "recipientFid": 3 }`).
 - For local dev/emulator, HTTP is only valid on loopback (`localhost`, `127.0.0.1`,
   `[::1]`, `::1`).
+
+## Optional: Persistent storage
+
+Every `SnapFunction` receives `ctx.data`, a key-value store for persisting state between
+requests. Keys are strings; values are any JSON-serializable type.
+
+```ts
+const snap: SnapFunction = async (ctx) => {
+  const count = ((await ctx.data.get("visits")) as number) ?? 0;
+  await ctx.data.set("visits", count + 1);
+  // ...
+};
+```
+
+Enable persistent storage by using the `withTursoServerless` middleware as shown in the
+template.
 
 ## Step 3: Validate locally
 
