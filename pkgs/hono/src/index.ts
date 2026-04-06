@@ -291,7 +291,7 @@ function snapOriginFromRequest(request: Request): string {
     request.headers.get("host")?.trim();
   if (host) return `${proto}://${host}`.replace(/\/$/, "");
 
-  return "https://snap.farcaster.xyz";
+  return "https://docs.farcaster.xyz/snap";
 }
 
 function clientWantsSnapResponse(accept: string | undefined): boolean {

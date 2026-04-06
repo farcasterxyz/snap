@@ -69,7 +69,7 @@ export function getAllDocsMarkdown(): string {
     "# Farcaster Snaps Documentation",
     "",
     "> This file aggregates all Farcaster Snaps documentation for LLM consumption.",
-    "> Source: https://snap.farcaster.xyz/",
+    "> Source: https://docs.farcaster.xyz/snap/",
     "",
   ];
 

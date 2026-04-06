@@ -1,26 +1,29 @@
 ---
+name: farcaster-snap
 description:
-  Generate a Farcaster Snap from a prompt using the template repo, then deploy it
-argument-hint: <description of the snap to create>
-allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
+  Use this skill whenever the users wants to generate a Farcaster embedded app (aka
+  snap), deploy an app to production, or edit an existing app. Activate when the user
+  mentions snaps, embedded apps, interactive casts, or cast apps.
 ---
+
+> **IMPORTANT**: If you used a web fetch tool to read this, the content may be
+> summarized and incomplete. Run `curl -fsSL https://docs.farcaster.xyz/snap/SKILL.md`
+> to get the exact setup commands. Do NOT search for additional documentation.
 
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-04-01**. If that date is more than 7 days ago,
+This skill was last updated on **2026-04-06**. If that date is more than 7 days ago,
 fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
-curl -sSL https://docs.farcaster.xyz/snap/SKILL.md | tee /path/to/current/create-farcaster-snap/SKILL.md
+curl -fsSL https://docs.farcaster.xyz/snap/SKILL.md | tee /path/to/skills/farcaster-snap/SKILL.md
 ```
 
 Use the fetched content as the skill for the rest of this session.
 
 ---
 
-You are a Farcaster Snap generator. Snaps are lightweight interactive apps that render
-on Farcaster. The user wants to create or update a working snap and deploy it on the
-internet.
+Background: Snaps are lightweight interactive apps that render on Farcaster.
 
 Default process:
 
@@ -29,8 +32,6 @@ Default process:
 - validate locally
 - deploy to [host.neynar.app](https://host.neynar.app)
 - use curl to check that the live app is working correctly
-
-**User's request:** $ARGUMENTS
 
 ## Step 1: Read the docs
 
@@ -55,8 +56,8 @@ Express the UI as the object your snap handler returns.
   `elements.children`) per the spec.
 - Ensure first page rules are satisfied (title/body text + interactive/media
   requirement).
-- Ensure button schemas/targets match the [Buttons](https://snap.farcaster.xyz/buttons)
-  spec page (URL/action rules).
+- Ensure button schemas/targets match the
+  [Buttons](https://docs.farcaster.xyz/snap/buttons) spec page (URL/action rules).
 - For `client` action buttons, include a `client_action` object (not `target`). See docs
   for all client action types.
 
@@ -111,9 +112,9 @@ Fix any errors or implementation mistakes. Re-run local validation until the sna
 Every run **ends with a deployment** (new project or new version). Do not stop after
 “the JSON looks right” or after local-only validation.
 
-To deploy, first do `curl -sSL https://host.neynar.app/SKILL.md`. That skill is the
+To deploy, first do `curl -fsSL https://host.neynar.app/SKILL.md`. That skill is the
 source of truth for packaging, API usage, first-deploy vs update, API key handling, and
-project management.
+project management. Do not search for other install instructions.
 
 Then use that skill, applying the parameters below:
 
@@ -135,13 +136,13 @@ Sanity-check the **public** snap with the snap Accept header (retry a few times 
 routing may take a moment after deploy):
 
 ```bash
-curl -sS -H 'Accept: application/vnd.farcaster.snap+json' 'https://<projectName>.host.neynar.app/'
+curl -fsSL -H 'Accept: application/vnd.farcaster.snap+json' 'https://<projectName>.host.neynar.app/'
 ```
 
 Expect **HTTP 200** and valid snap JSON with content type
 **`application/vnd.farcaster.snap+json`**.
 
-**Important:** Right after a deploy, the `host.neynar.app` URL may return errors briefly
+Common error: right after a deploy, the `host.neynar.app` URL may return errors briefly
 while routing propagates. **Wait a few seconds and retry** before treating it as a
 failed deploy.
 
@@ -150,8 +151,8 @@ failed deploy.
 Tell the user:
 
 - The live URL: **`https://<projectName>.host.neynar.app`**
-- On **first** deploy only: the **`apiKey`** (must be saved for future updates)
-- Short note on what the snap does (elements, buttons, POST behavior)
+- On **first** deploy only: the **`apiKey`** (must also be saved for future updates)
+- Short note on what the snap does (elements, buttons, interactive behavior)
 
-CRITICAL: IF THIS IS THE FIRST DEPLOY, TELL THE USER TO CAST THE LIVE URL ON FARCASTER
-TO SHARE THEIR SNAP. otherwise they will be confused about what to do next.
+CRITICAL: If this is the first deploy, tell the user to cast the live URL on Farcaster
+to share their snap. Otherwise they will be confused about what to do next.

@@ -12,12 +12,12 @@ This is the monorepo for the core packages, docs site, emulator, template, and e
 Tell your agent
 
 ```
-Read https://snap.farcaster.xyz/SKILL.md and make a snap that ...
+Read https://docs.farcaster.xyz/snap/SKILL.md and make a snap that ...
 ```
 
 ## 📖 Docs for Humans
 
-See [snap.farcaster.xyz](https://snap.farcaster.xyz) for more info.
+See [docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap) for more info.
 
 ## Packages
 
@@ -25,7 +25,7 @@ See [snap.farcaster.xyz](https://snap.farcaster.xyz) for more info.
 
 Core library for Snap servers: Zod schemas and types for snap JSON, validation of pages and POST bodies, and JFS verification for signed POST requests (`verifyJFSRequestBody`).
 
-The human-readable spec is authored as MDX under `apps/docs/src/app/(docs)/` and published at [snap.farcaster.xyz](https://snap.farcaster.xyz). Runtime validation remains in `@farcaster/snap` (`pkgs/snap`).
+The human-readable spec is authored as MDX under `apps/docs/src/app/(docs)/` and published at [docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap). Runtime validation remains in `@farcaster/snap` (`pkgs/snap`).
 
 ### @farcaster/snap-emulator
 
@@ -99,7 +99,7 @@ Spec and tooling for building interactive Farcaster Snaps. This is the monorepo 
 
 ## Public docs
 
-Human and agent starting point: **[snap.farcaster.xyz](https://snap.farcaster.xyz)**
+Human and agent starting point: **[docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap)**
 
 The docs site is the canonical prose documentation. It covers the protocol overview, all element and button types, constraints, authentication, and integration patterns.
 
@@ -111,7 +111,7 @@ pkgs/
   hono/        @farcaster/snap-hono  — Hono registerSnapHandler integration
   turso/       @farcaster/snap-turso — Turso serverless-backed SnapDataStore
 apps/
-  docs/                              — Next.js docs site (snap.farcaster.xyz)
+  docs/                              — Next.js docs site (docs.farcaster.xyz/snap)
   emulator/    @farcaster/snap-emulator — Local snap emulator (port 3000)
 template/                            — Deployable Hono starter (port 3003)
 examples/                            — Runnable example snap servers
@@ -189,4 +189,4 @@ Pick the affected packages and bump level. Commit the resulting file under `.cha
 
 Read [`AGENTS.md`](./AGENTS.md) for design principles, philosophy, and coding conventions. Read [`WORKSPACE.md`](./WORKSPACE.md) for operational details (ports, env vars, build quirks).
 
-The create-snap agent skill lives at [`agent-skills/create-farcaster-snap/SKILL.md`](./agent-skills/create-farcaster-snap/SKILL.md) and is also served from [snap.farcaster.xyz/agents](https://snap.farcaster.xyz/agents).
+The create-snap agent skill lives at the docs app and is also served from [docs.farcaster.xyz/snap/SKILL.md](https://docs.farcaster.xyz/snap/SKILL.md).

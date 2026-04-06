@@ -5,35 +5,21 @@ implementation.
 
 ## Agent Skill
 
-If you use a coding agent like [Claude Code](https://claude.ai/code), you can install a custom slash command
-that generates snaps from natural language:
+If you use a coding agent like [Claude Code](https://claude.ai/code), you can ask it to
+install a skill that generates snaps from natural language:
 
 ```bash
-mkdir -p $HOME/.claude/skills/create-farcaster-snap
-curl -sS -o $HOME/.claude/skills/create-farcaster-snap/SKILL.md https://snap.farcaster.xyz/SKILL.md
-```
-
-You can also
-[view the skill source on GitHub](https://github.com/farcasterxyz/snap/blob/main/agent-skills/create-farcaster-snap/SKILL.md).
-
-Then run it:
-
-```
-/create-farcaster-snap a poll asking users to pick their favorite L2
+install the create-farcaster-snap skill from https://docs.farcaster.xyz/snap/SKILL.md
+make me a Farcaster Snap poll asking users to pick their favorite variety of mole
 ```
 
 The skill will:
 
 1. Read the full snap spec
-2. Generate valid snap JSON and server logic
-3. Validate the output against the schema
-4. Optionally deploy to a live URL
+2. Generate valid snap code
+3. Deploy it to a live URL
 
 This is the fastest way to go from idea to working snap.
-
-> **Note:** The skill works best when run from within the
-> [snap](https://github.com/farcasterxyz/snap) repo, since it references the spec docs
-> and template locally.
 
 ## Template (Hono)
 

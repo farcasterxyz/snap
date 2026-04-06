@@ -41,4 +41,4 @@ The server runs on `http://localhost:3003` by default.
 
 ## Deploying
 
-The fastest way to deploy is using https://host.neynar.app. Tell your agent to read [SKILL.md](https://snap.farcaster.xyz/SKILL.md) and then deploy with `framework=hono`.
+The fastest way to deploy is using https://host.neynar.app. Tell your agent to read [SKILL.md](https://docs.farcaster.xyz/snap/SKILL.md) and then deploy with `framework=hono`.
