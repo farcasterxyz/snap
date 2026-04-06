@@ -21,46 +21,60 @@ For each schema constant, grep the repo for any value that was removed or rename
 these file groups:
 
 **React components** (`pkgs/snap/src/react/components/`):
+
 - Variant/size/weight maps must only contain current schema values
 - Default fallbacks must match schema defaults
 
 **React Native components** (`pkgs/snap/src/react-native/components/`):
+
 - Same as React components
 
 **Server-side renderer** (`pkgs/hono/src/renderSnapPage.ts`):
+
 - Switch cases and style maps must match schema values
 
 **Catalog descriptions** (`pkgs/snap/src/ui/catalog.ts`):
+
 - Description strings must reflect current component capabilities
 
 **Package llms.txt** (`pkgs/snap/llms.txt`):
+
 - All component props, variants, values, and examples must match schema
 
-**Reference docs** (`apps/docs/src/app/(docs)/(reference)/`):
+**Home docs** (`apps/docs/src/app/(docs)/(home)/`):
+
+- `page.mdx` — landing page
+- `agents/page.mdx` — agent-oriented entrypoint
+
+**Snap spec docs** (`apps/docs/src/app/(docs)/(spec)/`):
+
+- `spec-overview/page.mdx` — Overview
 - `elements/page.mdx` — props tables, variants tables, usage narrative, examples
 - `buttons/page.mdx` — button variants, defaults, examples
 - `actions/page.mdx` — button examples in action demos
 - `effects/page.mdx` — component usage in examples
 - `constraints/page.mdx` — char limits and validation rules
-- `protocol/page.mdx` — SnapResponse example
 
 **Learn docs** (`apps/docs/src/app/(docs)/(learn)/`):
+
 - `examples/page.mdx` — full snap response examples
 - `building/page.mdx` — code example
-- `page.mdx` — landing page
 
 **LLM / agent docs**:
+
 - `apps/docs/src/app/SKILL.md/SKILL.md` — design guidance
 - `AGENTS.md` — protocol references
 - `template/AGENTS.md` — protocol references
 
 **Examples**:
+
 - `examples/snap-catalog/src/index.ts`
 - `examples/action-showcase/src/index.ts`
 
 ## Step 3: Fix mismatches
 
 For each mismatch found:
+
 1. Update the downstream file to use the current schema value
 2. For removed values, choose the closest valid replacement
 3. For renamed values, use the new name

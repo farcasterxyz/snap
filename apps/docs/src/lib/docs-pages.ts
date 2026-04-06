@@ -12,12 +12,12 @@ export type DocSection = {
 
 /** Route group folder under `src/app/(docs)/` for each sidebar section (URLs unchanged). */
 const SECTION_APP_FOLDER: Record<string, string> = {
-  Home: "(learn)",
+  Home: "(home)",
   Learn: "(learn)",
-  "Spec": "(reference)",
+  Spec: "(spec)",
 };
 
-// NOTE: keep this in sync with snap-sidebar.json and apps/docs/src/app/(docs)/(learn)/page.mdx
+// NOTE: keep this in sync with snap-sidebar.json and apps/docs/src/app/(docs)/(home)/page.mdx
 export const DOC_SECTIONS: DocSection[] = [
   {
     title: "Home",
@@ -39,7 +39,7 @@ export const DOC_SECTIONS: DocSection[] = [
   {
     title: "Spec",
     pages: [
-      { pathname: "/protocol", title: "Overview" },
+      { pathname: "/spec-overview", title: "Overview" },
       { pathname: "/elements", title: "Elements" },
       { pathname: "/buttons", title: "Buttons" },
       { pathname: "/effects", title: "Effects" },
