@@ -1,24 +1,25 @@
 # Farcaster Snaps
 
-Snaps are simple, nimble apps embedded in Farcaster casts. They render as cards in the
-feed and respond to user input — buttons, sliders, text — without executing any code on
-the client. A snap server returns JSON; the Farcaster client renders it.
+Snaps are simple, nimble apps embedded in Farcaster casts. They render in the feed and
+respond to user input — buttons, sliders, text — without executing any code on the
+client. A snap server returns JSON; the Farcaster client displays it.
 
-> **Beta:** Snaps are still in beta and may change significantly over the next few weeks
-> or months.
+> **Beta:** This is all still in beta and may change significantly over the next few
+> weeks or months.
 
-Quickstart for agents:
+Using Claude Code? Tell your agent to
 
-> **Using Claude Code?** See the [Building a Snap](/building) guide for install
-> instructions and all other approaches.
+```bash
+use https://docs.farcaster.xyz/snap/SKILL.md to build me an app that
+```
 
 ## Learn
 
-- [Examples](/examples) — Real SnapResponse payloads showing common UI patterns.
 - [Building a Snap](/building) — Ways to create a snap, from AI-assisted generation to
   manual implementation with the template.
 - [Integrating Snaps](/integrating) — How to serve snap JSON alongside your normal site
   using content negotiation on the `Accept` header.
+- [Examples](/examples) — Sample snap response payloads showing common UI patterns.
 
 ## Reference
 
