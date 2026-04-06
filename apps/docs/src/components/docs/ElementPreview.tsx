@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Star,
   Zap,
@@ -100,6 +100,7 @@ function ButtonPreview({
       onPointerDown={() => setPressed(true)}
       onPointerUp={() => setPressed(false)}
       onPointerLeave={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -149,8 +150,6 @@ function TextPreview({
   );
 }
 
-let inputCounter = 0;
-
 function InputPreview({
   label,
   placeholder = "Type here...",
@@ -158,7 +157,7 @@ function InputPreview({
   label?: string;
   placeholder?: string;
 }) {
-  const [id] = useState(() => `el-input-${++inputCounter}`);
+  const id = React.useId();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {label && (
@@ -243,6 +242,9 @@ function SwitchPreview({
       {label && <span style={{ fontSize: 14, color: "var(--text-primary)" }}>{label}</span>}
       <button
         type="button"
+        role="switch"
+        aria-checked={on}
+        aria-label={label ?? "Toggle"}
         onClick={() => setOn(!on)}
         style={{
           width: 42,

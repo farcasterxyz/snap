@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Share } from "lucide-react";
 
 const PALETTE: Record<string, string> = {
@@ -79,6 +79,7 @@ function SnapButton({
       onPointerDown={() => setPressed(true)}
       onPointerUp={() => setPressed(false)}
       onPointerLeave={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -105,8 +106,6 @@ function SnapButton({
   );
 }
 
-let snapInputCounter = 0;
-
 function SnapInput({
   label,
   placeholder,
@@ -114,7 +113,7 @@ function SnapInput({
   label?: string;
   placeholder?: string;
 }) {
-  const [id] = useState(() => `snap-input-${++snapInputCounter}`);
+  const id = React.useId();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {label && (
