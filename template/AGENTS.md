@@ -25,6 +25,10 @@ template/
 
 Check `ctx.action.type` before accessing `inputs` — it only exists on `"post"` actions.
 
+### Optional data persistence
+
+The template composes with `createTursoDataStore` . It injects `data` (a key-value `DataStore` from `@farcaster/snap-turso`) before your handler runs. Remove that code if you do not need storage; the base `SnapFunction` type from `@farcaster/snap` does not handle storage.
+
 ## Local development
 
 ```bash

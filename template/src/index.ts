@@ -3,13 +3,21 @@ import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
 import { SnapFunction, useMiddleware } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import { withTursoServerless } from "@farcaster/snap-turso";
+import {
+  createInMemoryDataStore,
+  createTursoDataStore,
+} from "@farcaster/snap-turso";
 
 const TOPIC_NAME = "topic" as const;
 const OPT_OVERVIEW = "overview";
 const OPT_HTTP = "http";
 const OPT_LOCAL = "local";
 const OPT_DEPLOY = "deploy";
+
+const data =
+  process.env.VERCEL === "1"
+    ? createTursoDataStore()
+    : createInMemoryDataStore();
 
 const snap: SnapFunction = async (ctx) => {
   const pref =
@@ -71,11 +79,7 @@ const fontsDir = join(__dir, "../assets/fonts");
 
 const app = new Hono();
 
-const snapWithMiddleware = useMiddleware(snap, [
-  withTursoServerless, // optional. use this if you want persistent data storage.
-]);
-
-registerSnapHandler(app, snapWithMiddleware, {
+registerSnapHandler(app, snap, {
   og: {
     fonts: [
       { path: join(fontsDir, "inter-latin-400-normal.woff"), weight: 400 },
