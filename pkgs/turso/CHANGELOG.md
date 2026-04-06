@@ -1,5 +1,14 @@
 # @farcaster/snap-turso
 
+## 1.0.1
+
+### Patch Changes
+
+- [`5be48bf`](https://github.com/farcasterxyz/snap/commit/5be48bfe1f517bb1b725a616bdf0b541cbab5e74) Thanks [@lyoshenka](https://github.com/lyoshenka)! - moved data storage out of snap package and strictly into snap-turso
+
+- Updated dependencies [[`5be48bf`](https://github.com/farcasterxyz/snap/commit/5be48bfe1f517bb1b725a616bdf0b541cbab5e74)]:
+  - @farcaster/snap@1.10.0
+
 ## 1.0.0
 
 ### Major Changes
