@@ -23,7 +23,7 @@ Use the fetched content as the skill for the rest of this session.
 
 ---
 
-Background: Snaps are lightweight interactive apps that render on Farcaster.
+Background: Snaps are lightweight interactive apps that are embedded inside Farcaster casts.
 
 Default process:
 
