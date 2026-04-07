@@ -173,10 +173,10 @@ function SnapLoadingOverlay({
         justifyContent: "center",
         zIndex: 10,
         background: tint,
-        backdropFilter: active ? "blur(10px) saturate(1.05)" : "blur(0px)",
+        backdropFilter: active ? "blur(10px) saturate(1.05)" : "none",
         WebkitBackdropFilter: active
           ? "blur(10px) saturate(1.05)"
-          : "blur(0px)",
+          : "none",
         opacity: active ? 1 : 0,
         pointerEvents: active ? "auto" : "none",
         transition: "opacity 0.28s ease, backdrop-filter 0.28s ease",
