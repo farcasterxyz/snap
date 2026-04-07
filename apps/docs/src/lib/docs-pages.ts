@@ -40,6 +40,7 @@ export const DOC_SECTIONS: DocSection[] = [
     title: "Spec",
     pages: [
       { pathname: "/spec-overview", title: "Overview" },
+      { pathname: "/http-headers", title: "HTTP Headers" },
       { pathname: "/elements", title: "Elements" },
       { pathname: "/buttons", title: "Buttons" },
       { pathname: "/effects", title: "Effects" },

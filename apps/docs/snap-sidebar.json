@@ -41,6 +41,10 @@
         "link": "/snap/spec-overview"
       },
       {
+        "text": "HTTP Headers",
+        "link": "/snap/http-headers"
+      },
+      {
         "text": "Elements",
         "link": "/snap/elements"
       },
