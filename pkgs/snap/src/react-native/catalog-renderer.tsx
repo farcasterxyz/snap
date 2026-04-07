@@ -14,6 +14,8 @@ import { SnapStack } from "./components/snap-stack";
 import { SnapSwitch } from "./components/snap-switch";
 import { SnapText } from "./components/snap-text";
 import { SnapToggleGroup } from "./components/snap-toggle-group";
+import { SnapBarChart } from "./components/snap-bar-chart";
+import { SnapCellGrid } from "./components/snap-cell-grid";
 
 /**
  * Maps snap json-render catalog types to React Native primitives.
@@ -34,4 +36,6 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
   switch: SnapSwitch,
   text: SnapText,
   toggle_group: SnapToggleGroup,
+  bar_chart: SnapBarChart,
+  cell_grid: SnapCellGrid,
 });

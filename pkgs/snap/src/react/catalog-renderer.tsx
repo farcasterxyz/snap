@@ -16,6 +16,8 @@ import { SnapStack } from "./components/stack";
 import { SnapSwitch } from "./components/switch";
 import { SnapText } from "./components/text";
 import { SnapToggleGroup } from "./components/toggle-group";
+import { SnapBarChart } from "./components/bar-chart";
+import { SnapCellGrid } from "./components/cell-grid";
 
 /**
  * Maps snap json-render catalog types to React components.
@@ -36,4 +38,6 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
   switch: SnapSwitch,
   text: SnapText,
   toggle_group: SnapToggleGroup,
+  bar_chart: SnapBarChart,
+  cell_grid: SnapCellGrid,
 });

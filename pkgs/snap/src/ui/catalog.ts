@@ -15,6 +15,8 @@ import { separatorProps } from "./separator.js";
 import { sliderProps } from "./slider.js";
 import { stackProps } from "./stack.js";
 import { textProps } from "./text.js";
+import { barChartProps } from "./bar-chart.js";
+import { cellGridProps } from "./cell-grid.js";
 
 const snapClientParams = z.object({
   client_action: z.record(z.string(), z.unknown()),
@@ -96,6 +98,16 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       props: textProps,
       description:
         "Text block — size: md (body, default), sm (caption). Optional weight and align.",
+    },
+    bar_chart: {
+      props: barChartProps,
+      description:
+        "Horizontal bar chart — 1–6 bars with label, value, and optional per-bar color. Optional max and default color.",
+    },
+    cell_grid: {
+      props: cellGridProps,
+      description:
+        "Cell grid — sparse colored cells on a rows×cols grid. Optional gap and selection mode (taps write to inputs[name]).",
     },
   },
   actions: {

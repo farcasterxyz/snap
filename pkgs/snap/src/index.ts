@@ -2,7 +2,12 @@ export type {
   Spec as SnapSpec,
   UIElement as SnapUIElement,
 } from "@json-render/core";
-export { SPEC_VERSION, MEDIA_TYPE, EFFECT_VALUES } from "./constants";
+export {
+  SPEC_VERSION,
+  MEDIA_TYPE,
+  EFFECT_VALUES,
+  POST_GRID_TAP_KEY,
+} from "./constants";
 export {
   DEFAULT_THEME_ACCENT,
   PALETTE_COLOR,

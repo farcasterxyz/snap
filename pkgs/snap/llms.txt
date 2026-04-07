@@ -30,7 +30,7 @@ Top-level fields: `version` (required, `"1.0"`), `theme` (optional, `{ accent: P
 
 `ui.root` is the ID of the root element. `ui.elements` is a flat map of element ID to element definition.
 
-## Components (14 total)
+## Components (16 total)
 
 ### Display Components
 
@@ -74,6 +74,21 @@ Top-level fields: `version` (required, `"1.0"`), `theme` (optional, `{ accent: P
 - `size` (optional): `"md"` (body) | `"sm"` (caption). Default: `"md"`
 - `weight` (optional): `"bold"` | `"normal"`. Default: `"normal"`
 - `align` (optional): `"left"` | `"center"` | `"right"`. Default: `"left"`
+
+### Data Components
+
+**bar_chart** — Horizontal bar chart with labeled bars.
+- `bars` (array, required, 1–6 items): each `{ label: string (max 40), value: number (≥0), color?: PaletteColor }`
+- `max` (number, optional, ≥0): ceiling value; defaults to max bar value
+- `color` (optional): PaletteColor. Default bar color. Default: `"accent"`
+
+**cell_grid** — Colored cell grid, optionally interactive.
+- `name` (string, optional): POST inputs key. Default: `"grid_tap"`
+- `cols` (number, required, 2–32)
+- `rows` (number, required, 2–16)
+- `cells` (array, required): sparse list of `{ row, col, color?: PaletteColor, content?: string }`
+- `gap` (optional): `"none"` (0px) | `"sm"` (1px) | `"md"` (2px) | `"lg"` (4px). Default: `"sm"`
+- `select` (optional): `"off"` | `"single"` | `"multiple"`. Default: `"off"`. Taps write to `inputs[name]`
 
 ### Container Components
 

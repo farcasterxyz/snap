@@ -42,3 +42,9 @@ export type { StackProps } from "./stack.js";
 
 export { textProps } from "./text.js";
 export type { TextProps } from "./text.js";
+
+export { barChartProps } from "./bar-chart.js";
+export type { BarChartProps } from "./bar-chart.js";
+
+export { cellGridProps } from "./cell-grid.js";
+export type { CellGridProps } from "./cell-grid.js";
