@@ -20,7 +20,6 @@ export const metadata: Metadata = {
     },
     description:
       "Build rich, interactive content on Farcaster with Snap — a protocol for mini-apps that work everywhere.",
-    url: "https://docs.farcaster.xyz/snap",
     siteName: "Farcaster Docs",
     type: "website",
   },
