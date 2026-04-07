@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.13.0
+
+### Minor Changes
+
+- [`9bbebf9`](https://github.com/farcasterxyz/snap/commit/9bbebf937b6540fbb94c77fd95151f1c8e09f087) Thanks [@lyoshenka](https://github.com/lyoshenka)! - Add bar_chart and cell_grid components. Widen SnapHandlerResult type for dynamic element construction. Update HTML and OG renderers for v1 components.
+
 ## 1.10.0
 
 ### Minor Changes
