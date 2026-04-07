@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.15.1
+
+### Patch Changes
+
+- [#81](https://github.com/farcasterxyz/snap/pull/81) [`9825b48`](https://github.com/farcasterxyz/snap/commit/9825b484410c759bbe6351d005c8ed8129daff0b) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Fix light mode colors by reading appearance from SnapView context instead of useColorMode.
+
 ## 1.15.0
 
 ### Minor Changes
