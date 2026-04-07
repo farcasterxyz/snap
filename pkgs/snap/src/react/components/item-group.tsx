@@ -2,6 +2,7 @@
 
 import { Children, type ReactNode, Fragment } from "react";
 import { cn } from "@neynar/ui/utils";
+import { useSnapColors } from "../hooks/use-snap-colors";
 
 const GAP_MAP: Record<string, string> = {
   none: "gap-0",
@@ -21,6 +22,7 @@ export function SnapItemGroup({
   const separator = Boolean(props.separator);
   const gap = GAP_MAP[String(props.gap ?? "sm")] ?? "gap-1";
   const items = Children.toArray(children);
+  const colors = useSnapColors();
 
   return (
     <div
@@ -29,11 +31,12 @@ export function SnapItemGroup({
         border && "rounded-lg border",
         gap,
       )}
+      style={border ? { borderColor: colors.border } : undefined}
     >
       {items.map((child, i) => (
         <Fragment key={i}>
           {separator && i > 0 && (
-            <div className="h-px bg-border" />
+            <div className="h-px" style={{ backgroundColor: colors.border }} />
           )}
           {child}
         </Fragment>

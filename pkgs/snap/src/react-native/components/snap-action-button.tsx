@@ -6,11 +6,6 @@ import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
 import { ICON_MAP } from "./snap-icon";
 
-const VARIANT_MAP: Record<string, "primary" | "secondary"> = {
-  primary: "primary",
-  secondary: "secondary",
-};
-
 export function SnapActionButton({
   element: { props },
   emit,
@@ -18,28 +13,22 @@ export function SnapActionButton({
   const { accentHex } = useSnapPalette();
   const { colors } = useSnapTheme();
   const label = String(props.label ?? "Action");
-  const variant = VARIANT_MAP[String(props.variant ?? "secondary")] ?? "secondary";
+  const variant = String(props.variant ?? "secondary");
+  const isPrimary = variant === "primary";
   const iconName = props.icon ? String(props.icon) : undefined;
 
-  const variantStyle = (() => {
-    switch (variant) {
-      case "primary":
-        return { backgroundColor: accentHex };
-      case "secondary":
-        return { backgroundColor: "transparent", borderWidth: 1.5, borderColor: accentHex };
-    }
-  })();
-
-  const textColor = variant === "primary" ? "#fff" : accentHex;
-  const iconColor = variant === "primary" ? "#fff" : accentHex;
+  const textColor = isPrimary ? "#fff" : colors.text;
+  const iconColor = isPrimary ? "#fff" : colors.text;
 
   return (
     <View style={styles.outer}>
       <Pressable
         style={({ pressed }) => [
           styles.btn,
-          variant === "primary" ? styles.btnDefault : styles.btnOther,
-          variantStyle,
+          isPrimary ? styles.btnDefault : styles.btnOther,
+          isPrimary
+            ? { backgroundColor: pressed ? accentHex + "DD" : accentHex }
+            : { backgroundColor: pressed ? colors.mutedHover : colors.muted },
           pressed && styles.pressed,
         ]}
         onPress={() => {
@@ -48,7 +37,6 @@ export function SnapActionButton({
               await emit("press");
             } catch (err: unknown) {
               if (typeof __DEV__ !== "undefined" && __DEV__) {
-                // eslint-disable-next-line no-console
                 console.error("[snap] action failed", err);
               }
             }

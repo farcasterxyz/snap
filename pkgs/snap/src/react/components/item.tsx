@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import {
   Item,
   ItemContent,
@@ -8,26 +7,30 @@ import {
   ItemDescription,
   ItemActions,
 } from "@neynar/ui/item";
+import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapItem({
-  element: { props },
+  element: { props, children: childIds },
   children,
 }: {
-  element: { props: Record<string, unknown> };
-  children?: ReactNode;
+  element: { props: Record<string, unknown>; children?: string[] };
+  children?: React.ReactNode;
 }) {
   const title = String(props.title ?? "");
   const description = props.description ? String(props.description) : undefined;
-  const variant =
-    (props.variant as "default") ?? "default";
+  const colors = useSnapColors();
 
   return (
-    <Item variant={variant} className="flex-1 py-1.5 px-2.5">
+    <Item className="flex-1 py-1.5 px-2.5">
       <ItemContent className="gap-0.5">
-        <ItemTitle>{title}</ItemTitle>
-        {description && <ItemDescription className="mt-0">{description}</ItemDescription>}
+        <ItemTitle style={{ color: colors.text }}>{title}</ItemTitle>
+        {description && (
+          <ItemDescription className="mt-0" style={{ color: colors.textMuted }}>
+            {description}
+          </ItemDescription>
+        )}
       </ItemContent>
-      {children && <ItemActions>{children}</ItemActions>}
+      {childIds && childIds.length > 0 && <ItemActions>{children}</ItemActions>}
     </Item>
   );
 }

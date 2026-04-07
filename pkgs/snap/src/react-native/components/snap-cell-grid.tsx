@@ -118,7 +118,7 @@ export function SnapCellGrid({
     : null;
 
   return (
-    <View style={[styles.wrap, { gap: gapPx }]}>
+    <View style={[styles.wrap, { gap: gapPx, backgroundColor: colors.muted, padding: 4, borderRadius: 8 }]}>
       {rowEls}
       {selectionLabel ? (
         <Text style={[styles.selectionText, { color: colors.textSecondary }]}>

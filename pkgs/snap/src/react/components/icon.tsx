@@ -36,7 +36,7 @@ import {
   TrendingDown,
   type LucideIcon,
 } from "lucide-react";
-import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
+import { useSnapColors } from "../hooks/use-snap-colors";
 
 export const ICON_MAP: Record<string, LucideIcon> = {
   "arrow-right": ArrowRight,
@@ -87,29 +87,16 @@ export function SnapIcon({
   const name = String(props.name ?? "info");
   const size = SIZE_PX[String(props.size ?? "md")] ?? 20;
   const color = props.color ? String(props.color) : undefined;
-  const accentStyle = useSnapAccentScopeStyle();
+  const colors = useSnapColors();
 
   const Icon = ICON_MAP[name];
   if (!Icon) return null;
 
-  const isAccent = !color || color === "accent";
+  const iconColor = colors.colorHex(color);
 
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        ...(isAccent ? accentStyle : {}),
-      }}
-    >
-      <Icon
-        size={size}
-        style={
-          isAccent
-            ? { color: "var(--snap-accent, currentColor)" }
-            : { color: `var(--snap-color-${color}, currentColor)` }
-        }
-      />
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      <Icon size={size} style={{ color: iconColor }} />
     </span>
   );
 }

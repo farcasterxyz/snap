@@ -1,15 +1,11 @@
 "use client";
 
 import { Text } from "@neynar/ui/typography";
+import { useSnapColors } from "../hooks/use-snap-colors";
 
 const SIZE_MAP = {
-  md: { component: "text", textSize: "base" as const },
-  sm: { component: "text", textSize: "sm" as const },
-} as const;
-
-const WEIGHT_MAP = {
-  bold: "bold",
-  normal: "normal",
+  md: { textSize: "base" as const },
+  sm: { textSize: "sm" as const },
 } as const;
 
 export function SnapText({
@@ -22,9 +18,16 @@ export function SnapText({
   const weight = props.weight ? String(props.weight) as "bold" | "normal" : undefined;
   const align = (props.align as "left" | "center" | "right") ?? undefined;
   const config = SIZE_MAP[size] ?? SIZE_MAP.md;
+  const colors = useSnapColors();
 
   return (
-    <Text size={config.textSize} weight={weight} align={align} className="flex-1">
+    <Text
+      size={config.textSize}
+      weight={weight}
+      align={align}
+      className="flex-1"
+      style={{ color: colors.text }}
+    >
       {content}
     </Text>
   );
