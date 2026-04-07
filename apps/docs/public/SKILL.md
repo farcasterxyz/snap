@@ -12,7 +12,7 @@ description:
 
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-04-06**. If that date is more than 7 days ago,
+This skill was last updated on **2026-04-07**. If that date is more than 1 day ago,
 fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
