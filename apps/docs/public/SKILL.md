@@ -36,19 +36,13 @@ Default process:
 
 ## Step 1: Read the docs
 
-Fetch the complete snap documentation in a single request:
-
-```bash
-curl -fsSL https://docs.farcaster.xyz/snap/llms.txt
-```
-
-This returns all snap docs as plain-text markdown — spec, components, actions,
-constraints, and examples — in one file. Refer to it throughout. Do not rely on memorized
-spec content. Do NOT guess or construct documentation URLs — use only `llms.txt`.
+Read the agent-directed docs at https://docs.farcaster.xyz/snap. Refer to these docs
+throughout. Explore them as needed. Do not rely on memorized spec content.
 
 ## Step 2: Implement the snap (follow the template)
 
-Explore the snap template code on Github.
+Explore the
+[`template/` directory on GitHub](https://github.com/farcasterxyz/snap/tree/main/template).
 
 Read README.md and AGENTS.md there first, then follow the links therein to more content.
 Also skim it's @farcaster/snap\* dependencies.
@@ -74,6 +68,9 @@ Design guidance:
 - 9 action types: `submit` (server round-trip), `open_url` (browser), `open_mini_app`
   (in-app), and client actions: `view_cast`, `view_profile`, `compose_cast`,
   `view_token`, `send_token`, `swap_token`.
+- Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
+- Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
+  Set `select: "single"` or `"multiple"` to let users tap cells.
 - Keep strings within component char limits (see
   [Constraints](https://docs.farcaster.xyz/snap/constraints)).
 
@@ -129,7 +126,7 @@ Fix any errors or implementation mistakes. Re-run local validation until the sna
 ## Step 5: Deploy or update (always)
 
 Every run **ends with a deployment** (new project or new version). Do not stop after
-“the JSON looks right” or after local-only validation.
+"the JSON looks right" or after local-only validation.
 
 To deploy, first do `curl -fsSL https://host.neynar.app/SKILL.md`. That skill is the
 source of truth for packaging, API usage, first-deploy vs update, API key handling, and
@@ -142,7 +139,7 @@ Then use that skill, applying the parameters below:
 - **`projectName`**: choose a stable name per snap (e.g. `my-team-widget-snap`) so
   updates target the same live URL
 - **`env`**: must include
-  `{“SNAP_PUBLIC_BASE_URL”:”https://<projectName>.host.neynar.app”}` so button targets
+  `{"SNAP_PUBLIC_BASE_URL":"https://<projectName>.host.neynar.app"}` so button targets
   use the live HTTPS origin
 - **Archive**: exclude `src/server.ts` (imports `@hono/node-server`, a Node.js built-in
   incompatible with Edge runtime) and `node_modules`
