@@ -51,11 +51,12 @@ Buttons use `action: "submit"` with a `target` URL that includes the next or pre
 const items = ["Alpha", "Bravo", "Charlie", "Delta", "Echo"];
 
 const snap: SnapFunction = async (ctx) => {
+  const url = new URL(ctx.request.url);
   const idx = Math.max(0, Math.min(items.length - 1,
-    parseInt(ctx.url.searchParams.get("idx") ?? "0", 10) || 0));
+    parseInt(url.searchParams.get("idx") ?? "0", 10) || 0));
   const prev = Math.max(0, idx - 1);
   const next = Math.min(items.length - 1, idx + 1);
-  const base = ctx.snapBaseUrl;
+  const base = snapBaseUrlFromRequest(ctx.request);
 
   return {
     version: "1.0",
