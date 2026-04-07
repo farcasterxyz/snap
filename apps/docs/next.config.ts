@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
-  assetPrefix: "https://snap-docs.farcaster.xyz",
+  basePath: "/snap",
 };
 
 const withMDX = createMDX({
