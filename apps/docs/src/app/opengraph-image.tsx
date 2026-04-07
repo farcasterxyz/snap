@@ -60,7 +60,7 @@ export default function OGImage() {
               lineHeight: 1.4,
             }}
           >
-            A protocol for rich, interactive mini-apps on Farcaster
+            Simple, Nimble App Protocol
           </div>
         </div>
       </div>

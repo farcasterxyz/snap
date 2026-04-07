@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s — Farcaster Snap",
   },
   description:
-    "Build rich, interactive content on Farcaster with Snap — a protocol for mini-apps that work everywhere.",
+    "Build rich, interactive content on Farcaster with Snap — simple, nimble app protocol.",
   icons: {
     icon: "/snap/icon.svg",
   },
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
       template: "%s — Farcaster Snap",
     },
     description:
-      "Build rich, interactive content on Farcaster with Snap — a protocol for mini-apps that work everywhere.",
+      "Build rich, interactive content on Farcaster with Snap — simple, nimble app protocol.",
     siteName: "Farcaster Docs",
     type: "website",
   },
