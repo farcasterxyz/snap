@@ -1,7 +1,11 @@
 import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./catalog-renderer";
-import { SnapThemeProvider, useSnapTheme, type SnapNativeColors } from "./theme";
+import {
+  SnapThemeProvider,
+  useSnapTheme,
+  type SnapNativeColors,
+} from "./theme";
 import { hexToRgba } from "./use-snap-palette";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -47,10 +51,7 @@ export type SnapActionHandlers = {
     recipientFid?: number;
     recipientAddress?: string;
   }) => void;
-  swap_token: (params: {
-    sellToken?: string;
-    buyToken?: string;
-  }) => void;
+  swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
 };
 
 // ─── Re-exports ───────────────────────────────────────
@@ -94,9 +95,15 @@ function applyStatePaths(
   }
 }
 
-function resolveAccentHex(accent: string | undefined, appearance: "light" | "dark"): string {
+function resolveAccentHex(
+  accent: string | undefined,
+  appearance: "light" | "dark",
+): string {
   const map = appearance === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
-  const name = accent && Object.hasOwn(map, accent) ? (accent as PaletteColor) : DEFAULT_THEME_ACCENT;
+  const name =
+    accent && Object.hasOwn(map, accent)
+      ? (accent as PaletteColor)
+      : DEFAULT_THEME_ACCENT;
   return map[name];
 }
 
@@ -191,7 +198,9 @@ function SnapViewInner({
           token: String(p.token ?? ""),
           amount: p.amount ? String(p.amount) : undefined,
           recipientFid: p.recipientFid ? Number(p.recipientFid) : undefined,
-          recipientAddress: p.recipientAddress ? String(p.recipientAddress) : undefined,
+          recipientAddress: p.recipientAddress
+            ? String(p.recipientAddress)
+            : undefined,
         });
         break;
       case "swap_token":
@@ -207,19 +216,19 @@ function SnapViewInner({
 
   return (
     <View style={styles.container}>
-      {loading && (
+      {loading ? (
         <View
           style={[
             styles.overlay,
             {
               backgroundColor:
-                mode === "dark" ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.5)",
+                mode === "dark" ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)",
             },
           ]}
         >
           <ActivityIndicator size="large" color={accentHex} />
         </View>
-      )}
+      ) : null}
       <SnapCatalogView
         key={pageKey}
         spec={spec}
