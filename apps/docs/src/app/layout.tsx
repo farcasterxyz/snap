@@ -3,10 +3,29 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Farcaster Snap",
-  description: "Documentation for Farcaster Snap",
+  title: {
+    default: "Farcaster Snap",
+    template: "%s — Farcaster Snap",
+  },
+  description:
+    "Build rich, interactive content on Farcaster with Snap — a protocol for mini-apps that work everywhere.",
   icons: {
     icon: "/snap/icon.svg",
+  },
+  metadataBase: new URL("https://docs.farcaster.xyz"),
+  openGraph: {
+    title: {
+      default: "Farcaster Snap",
+      template: "%s — Farcaster Snap",
+    },
+    description:
+      "Build rich, interactive content on Farcaster with Snap — a protocol for mini-apps that work everywhere.",
+    url: "https://docs.farcaster.xyz/snap",
+    siteName: "Farcaster Docs",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 
