@@ -10,6 +10,12 @@ export type SnapNativeColors = {
   border: string;
   inputBg: string;
   muted: string;
+  /** Subtle tint for toggle button resting state */
+  mutedSubtle: string;
+  /** Slightly stronger tint for hover/press state */
+  mutedHover: string;
+  /** Stronger tint for selected state (toggle group) */
+  mutedSelected: string;
 };
 
 const DEFAULT_LIGHT: SnapNativeColors = {
@@ -17,9 +23,12 @@ const DEFAULT_LIGHT: SnapNativeColors = {
   surface: "#ffffff",
   text: "#111111",
   textSecondary: "#6b7280",
-  border: "#d1d5db",
-  inputBg: "#ffffff",
-  muted: "#f9fafb",
+  border: "#E5E7EB",
+  inputBg: "rgba(0,0,0,0.12)",
+  muted: "rgba(0,0,0,0.12)",
+  mutedSubtle: "rgba(0,0,0,0.06)",
+  mutedHover: "rgba(0,0,0,0.10)",
+  mutedSelected: "rgba(0,0,0,0.18)",
 };
 
 const DEFAULT_DARK: SnapNativeColors = {
@@ -27,9 +36,12 @@ const DEFAULT_DARK: SnapNativeColors = {
   surface: "#1a1d24",
   text: "#fafafa",
   textSecondary: "#a1a1aa",
-  border: "#374151",
-  inputBg: "#1a1d24",
-  muted: "#27272a",
+  border: "#2D2D44",
+  inputBg: "rgba(255,255,255,0.03)",
+  muted: "rgba(255,255,255,0.03)",
+  mutedSubtle: "rgba(255,255,255,0.02)",
+  mutedHover: "rgba(255,255,255,0.04)",
+  mutedSelected: "rgba(255,255,255,0.10)",
 };
 
 // ─── Context ──────────────────────────────────────────

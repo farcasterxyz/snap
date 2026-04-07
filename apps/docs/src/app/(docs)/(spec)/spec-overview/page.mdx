@@ -32,7 +32,7 @@ so the same URL can serve snap JSON or fallback content. See
 
 ## Authentication
 
-Main page: [Authentication](/auth)
+Main page: [Authentication](/snap/auth)
 
 Snap POST requests use **JSON Farcaster Signatures (JFS)** for authentication.
 
@@ -83,7 +83,7 @@ Valid snap responses have roughly this shape:
 | `version`      | `"1.0"`          | Yes      |                        | Spec version                                              |
 | `theme`        | object           | No       | `{ accent: "purple" }` | Theme configuration                                       |
 | `theme.accent` | PaletteColor     | No       | `"purple"`             | Accent color for buttons, progress bars, etc.             |
-| `effects`      | string[]         | No       |                        | Visual effects applied on render. See [Effects](/effects) |
+| `effects`      | string[]         | No       |                        | Visual effects applied on render. See [Effects](/snap/effects) |
 | `ui`           | json-render Spec | Yes      |                        | The UI tree                                               |
 
 ### The `ui` Field
@@ -103,7 +103,7 @@ Every element in `ui.elements` follows this shape:
 
 | Field      | Type     | Required | Description                                                            |
 | ---------- | -------- | -------- | ---------------------------------------------------------------------- |
-| `type`     | string   | Yes      | Component name (see [Elements](/elements))                             |
+| `type`     | string   | Yes      | Component name (see [Elements](/snap/elements))                             |
 | `props`    | object   | Yes      | Component-specific properties (use `{}` if none)                       |
 | `children` | string[] | No       | Child element IDs (for containers and action slots)                    |
 | `on`       | object   | No       | Event bindings — `on.press` triggers an action when a button is tapped |

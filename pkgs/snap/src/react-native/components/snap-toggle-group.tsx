@@ -1,14 +1,12 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { useStateStore } from "@json-render/react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
 
 export function SnapToggleGroup({
   element: { props },
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { get, set } = useStateStore();
-  const { accentHex } = useSnapPalette();
   const { colors } = useSnapTheme();
   const name = String(props.name ?? "toggle_group");
   const path = `/inputs/${name}`;
@@ -59,7 +57,7 @@ export function SnapToggleGroup({
       <View
         style={[
           styles.group,
-          { backgroundColor: colors.border + "33" },
+          { backgroundColor: colors.muted },
           isVertical ? styles.groupVertical : styles.groupHorizontal,
         ]}
       >
@@ -70,8 +68,13 @@ export function SnapToggleGroup({
               key={index}
               style={({ pressed }) => [
                 styles.option,
-                isSelected && { backgroundColor: accentHex },
-                pressed && styles.pressed,
+                {
+                  backgroundColor: isSelected
+                    ? colors.mutedSelected
+                    : pressed
+                      ? colors.mutedHover
+                      : colors.mutedSubtle,
+                },
                 !isVertical && styles.optionHorizontal,
               ]}
               onPress={() => handlePress(opt)}
@@ -80,7 +83,6 @@ export function SnapToggleGroup({
                 style={[
                   styles.optionText,
                   { color: colors.text },
-                  isSelected && styles.optionTextSelected,
                 ]}
               >
                 {opt}
@@ -117,12 +119,8 @@ const styles = StyleSheet.create({
   optionHorizontal: {
     flex: 1,
   },
-  pressed: { opacity: 0.88 },
   optionText: {
     fontSize: 13,
     fontWeight: "500",
-  },
-  optionTextSelected: {
-    color: "#fff",
   },
 });

@@ -3,10 +3,8 @@
 import type { ReactNode } from "react";
 import { useStateStore } from "@json-render/react";
 import { cn } from "@neynar/ui/utils";
-import { POST_GRID_TAP_KEY, PALETTE_LIGHT_HEX } from "@farcaster/snap";
-import type { PaletteColor } from "@farcaster/snap";
-import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
-import { useColorMode } from "@neynar/ui/color-mode";
+import { POST_GRID_TAP_KEY } from "@farcaster/snap";
+import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapCellGrid({
   element: { props },
@@ -14,8 +12,7 @@ export function SnapCellGrid({
   element: { props: Record<string, unknown> };
 }) {
   const { get, set } = useStateStore();
-  const accentStyle = useSnapAccentScopeStyle();
-  const { mode: appearance } = useColorMode();
+  const colors = useSnapColors();
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const select = String(props.select ?? "off");
@@ -60,17 +57,12 @@ export function SnapCellGrid({
     });
   }
 
-  const ringColor = appearance === "dark" ? "#fff" : "#000";
-
   const cellEls: ReactNode[] = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const cell = cellMap.get(`${r},${c}`);
       const selected = interactive && isSelected(r, c);
-      const bg =
-        cell?.color && cell.color in PALETTE_LIGHT_HEX
-          ? `var(--snap-color-${cell.color}, ${PALETTE_LIGHT_HEX[cell.color as PaletteColor]})`
-          : "transparent";
+      const bg = cell?.color ? colors.colorHex(cell.color) : "transparent";
 
       cellEls.push(
         <div
@@ -96,7 +88,7 @@ export function SnapCellGrid({
             background: bg,
             // Two-layer ring: 1px white/black inner + 2px accent outer
             boxShadow: selected
-              ? `inset 0 0 0 1px ${appearance === "dark" ? "#000" : "#fff"}, inset 0 0 0 2px ${appearance === "dark" ? "#fff" : "#000"}`
+              ? `inset 0 0 0 1px ${colors.mode === "dark" ? "#000" : "#fff"}, inset 0 0 0 2px ${colors.mode === "dark" ? "#fff" : "#000"}`
               : undefined,
           }}
         >
@@ -111,18 +103,19 @@ export function SnapCellGrid({
     : null;
 
   return (
-    <div style={accentStyle}>
+    <div>
       <div
-        className="grid w-full"
+        className="grid w-full rounded-lg p-1"
         style={{
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
           gap: gapPx,
+          backgroundColor: colors.muted,
         }}
       >
         {cellEls}
       </div>
       {selectionLabel && (
-        <div className="text-muted-foreground mt-1.5 truncate text-xs font-mono">
+        <div className="mt-1.5 truncate text-xs font-mono" style={{ color: colors.textMuted }}>
           {selectionLabel}
         </div>
       )}

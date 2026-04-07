@@ -1,6 +1,7 @@
 "use client";
 
 import { Separator } from "@neynar/ui/separator";
+import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapSeparator({
   element: { props },
@@ -9,6 +10,12 @@ export function SnapSeparator({
 }) {
   const orientation =
     (props.orientation as "horizontal" | "vertical") ?? "horizontal";
+  const colors = useSnapColors();
 
-  return <Separator orientation={orientation} />;
+  return (
+    <Separator
+      orientation={orientation}
+      style={{ backgroundColor: colors.border }}
+    />
+  );
 }

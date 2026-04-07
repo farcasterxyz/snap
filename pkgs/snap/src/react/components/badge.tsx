@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@neynar/ui/badge";
-import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
+import { useSnapColors, pickForegroundForBg } from "../hooks/use-snap-colors";
 import { ICON_MAP } from "./icon";
 
 export function SnapBadge({
@@ -13,25 +13,22 @@ export function SnapBadge({
   const variant = String(props.variant ?? "default") as "default" | "outline";
   const color = props.color ? String(props.color) : undefined;
   const iconName = props.icon ? String(props.icon) : undefined;
-  const accentStyle = useSnapAccentScopeStyle();
+  const colors = useSnapColors();
 
-  const isAccent = !color || color === "accent";
+  const badgeColor = colors.colorHex(color);
+  const badgeFg = variant === "default" ? pickForegroundForBg(badgeColor) : badgeColor;
+
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
 
+  const style =
+    variant === "outline"
+      ? { borderColor: badgeColor, color: badgeColor, backgroundColor: "transparent" }
+      : { backgroundColor: badgeColor, color: badgeFg, borderColor: "transparent" };
+
   return (
-    <span style={isAccent ? accentStyle : undefined}>
-      <Badge
-        variant={variant}
-        className="gap-1"
-        style={
-          variant === "outline" && !isAccent
-            ? { borderColor: `var(--snap-color-${color})`, color: `var(--snap-color-${color})` }
-            : undefined
-        }
-      >
-        {Icon && <Icon size={12} />}
-        {content}
-      </Badge>
-    </span>
+    <Badge variant={variant} className="gap-1" style={style}>
+      {Icon && <Icon size={12} />}
+      {content}
+    </Badge>
   );
 }

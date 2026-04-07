@@ -1,14 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@neynar/ui/button";
 import { cn } from "@neynar/ui/utils";
-import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
+import { useSnapColors } from "../hooks/use-snap-colors";
 import { ICON_MAP } from "./icon";
-
-const VARIANT_MAP: Record<string, "default" | "secondary"> = {
-  primary: "default",
-  secondary: "secondary",
-};
 
 export function SnapActionButton({
   element: { props },
@@ -18,25 +14,36 @@ export function SnapActionButton({
   emit: (name: string) => void;
 }) {
   const label = String(props.label ?? "Action");
-  const variant = VARIANT_MAP[String(props.variant ?? "secondary")] ?? "secondary";
+  const variant = String(props.variant ?? "secondary");
+  const isPrimary = variant === "primary";
   const iconName = props.icon ? String(props.icon) : undefined;
-  const accentStyle = useSnapAccentScopeStyle();
+  const colors = useSnapColors();
+  const [hovered, setHovered] = useState(false);
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
 
+  const style = isPrimary
+    ? {
+        backgroundColor: hovered ? colors.accentHover : colors.accent,
+        color: colors.accentFg,
+        borderColor: "transparent",
+      }
+    : {
+        backgroundColor: hovered ? `color-mix(in srgb, ${colors.accent} 15%, transparent)` : colors.muted,
+        color: colors.text,
+        borderColor: "transparent",
+      };
+
   return (
-    <div className="w-full min-w-0 flex-1" style={accentStyle}>
+    <div className="w-full min-w-0 flex-1">
       <Button
         type="button"
-        variant={variant}
-        className={cn(
-          "w-full gap-2",
-          variant === "default" &&
-            "hover:!bg-[var(--snap-action-primary-hover)]",
-          variant !== "default" &&
-            "hover:!bg-[var(--snap-action-outline-hover)]",
-        )}
+        variant={isPrimary ? "default" : "secondary"}
+        className={cn("w-full gap-2")}
+        style={style}
         onClick={() => emit("press")}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
       >
         {Icon && <Icon size={16} />}
         {label}

@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useStateStore } from "@json-render/react";
 import { Label } from "@neynar/ui/label";
 import { cn } from "@neynar/ui/utils";
-import { useSnapAccentScopeStyle } from "../hooks/use-snap-accent";
+import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapToggleGroup({
   element: { props },
@@ -11,7 +12,7 @@ export function SnapToggleGroup({
   element: { props: Record<string, unknown> };
 }) {
   const { get, set } = useStateStore();
-  const accentStyle = useSnapAccentScopeStyle();
+  const colors = useSnapColors();
   const name = String(props.name ?? "toggle_group");
   const path = `/inputs/${name}`;
   const label = props.label ? String(props.label) : undefined;
@@ -50,30 +51,46 @@ export function SnapToggleGroup({
   };
 
   const isVertical = orientation === "vertical";
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   return (
-    <div className="w-full space-y-1.5" style={accentStyle}>
-      {label && <Label>{label}</Label>}
+    <div className="w-full space-y-1.5">
+      {label && <Label style={{ color: colors.text }}>{label}</Label>}
       <div
         className={cn(
-          "flex gap-1 rounded-lg bg-border/20 p-1",
+          "flex gap-1 rounded-lg p-1",
           isVertical ? "flex-col" : "flex-row",
         )}
+        style={{ backgroundColor: colors.muted }}
       >
-        {options.map((opt) => {
+        {options.map((opt, i) => {
           const isSelected = selected.includes(opt);
+          const isHovered = hoveredIdx === i && !isSelected;
           return (
             <button
               key={opt}
               type="button"
               onClick={() => toggle(opt)}
+              onPointerEnter={() => setHoveredIdx(i)}
+              onPointerLeave={() => setHoveredIdx(null)}
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 isVertical ? "w-full" : "flex-1",
-                isSelected
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-border/30",
               )}
+              style={{
+                transition: "background-color 0.15s, color 0.15s",
+                ...(isSelected
+                  ? {
+                      backgroundColor: colors.mode === "dark" ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)",
+                      color: colors.text,
+                    }
+                  : {
+                      color: colors.text,
+                      backgroundColor: isHovered
+                        ? (colors.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)")
+                        : (colors.mode === "dark" ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)"),
+                    }),
+              }}
             >
               {opt}
             </button>

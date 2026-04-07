@@ -23,7 +23,7 @@ export function SnapSwitch({
       <Switch
         value={checked}
         onValueChange={(v) => set(path, v)}
-        trackColor={{ false: colors.border, true: accentHex }}
+        trackColor={{ false: colors.muted, true: accentHex }}
         thumbColor="#fff"
       />
     </View>
