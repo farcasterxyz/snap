@@ -9,6 +9,44 @@ A multi-page gallery with Previous / Next navigation using query parameters.
 The handler reads `?idx=N` from the URL and returns different content for each page.
 Buttons use `action: "submit"` with a `target` URL that includes the next or previous index.
 
+### First page (`?idx=0`)
+
+<SnapPreview snap={{
+  version: "1.0",
+  theme: { accent: "blue" },
+  ui: {
+    root: "page",
+    elements: {
+      "page": { type: "stack", props: {}, children: ["title", "counter", "nav"] },
+      "title": { type: "text", props: { content: "Alpha", weight: "bold" } },
+      "counter": { type: "text", props: { content: "1 of 5", size: "sm" } },
+      "nav": { type: "stack", props: { direction: "horizontal" }, children: ["prev-btn", "next-btn"] },
+      "prev-btn": { type: "button", props: { label: "Previous" }, on: { press: { action: "submit", params: { target: "https://example.com/?idx=0" } } } },
+      "next-btn": { type: "button", props: { label: "Next", variant: "primary" }, on: { press: { action: "submit", params: { target: "https://example.com/?idx=1" } } } }
+    }
+  }
+}} />
+
+### After tapping Next (`?idx=1`)
+
+<SnapPreview snap={{
+  version: "1.0",
+  theme: { accent: "blue" },
+  ui: {
+    root: "page",
+    elements: {
+      "page": { type: "stack", props: {}, children: ["title", "counter", "nav"] },
+      "title": { type: "text", props: { content: "Bravo", weight: "bold" } },
+      "counter": { type: "text", props: { content: "2 of 5", size: "sm" } },
+      "nav": { type: "stack", props: { direction: "horizontal" }, children: ["prev-btn", "next-btn"] },
+      "prev-btn": { type: "button", props: { label: "Previous" }, on: { press: { action: "submit", params: { target: "https://example.com/?idx=0" } } } },
+      "next-btn": { type: "button", props: { label: "Next", variant: "primary" }, on: { press: { action: "submit", params: { target: "https://example.com/?idx=2" } } } }
+    }
+  }
+}} />
+
+### Handler code
+
 ```ts
 const items = ["Alpha", "Bravo", "Charlie", "Delta", "Echo"];
 
@@ -42,24 +80,6 @@ const snap: SnapFunction = async (ctx) => {
   };
 };
 ```
-
-The resulting payload for the first page (`?idx=0`):
-
-<SnapPreview snap={{
-  version: "1.0",
-  theme: { accent: "blue" },
-  ui: {
-    root: "page",
-    elements: {
-      "page": { type: "stack", props: {}, children: ["title", "counter", "nav"] },
-      "title": { type: "text", props: { content: "Alpha", weight: "bold" } },
-      "counter": { type: "text", props: { content: "1 of 5", size: "sm" } },
-      "nav": { type: "stack", props: { direction: "horizontal" }, children: ["prev-btn", "next-btn"] },
-      "prev-btn": { type: "button", props: { label: "Previous" }, on: { press: { action: "submit", params: { target: "https://example.com/?idx=0" } } } },
-      "next-btn": { type: "button", props: { label: "Next", variant: "primary" }, on: { press: { action: "submit", params: { target: "https://example.com/?idx=1" } } } }
-    }
-  }
-}} />
 
 ## Collaborative Wordle
 
