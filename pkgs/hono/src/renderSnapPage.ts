@@ -16,6 +16,7 @@ export type RenderSnapPageOptions = {
   ogImageUrl?: string;
   resourcePath?: string;
   siteName?: string;
+  openGraph?: { title?: string; description?: string };
 };
 
 type PageMeta = {
@@ -97,7 +98,9 @@ function buildOgMeta(opts: {
   }
   if (imgUrl) {
     lines.push(`<meta property="og:image" content="${esc(imgUrl)}">`);
-    lines.push(`<meta property="og:image:alt" content="${esc(imageAlt ?? title)}">`);
+    lines.push(
+      `<meta property="og:image:alt" content="${esc(imageAlt ?? title)}">`,
+    );
   }
   lines.push(
     `<meta name="twitter:card" content="${twitterCard}">`,
@@ -126,10 +129,7 @@ function accentHex(accent: PaletteColor | undefined): string {
     : PALETTE_LIGHT_HEX[DEFAULT_THEME_ACCENT];
 }
 
-function colorHex(
-  color: string | undefined,
-  accent: string,
-): string {
+function colorHex(color: string | undefined, accent: string): string {
   if (!color || color === PALETTE_COLOR_ACCENT) return accent;
   return (PALETTE_LIGHT_HEX as Record<string, string>)[color] ?? accent;
 }
@@ -189,11 +189,7 @@ function renderIcon(name: string, size: number, color: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0">${inner}</svg>`;
 }
 
-function renderElement(
-  key: string,
-  spec: SnapSpec,
-  accent: string,
-): string {
+function renderElement(key: string, spec: SnapSpec, accent: string): string {
   const el = spec.elements[key] as SnapUIElement | undefined;
   if (!el) return "";
   const p = el.props ?? {};
@@ -203,46 +199,75 @@ function renderElement(
       const color = colorHex(p.color as string | undefined, accent);
       const size = String(p.size ?? "md") === "sm" ? 16 : 20;
       const name = String(p.name ?? "info");
-      return `<span style="display:inline-flex;align-items:center">${renderIcon(name, size, color)}</span>`;
+      return `<span style="display:inline-flex;align-items:center">${renderIcon(
+        name,
+        size,
+        color,
+      )}</span>`;
     }
     case "badge": {
       const color = colorHex(p.color as string | undefined, accent);
       const badgeVariant = String(p.variant ?? "default");
       const isFilled = badgeVariant === "default";
       const fg = isFilled ? fgForBg(color) : color;
-      const bgStyle = isFilled ? `background:${color};color:${fg}` : `border:1px solid ${color};color:${color}`;
+      const bgStyle = isFilled
+        ? `background:${color};color:${fg}`
+        : `border:1px solid ${color};color:${color}`;
       const iconName = p.icon ? String(p.icon) : undefined;
       const iconHtml = iconName ? renderIcon(iconName, 12, fg) : "";
       const gap = iconHtml ? "gap:4px;" : "";
-      return `<span style="display:inline-flex;align-items:center;${gap}padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:1.5;${bgStyle}">${iconHtml}${esc(String(p.label ?? ""))}</span>`;
+      return `<span style="display:inline-flex;align-items:center;${gap}padding:2px 10px;border-radius:9999px;font-size:12px;font-weight:500;line-height:1.5;${bgStyle}">${iconHtml}${esc(
+        String(p.label ?? ""),
+      )}</span>`;
     }
     case "image": {
       const url = esc(String(p.url ?? ""));
       const aspect = String(p.aspect ?? "1:1");
       const [w, h] = aspect.split(":").map(Number);
       const ratio = w && h ? `${w}/${h}` : "1/1";
-      return `<div style="flex:1;aspect-ratio:${ratio};border-radius:8px;overflow:hidden;background:#F3F4F6"><img src="${url}" alt="${esc(String(p.alt ?? ""))}" style="width:100%;height:100%;object-fit:cover"></div>`;
+      return `<div style="flex:1;aspect-ratio:${ratio};border-radius:8px;overflow:hidden;background:#F3F4F6"><img src="${url}" alt="${esc(
+        String(p.alt ?? ""),
+      )}" style="width:100%;height:100%;object-fit:cover"></div>`;
     }
     case "item": {
-      const descHtml = p.description ? `<div style="font-size:13px;color:#6B7280;margin-top:2px">${esc(String(p.description))}</div>` : "";
-      const childIds = el.children ?? [];
-      const actionsHtml = childIds.length > 0
-        ? `<div style="margin-left:auto;padding-left:12px;display:flex;align-items:center;gap:4px">${childIds.map((id) => renderElement(id, spec, accent)).join("")}</div>`
+      const descHtml = p.description
+        ? `<div style="font-size:13px;color:#6B7280;margin-top:2px">${esc(
+            String(p.description),
+          )}</div>`
         : "";
-      return `<div style="display:flex;align-items:flex-start;padding:6px 10px"><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:500;color:#111">${esc(String(p.title ?? ""))}</div>${descHtml}</div>${actionsHtml}</div>`;
+      const childIds = el.children ?? [];
+      const actionsHtml =
+        childIds.length > 0
+          ? `<div style="margin-left:auto;padding-left:12px;display:flex;align-items:center;gap:4px">${childIds
+              .map((id) => renderElement(id, spec, accent))
+              .join("")}</div>`
+          : "";
+      return `<div style="display:flex;align-items:flex-start;padding:6px 10px"><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:500;color:#111">${esc(
+        String(p.title ?? ""),
+      )}</div>${descHtml}</div>${actionsHtml}</div>`;
     }
     case "item_group": {
       const childIds = el.children ?? [];
       const border = Boolean(p.border);
       const separator = Boolean(p.separator);
-      const outerStyle = border ? "border:1px solid #E5E7EB;border-radius:8px;overflow:hidden" : "";
+      const outerStyle = border
+        ? "border:1px solid #E5E7EB;border-radius:8px;overflow:hidden"
+        : "";
       let html = `<div style="display:flex;flex-direction:column;${outerStyle}">`;
       for (let i = 0; i < childIds.length; i++) {
         if (separator && i > 0) {
           html += `<hr style="border:none;border-top:1px solid #E5E7EB;margin:0 12px">`;
         }
-        const pad = border ? "padding:8px 12px;" : separator ? "padding:8px 0;" : "";
-        html += `<div style="${pad}">${renderElement(childIds[i]!, spec, accent)}</div>`;
+        const pad = border
+          ? "padding:8px 12px;"
+          : separator
+          ? "padding:8px 0;"
+          : "";
+        html += `<div style="${pad}">${renderElement(
+          childIds[i]!,
+          spec,
+          accent,
+        )}</div>`;
       }
       html += `</div>`;
       return html;
@@ -251,44 +276,69 @@ function renderElement(
       const value = Number(p.value ?? 0);
       const max = Number(p.max ?? 100);
       const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
-      const labelHtml = p.label ? `<div style="font-size:12px;color:#6B7280;margin-bottom:4px">${esc(String(p.label))}</div>` : "";
+      const labelHtml = p.label
+        ? `<div style="font-size:12px;color:#6B7280;margin-bottom:4px">${esc(
+            String(p.label),
+          )}</div>`
+        : "";
       return `<div style="display:flex;flex:1;flex-direction:column;gap:4px">${labelHtml}<div style="height:10px;background:#E5E7EB;border-radius:9999px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${accent};border-radius:9999px;transition:width 0.3s"></div></div></div>`;
     }
     case "separator": {
       const orientation = String(p.orientation ?? "horizontal");
-      if (orientation === "vertical") return `<div style="width:1px;background:#E5E7EB;align-self:stretch;min-height:16px"></div>`;
+      if (orientation === "vertical")
+        return `<div style="width:1px;background:#E5E7EB;align-self:stretch;min-height:16px"></div>`;
       return `<hr style="border:none;border-top:1px solid #E5E7EB;margin:4px 0">`;
     }
     case "slider": {
       const min = Number(p.min ?? 0);
       const max = Number(p.max ?? 100);
-      const value = p.defaultValue !== undefined ? Number(p.defaultValue) : (min + max) / 2;
-      const labelHtml = p.label ? `<div style="font-size:13px;font-weight:500;color:#374151;margin-bottom:6px">${esc(String(p.label))}</div>` : "";
+      const value =
+        p.defaultValue !== undefined ? Number(p.defaultValue) : (min + max) / 2;
+      const labelHtml = p.label
+        ? `<div style="font-size:13px;font-weight:500;color:#374151;margin-bottom:6px">${esc(
+            String(p.label),
+          )}</div>`
+        : "";
       return `<div style="display:flex;flex-direction:column;gap:6px">${labelHtml}<input type="range" min="${min}" max="${max}" value="${value}" disabled style="width:100%;height:10px;border-radius:9999px;accent-color:${accent};background:#E5E7EB;-webkit-appearance:none;appearance:none"></div>`;
     }
     case "switch": {
       const checked = Boolean(p.defaultChecked);
       const bg = checked ? accent : "#D1D5DB";
       const tx = checked ? "20px" : "2px";
-      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-size:14px;color:#374151">${esc(String(p.label ?? ""))}</span><div style="width:44px;height:24px;background:${bg};border-radius:12px;position:relative;transition:background 0.2s"><div style="width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:${tx};transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)"></div></div></div>`;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-size:14px;color:#374151">${esc(
+        String(p.label ?? ""),
+      )}</span><div style="width:44px;height:24px;background:${bg};border-radius:12px;position:relative;transition:background 0.2s"><div style="width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:${tx};transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)"></div></div></div>`;
     }
     case "input": {
-      const labelHtml = p.label ? `<label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px">${esc(String(p.label))}</label>` : "";
-      return `<div style="display:flex;flex-direction:column;gap:6px">${labelHtml}<input type="text" placeholder="${esc(String(p.placeholder ?? ""))}" readonly style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;font-size:14px;color:#374151;font-family:inherit;box-sizing:border-box"></div>`;
+      const labelHtml = p.label
+        ? `<label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px">${esc(
+            String(p.label),
+          )}</label>`
+        : "";
+      return `<div style="display:flex;flex-direction:column;gap:6px">${labelHtml}<input type="text" placeholder="${esc(
+        String(p.placeholder ?? ""),
+      )}" readonly style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;font-size:14px;color:#374151;font-family:inherit;box-sizing:border-box"></div>`;
     }
     case "toggle_group": {
       const options = Array.isArray(p.options) ? (p.options as string[]) : [];
       const orientation = String(p.orientation ?? "horizontal");
       const dir = orientation === "vertical" ? "column" : "row";
-      const defaultVal = p.defaultValue !== undefined ? String(p.defaultValue) : undefined;
-      const labelHtml = p.label ? `<div style="font-size:13px;font-weight:500;color:#374151;margin-bottom:6px">${esc(String(p.label))}</div>` : "";
+      const defaultVal =
+        p.defaultValue !== undefined ? String(p.defaultValue) : undefined;
+      const labelHtml = p.label
+        ? `<div style="font-size:13px;font-weight:500;color:#374151;margin-bottom:6px">${esc(
+            String(p.label),
+          )}</div>`
+        : "";
       let html = `<div>${labelHtml}<div style="display:flex;flex-direction:${dir};gap:4px;padding:4px;background:rgba(229,231,235,0.2);border-radius:8px">`;
       for (const opt of options) {
         const selected = defaultVal === opt;
         const optBg = selected ? accent : "transparent";
         const optColor = selected ? fgForBg(accent) : "#374151";
         const optWeight = selected ? "600" : "500";
-        html += `<button onclick="showModal()" style="flex:1;padding:8px 12px;border-radius:6px;border:none;background:${optBg};font-size:13px;font-weight:${optWeight};color:${optColor};cursor:pointer;font-family:inherit;transition:background 0.15s,color 0.15s">${esc(opt)}</button>`;
+        html += `<button onclick="showModal()" style="flex:1;padding:8px 12px;border-radius:6px;border:none;background:${optBg};font-size:13px;font-weight:${optWeight};color:${optColor};cursor:pointer;font-family:inherit;transition:background 0.15s,color 0.15s">${esc(
+          opt,
+        )}</button>`;
       }
       html += `</div></div>`;
       return html;
@@ -304,7 +354,9 @@ function renderElement(
       const iconName = p.icon ? String(p.icon) : undefined;
       const iconHtml = iconName ? renderIcon(iconName, 16, fg) : "";
       const gap = iconHtml ? "gap:8px;" : "";
-      return `<button onclick="showModal()" style="display:inline-flex;align-items:center;justify-content:center;${gap}width:100%;${minH}padding:${pad};border-radius:10px;background:${bg};color:${fg};border:${border};font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-sizing:border-box">${iconHtml}${esc(String(p.label ?? ""))}</button>`;
+      return `<button onclick="showModal()" style="display:inline-flex;align-items:center;justify-content:center;${gap}width:100%;${minH}padding:${pad};border-radius:10px;background:${bg};color:${fg};border:${border};font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-sizing:border-box">${iconHtml}${esc(
+        String(p.label ?? ""),
+      )}</button>`;
     }
     case "text": {
       const size = String(p.size ?? "md");
@@ -318,40 +370,74 @@ function renderElement(
         bold: "font-weight:700",
         normal: "font-weight:400",
       };
-      return `<div style="flex:1;${styles[size] ?? styles.md};${weights[weight] ?? weights.normal};color:#374151;text-align:${align}">${esc(String(p.content ?? ""))}</div>`;
+      return `<div style="flex:1;${styles[size] ?? styles.md};${
+        weights[weight] ?? weights.normal
+      };color:#374151;text-align:${align}">${esc(
+        String(p.content ?? ""),
+      )}</div>`;
     }
     case "stack": {
       const direction = String(p.direction ?? "vertical");
       const isHorizontal = direction === "horizontal";
-      const vGap: Record<string, string> = { none: "0", sm: "8px", md: "16px", lg: "24px" };
-      const hGap: Record<string, string> = { none: "0", sm: "4px", md: "8px", lg: "12px" };
+      const vGap: Record<string, string> = {
+        none: "0",
+        sm: "8px",
+        md: "16px",
+        lg: "24px",
+      };
+      const hGap: Record<string, string> = {
+        none: "0",
+        sm: "4px",
+        md: "8px",
+        lg: "12px",
+      };
       const gapMap = isHorizontal ? hGap : vGap;
-      const gapVal = gapMap[String(p.gap ?? "md")] ?? (isHorizontal ? "8px" : "16px");
+      const gapVal =
+        gapMap[String(p.gap ?? "md")] ?? (isHorizontal ? "8px" : "16px");
       const dir = isHorizontal ? "row" : "column";
       const wrap = isHorizontal ? "flex-wrap:wrap;" : "";
       const align = isHorizontal ? "align-items:center;" : "";
-      const justifyMap: Record<string, string> = { start: "flex-start", center: "center", end: "flex-end", between: "space-between", around: "space-around" };
+      const justifyMap: Record<string, string> = {
+        start: "flex-start",
+        center: "center",
+        end: "flex-end",
+        between: "space-between",
+        around: "space-around",
+      };
       const jc = p.justify ? justifyMap[String(p.justify)] : undefined;
       const childIds = el.children ?? [];
-      let html = `<div style="display:flex;width:100%;flex-direction:${dir};gap:${gapVal};${wrap}${align}${jc ? `justify-content:${jc};` : ""}">`;
+      let html = `<div style="display:flex;width:100%;flex-direction:${dir};gap:${gapVal};${wrap}${align}${
+        jc ? `justify-content:${jc};` : ""
+      }">`;
       for (const childKey of childIds) {
         const flex = isHorizontal ? "flex:1;min-width:0;" : "";
-        html += `<div style="${flex}">${renderElement(childKey, spec, accent)}</div>`;
+        html += `<div style="${flex}">${renderElement(
+          childKey,
+          spec,
+          accent,
+        )}</div>`;
       }
       html += `</div>`;
       return html;
     }
     case "bar_chart": {
-      const bars = Array.isArray(p.bars) ? (p.bars as Array<{ label?: string; value?: number; color?: string }>) : [];
+      const bars = Array.isArray(p.bars)
+        ? (p.bars as Array<{ label?: string; value?: number; color?: string }>)
+        : [];
       const chartColor = colorHex(p.color as string | undefined, accent);
-      const maxVal = p.max != null ? Number(p.max) : Math.max(...bars.map((b) => Number(b.value ?? 0)), 1);
+      const maxVal =
+        p.max != null
+          ? Number(p.max)
+          : Math.max(...bars.map((b) => Number(b.value ?? 0)), 1);
       let html = `<div style="display:flex;flex-direction:column;gap:8px;width:100%">`;
       for (const bar of bars) {
         const value = Number(bar.value ?? 0);
         const pct = maxVal > 0 ? Math.min(100, (value / maxVal) * 100) : 0;
         const fill = bar.color ? colorHex(bar.color, accent) : chartColor;
         html += `<div style="display:flex;align-items:center;gap:8px">`;
-        html += `<span style="width:80px;flex-shrink:0;text-align:right;font-size:12px;color:#6B7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(String(bar.label ?? ""))}</span>`;
+        html += `<span style="width:80px;flex-shrink:0;text-align:right;font-size:12px;color:#6B7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(
+          String(bar.label ?? ""),
+        )}</span>`;
         html += `<div style="flex:1;height:10px;background:#E5E7EB;border-radius:9999px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${fill};border-radius:9999px;transition:width 0.3s"></div></div>`;
         html += `<span style="width:32px;flex-shrink:0;font-size:12px;color:#6B7280;font-variant-numeric:tabular-nums">${value}</span>`;
         html += `</div>`;
@@ -362,13 +448,23 @@ function renderElement(
     case "cell_grid": {
       const cols = Number(p.cols ?? 2);
       const rows = Number(p.rows ?? 2);
-      const cells = Array.isArray(p.cells) ? (p.cells as Array<{ row?: number; col?: number; color?: string; content?: string }>) : [];
+      const cells = Array.isArray(p.cells)
+        ? (p.cells as Array<{
+            row?: number;
+            col?: number;
+            color?: string;
+            content?: string;
+          }>)
+        : [];
       const gap = String(p.gap ?? "sm");
       const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
       const gapPx = gapMap[gap] ?? 1;
       const cellMap = new Map<string, { color?: string; content?: string }>();
       for (const c of cells) {
-        cellMap.set(`${Number(c.row ?? 0)},${Number(c.col ?? 0)}`, { color: c.color, content: c.content });
+        cellMap.set(`${Number(c.row ?? 0)},${Number(c.col ?? 0)}`, {
+          color: c.color,
+          content: c.content,
+        });
       }
       let html = `<div style="display:grid;grid-template-columns:repeat(${cols},minmax(0,1fr));gap:${gapPx}px;width:100%">`;
       for (let r = 0; r < rows; r++) {
@@ -398,15 +494,17 @@ export function renderSnapPage(
   const accent = accentHex(snap.theme?.accent);
 
   const meta = extractPageMeta(spec);
-  const pageTitle = esc(meta.title);
+  const title = opts?.openGraph?.title ?? meta.title;
+  const description = opts?.openGraph?.description ?? meta.description;
+  const pageTitle = esc(title);
   const resourcePath = opts?.resourcePath ?? "/";
   const pageUrl = snapOrigin.replace(/\/$/, "") + resourcePath;
   const ogMeta = buildOgMeta({
-    title: meta.title,
-    description: meta.description,
+    title,
+    description,
     pageUrl,
     ogImageUrl: opts?.ogImageUrl,
-    imageAlt: meta.imageAlt ?? meta.imageUrl ? meta.title : undefined,
+    imageAlt: meta.imageAlt ?? meta.imageUrl ? title : undefined,
     siteName: opts?.siteName,
   });
 

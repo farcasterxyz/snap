@@ -16,6 +16,11 @@ import {
   type OgOptions,
 } from "./og-image";
 
+export type SnapOpenGraphMeta = {
+  title?: string;
+  description?: string;
+};
+
 export type SnapHandlerOptions = {
   /**
    * Route path to register GET and POST handlers on.
@@ -34,6 +39,13 @@ export type SnapHandlerOptions = {
    * over the default branded fallback.
    */
   fallbackHtml?: string;
+
+  /**
+   * Open Graph title/description overrides for the HTML fallback page meta tags
+   * (and document title). When a field is omitted, the usual extraction from snap
+   * UI or branded defaults applies.
+   */
+  openGraph?: SnapOpenGraphMeta;
 
   /**
    * Open Graph configuration. Set to `false` to disable OG tag injection and
@@ -152,6 +164,7 @@ export function registerSnapHandler(
           c.req.raw,
           snapFn,
           ogEnabled ? buildOgImageUrl(c.req.raw, path) : undefined,
+          options.openGraph,
         ));
       return new Response(fallbackHtml, {
         status: 200,
@@ -255,6 +268,7 @@ async function getFallbackHtml(
   request: Request,
   snapFn: SnapFunction,
   ogImageUrl?: string,
+  openGraph?: SnapOpenGraphMeta,
 ): Promise<string> {
   const origin = snapOriginFromRequest(request);
   const siteName =
@@ -268,9 +282,20 @@ async function getFallbackHtml(
       action: { type: ACTION_TYPE_GET },
       request: stripAuthHeaders(request),
     });
-    return renderSnapPage(snap, origin, { ogImageUrl, resourcePath, siteName });
+    return renderSnapPage(snap, origin, {
+      ogImageUrl,
+      resourcePath,
+      siteName,
+      openGraph,
+    });
   } catch {
-    return brandedFallbackHtml(origin, { ogImageUrl, resourcePath, siteName });
+    return brandedFallbackHtml(origin, {
+      ogImageUrl,
+      resourcePath,
+      siteName,
+      title: openGraph?.title,
+      description: openGraph?.description,
+    });
   }
 }
 

@@ -24,11 +24,16 @@ const minimalSnapFn: SnapFunction = async () => ({
     root: "page",
     elements: {
       page: { type: "stack", props: {}, children: ["title", "go"] },
-      title: { type: "item", props: { title: "Hello", description: "A test snap." } },
+      title: {
+        type: "item",
+        props: { title: "Hello", description: "A test snap." },
+      },
       go: {
         type: "button",
         props: { label: "Go" },
-        on: { press: { action: "submit", params: { target: "http://localhost/" } } },
+        on: {
+          press: { action: "submit", params: { target: "http://localhost/" } },
+        },
       },
     },
   },
@@ -191,6 +196,72 @@ describe("OG meta tags in HTML fallback", () => {
     expect(html).toContain('name="twitter:title" content="Hello"');
     expect(html).toContain('name="twitter:description" content="A test snap."');
     expect(html).toContain('name="twitter:image"');
+  });
+
+  it("openGraph option overrides HTML fallback meta tags", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+      openGraph: {
+        title: "Override title",
+        description: "Override description.",
+      },
+    });
+
+    const res = await app.request("http://example.com/", { method: "GET" });
+
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("<title>Override title</title>");
+    expect(html).toContain('property="og:title" content="Override title"');
+    expect(html).toContain(
+      'name="description" content="Override description."',
+    );
+    expect(html).toContain(
+      'property="og:description" content="Override description."',
+    );
+    expect(html).toContain('name="twitter:title" content="Override title"');
+    expect(html).toContain(
+      'name="twitter:description" content="Override description."',
+    );
+    expect(html).not.toContain('property="og:title" content="Hello"');
+  });
+
+  it("openGraph partial override keeps extracted description", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+      openGraph: { title: "Only title" },
+    });
+
+    const res = await app.request("http://example.com/", { method: "GET" });
+    const html = await res.text();
+    expect(html).toContain('property="og:title" content="Only title"');
+    expect(html).toContain('property="og:description" content="A test snap."');
+  });
+
+  it("openGraph applies to branded fallback when snap handler throws", async () => {
+    const app = new Hono();
+    const badSnap: SnapFunction = async () => {
+      throw new Error("boom");
+    };
+    registerSnapHandler(app, badSnap, {
+      skipJFSVerification: true,
+      og: false,
+      openGraph: {
+        title: "Error page title",
+        description: "Error page description.",
+      },
+    });
+
+    const res = await app.request("http://example.com/", { method: "GET" });
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("<title>Error page title</title>");
+    expect(html).toContain('property="og:title" content="Error page title"');
+    expect(html).toContain(
+      'property="og:description" content="Error page description."',
+    );
   });
 
   it("HTML fallback with og: false omits OG image route reference", async () => {

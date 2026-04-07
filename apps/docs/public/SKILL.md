@@ -76,6 +76,8 @@ Design guidance:
 - Keep strings within component char limits (see
   [Constraints](https://docs.farcaster.xyz/snap/constraints)).
 
+Set a good, short title and description using the options on registerSnapHandler().
+
 ## Optional: Persistent storage
 
 To store persistent data, use `createTursoDataStore` from `@farcaster/snap-turso` (see

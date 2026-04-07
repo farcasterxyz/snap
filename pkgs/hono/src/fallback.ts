@@ -1,17 +1,28 @@
 const FARCASTER_ICON_SVG = `<svg aria-hidden="true" focusable="false" viewBox="0 0 520 457" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M519.801 0V61.6809H458.172V123.31H477.054V123.331H519.801V456.795H416.57L416.507 456.49L363.832 207.03C358.81 183.251 345.667 161.736 326.827 146.434C307.988 131.133 284.255 122.71 260.006 122.71H259.8C235.551 122.71 211.818 131.133 192.979 146.434C174.139 161.736 160.996 183.259 155.974 207.03L103.239 456.795H0V123.323H42.7471V123.31H61.6262V61.6809H0V0H519.801Z" fill="currentColor"/></svg>`;
 
+const DEFAULT_BRANDED_TITLE = "Farcaster Snap";
+const DEFAULT_BRANDED_DESCRIPTION = "An interactive embed for Farcaster.";
+
 export function brandedFallbackHtml(
   snapOrigin: string,
-  og?: { ogImageUrl?: string; resourcePath?: string; siteName?: string },
+  og?: {
+    ogImageUrl?: string;
+    resourcePath?: string;
+    siteName?: string;
+    title?: string;
+    description?: string;
+  },
 ): string {
   const snapUrl = encodeURIComponent(snapOrigin + "/");
   const testUrl = `https://farcaster.xyz/~/developers/snaps?url=${snapUrl}`;
   const pageUrl = snapOrigin + (og?.resourcePath ?? "/");
+  const pageTitle = og?.title ?? DEFAULT_BRANDED_TITLE;
+  const pageDescription = og?.description ?? DEFAULT_BRANDED_DESCRIPTION;
 
   const ogLines = [
-    `<meta name="description" content="An interactive embed for Farcaster.">`,
-    `<meta property="og:title" content="Farcaster Snap">`,
-    `<meta property="og:description" content="An interactive embed for Farcaster.">`,
+    `<meta name="description" content="${escHtml(pageDescription)}">`,
+    `<meta property="og:title" content="${escHtml(pageTitle)}">`,
+    `<meta property="og:description" content="${escHtml(pageDescription)}">`,
     `<meta property="og:url" content="${escHtml(pageUrl)}">`,
     `<meta property="og:type" content="website">`,
     `<meta property="og:locale" content="en_US">`,
@@ -31,8 +42,8 @@ export function brandedFallbackHtml(
     ogLines.push(`<meta name="twitter:card" content="summary">`);
   }
   ogLines.push(
-    `<meta name="twitter:title" content="Farcaster Snap">`,
-    `<meta name="twitter:description" content="An interactive embed for Farcaster.">`,
+    `<meta name="twitter:title" content="${escHtml(pageTitle)}">`,
+    `<meta name="twitter:description" content="${escHtml(pageDescription)}">`,
   );
 
   return `<!DOCTYPE html>
@@ -40,7 +51,7 @@ export function brandedFallbackHtml(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Farcaster Snap</title>
+<title>${escHtml(pageTitle)}</title>
 ${ogLines.join("\n")}
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
