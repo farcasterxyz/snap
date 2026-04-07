@@ -213,7 +213,7 @@ function SnapViewInner({
             styles.overlay,
             {
               backgroundColor:
-                mode === "dark" ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.75)",
+                mode === "dark" ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.5)",
             },
           ]}
         >

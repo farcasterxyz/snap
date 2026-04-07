@@ -283,24 +283,25 @@ export function SnapView({
   return (
     <div style={{ position: "relative", width: "100%" }}>
       {showConfetti && <ConfettiOverlay />}
-      {loading && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            fontSize: 14,
-            color: "var(--text-muted)",
-            background: "var(--bg-primary, rgba(0,0,0,0.6))",
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          Loading...
-        </div>
-      )}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 10,
+          fontSize: 14,
+          color: appearance === "dark" ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.4)",
+          background: appearance === "dark" ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.5)",
+          backdropFilter: loading ? "blur(8px)" : "blur(0px)",
+          opacity: loading ? 1 : 0,
+          pointerEvents: loading ? "auto" : "none",
+          transition: "opacity 0.3s ease, backdrop-filter 0.3s ease",
+        }}
+      >
+        Loading...
+      </div>
 
       <div style={previewSurfaceStyle}>
         <SnapPreviewAccentProvider pageAccent={snap.theme?.accent}>
