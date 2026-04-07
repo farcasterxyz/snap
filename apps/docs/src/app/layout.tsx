@@ -3,8 +3,11 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Farcaster Snaps",
-  description: "Documentation for Farcaster Snaps",
+  title: "Farcaster Snap",
+  description: "Documentation for Farcaster Snap",
+  icons: {
+    icon: "/snap/icon.svg",
+  },
 };
 
 export default function RootLayout({
