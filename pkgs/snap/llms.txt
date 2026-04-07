@@ -88,6 +88,7 @@ Top-level fields: `version` (required, `"1.0"`), `theme` (optional, `{ accent: P
 - `rows` (number, required, 2–16)
 - `cells` (array, required): sparse list of `{ row, col, color?: PaletteColor, content?: string }`
 - `gap` (optional): `"none"` (0px) | `"sm"` (1px) | `"md"` (2px) | `"lg"` (4px). Default: `"sm"`
+- `rowHeight` (number, optional, 8–64): pixel height per row. Default: 28. Grid height = rows × rowHeight
 - `select` (optional): `"off"` | `"single"` | `"multiple"`. Default: `"off"`. Taps write to `inputs[name]`
 
 ### Container Components

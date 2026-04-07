@@ -22,6 +22,7 @@ export function SnapCellGrid({
   const gap = String(props.gap ?? "sm");
   const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
   const gapPx = gapMap[gap] ?? 1;
+  const rowHeight = typeof props.rowHeight === "number" ? props.rowHeight : 28;
 
   const name = props.name ? String(props.name) : POST_GRID_TAP_KEY;
   const tapPath = `/inputs/${name}`;
@@ -81,12 +82,12 @@ export function SnapCellGrid({
               : undefined
           }
           className={cn(
-            "flex min-h-7 items-center justify-center rounded text-xs font-semibold",
+            "flex items-center justify-center rounded text-xs font-semibold",
             interactive ? "cursor-pointer select-none" : "cursor-default",
           )}
           style={{
+            height: rowHeight,
             background: bg,
-            // Two-layer ring: 1px white/black inner + 2px accent outer
             boxShadow: selected
               ? `inset 0 0 0 1px ${colors.mode === "dark" ? "#000" : "#fff"}, inset 0 0 0 2px ${colors.mode === "dark" ? "#fff" : "#000"}`
               : undefined,
@@ -105,10 +106,13 @@ export function SnapCellGrid({
   return (
     <div>
       <div
-        className="grid w-full rounded-lg p-1"
         style={{
-          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+          display: "grid",
+          width: "100%",
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
           gap: gapPx,
+          padding: 4,
+          borderRadius: 8,
           backgroundColor: colors.muted,
         }}
       >

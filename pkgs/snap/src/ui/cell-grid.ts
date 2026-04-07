@@ -22,6 +22,7 @@ export const cellGridProps = z
     rows: z.number().int().min(GRID_MIN_ROWS).max(GRID_MAX_ROWS),
     cells: z.array(cellGridCellSchema),
     gap: z.enum(GRID_GAP_VALUES).optional(),
+    rowHeight: z.number().int().min(8).max(64).optional(),
     select: z.enum(["off", "single", "multiple"]).optional(),
   })
   .superRefine((val, ctx) => {
