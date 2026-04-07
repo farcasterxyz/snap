@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.14.0
+
+### Minor Changes
+
+- [#74](https://github.com/farcasterxyz/snap/pull/74) [`93973e2`](https://github.com/farcasterxyz/snap/commit/93973e23768cd3746e1a8719b1b9e8e85f913517) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Self-contained component styles via useSnapColors hook. All React and React Native components now use explicit inline colors independent of host app CSS themes.
+
 ## 1.13.0
 
 ### Minor Changes
