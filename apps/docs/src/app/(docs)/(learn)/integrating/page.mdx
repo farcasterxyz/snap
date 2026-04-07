@@ -1,27 +1,14 @@
 # Integrating Snaps
 
 If you already have a website and want it to render as a snap when shared on Farcaster,
-you need **content negotiation** -- serving different responses based on the `Accept`
-header.
-
-When a Farcaster client loads your URL, it sends
-`Accept: application/vnd.farcaster.snap+json`. Your server checks for this header and
-returns snap JSON instead of HTML. Browsers don't send this header, so they continue to
-see your normal webpage.
-
-## How it works
-
-```
-Browser → GET example.com → Accept: text/html → Your normal webpage
-Farcaster → GET example.com → Accept: application/vnd.farcaster.snap+json → Snap JSON
-```
-
-The server must include `Vary: Accept` on these responses so caches key correctly.
+you need to serve snap JSON from the **same URL** as your site when the client requests
+it. You can use HTTP headers to serve snaps and HTML from the same URL. See
+[HTTP Headers](/http-headers) for details.
 
 ## Dynamic sites (Node.js, Hono, Express)
 
-If your site has a server, add middleware that checks the `Accept` header before your
-existing routes.
+If your site has a server, add middleware that checks for the snap media type in
+`Accept` before your existing routes.
 
 ### With Hono
 
@@ -121,12 +108,13 @@ app.get("/", (req, res, next) => {
 
 ## Static sites (GitHub Pages, Netlify, S3)
 
-Static hosts can't do server-side content negotiation. Use one of these approaches:
+Static hosts can't do server-side content negotiation. Use one of these approaches to
+honor [HTTP Headers](/http-headers) at the edge:
 
 ### Option 1: Cloudflare Worker proxy
 
-Put a Cloudflare Worker in front of your static site. It checks the `Accept` header and
-routes snap requests to a separate snap server.
+Put a Cloudflare Worker in front of your static site. It inspects `Accept` and routes
+snap requests to a separate snap server.
 
 ```typescript
 export default {
