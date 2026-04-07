@@ -1,5 +1,11 @@
 # @farcaster/snap-hono
 
+## 1.4.8
+
+### Patch Changes
+
+- [`c005511`](https://github.com/farcasterxyz/snap/commit/c00551185215df5825781e2f70d75d596703f4fa) Thanks [@lyoshenka](https://github.com/lyoshenka)! - add title/description to hono
+
 ## 1.4.7
 
 ### Patch Changes
