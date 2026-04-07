@@ -50,10 +50,7 @@ export type SnapActionHandlers = {
     recipientFid?: number;
     recipientAddress?: string;
   }) => void;
-  swap_token: (params: {
-    sellToken?: string;
-    buyToken?: string;
-  }) => void;
+  swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
 };
 
 // ─── Internal helpers ──────────────────────────────────
@@ -144,7 +141,76 @@ function ConfettiOverlay() {
           }}
         />
       ))}
-      <style>{`@keyframes confettiFall{0%{top:-20px;opacity:1;transform:rotate(0deg) translateX(0)}50%{opacity:1}100%{top:110%;opacity:0;transform:rotate(720deg) translateX(${Math.random() > 0.5 ? "" : "-"}40px)}}`}</style>
+      <style>{`@keyframes confettiFall{0%{top:-20px;opacity:1;transform:rotate(0deg) translateX(0)}50%{opacity:1}100%{top:110%;opacity:0;transform:rotate(720deg) translateX(${
+        Math.random() > 0.5 ? "" : "-"
+      }40px)}}`}</style>
+    </div>
+  );
+}
+
+function SnapLoadingOverlay({
+  appearance,
+  accentHex,
+  active,
+}: {
+  appearance: "light" | "dark";
+  accentHex: string;
+  active: boolean;
+}) {
+  const isDark = appearance === "dark";
+  const tint = isDark ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.2)";
+  const trackColor = isDark
+    ? "rgba(255, 255, 255, 0.12)"
+    : "rgba(15, 23, 42, 0.1)";
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 10,
+        background: tint,
+        backdropFilter: active ? "blur(10px) saturate(1.05)" : "blur(0px)",
+        WebkitBackdropFilter: active
+          ? "blur(10px) saturate(1.05)"
+          : "blur(0px)",
+        opacity: active ? 1 : 0,
+        pointerEvents: active ? "auto" : "none",
+        transition: "opacity 0.28s ease, backdrop-filter 0.28s ease",
+      }}
+      aria-hidden={!active}
+      aria-busy={active ? true : undefined}
+      aria-live={active ? "polite" : undefined}
+      aria-label={active ? "Loading" : undefined}
+    >
+      <div
+        data-snap-loading-spinner
+        style={{
+          width: 30,
+          height: 30,
+          borderRadius: "50%",
+          border: `2.5px solid ${trackColor}`,
+          borderTopColor: accentHex,
+          opacity: 0.88,
+          animation: "snapViewSpin 0.75s linear infinite",
+          flexShrink: 0,
+        }}
+      />
+      <style>{`
+        @keyframes snapViewSpin {
+          to { transform: rotate(360deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [data-snap-loading-spinner] {
+            animation: none;
+            border-top-color: ${accentHex};
+            opacity: 0.75;
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -174,10 +240,7 @@ export function SnapView({
   appearance?: "light" | "dark";
 }) {
   const spec = snap.ui;
-  const initialState = useMemo(
-    () => spec.state ?? { inputs: {} },
-    [spec],
-  );
+  const initialState = useMemo(() => spec.state ?? { inputs: {} }, [spec]);
 
   const stateRef = useRef<Record<string, unknown>>(initialState);
 
@@ -207,18 +270,22 @@ export function SnapView({
 
   const showConfetti = snap.effects?.includes("confetti");
 
+  const accentName = snap.theme?.accent ?? "purple";
+
+  const accentHex = useMemo(
+    () => resolveSnapPaletteHex(accentName, appearance),
+    [accentName, appearance],
+  );
+
   const previewSurfaceStyle = useMemo(() => {
     const vars: Record<string, string> = {};
     for (const c of PALETTE)
       vars[`--snap-color-${c}`] = resolveSnapPaletteHex(c, appearance);
     return {
-      ...snapPreviewPrimaryCssProperties(
-        snap.theme?.accent ?? "purple",
-        appearance,
-      ),
+      ...snapPreviewPrimaryCssProperties(accentName, appearance),
       ...vars,
     } as CSSProperties;
-  }, [snap.theme?.accent, appearance]);
+  }, [accentName, appearance]);
 
   const handleAction = useCallback(
     (name: unknown, params: unknown) => {
@@ -259,9 +326,7 @@ export function SnapView({
           handlers.send_token({
             token: String(p.token ?? ""),
             amount: p.amount ? String(p.amount) : undefined,
-            recipientFid: p.recipientFid
-              ? Number(p.recipientFid)
-              : undefined,
+            recipientFid: p.recipientFid ? Number(p.recipientFid) : undefined,
             recipientAddress: p.recipientAddress
               ? String(p.recipientAddress)
               : undefined,
@@ -283,28 +348,17 @@ export function SnapView({
   return (
     <div style={{ position: "relative", width: "100%" }}>
       {showConfetti && <ConfettiOverlay />}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 10,
-          fontSize: 14,
-          color: appearance === "dark" ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.4)",
-          background: appearance === "dark" ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.5)",
-          backdropFilter: loading ? "blur(8px)" : "blur(0px)",
-          opacity: loading ? 1 : 0,
-          pointerEvents: loading ? "auto" : "none",
-          transition: "opacity 0.3s ease, backdrop-filter 0.3s ease",
-        }}
-      >
-        Loading...
-      </div>
+      <SnapLoadingOverlay
+        appearance={appearance}
+        accentHex={accentHex}
+        active={loading}
+      />
 
       <div style={previewSurfaceStyle}>
-        <SnapPreviewAccentProvider pageAccent={snap.theme?.accent} appearance={appearance}>
+        <SnapPreviewAccentProvider
+          pageAccent={snap.theme?.accent}
+          appearance={appearance}
+        >
           <SnapCatalogView
             key={pageKey}
             spec={spec}
