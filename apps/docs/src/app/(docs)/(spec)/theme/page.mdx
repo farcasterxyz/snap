@@ -10,13 +10,12 @@ The snap provides a single `theme.accent` color. The Farcaster client uses this 
 ```json
 {
   "version": "1.0",
-  "page": {
-    "theme": {
-      "accent": "purple"
-    },
+  "theme": { "accent": "purple" },
+  "ui": {
+    "root": "page",
     "elements": {
-      "type": "stack",
-      "children": [{ "type": "text", "style": "title", "content": "My Snap" }]
+      "page": { "type": "stack", "props": {}, "children": ["title"] },
+      "title": { "type": "text", "props": { "content": "My Snap", "weight": "bold" } }
     }
   }
 }
@@ -24,10 +23,10 @@ The snap provides a single `theme.accent` color. The Farcaster client uses this 
 
 ### Theme Properties
 
-| Property            | Required | Values                                                                                                     |
-| ------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
-| `page.theme`        | No       | Theme object. If omitted, defaults apply                                                                   |
-| `page.theme.accent` | No       | Palette color name: `gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`. Default: `"purple"` |
+| Property       | Required | Values                                                                                                     |
+| -------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `theme`        | No       | Theme object. If omitted, defaults apply                                                                   |
+| `theme.accent` | No       | Palette color name: `gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`. Default: `"purple"` |
 
 ### Accent Color Palette
 

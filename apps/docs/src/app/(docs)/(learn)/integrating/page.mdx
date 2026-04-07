@@ -27,7 +27,6 @@ existing routes.
 
 ```typescript
 import { Hono } from "hono";
-import { MEDIA_TYPE } from "@farcaster/snap";
 
 const app = new Hono();
 
@@ -42,26 +41,34 @@ app.get("/", async (c, next) => {
   return c.json(
     {
       version: "1.0",
-      page: {
-        theme: { accent: "purple" },
+      theme: { accent: "purple" },
+      ui: {
+        root: "page",
         elements: {
-          type: "stack",
-          children: [
-            { type: "text", style: "title", content: "My Site" },
-            {
-              type: "text",
-              style: "body",
-              content: "Welcome to my site on Farcaster.",
-            },
-          ],
-        },
-        buttons: [
-          {
-            label: "Visit site",
-            action: "link",
-            target: "https://example.com",
+          page: {
+            type: "stack",
+            props: {},
+            children: ["title", "body", "cta"],
           },
-        ],
+          title: {
+            type: "text",
+            props: { content: "My Site", weight: "bold" },
+          },
+          body: {
+            type: "text",
+            props: { content: "Welcome to my site on Farcaster.", size: "sm" },
+          },
+          cta: {
+            type: "button",
+            props: { label: "Visit site", variant: "primary" },
+            on: {
+              press: {
+                action: "open_url",
+                params: { target: "https://example.com" },
+              },
+            },
+          },
+        },
       },
     },
     200,
@@ -89,18 +96,23 @@ app.get("/", (req, res, next) => {
   res.set("Vary", "Accept");
   res.json({
     version: "1.0",
-    page: {
-      theme: { accent: "blue" },
+    theme: { accent: "blue" },
+    ui: {
+      root: "page",
       elements: {
-        type: "stack",
-        children: [
-          { type: "text", style: "title", content: "My Site" },
-          {
-            type: "text",
-            style: "body",
-            content: "Check us out on Farcaster.",
-          },
-        ],
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "body"],
+        },
+        title: {
+          type: "text",
+          props: { content: "My Site", weight: "bold" },
+        },
+        body: {
+          type: "text",
+          props: { content: "Check us out on Farcaster.", size: "sm" },
+        },
       },
     },
   });
@@ -177,21 +189,22 @@ snap and links to your site). Farcaster clients render the snap inline.
 
 ## Handling POST interactions
 
-If your snap has `post` buttons, the Farcaster client sends signed POST requests to the
-button's `target` URL. For static site setups (Options 1-3 above), these POSTs go to
-your snap server, not the static site.
+If your snap has buttons with `submit` actions, the Farcaster client sends signed POST
+requests to the button's `target` URL. For static site setups (Options 1-3 above), these
+POSTs go to your snap server, not the static site.
 
 Make sure your snap's button targets point to the snap server URL, not the static site:
 
 ```json
 {
-  "buttons": [
-    {
-      "label": "Vote",
-      "action": "post",
-      "target": "https://my-snap.host.neynar.app/vote"
+  "type": "button",
+  "props": { "label": "Vote", "variant": "primary" },
+  "on": {
+    "press": {
+      "action": "submit",
+      "params": { "target": "https://my-snap.host.neynar.app/vote" }
     }
-  ]
+  }
 }
 ```
 
