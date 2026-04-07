@@ -2,13 +2,14 @@ name: Sync protocol docs to docs.farcaster.xyz
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "apps/docs/src/app/(docs)/**"
-      - "apps/docs/src/components/docs/**"
-      - "apps/docs/src/app/SKILL.md/**"
-      - "apps/docs/snap-sidebar.json"
+  # Disabled automatic sync — run manually via workflow_dispatch when ready
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - "apps/docs/src/app/(docs)/**"
+  #     - "apps/docs/src/components/docs/**"
+  #     - "apps/docs/src/app/SKILL.md/**"
+  #     - "apps/docs/snap-sidebar.json"
 
 jobs:
   sync-docs:
