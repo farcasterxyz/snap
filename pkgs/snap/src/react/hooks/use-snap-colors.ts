@@ -2,9 +2,8 @@
 
 import { useMemo } from "react";
 import { useStateStore } from "@json-render/react";
-import { useColorMode } from "@neynar/ui/color-mode";
 import { resolveSnapPaletteHex } from "../lib/resolve-palette-hex";
-import { useSnapPreviewPageAccent } from "../accent-context";
+import { useSnapPreviewPageAccent, useSnapAppearance } from "../accent-context";
 import type { PaletteColor } from "@farcaster/snap";
 import { PALETTE_DARK_HEX, PALETTE_LIGHT_HEX } from "@farcaster/snap";
 
@@ -113,7 +112,7 @@ function buildSnapColors(
  */
 export function useSnapColors(): SnapColors {
   const { get } = useStateStore();
-  const { mode } = useColorMode();
+  const mode = useSnapAppearance();
   const pageAccent = useSnapPreviewPageAccent();
   const fromState = get("/theme/accent");
   const accentRaw =
