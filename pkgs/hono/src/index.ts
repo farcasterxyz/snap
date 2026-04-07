@@ -9,6 +9,7 @@ import { parseRequest } from "@farcaster/snap/server";
 import { brandedFallbackHtml } from "./fallback";
 import { payloadToResponse, snapHeaders } from "./payloadToResponse";
 import { renderSnapPage } from "./renderSnapPage";
+import { snapRedirectHtml } from "./redirect-page";
 import {
   renderSnapPageToPng,
   renderWithDedup,
@@ -268,7 +269,7 @@ async function getFallbackHtml(
       action: { type: ACTION_TYPE_GET },
       request: stripAuthHeaders(request),
     });
-    return renderSnapPage(snap, origin, { ogImageUrl, resourcePath, siteName });
+    return snapRedirectHtml(origin, snap, { ogImageUrl, resourcePath, siteName });
   } catch {
     return brandedFallbackHtml(origin, { ogImageUrl, resourcePath, siteName });
   }
