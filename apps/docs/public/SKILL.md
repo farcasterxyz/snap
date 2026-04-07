@@ -34,6 +34,9 @@ Default process:
 - deploy to [host.neynar.app](https://host.neynar.app)
 - use curl to check that the live app is working correctly
 
+Do NOT build a full Farcaster miniapp. This is a snap, which is a different thing:
+simpler, smaller, meant for in-feed interaction.
+
 ## Step 1: Read the docs
 
 Read the agent-directed docs at https://docs.farcaster.xyz/snap. Use
