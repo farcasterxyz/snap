@@ -1,6 +1,6 @@
 {
   "name": "@farcaster/snap-turso",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Turso data store adapter for Farcaster Snaps",
   "repository": {
     "type": "git",

@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.15.0
+
+### Minor Changes
+
+- [#79](https://github.com/farcasterxyz/snap/pull/79) [`e9649fb`](https://github.com/farcasterxyz/snap/commit/e9649fb385d6d708a38d631d142967d36a60eb01) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Fix cell_grid rendering with rowHeight prop and improved loading overlay translucency.
+
 ## 1.14.0
 
 ### Minor Changes
