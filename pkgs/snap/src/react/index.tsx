@@ -304,7 +304,7 @@ export function SnapView({
       </div>
 
       <div style={previewSurfaceStyle}>
-        <SnapPreviewAccentProvider pageAccent={snap.theme?.accent}>
+        <SnapPreviewAccentProvider pageAccent={snap.theme?.accent} appearance={appearance}>
           <SnapCatalogView
             key={pageKey}
             spec={spec}
