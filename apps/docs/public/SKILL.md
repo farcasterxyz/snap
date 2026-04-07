@@ -36,8 +36,10 @@ Default process:
 
 ## Step 1: Read the docs
 
-Read the agent-directed docs at https://docs.farcaster.xyz/snap. Refer to these docs
-throughout. Explore them as needed. Do not rely on memorized spec content.
+Read the agent-directed docs at https://docs.farcaster.xyz/snap. Use
+`curl -H 'Accept: text/markdown'` to get markdown-formatted docs and conserve tokens.
+Refer to these docs throughout. Explore them as needed by following the links from that
+page. Do not invent URLs that dont exist. Do not rely on memorized spec content.
 
 ## Step 2: Implement the snap (follow the template)
 
