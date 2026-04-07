@@ -9,6 +9,7 @@ type View =
   | "icons"
   | "items"
   | "layout"
+  | "data"
   | "form"
   | "results"
   | "actions";
@@ -20,6 +21,7 @@ const FLOW: View[] = [
   "icons",
   "items",
   "layout",
+  "data",
   "form",
   "actions",
 ];
@@ -31,7 +33,7 @@ registerSnapHandler(app, async (ctx) => {
   const view = (url.searchParams.get("view") ?? "welcome") as View;
   const base = snapBaseUrl(ctx.request);
 
-  if (ctx.action.type === "get") return welcomePage(base);
+  if (ctx.action.type === "get") return dataPage(base);
   if (view === "results" && ctx.action.type === "post") {
     return resultsPage(base, ctx.action.inputs);
   }
@@ -42,6 +44,7 @@ registerSnapHandler(app, async (ctx) => {
     case "icons": return iconsPage(base);
     case "items": return itemsPage(base);
     case "layout": return layoutPage(base);
+    case "data": return dataPage(base);
     case "form": return formPage(base);
     case "actions": return actionsPage(base);
     default: return welcomePage(base);
@@ -113,7 +116,7 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         tagline: {
           type: "text",
-          props: { content: "Interactive feed cards. 14 components, 9 actions, one spec.", size: "sm", align: "center" },
+          props: { content: "Interactive feed cards. 16 components, 9 actions, one spec.", size: "sm", align: "center" },
         },
         hero: {
           type: "image",
@@ -127,7 +130,7 @@ function welcomePage(base: string): SnapHandlerResult {
           props: { direction: "horizontal" },
           children: ["s1", "s2", "s3"],
         },
-        s1: { type: "badge", props: { label: "14 Components", icon: "zap" } },
+        s1: { type: "badge", props: { label: "16 Components", icon: "zap" } },
         s2: { type: "badge", props: { label: "9 Actions", color: "blue", icon: "trending-up" } },
         s3: { type: "badge", props: { label: "v1.0", color: "green", icon: "check" } },
         sep: { type: "separator", props: {} },
@@ -490,6 +493,98 @@ function layoutPage(base: string): SnapHandlerResult {
         m2: { type: "progress", props: { value: 67, max: 100, label: "Adoption" } },
         sep4: { type: "separator", props: {} },
         ...nav(base, "layout"),
+      },
+    },
+  };
+}
+
+function dataPage(base: string): SnapHandlerResult {
+  return {
+    version: "1.0",
+    theme: { accent: "purple" },
+    ui: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["heading", "step", "chart-label", "chart", "sep", "grid-label", "grid", "sep2", "multi-label", "multi-grid", "nav"],
+        },
+        heading: {
+          type: "text",
+          props: { content: "Data Components", weight: "bold" },
+        },
+        step: {
+          type: "text",
+          props: { content: `${step("data")} — bar_chart and cell_grid`, size: "sm" },
+        },
+        "chart-label": {
+          type: "text",
+          props: { content: "bar_chart — poll results", size: "sm" },
+        },
+        chart: {
+          type: "bar_chart",
+          props: {
+            bars: [
+              { label: "Poblano", value: 42 },
+              { label: "Negro", value: 38, color: "red" },
+              { label: "Verde", value: 15, color: "green" },
+              { label: "Rojo", value: 12, color: "amber" },
+            ],
+          },
+        },
+        sep: { type: "separator", props: {} },
+        "grid-label": {
+          type: "text",
+          props: { content: "cell_grid — 4×4 color grid", size: "sm" },
+        },
+        grid: {
+          type: "cell_grid",
+          props: {
+            name: "color_grid",
+            cols: 4,
+            rows: 4,
+            select: "single",
+            cells: [
+              { row: 0, col: 0, color: "red" },
+              { row: 0, col: 1, color: "amber" },
+              { row: 0, col: 2, color: "green" },
+              { row: 0, col: 3, color: "blue" },
+              { row: 1, col: 0, color: "purple" },
+              { row: 1, col: 3, color: "pink" },
+              { row: 2, col: 1, color: "teal", content: "X" },
+              { row: 2, col: 2, color: "gray" },
+              { row: 3, col: 0, color: "blue" },
+              { row: 3, col: 3, color: "red" },
+            ],
+          },
+        },
+        sep2: { type: "separator", props: {} },
+        "multi-label": {
+          type: "text",
+          props: { content: "cell_grid — multiselect 3×3", size: "sm" },
+        },
+        "multi-grid": {
+          type: "cell_grid",
+          props: {
+            name: "multi_grid",
+            cols: 3,
+            rows: 3,
+            select: "multiple",
+            cells: [
+              { row: 0, col: 0, color: "blue" },
+              { row: 0, col: 1, color: "blue" },
+              { row: 0, col: 2, color: "blue" },
+              { row: 1, col: 0, color: "green" },
+              { row: 1, col: 1, color: "green" },
+              { row: 1, col: 2, color: "green" },
+              { row: 2, col: 0, color: "amber" },
+              { row: 2, col: 1, color: "amber" },
+              { row: 2, col: 2, color: "amber" },
+            ],
+          },
+        },
+        ...nav(base, "data"),
       },
     },
   };

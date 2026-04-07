@@ -6,12 +6,14 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
     expect([...snapJsonRenderCatalog.componentNames].sort()).toEqual(
       [
         "badge",
+        "bar_chart",
         "button",
         "icon",
         "image",
         "input",
         "item",
         "item_group",
+        "cell_grid",
         "progress",
         "separator",
         "slider",

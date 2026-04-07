@@ -521,49 +521,58 @@ function mapBarChart(el: El, accent: string): VNode {
       bar.color !== undefined && bar.color !== ""
         ? colorHex(bar.color as string, accent)
         : chartDefault;
-    const pct = maxVal > 0 ? (bar.value / maxVal) * 100 : 0;
+    const pct = maxVal > 0 ? Math.min(100, (bar.value / maxVal) * 100) : 0;
     return h(
       "div",
-      {
-        display: "flex",
-        flex: 1,
-        flexDirection: "column",
-        alignItems: "center",
-        height: "100%",
-        justifyContent: "flex-end",
-      },
+      { display: "flex", flexDirection: "row", alignItems: "center", gap: 8, width: OG_CARD_INNER_WIDTH_PX },
+      h("div", { display: "flex", width: 80, fontSize: 12, color: "#6B7280", justifyContent: "flex-end" }, bar.label.slice(0, 20)),
       h(
         "div",
-        { display: "flex", fontSize: 11, color: "#6B7280", marginBottom: 4 },
-        String(bar.value),
+        { display: "flex", flex: 1, height: 10, backgroundColor: "#E5E7EB", borderRadius: 9999, overflow: "hidden" },
+        h("div", { display: "flex", height: 10, width: `${pct}%`, backgroundColor: color, borderRadius: 9999 }),
       ),
-      h("div", {
-        display: "flex",
-        width: "100%",
-        height: `${pct}%`,
-        backgroundColor: color,
-        borderRadius: "4px 4px 0 0",
-        minHeight: 4,
-      }),
-      h(
-        "div",
-        { display: "flex", fontSize: 11, color: "#9CA3AF", marginTop: 4 },
-        bar.label.slice(0, 12),
-      ),
+      h("div", { display: "flex", width: 32, fontSize: 12, color: "#6B7280" }, String(bar.value)),
     );
   });
   return h(
     "div",
-    {
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "flex-end",
-      gap: 12,
-      height: 100,
-      width: "100%",
-    },
+    { display: "flex", flexDirection: "column", gap: 8, width: OG_CARD_INNER_WIDTH_PX },
     ...barNodes,
   );
+}
+
+function mapCellGrid(el: El, accent: string): VNode {
+  const cols = Number(el.cols ?? 2);
+  const rows = Number(el.rows ?? 2);
+  const cells = Array.isArray(el.cells) ? (el.cells as Array<{ row?: number; col?: number; color?: string; content?: string }>) : [];
+  const gap = String(el.gap ?? "sm");
+  const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
+  const gapPx = gapMap[gap] ?? 1;
+  const cellW = Math.floor((OG_CARD_INNER_WIDTH_PX - (cols - 1) * gapPx) / cols);
+
+  const cellMap = new Map<string, { color?: string; content?: string }>();
+  for (const c of cells) {
+    cellMap.set(`${Number(c.row ?? 0)},${Number(c.col ?? 0)}`, { color: c.color, content: c.content });
+  }
+
+  const rowNodes = [];
+  for (let r = 0; r < rows; r++) {
+    const cellNodes = [];
+    for (let c = 0; c < cols; c++) {
+      const cell = cellMap.get(`${r},${c}`);
+      const bg = cell?.color ? colorHex(cell.color, accent) : "#F3F4F6";
+      cellNodes.push(
+        h("div", {
+          display: "flex", alignItems: "center", justifyContent: "center",
+          width: cellW, height: cellW > 28 ? 28 : cellW, borderRadius: 4,
+          backgroundColor: bg, border: "1px solid #E5E7EB",
+          fontSize: 10, fontWeight: 600, color: "#374151",
+        }, cell?.content ?? ""),
+      );
+    }
+    rowNodes.push(h("div", { display: "flex", flexDirection: "row", gap: gapPx }, ...cellNodes));
+  }
+  return h("div", { display: "flex", flexDirection: "column", gap: gapPx, width: OG_CARD_INNER_WIDTH_PX }, ...rowNodes);
 }
 
 function mapElement(
@@ -631,6 +640,8 @@ function mapElement(
       return mapList(el);
     case "bar_chart":
       return mapBarChart(el, accent);
+    case "cell_grid":
+      return mapCellGrid(el, accent);
     case "group": {
       const children = (el.children as El[]) ?? [];
       const childNodes = children
@@ -793,8 +804,17 @@ function estimateElementHeight(el: El, imageMap: Map<string, string>): number {
       return estimateListHeight(el);
     case "toggle_group":
       return estimateButtonGroupHeight(el);
-    case "bar_chart":
-      return 100;
+    case "bar_chart": {
+      const bars = Array.isArray(el.bars) ? el.bars : [];
+      return Math.max(1, bars.length) * 26;
+    }
+    case "cell_grid": {
+      const rows = Number(el.rows ?? 2);
+      const gap = String(el.gap ?? "sm");
+      const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
+  const gapPx = gapMap[gap] ?? 1;
+      return rows * 28 + (rows - 1) * gapPx;
+    }
     case "group": {
       const children = (el.children as El[]) ?? [];
       if (children.length === 0) return 0;

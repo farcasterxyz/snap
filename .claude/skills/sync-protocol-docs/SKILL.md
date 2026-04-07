@@ -11,9 +11,10 @@ in `pkgs/snap/src/ui/`.
 
 ## Step 1: Read the schema source of truth
 
-Read every `.ts` file in `pkgs/snap/src/ui/` and `pkgs/snap/src/colors.ts`. Extract the
-current valid values for each component: variants, sizes, weights, aspect ratios, icon
-names, gap values, orientations, char limits, and default values.
+Read every `.ts` file in `pkgs/snap/src/ui/`, `pkgs/snap/src/colors.ts`, and
+`pkgs/snap/src/constants.ts`. Extract the current valid values for each component:
+variants, sizes, weights, aspect ratios, icon names, gap values, orientations, char
+limits, grid/bar-chart limits, and default values.
 
 ## Step 2: Audit all downstream files
 
@@ -29,9 +30,15 @@ these file groups:
 
 - Same as React components
 
-**Server-side renderer** (`pkgs/hono/src/renderSnapPage.ts`):
+**Server-side HTML renderer** (`pkgs/hono/src/renderSnapPage.ts`):
 
 - Switch cases and style maps must match schema values
+- Every component type must have a `case` in `renderElement`
+
+**OG image renderer** (`pkgs/hono/src/og-image.ts`):
+
+- `mapElement` switch and `estimateElementHeight` must cover all component types
+- `specToElementList` must recurse into container types (stack, item_group)
 
 **Catalog descriptions** (`pkgs/snap/src/ui/catalog.ts`):
 
@@ -66,6 +73,10 @@ these file groups:
 - `AGENTS.md` — protocol references
 - `template/AGENTS.md` — protocol references
 
+**Integration docs**:
+
+- `MERKLE_INTEGRATION.md` — component type list and count
+
 **Examples**:
 
 - `examples/snap-catalog/src/index.ts`
@@ -93,3 +104,9 @@ remaining stale values.
 - The emulator UI uses `@neynar/ui` component variants (like `variant="ghost"` on
   ColorModeToggle) — these are UI library props, not snap protocol values
 - `catalog.ts` description strings are human-readable and can go stale silently
+- `bar_chart` and `cell_grid` have their own constraint constants in `constants.ts` —
+  check those when auditing the constraints page
+- Component count strings (e.g. "16 components") appear in multiple places — grep for
+  the old count when adding or removing components
+- The OG renderer (`og-image.ts`) has its own element mapping separate from the HTML
+  renderer — both must be updated when components change

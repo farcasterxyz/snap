@@ -341,6 +341,47 @@ function renderElement(
       html += `</div>`;
       return html;
     }
+    case "bar_chart": {
+      const bars = Array.isArray(p.bars) ? (p.bars as Array<{ label?: string; value?: number; color?: string }>) : [];
+      const chartColor = colorHex(p.color as string | undefined, accent);
+      const maxVal = p.max != null ? Number(p.max) : Math.max(...bars.map((b) => Number(b.value ?? 0)), 1);
+      let html = `<div style="display:flex;flex-direction:column;gap:8px;width:100%">`;
+      for (const bar of bars) {
+        const value = Number(bar.value ?? 0);
+        const pct = maxVal > 0 ? Math.min(100, (value / maxVal) * 100) : 0;
+        const fill = bar.color ? colorHex(bar.color, accent) : chartColor;
+        html += `<div style="display:flex;align-items:center;gap:8px">`;
+        html += `<span style="width:80px;flex-shrink:0;text-align:right;font-size:12px;color:#6B7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(String(bar.label ?? ""))}</span>`;
+        html += `<div style="flex:1;height:10px;background:#E5E7EB;border-radius:9999px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${fill};border-radius:9999px;transition:width 0.3s"></div></div>`;
+        html += `<span style="width:32px;flex-shrink:0;font-size:12px;color:#6B7280;font-variant-numeric:tabular-nums">${value}</span>`;
+        html += `</div>`;
+      }
+      html += `</div>`;
+      return html;
+    }
+    case "cell_grid": {
+      const cols = Number(p.cols ?? 2);
+      const rows = Number(p.rows ?? 2);
+      const cells = Array.isArray(p.cells) ? (p.cells as Array<{ row?: number; col?: number; color?: string; content?: string }>) : [];
+      const gap = String(p.gap ?? "sm");
+      const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
+      const gapPx = gapMap[gap] ?? 1;
+      const cellMap = new Map<string, { color?: string; content?: string }>();
+      for (const c of cells) {
+        cellMap.set(`${Number(c.row ?? 0)},${Number(c.col ?? 0)}`, { color: c.color, content: c.content });
+      }
+      let html = `<div style="display:grid;grid-template-columns:repeat(${cols},minmax(0,1fr));gap:${gapPx}px;width:100%">`;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cell = cellMap.get(`${r},${c}`);
+          const bg = cell?.color ? colorHex(cell.color, accent) : "transparent";
+          const content = cell?.content ? esc(cell.content) : "";
+          html += `<div style="min-height:28px;border:1px solid #E5E7EB;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#374151;background:${bg}">${content}</div>`;
+        }
+      }
+      html += `</div>`;
+      return html;
+    }
     default:
       return "";
   }
