@@ -66,9 +66,9 @@ export function getDocMarkdownByPathname(pathname: string): string | null {
 
 export function getAllDocsMarkdown(): string {
   const sections: string[] = [
-    "# Farcaster Snaps Documentation",
+    "# Farcaster Snap Documentation",
     "",
-    "> This file aggregates all Farcaster Snaps documentation for LLM consumption.",
+    "> This file aggregates all Farcaster Snap documentation for LLM consumption.",
     "> Source: https://docs.farcaster.xyz/snap/",
     "",
   ];
