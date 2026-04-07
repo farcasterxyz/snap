@@ -69,7 +69,7 @@ these file groups:
 
 **LLM / agent docs**:
 
-- `apps/docs/src/app/SKILL.md/route.ts` — SKILL_CONTENT constant with design guidance
+- `apps/docs/public/SKILL.md` — agent skill with design guidance
 - `AGENTS.md` — protocol references
 - `template/AGENTS.md` — protocol references
 
