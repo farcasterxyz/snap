@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function DocsLayout({
   children,
 }: {
@@ -5,9 +7,9 @@ export default function DocsLayout({
 }) {
   return (
     <main className="main-content" style={{ position: "relative" }}>
-      <a href="/llms.txt" className="docs-llms-link">
+      <Link href="/llms.txt" className="docs-llms-link">
         llms.txt
-      </a>
+      </Link>
       <article className="docs-content">{children}</article>
     </main>
   );
