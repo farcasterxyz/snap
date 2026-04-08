@@ -55,10 +55,7 @@ export default function EmulatorPage() {
   }, [formHydrated, urlInput, fidInput]);
 
   const appendPairRequest = useCallback((request: LogPairRequest) => {
-    setLog((prev) => [
-      ...prev,
-      { id: createLogId(), request, response: null },
-    ]);
+    setLog((prev) => [...prev, { id: createLogId(), request, response: null }]);
   }, []);
 
   const completePairResponse = useCallback((response: LogPairResponse) => {
@@ -293,12 +290,7 @@ export default function EmulatorPage() {
 
         const body = await logResponseFromFetch(response);
 
-        if (
-          response.ok &&
-          body &&
-          typeof body === "object" &&
-          "snap" in body
-        ) {
+        if (response.ok && body && typeof body === "object" && "snap" in body) {
           const load = body as { snap: SnapPage };
           setSnap(load.snap);
           setCurrentSourceUrl(absoluteUrl);
@@ -357,7 +349,6 @@ export default function EmulatorPage() {
     const requestBody = {
       currentUrl: currentSourceUrl,
       target,
-      button_index: 0,
       inputs,
       fid: fidParsed,
     };
@@ -505,7 +496,8 @@ export default function EmulatorPage() {
                   handlers={{
                     submit: handlePostButton,
                     open_url: (target) => {
-                      if (target) window.open(target, "_blank", "noopener,noreferrer");
+                      if (target)
+                        window.open(target, "_blank", "noopener,noreferrer");
                     },
                     open_mini_app: (target) => {
                       window.alert(`open_mini_app\n\n${target}`);

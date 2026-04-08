@@ -85,10 +85,9 @@ export const payloadSchema = z
   .object({
     fid: z.number().int().nonnegative(),
     inputs: z.record(z.string(), postInputValueSchema).default({}),
-    button_index: z.number().int().nonnegative(),
     timestamp: z.number().int(),
   })
-  .strict();
+  .strip();
 
 export type SnapPayload = z.infer<typeof payloadSchema>;
 
@@ -101,11 +100,9 @@ const snapGetActionSchema = z.object({
 
 export type SnapGetAction = z.infer<typeof snapGetActionSchema>;
 
-const snapPostActionSchema = payloadSchema
-  .extend({
-    type: z.literal(ACTION_TYPE_POST),
-  })
-  .strict();
+const snapPostActionSchema = payloadSchema.extend({
+  type: z.literal(ACTION_TYPE_POST),
+});
 
 export type SnapPostAction = z.infer<typeof snapPostActionSchema>;
 

@@ -76,7 +76,7 @@ Snap POST authentication uses `verifyJFSRequestBody` from `@farcaster/snap/serve
 
 ## Input normalization
 
-Some snap clients send JFS-decoded POST payload fields with `inputs` as a string (JSON text) and `button_index` as a string. `parseRequest` (`@farcaster/snap/server`) normalizes these to a plain object and a number before `payloadSchema`. Regression coverage in `pkgs/snap/tests/parseRequest.test.ts`.
+Some snap clients send JFS-decoded POST payload fields with `inputs` as a string (JSON text). `parseRequest` (`@farcaster/snap/server`) normalizes these to a plain object and a number before `payloadSchema`. Regression coverage in `pkgs/snap/tests/parseRequest.test.ts`.
 
 ## Build system
 

@@ -78,7 +78,8 @@ registerSnapHandler(app, async (ctx) => {
   }
 
   // Handle POST interactions
-  const { fid, inputs, button_index } = ctx.action;
+  const { fid, inputs } = ctx.action;
+  // Use ctx.request.url (or parse query params) to tell which submit target was used
   // ... your logic here
 });
 ```

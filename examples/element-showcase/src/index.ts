@@ -21,7 +21,11 @@ registerSnapHandler(app, async (ctx) => {
   if (ctx.action.type === "get") return homePage(base);
 
   if (view === "inputs_result" && ctx.action.type === "post") {
-    return inputsResultPage(base, ctx.action.inputs, ctx.action.button_index);
+    return inputsResultPage(
+      base,
+      ctx.action.inputs,
+      `${url.pathname}${url.search}`,
+    );
   }
 
   switch (view) {
@@ -185,8 +189,7 @@ function textPage(base: string): SnapHandlerResult {
         caption: {
           type: "badge",
           props: {
-            content:
-              "Caption (100 chars) — timestamps, attribution, metadata",
+            content: "Caption (100 chars) — timestamps, attribution, metadata",
           },
         },
         "btn-row": {
@@ -244,7 +247,14 @@ function inputsPage(base: string): SnapHandlerResult {
         },
         "pick-group": {
           type: "toggle_group",
-          props: { name: "pick", options: [{ value: "alpha", label: "Alpha" }, { value: "beta", label: "Beta" }, { value: "gamma", label: "Gamma" }] },
+          props: {
+            name: "pick",
+            options: [
+              { value: "alpha", label: "Alpha" },
+              { value: "beta", label: "Beta" },
+              { value: "gamma", label: "Gamma" },
+            ],
+          },
         },
         "rating-slider": {
           type: "slider",
@@ -314,7 +324,7 @@ function inputsPage(base: string): SnapHandlerResult {
 function inputsResultPage(
   base: string,
   inputs: Record<string, unknown>,
-  button_index: number,
+  postTargetPathAndSearch: string,
 ): SnapHandlerResult {
   const pick = typeof inputs.pick === "string" ? inputs.pick : "(none)";
   const rating = typeof inputs.rating === "number" ? inputs.rating : "?";
@@ -372,7 +382,7 @@ function inputsResultPage(
         caption: {
           type: "badge",
           props: {
-            content: `Button index: ${button_index}. All input values sent via POST.`,
+            content: `POST target ${postTargetPathAndSearch}. Use distinct submit URLs (for example query params) to distinguish buttons.`,
           },
         },
         "btn-row": {

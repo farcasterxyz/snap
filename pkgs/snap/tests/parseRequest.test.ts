@@ -7,7 +7,6 @@ describe("parseRequest", () => {
     const payload: SnapPayload = {
       fid: 42,
       inputs: { guess: "HELLO" },
-      button_index: 0,
       timestamp: Math.floor(Date.now() / 1000),
       ...overrides,
     };
@@ -43,7 +42,6 @@ describe("parseRequest", () => {
         type: "post",
         fid: 42,
         inputs: { guess: "HELLO" },
-        button_index: 0,
         timestamp: payload.timestamp,
       },
     });
@@ -53,7 +51,6 @@ describe("parseRequest", () => {
     const payload: SnapPayload = {
       fid: 42,
       inputs: { guess: "HELLO" },
-      button_index: 0,
       timestamp: Math.floor(Date.now() / 1000),
     };
     const res = await parseRequest(

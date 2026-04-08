@@ -78,13 +78,13 @@ Valid snap responses have roughly this shape:
 
 ### Top-Level Fields
 
-| Field          | Type             | Required | Default                | Description                                               |
-| -------------- | ---------------- | -------- | ---------------------- | --------------------------------------------------------- |
-| `version`      | `"1.0"`          | Yes      |                        | Spec version                                              |
-| `theme`        | object           | No       | `{ accent: "purple" }` | Theme configuration                                       |
-| `theme.accent` | PaletteColor     | No       | `"purple"`             | Accent color for buttons, progress bars, etc.             |
+| Field          | Type             | Required | Default                | Description                                                    |
+| -------------- | ---------------- | -------- | ---------------------- | -------------------------------------------------------------- |
+| `version`      | `"1.0"`          | Yes      |                        | Spec version                                                   |
+| `theme`        | object           | No       | `{ accent: "purple" }` | Theme configuration                                            |
+| `theme.accent` | PaletteColor     | No       | `"purple"`             | Accent color for buttons, progress bars, etc.                  |
 | `effects`      | string[]         | No       |                        | Visual effects applied on render. See [Effects](/snap/effects) |
-| `ui`           | json-render Spec | Yes      |                        | The UI tree                                               |
+| `ui`           | json-render Spec | Yes      |                        | The UI tree                                                    |
 
 ### The `ui` Field
 
@@ -103,7 +103,7 @@ Every element in `ui.elements` follows this shape:
 
 | Field      | Type     | Required | Description                                                            |
 | ---------- | -------- | -------- | ---------------------------------------------------------------------- |
-| `type`     | string   | Yes      | Component name (see [Elements](/snap/elements))                             |
+| `type`     | string   | Yes      | Component name (see [Elements](/snap/elements))                        |
 | `props`    | object   | Yes      | Component-specific properties (use `{}` if none)                       |
 | `children` | string[] | No       | Child element IDs (for containers and action slots)                    |
 | `on`       | object   | No       | Event bindings — `on.press` triggers an action when a button is tapped |
@@ -112,12 +112,15 @@ Every element in `ui.elements` follows this shape:
 
 When a `submit` action fires, the client sends a JFS-signed envelope containing:
 
-| Field          | Type                    | Description                                 |
-| -------------- | ----------------------- | ------------------------------------------- |
-| `fid`          | number                  | Farcaster user ID                           |
-| `inputs`       | Record\<string, value\> | Field values keyed by component `name` prop |
-| `button_index` | number                  | Button index (0-based)                      |
-| `timestamp`    | number                  | Unix timestamp in seconds                   |
+| Field       | Type                    | Description                                 |
+| ----------- | ----------------------- | ------------------------------------------- |
+| `fid`       | number                  | Farcaster user ID                           |
+| `inputs`    | Record\<string, value\> | Field values keyed by component `name` prop |
+| `timestamp` | number                  | Unix timestamp in seconds                   |
+
+The POST is sent to the URL in the button’s `submit` action (`params.target`). Use
+**different targets** for different buttons—for example distinct paths or query
+strings—so your server can tell which action ran.
 
 Input values by field type:
 

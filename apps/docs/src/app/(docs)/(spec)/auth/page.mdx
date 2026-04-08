@@ -9,7 +9,7 @@ Every POST request from the client to a snap server MUST be authenticated with
 When a user taps a `post` button, the Farcaster client:
 
 1. Collects all input values from the current page
-2. Builds a payload with the user's FID, inputs, button index, and timestamp
+2. Builds a payload with the user's FID, inputs, and timestamp
 3. Signs the payload using the user's Farcaster signer key
 4. Sends the signed JFS compact string as the POST body
 
@@ -31,7 +31,6 @@ The decoded JFS payload (signed inside JFS, not sent as bare JSON):
     "guess": "CLASS",
     "vote": "Tabs"
   },
-  "button_index": 0,
   "timestamp": 1710864000
 }
 ```
@@ -113,7 +112,7 @@ registerSnapHandler(
   async (ctx) => {
     // ctx.action.fid is verified — the JFS signature was checked
     // ctx.action.inputs contains the user's input values
-    // ctx.action.button_index is which button was tapped
+    // Distinguish buttons via distinct submit target URLs on each button (ctx.request.url)
   },
   {
     skipJFSVerification: false, // set to `true` for local dev

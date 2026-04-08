@@ -43,7 +43,6 @@ function jfsPostBody() {
   const payload: SnapPayload = {
     fid: 1,
     inputs: {},
-    button_index: 0,
     timestamp: Math.floor(Date.now() / 1000),
   };
   return JSON.stringify({
@@ -126,7 +125,6 @@ describe("registerSnapHandler content type", () => {
       body: JSON.stringify({
         fid: 1,
         inputs: {},
-        button_index: 0,
         timestamp: Math.floor(Date.now() / 1000),
       }),
     });
