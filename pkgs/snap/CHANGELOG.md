@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.15.3
+
+### Patch Changes
+
+- [`a43c623`](https://github.com/farcasterxyz/snap/commit/a43c6237d60dfc581b6402baaab201b8ec9508c4) Thanks [@lyoshenka](https://github.com/lyoshenka)! - minor confetti improvement
+
 ## 1.15.2
 
 ### Patch Changes
