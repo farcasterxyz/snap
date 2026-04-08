@@ -55,10 +55,22 @@ const SHARED_SECTIONS: DocSection[] = [
   },
 ];
 
+const V2_SECTIONS: DocSection[] = [
+  SHARED_SECTIONS[0],
+  {
+    ...SHARED_SECTIONS[1],
+    pages: [
+      ...SHARED_SECTIONS[1].pages,
+      { pathname: "/upgrading", title: "Upgrading from v1.0" },
+    ],
+  },
+  SHARED_SECTIONS[2],
+];
+
 /** Per-version section definitions. Versions can override pages if needed. */
 export const VERSION_DOC_SECTIONS: Record<string, DocSection[]> = {
   "1.0": SHARED_SECTIONS,
-  "2.0": SHARED_SECTIONS,
+  "2.0": V2_SECTIONS,
 };
 
 /** Sections for the default version (backward compat). */
