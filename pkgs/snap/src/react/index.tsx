@@ -34,7 +34,7 @@ export type SnapPage = {
 
 export type SnapActionHandlers = {
   submit: (target: string, inputs: Record<string, JsonValue>) => void;
-  open_url: (target: string) => void;
+  open_url: (target: string, options?: { is_snap?: boolean }) => void;
   open_mini_app: (target: string) => void;
   view_cast: (params: { hash: string }) => void;
   view_profile: (params: { fid: number }) => void;
@@ -174,9 +174,7 @@ function SnapLoadingOverlay({
         zIndex: 10,
         background: tint,
         backdropFilter: active ? "blur(10px) saturate(1.05)" : "none",
-        WebkitBackdropFilter: active
-          ? "blur(10px) saturate(1.05)"
-          : "none",
+        WebkitBackdropFilter: active ? "blur(10px) saturate(1.05)" : "none",
         opacity: active ? 1 : 0,
         pointerEvents: active ? "auto" : "none",
         transition: "opacity 0.28s ease, backdrop-filter 0.28s ease",
@@ -308,7 +306,9 @@ export function SnapView({
           handlers.submit(String(p.target ?? ""), inputs);
           break;
         case "open_url":
-          handlers.open_url(String(p.target ?? ""));
+          handlers.open_url(String(p.target ?? ""), {
+            is_snap: p.is_snap === true,
+          });
           break;
         case "open_mini_app":
           handlers.open_mini_app(String(p.target ?? ""));
@@ -356,7 +356,9 @@ export function SnapView({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {showConfetti && <ConfettiOverlay key={`confetti-${confettiEpochRef.current}`} />}
+      {showConfetti && (
+        <ConfettiOverlay key={`confetti-${confettiEpochRef.current}`} />
+      )}
       <SnapLoadingOverlay
         appearance={appearance}
         accentHex={accentHex}

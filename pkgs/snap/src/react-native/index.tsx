@@ -36,7 +36,7 @@ export type SnapPage = {
 
 export type SnapActionHandlers = {
   submit: (target: string, inputs: Record<string, JsonValue>) => void;
-  open_url: (target: string) => void;
+  open_url: (target: string, options?: { is_snap?: boolean }) => void;
   open_mini_app: (target: string) => void;
   view_cast: (params: { hash: string }) => void;
   view_profile: (params: { fid: number }) => void;
@@ -184,7 +184,9 @@ function SnapViewInner({
         h.submit(String(p.target ?? ""), inputs);
         break;
       case "open_url":
-        h.open_url(String(p.target ?? ""));
+        h.open_url(String(p.target ?? ""), {
+          is_snap: p.is_snap === true,
+        });
         break;
       case "open_mini_app":
         h.open_mini_app(String(p.target ?? ""));
@@ -241,7 +243,9 @@ function SnapViewInner({
           <ActivityIndicator size="large" color={accentHex} />
         </View>
       ) : null}
-      {showConfetti ? <ConfettiOverlay key={`confetti-${confettiEpochRef.current}`} /> : null}
+      {showConfetti ? (
+        <ConfettiOverlay key={`confetti-${confettiEpochRef.current}`} />
+      ) : null}
       <SnapCatalogView
         key={pageKey}
         spec={spec}
