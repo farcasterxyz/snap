@@ -192,9 +192,9 @@ their latest versions:
 - Read the [release changelog](https://github.com/farcasterxyz/snap/releases) on Github.
   Start from the current version of each `@farcaster/snap*` package from package.json
   and read each version from there to the latest version. Make a note of any relevant
-  changes (**especially breaking changes**). Read the actual diff of any release that
-  sounds relevant.
-- Update those packages to their latest version.
+  changes (**especially breaking changes**). Read the PR and the actual diff of any
+  release that sounds relevant. Pay extra attention to major and minor version bumps.
+- Update the `@farcaster/snap*` packages to their latest version.
 - Make any necessary changes as described in the changelog. Feel free to look at the
   code for any package release.
 - Run tests and fix anything that's wrong. Repeat this step on loop until everything
