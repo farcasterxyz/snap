@@ -118,15 +118,6 @@ function validateStructure(
   const issues: z.core.$ZodIssue[] = [];
   const elements = ui.elements as Record<string, ElementShape>;
 
-  // Root must reference an existing element
-  if (!(ui.root in elements)) {
-    issues.push({
-      code: "custom",
-      message: `ui.root "${ui.root}" does not exist in ui.elements`,
-      path: ["ui", "root"],
-    });
-  }
-
   const elementCount = Object.keys(elements).length;
   if (elementCount > MAX_ELEMENTS) {
     issues.push({
@@ -157,18 +148,16 @@ function validateStructure(
     }
   }
 
-  if (ui.root in elements) {
-    const depth = measureDepth(
-      elements as Record<string, { children?: string[] }>,
-      ui.root,
-    );
-    if (depth > MAX_DEPTH) {
-      issues.push({
-        code: "custom",
-        message: `Snap exceeds maximum nesting depth of ${MAX_DEPTH} (found ${depth})`,
-        path: ["ui", "root"],
-      });
-    }
+  const depth = measureDepth(
+    elements as Record<string, { children?: string[] }>,
+    ui.root,
+  );
+  if (depth > MAX_DEPTH) {
+    issues.push({
+      code: "custom",
+      message: `Snap exceeds maximum nesting depth of ${MAX_DEPTH} (found ${depth})`,
+      path: ["ui", "root"],
+    });
   }
 
   return issues;
@@ -246,14 +235,29 @@ export function validateSnapResponse(json: unknown): ValidationResult {
     elements: Record<string, unknown>;
   };
 
-  const structuralIssues = validateStructure(ui);
-  if (structuralIssues.length > 0) {
-    return { valid: false, issues: structuralIssues };
+  // Root reference check applies to all versions
+  if (!(ui.root in ui.elements)) {
+    return {
+      valid: false,
+      issues: [{
+        code: "custom",
+        message: `ui.root "${ui.root}" does not exist in ui.elements`,
+        path: ["ui", "root"],
+      }],
+    };
   }
 
-  const urlIssues = validateUrls(ui.elements);
-  if (urlIssues.length > 0) {
-    return { valid: false, issues: urlIssues };
+  // Structural limits and URL validation only apply to v2+ snaps
+  if (parsed.data.version !== "1.0") {
+    const structuralIssues = validateStructure(ui);
+    if (structuralIssues.length > 0) {
+      return { valid: false, issues: structuralIssues };
+    }
+
+    const urlIssues = validateUrls(ui.elements);
+    if (urlIssues.length > 0) {
+      return { valid: false, issues: urlIssues };
+    }
   }
 
   return { valid: true, issues: [] };

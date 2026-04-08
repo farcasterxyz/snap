@@ -166,12 +166,22 @@ describe("Root validation", () => {
   });
 });
 
-// ─── URL validation ───────────────────────────────────
+// ─── URL validation (v2 only) ─────────────────────────
 
 describe("URL validation", () => {
-  it("accepts HTTPS image URL with valid extension", () => {
+  it("skips URL validation for v1 snaps", () => {
+    // v1 snap with HTTP image on non-loopback — would fail for v2 but passes for v1
     expectValid({
       version: "1.0",
+      ui: makeSpec({
+        img: { type: "image", props: { url: "http://evil.com/photo.jpg", aspect: "16:9" } },
+      }),
+    });
+  });
+
+  it("accepts HTTPS image URL with valid extension", () => {
+    expectValid({
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "https://example.com/photo.jpg", aspect: "16:9" } },
       }),
@@ -180,7 +190,7 @@ describe("URL validation", () => {
 
   it("accepts HTTPS image URL with png extension", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "https://example.com/photo.png", aspect: "1:1" } },
       }),
@@ -189,7 +199,7 @@ describe("URL validation", () => {
 
   it("accepts HTTPS image URL with gif extension", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "https://example.com/anim.gif", aspect: "4:3" } },
       }),
@@ -198,7 +208,7 @@ describe("URL validation", () => {
 
   it("accepts HTTPS image URL with webp extension", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "https://example.com/img.webp", aspect: "16:9" } },
       }),
@@ -207,7 +217,7 @@ describe("URL validation", () => {
 
   it("accepts localhost HTTP image URL for dev", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "http://localhost:3000/photo.jpg", aspect: "16:9" } },
       }),
@@ -216,7 +226,7 @@ describe("URL validation", () => {
 
   it("rejects HTTP image URL on non-loopback host", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "http://evil.com/photo.jpg", aspect: "16:9" } },
       }),
@@ -226,7 +236,7 @@ describe("URL validation", () => {
 
   it("rejects image URL with unsupported extension", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "https://example.com/file.svg", aspect: "16:9" } },
       }),
@@ -236,7 +246,7 @@ describe("URL validation", () => {
 
   it("rejects image URL without extension", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "https://example.com/photo", aspect: "16:9" } },
       }),
@@ -246,7 +256,7 @@ describe("URL validation", () => {
 
   it("rejects javascript: URI in image", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         img: { type: "image", props: { url: "javascript:alert(1)", aspect: "16:9" } },
       }),
@@ -256,7 +266,7 @@ describe("URL validation", () => {
 
   it("accepts HTTPS action target URL", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -273,7 +283,7 @@ describe("URL validation", () => {
 
   it("accepts localhost HTTP action target for dev", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -290,7 +300,7 @@ describe("URL validation", () => {
 
   it("rejects HTTP action target on non-loopback host", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -308,7 +318,7 @@ describe("URL validation", () => {
 
   it("rejects javascript: URI in action target", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -326,7 +336,7 @@ describe("URL validation", () => {
 
   it("validates open_url action targets", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -344,7 +354,7 @@ describe("URL validation", () => {
 
   it("validates open_mini_app action targets", () => {
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -362,7 +372,7 @@ describe("URL validation", () => {
 
   it("does not validate URLs for non-URL actions", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -378,9 +388,30 @@ describe("URL validation", () => {
   });
 });
 
-// ─── Structural constraints ───────────────────────────
+// ─── Structural constraints (v2 only) ────────────────
 
 describe("Structural constraints", () => {
+  it("skips structural validation for v1 snaps", () => {
+    // v1 snap with 11 root children — would fail for v2 but passes for v1
+    const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
+    const childIds: string[] = [];
+    for (let i = 0; i < 11; i++) {
+      const id = `child_${i}`;
+      elements[id] = { type: "text", props: { content: `text ${i}` } };
+      childIds.push(id);
+    }
+    expectValid({
+      version: "1.0",
+      ui: {
+        root: "page",
+        elements: {
+          page: { type: "stack", children: childIds },
+          ...elements,
+        },
+      },
+    });
+  });
+
   it("rejects a snap with too many elements", () => {
     const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
     const childIds: string[] = [];
@@ -391,7 +422,7 @@ describe("Structural constraints", () => {
     }
     // root + all the generated elements exceeds MAX_ELEMENTS
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -449,7 +480,7 @@ describe("Structural constraints", () => {
     expect(Object.keys(elements).length).toBe(MAX_ELEMENTS);
 
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: { root: "page", elements },
     });
   });
@@ -463,7 +494,7 @@ describe("Structural constraints", () => {
       childIds.push(id);
     }
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -485,7 +516,7 @@ describe("Structural constraints", () => {
       childIds.push(id);
     }
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -505,7 +536,7 @@ describe("Structural constraints", () => {
       childIds.push(id);
     }
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -528,7 +559,7 @@ describe("Structural constraints", () => {
       childIds.push(id);
     }
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: {
         root: "page",
         elements: {
@@ -554,7 +585,7 @@ describe("Structural constraints", () => {
       prevId = id;
     }
     const result = expectInvalid({
-      version: "1.0",
+      version: "2.0",
       ui: { root: prevId, elements },
     });
     expect(result.issues[0].message).toContain("depth");
@@ -574,7 +605,7 @@ describe("Structural constraints", () => {
       prevId = id;
     }
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: { root: prevId, elements },
     });
   });
