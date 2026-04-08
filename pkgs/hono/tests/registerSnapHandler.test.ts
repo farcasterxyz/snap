@@ -39,11 +39,13 @@ const minimalSnapFn: SnapFunction = async () => ({
   },
 });
 
-function jfsPostBody() {
+function jfsPostBody(audience = "http://localhost") {
   const payload: SnapPayload = {
     fid: 1,
     inputs: {},
     timestamp: Math.floor(Date.now() / 1000),
+    nonce: "test-nonce",
+    audience,
   };
   return JSON.stringify({
     header: "dev",

@@ -189,16 +189,17 @@ function AppContent() {
 
       const fid = parseUserFid(fidInput);
       const timestamp = Math.floor(Date.now() / 1000);
-      const payload: SnapPayload = {
-        fid,
-        inputs: inputs as SnapPayload["inputs"],
-        timestamp,
-      };
-
       const nextSourceUrl = coerceUpstreamUrlToMatchCurrentSnap(
         new URL(toAbsoluteSnapTarget(currentSourceUrl, target)),
         new URL(currentSourceUrl),
       ).toString();
+      const payload: SnapPayload = {
+        fid,
+        inputs: inputs as SnapPayload["inputs"],
+        timestamp,
+        nonce: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        audience: new URL(nextSourceUrl).origin,
+      };
 
       setLoading(true);
       setError(null);

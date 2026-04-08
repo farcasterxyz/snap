@@ -86,6 +86,8 @@ export const payloadSchema = z
     fid: z.number().int().nonnegative(),
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
+    nonce: z.string(),
+    audience: z.string(),
   })
   .strip();
 

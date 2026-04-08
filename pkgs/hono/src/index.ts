@@ -193,7 +193,10 @@ export function registerSnapHandler(
         ? options.skipJFSVerification
         : envSkipJFSVerification();
 
-    const parsed = await parseRequest(raw, { skipJFSVerification });
+    const parsed = await parseRequest(raw, {
+      skipJFSVerification,
+      requestOrigin: snapOriginFromRequest(raw),
+    });
 
     if (!parsed.success) {
       const err = parsed.error;
@@ -208,6 +211,7 @@ export function registerSnapHandler(
             400,
           );
         case "replay":
+        case "origin_mismatch":
           return c.json({ error: err.message }, 400);
         case "signature":
           return c.json({ error: err.message }, 401);
@@ -301,15 +305,19 @@ async function getFallbackHtml(
 
 function snapOriginFromRequest(request: Request): string {
   const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim();
-  if (fromEnv) return fromEnv.replace(/\/$/, "");
+  if (fromEnv) {
+    return fromEnv.replace(/\/$/, "");
+  }
 
-  const proto = request.headers.get("x-forwarded-proto")?.trim() || "https";
+  const proto =
+    request.headers.get("x-forwarded-proto")?.trim() ??
+    new URL(request.url).protocol.replace(":", "");
   const host =
-    request.headers.get("x-forwarded-host")?.trim() ||
-    request.headers.get("host")?.trim();
-  if (host) return `${proto}://${host}`.replace(/\/$/, "");
+    request.headers.get("x-forwarded-host")?.trim() ??
+    request.headers.get("host")?.trim() ??
+    new URL(request.url).host;
 
-  return "https://docs.farcaster.xyz/snap";
+  return `${proto}://${host}`.replace(/\/$/, "");
 }
 
 function clientWantsSnapResponse(accept: string | undefined): boolean {
