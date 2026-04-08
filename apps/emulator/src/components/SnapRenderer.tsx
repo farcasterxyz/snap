@@ -2,7 +2,7 @@
 
 import { useColorMode } from "@neynar/ui/color-mode";
 import {
-  SnapView,
+  SnapCard,
   type SnapPage,
   type SnapActionHandlers,
 } from "@farcaster/snap/react";
@@ -20,11 +20,12 @@ export function SnapRenderer({
 }) {
   const { mode } = useColorMode();
   return (
-    <SnapView
+    <SnapCard
       snap={snap}
       handlers={handlers}
       loading={loading}
       appearance={mode}
+      showOverflowWarning
     />
   );
 }

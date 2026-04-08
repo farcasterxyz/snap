@@ -1,5 +1,4 @@
 import type { SnapPayload } from "@farcaster/snap";
-import { validateSnapResponse } from "@farcaster/snap";
 import { encodePayload } from "@farcaster/snap/server";
 import * as Linking from "expo-linking";
 import { useCallback, useState } from "react";
@@ -15,7 +14,11 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { SnapPreview } from "./components/SnapPreview";
+import {
+  SnapCard,
+  type SnapActionHandlers,
+  type SnapPage,
+} from "@farcaster/snap/react-native";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import { SNAP_UPSTREAM_ACCEPT } from "./lib/snapUpstreamConstants";
 import {
@@ -25,7 +28,6 @@ import {
 import {
   parseSnapPayload,
   type SnapPageResponse,
-  unwrapSnapResponseJsonForValidation,
 } from "./lib/snapPayload";
 
 function formatValidationIssues(
@@ -163,12 +165,6 @@ function AppContent() {
         throw new Error(formatUpstreamSnapFailure(json, res.status, "GET"));
       }
 
-      const toValidate = unwrapSnapResponseJsonForValidation(json);
-      const validation = validateSnapResponse(toValidate);
-      if (!validation.valid) {
-        throw new Error(formatValidationIssues(validation.issues));
-      }
-
       const parsed = parseSnapPayload(json);
       setSnap(parsed);
       setCurrentSourceUrl(new URL(url).href);
@@ -236,12 +232,6 @@ function AppContent() {
           throw new Error(formatUpstreamSnapFailure(json, res.status, "POST"));
         }
 
-        const toValidate = unwrapSnapResponseJsonForValidation(json);
-        const validation = validateSnapResponse(toValidate);
-        if (!validation.valid) {
-          throw new Error(formatValidationIssues(validation.issues));
-        }
-
         const parsed = parseSnapPayload(json);
         setSnap(parsed);
         setCurrentSourceUrl(nextSourceUrl);
@@ -283,12 +273,6 @@ function AppContent() {
         return;
       }
       if (!res.ok) {
-        await Linking.openURL(target);
-        return;
-      }
-      const toValidate = unwrapSnapResponseJsonForValidation(json);
-      const validation = validateSnapResponse(toValidate);
-      if (!validation.valid) {
         await Linking.openURL(target);
         return;
       }
@@ -391,11 +375,41 @@ function AppContent() {
           {snap ? (
             <>
               <View style={styles.previewWrap}>
-                <SnapPreview
-                  snap={snap}
+                <SnapCard
+                  snap={snap as SnapPage}
                   loading={loading}
-                  onPostButton={handlePostButton}
-                  onLinkButton={handleLinkButton}
+                  appearance={mode}
+                  colors={colors}
+                  showOverflowWarning
+                  handlers={{
+                    submit: (target, inputs) => {
+                      void handlePostButton(target, inputs);
+                    },
+                    open_url: (target) => {
+                      if (target) void handleLinkButton(target);
+                    },
+                    open_mini_app: (url) => {
+                      Alert.alert("Client Action", `open_mini_app\n${url || "(no url)"}`);
+                    },
+                    view_cast: ({ hash }) => {
+                      Alert.alert("Client Action", `view_cast\nhash: ${hash || "(none)"}`);
+                    },
+                    view_profile: ({ fid }) => {
+                      Alert.alert("Client Action", `view_profile\nfid: ${fid || "(none)"}`);
+                    },
+                    compose_cast: ({ text }) => {
+                      Alert.alert("Client Action", `compose_cast\n${text || "(no text)"}`);
+                    },
+                    view_token: ({ token }) => {
+                      Alert.alert("Client Action", `view_token\n${token || "(no token)"}`);
+                    },
+                    send_token: ({ token }) => {
+                      Alert.alert("Client Action", `send_token\n${token || "(no token)"}`);
+                    },
+                    swap_token: ({ sellToken, buyToken }) => {
+                      Alert.alert("Client Action", `swap_token\nsell: ${sellToken || "(none)"} buy: ${buyToken || "(none)"}`);
+                    },
+                  } satisfies SnapActionHandlers}
                 />
               </View>
               {error ? (

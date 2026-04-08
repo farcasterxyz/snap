@@ -30,6 +30,15 @@ Top-level fields: `version` (required, `"1.0"`), `theme` (optional, `{ accent: P
 
 `ui.root` is the ID of the root element. `ui.elements` is a flat map of element ID to element definition.
 
+## Structural Constraints
+
+| Constraint | Limit |
+|------------|-------|
+| Total elements | Max **64** in `ui.elements` |
+| Root children | Max **7** children on the root element |
+| Children per element | Max **6** per non-root container (`stack`, `item_group`) |
+| Nesting depth | Max **4** levels from root to deepest leaf |
+
 ## Components (16 total)
 
 ### Display Components

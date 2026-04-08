@@ -491,59 +491,49 @@ export default function EmulatorPage() {
                 {error}
               </div>
             ) : snap ? (
-              <div
-                style={{
-                  display: "grid",
-                  gap: 10,
-                  width: "100%",
-                  maxWidth: 480,
-                  minWidth: 0,
+              <SnapRenderer
+                snap={snap}
+                handlers={{
+                  submit: handlePostButton,
+                  open_url: (target) => {
+                    if (target) window.open(target, "_blank", "noopener,noreferrer");
+                  },
+                  open_mini_app: (target) => {
+                    window.alert(`open_mini_app\n\n${target}`);
+                  },
+                  view_cast: (params) => {
+                    window.alert(
+                      `view_cast\n\n${JSON.stringify(params, null, 2)}`,
+                    );
+                  },
+                  view_profile: (params) => {
+                    window.alert(
+                      `view_profile\n\n${JSON.stringify(params, null, 2)}`,
+                    );
+                  },
+                  compose_cast: (params) => {
+                    window.alert(
+                      `compose_cast\n\n${JSON.stringify(params, null, 2)}`,
+                    );
+                  },
+                  view_token: (params) => {
+                    window.alert(
+                      `view_token\n\n${JSON.stringify(params, null, 2)}`,
+                    );
+                  },
+                  send_token: (params) => {
+                    window.alert(
+                      `send_token\n\n${JSON.stringify(params, null, 2)}`,
+                    );
+                  },
+                  swap_token: (params) => {
+                    window.alert(
+                      `swap_token\n\n${JSON.stringify(params, null, 2)}`,
+                    );
+                  },
                 }}
-              >
-                <SnapRenderer
-                  snap={snap}
-                  handlers={{
-                    submit: handlePostButton,
-                    open_url: (target) => {
-                      if (target) window.open(target, "_blank", "noopener,noreferrer");
-                    },
-                    open_mini_app: (target) => {
-                      window.alert(`open_mini_app\n\n${target}`);
-                    },
-                    view_cast: (params) => {
-                      window.alert(
-                        `view_cast\n\n${JSON.stringify(params, null, 2)}`,
-                      );
-                    },
-                    view_profile: (params) => {
-                      window.alert(
-                        `view_profile\n\n${JSON.stringify(params, null, 2)}`,
-                      );
-                    },
-                    compose_cast: (params) => {
-                      window.alert(
-                        `compose_cast\n\n${JSON.stringify(params, null, 2)}`,
-                      );
-                    },
-                    view_token: (params) => {
-                      window.alert(
-                        `view_token\n\n${JSON.stringify(params, null, 2)}`,
-                      );
-                    },
-                    send_token: (params) => {
-                      window.alert(
-                        `send_token\n\n${JSON.stringify(params, null, 2)}`,
-                      );
-                    },
-                    swap_token: (params) => {
-                      window.alert(
-                        `swap_token\n\n${JSON.stringify(params, null, 2)}`,
-                      );
-                    },
-                  }}
-                  loading={loading}
-                />
-              </div>
+                loading={loading}
+              />
             ) : (
               <div style={{ color: "var(--text-secondary)", fontSize: 14 }}>
                 Load a snap URL to render it here.

@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import type { SnapHandlerResult } from "@farcaster/snap";
 
-type View = "home" | "text" | "inputs" | "inputs_result" | "dataviz" | "grid";
+type View = "home" | "text" | "inputs" | "inputs_result" | "dataviz" | "grid" | "tall";
 
 const app = new Hono();
 
@@ -10,7 +10,7 @@ registerSnapHandler(app, async (ctx) => {
   const url = new URL(ctx.request.url);
   const rawView = url.searchParams.get("view") ?? "home";
   const view = (
-    ["home", "text", "inputs", "inputs_result", "dataviz", "grid"].includes(
+    ["home", "text", "inputs", "inputs_result", "dataviz", "grid", "tall"].includes(
       rawView,
     )
       ? rawView
@@ -18,7 +18,9 @@ registerSnapHandler(app, async (ctx) => {
   ) as View;
   const base = snapBaseUrl(ctx.request);
 
-  if (ctx.action.type === "get") return homePage(base);
+  if (ctx.action.type === "get") {
+    return view === "tall" ? tallPage(base) : homePage(base);
+  }
 
   if (view === "inputs_result" && ctx.action.type === "post") {
     return inputsResultPage(base, ctx.action.inputs, ctx.action.button_index);
@@ -33,6 +35,8 @@ registerSnapHandler(app, async (ctx) => {
       return dataVizPage(base);
     case "grid":
       return gridPage(base);
+    case "tall":
+      return tallPage(base);
     default:
       return homePage(base);
   }
@@ -543,6 +547,44 @@ function gridPage(base: string): SnapHandlerResult {
         },
       },
     },
+  };
+}
+
+function tallPage(base: string): SnapHandlerResult {
+  const children: string[] = ["title"];
+  const elements: Record<string, unknown> = {
+    page: { type: "stack", props: {}, children },
+    title: { type: "item", props: { title: "Tall Snap Example" } },
+  };
+
+  for (let i = 0; i < 5; i++) {
+    const id = `item_${i}`;
+    elements[id] = {
+      type: "item",
+      props: {
+        title: `Item ${i + 1}`,
+        description: "This content makes the snap taller than 500px to test the height indicator overlay.",
+      },
+    };
+    children.push(id);
+  }
+
+  children.push("btn-home");
+  elements["btn-home"] = {
+    type: "button",
+    props: { label: "Home" },
+    on: {
+      press: {
+        action: "submit",
+        params: { target: `${base}/?view=home` },
+      },
+    },
+  };
+
+  return {
+    version: "2.0",
+    theme: { accent: "red" },
+    ui: { root: "page", elements },
   };
 }
 

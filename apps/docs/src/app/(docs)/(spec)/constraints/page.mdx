@@ -38,6 +38,19 @@ validation to fail and the snap to not render.
 | `cell_grid` | `cells[].col` | 0 to `cols - 1` |
 | `cell_grid` | `rowHeight` | 8 to 64 |
 
+## Structural Constraints
+
+Snap UI trees are limited to prevent endlessly tall or overly complex snaps from rendering in clients.
+
+| Constraint | Limit |
+|------------|-------|
+| Total elements | Max **64** elements in `ui.elements` |
+| Root children | Max **7** children on the root element |
+| Children per element | Max **6** children per non-root container (`stack`, `item_group`) |
+| Nesting depth | Max **4** levels from root to deepest leaf |
+
+Exceeding any of these limits causes validation to fail and the snap to not render.
+
 ## Response Constraints
 
 | Constraint | Limit |
