@@ -587,7 +587,7 @@ function linksPage(base: string): SnapHandlerResult {
           on: {
             press: {
               action: "open_url",
-              params: { target: "https://farcaster.xyz", is_snap: false },
+              params: { target: "https://farcaster.xyz", isSnap: false },
             },
           },
         },
@@ -599,7 +599,7 @@ function linksPage(base: string): SnapHandlerResult {
               action: "open_url",
               params: {
                 target: "https://future-poll-snap.host.neynar.app/",
-                is_snap: true,
+                isSnap: true,
               },
             },
           },

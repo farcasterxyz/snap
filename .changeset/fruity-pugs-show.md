@@ -2,4 +2,4 @@
 "@farcaster/snap": patch
 ---
 
-add is_snap as a param to external links
+add isSnap param to open_url action for external link indication
