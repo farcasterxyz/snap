@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.15.4
+
+### Patch Changes
+
+- [`70bbbc1`](https://github.com/farcasterxyz/snap/commit/70bbbc173b7ab532cd1e73522dd7b1d41ace1704) Thanks [@lyoshenka](https://github.com/lyoshenka)! - add isSnap param to open_url action for external link indication
+
 ## 1.15.3
 
 ### Patch Changes
