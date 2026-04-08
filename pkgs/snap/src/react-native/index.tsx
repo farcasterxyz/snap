@@ -241,7 +241,7 @@ function SnapViewInner({
           <ActivityIndicator size="large" color={accentHex} />
         </View>
       ) : null}
-      {showConfetti ? <ConfettiOverlay key={confettiEpochRef.current} /> : null}
+      {showConfetti ? <ConfettiOverlay key={`confetti-${confettiEpochRef.current}`} /> : null}
       <SnapCatalogView
         key={pageKey}
         spec={spec}

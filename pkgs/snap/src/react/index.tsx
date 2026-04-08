@@ -356,7 +356,7 @@ export function SnapView({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {showConfetti && <ConfettiOverlay key={confettiEpochRef.current} />}
+      {showConfetti && <ConfettiOverlay key={`confetti-${confettiEpochRef.current}`} />}
       <SnapLoadingOverlay
         appearance={appearance}
         accentHex={accentHex}
