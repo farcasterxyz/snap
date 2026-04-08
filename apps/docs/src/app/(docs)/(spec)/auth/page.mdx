@@ -9,7 +9,7 @@ Every POST request from the client to a snap server MUST be authenticated with
 When a user taps a `post` button, the Farcaster client:
 
 1. Collects all input values from the current page
-2. Builds a payload with the user's FID, inputs, button index, and timestamp
+2. Builds a payload with the user's FID, inputs, timestamp, nonce, and audience
 3. Signs the payload using the user's Farcaster signer key
 4. Sends the signed JFS compact string as the POST body
 
@@ -17,8 +17,9 @@ The snap server then:
 
 1. Verifies the JFS signature cryptographically
 2. Checks the signing key against hub state for the claimed FID
-3. Validates the timestamp for replay protection
-4. Processes the request and returns a new page
+3. Validates that `audience` matches the server's origin
+4. Validates `timestamp` (and optionally `nonce`) for replay protection
+5. Processes the request and returns a new page
 
 ## JFS Payload Shape
 
@@ -31,25 +32,41 @@ The decoded JFS payload (signed inside JFS, not sent as bare JSON):
     "guess": "CLASS",
     "vote": "Tabs"
   },
-  "button_index": 0,
-  "timestamp": 1710864000
+  "timestamp": 1710864000,
+  "nonce": "b7f9c2a1-4d6e-4c3b-9a12-8f4e2d1c0b55",
+  "audience": "https://snap.example.com"
 }
 ```
 
+## Audience
+
+The payload MUST contain an `audience` field set to the origin of the snap server the
+request is intended for. Origin = scheme + host + port (port only needed if it is not
+the default port for that scheme)
+
+Servers MUST reject requests where `audience` does not match the server's own origin.
+This prevents a signed payload meant for one snap from being replayed against a
+different snap server.
+
 ## Replay protection
 
-The request payload MUST contain a `timestamp` field (Unix seconds).
+The payload MUST contain a `timestamp` field (Unix seconds) and a `nonce` field (a
+unique string per request, for example a UUID).
 
-Servers SHOULD reject requests with timestamps outside an allowed skew (for example 5
-minutes) to limit replay.
+Servers MUST reject requests with timestamps outside an allowed skew (default 5
+minutes). Servers MAY additionally track seen nonces to reject exact replays within the
+timestamp window.
 
 ## Requirements
 
 - The client MUST send a valid JFS for every authenticated POST
+- The client MUST include `audience` (server origin), `nonce` (unique string), and
+  `timestamp` (Unix seconds) in every payload
 - The server MUST verify the JFS cryptographically and MUST verify the signing key
   against hub (or equivalent) state for the FID
-- The server SHOULD enforce replay protection using `timestamp` (and any other policy
-  you require)
+- The server MUST verify that `audience` matches its own origin
+- The server MUST enforce timestamp skew checks
+- The server MAY use `nonce` for additional replay prevention
 
 ## JSON Farcaster Signatures (JFS) Format
 
@@ -113,7 +130,7 @@ registerSnapHandler(
   async (ctx) => {
     // ctx.action.fid is verified — the JFS signature was checked
     // ctx.action.inputs contains the user's input values
-    // ctx.action.button_index is which button was tapped
+    // Distinguish buttons via distinct submit target URLs on each button (ctx.request.url)
   },
   {
     skipJFSVerification: false, // set to `true` for local dev

@@ -21,7 +21,7 @@ template/
 `registerSnapHandler` calls your function with a `SnapContext` value (conventionally named `ctx`): `{ action, request }`.
 
 - `ctx.action.type === "get"` — first page load (GET request). No other fields on the action object.
-- `ctx.action.type === "post"` — user interaction (POST request). Includes `inputs` (Record of input name → value), `fid` (user's Farcaster ID), `button_index` (which button was tapped), and `timestamp`.
+- `ctx.action.type === "post"` — user interaction (POST request). Includes `inputs` (Record of input name → value), `fid` (user's Farcaster ID), `timestamp`, `nonce` (anti-replay), and `audience` (origin the payload was intended for). Use different `submit` target URLs (for example query parameters) to distinguish multiple buttons.
 
 Check `ctx.action.type` before accessing `inputs` — it only exists on `"post"` actions.
 
@@ -41,7 +41,7 @@ Test GET (first page): `curl -sS -H 'Accept: application/vnd.farcaster.snap+json
 Test POST (button tap): `pnpm dev` already sets `SKIP_JFS_VERIFICATION=true`, so POST works without real signatures. The body must still be JFS-shaped (header/payload/signature strings). The payload must be base64url-encoded (no `+`/`/`/`=`):
 
 ```bash
-PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"button_index\":0,\"timestamp\":$(date +%s)}" \
+PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"nonce\":\"dev-nonce\",\"audience\":\"http://localhost:3003\",\"timestamp\":$(date +%s)}" \
   | base64 | tr '+/' '-_' | tr -d '=')
 curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
   -H 'Content-Type: application/json' \

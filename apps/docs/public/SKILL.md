@@ -46,11 +46,13 @@ page. Do not invent URLs that dont exist. Do not rely on memorized spec content.
 
 ## Step 2: Implement the snap (follow the template)
 
-Explore the
-[`template/` directory on GitHub](https://github.com/farcasterxyz/snap/tree/main/template).
+Copy the
+[`template/` directory](https://github.com/farcasterxyz/snap/tree/main/template) from
+Github into a local directory. This will be the starting point for the snap.
 
-Read README.md and AGENTS.md there first, then follow the links therein to more content.
-Also skim it's @farcaster/snap\* dependencies.
+Explore the directory. Read README.md and AGENTS.md there first, then follow the links
+therein to more content. Also skim it's @farcaster/snap\* dependencies and update those
+to their latest version.
 
 Express the UI as the object your snap handler returns.
 
@@ -61,6 +63,8 @@ Express the UI as the object your snap handler returns.
   `props`, optional `children` (element IDs), and optional `on` (event bindings).
 - Button actions are bound via `on.press` with an `action` and `params` object.
 - Target URLs must be HTTPS in production; `http://` only on loopback for local dev.
+- Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
+  @farcaster/snap-hono)
 
 Design guidance:
 
@@ -115,7 +119,7 @@ without real signatures. The body must still be JFS-shaped. The payload must be
 base64url-encoded:
 
 ```bash
-PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"button_index\":0,\"timestamp\":$(date +%s)}" \
+PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"nonce\":\"dev-nonce\",\"audience\":\"http://localhost:<port>\",\"timestamp\":$(date +%s)}" \
   | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
 curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
   -H 'Content-Type: application/json' \
@@ -179,3 +183,22 @@ Tell the user:
 
 CRITICAL: If this is the first deploy, tell the user to cast the live URL on Farcaster
 to share their snap. Otherwise they will be confused about what to do next.
+
+## Updating an existing snap
+
+Follow this process to update the `@farcaster/snap*` packages of an existing app to
+their latest versions:
+
+- Read the [release changelog](https://github.com/farcasterxyz/snap/releases) on Github.
+  Start from the current version of each `@farcaster/snap*` package from package.json
+  and read each version from there to the latest version. Make a note of any relevant
+  changes (**especially breaking changes**). Read the actual diff of any release that
+  sounds relevant.
+- Update those packages to their latest version.
+- Make any necessary changes as described in the changelog. Feel free to look at the
+  code for any package release.
+- Run tests and fix anything that's wrong. Repeat this step on loop until everything
+  works.
+- Do a review to make sure there are no functionality changes. If you find anything
+  relevant, point it out to the user.
+- Deploy your changes.

@@ -1,18 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import { ExternalLink } from "lucide-react";
 import { Button } from "@neynar/ui/button";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
 import { ICON_MAP } from "./icon";
 
+function isExternalLinkAction(
+  on: Record<string, unknown> | undefined,
+): boolean {
+  if (!on) return false;
+  const press = on.press as
+    | { action?: string; params?: Record<string, unknown> }
+    | undefined;
+  if (!press || press.action !== "open_url") return false;
+  return press.params?.isSnap !== true;
+}
+
 export function SnapActionButton({
-  element: { props },
+  element,
   emit,
 }: {
-  element: { props: Record<string, unknown> };
+  element: {
+    props: Record<string, unknown>;
+    on?: Record<string, unknown>;
+  };
   emit: (name: string) => void;
 }) {
+  const { props } = element;
   const label = String(props.label ?? "Action");
   const variant = String(props.variant ?? "secondary");
   const isPrimary = variant === "primary";
@@ -21,6 +37,7 @@ export function SnapActionButton({
   const [hovered, setHovered] = useState(false);
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
+  const showExternalIcon = isExternalLinkAction(element.on);
 
   const style = isPrimary
     ? {
@@ -29,7 +46,9 @@ export function SnapActionButton({
         borderColor: "transparent",
       }
     : {
-        backgroundColor: hovered ? `color-mix(in srgb, ${colors.accent} 15%, transparent)` : colors.muted,
+        backgroundColor: hovered
+          ? `color-mix(in srgb, ${colors.accent} 15%, transparent)`
+          : colors.muted,
         color: colors.text,
         borderColor: "transparent",
       };
@@ -47,6 +66,9 @@ export function SnapActionButton({
       >
         {Icon && <Icon size={16} />}
         {label}
+        {showExternalIcon && (
+          <ExternalLink size={14} style={{ opacity: 0.6 }} />
+        )}
       </Button>
     </div>
   );

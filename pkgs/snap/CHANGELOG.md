@@ -1,5 +1,23 @@
 # @farcaster/snap
 
+## 1.15.4
+
+### Patch Changes
+
+- [`70bbbc1`](https://github.com/farcasterxyz/snap/commit/70bbbc173b7ab532cd1e73522dd7b1d41ace1704) Thanks [@lyoshenka](https://github.com/lyoshenka)! - add isSnap param to open_url action for external link indication
+
+## 1.15.3
+
+### Patch Changes
+
+- [`a43c623`](https://github.com/farcasterxyz/snap/commit/a43c6237d60dfc581b6402baaab201b8ec9508c4) Thanks [@lyoshenka](https://github.com/lyoshenka)! - minor confetti improvement
+
+## 1.15.2
+
+### Patch Changes
+
+- [#90](https://github.com/farcasterxyz/snap/pull/90) [`4511666`](https://github.com/farcasterxyz/snap/commit/45116663b43adf0587d41152850e923ba38cde87) Thanks [@lyoshenka](https://github.com/lyoshenka)! - add React Native component for confetti
+
 ## 1.15.1
 
 ### Patch Changes

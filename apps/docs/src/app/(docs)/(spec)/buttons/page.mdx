@@ -23,18 +23,18 @@ A button fires an action when tapped. Actions are bound via the `on.press` field
 
 ## Button Properties
 
-| Prop | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `label` | string | Yes | | Button text. Max 30 chars |
-| `variant` | string | No | `"secondary"` | Visual style (see below) |
-| `icon` | IconName | No | | Leading icon. See [icon set](/snap/elements#icon) |
+| Prop      | Type     | Required | Default       | Description                                       |
+| --------- | -------- | -------- | ------------- | ------------------------------------------------- |
+| `label`   | string   | Yes      |               | Button text. Max 30 chars                         |
+| `variant` | string   | No       | `"secondary"` | Visual style (see below)                          |
+| `icon`    | IconName | No       |               | Leading icon. See [icon set](/snap/elements#icon) |
 
 ### Variants
 
-| Variant | Description |
-|---------|-------------|
-| `primary` | Solid accent background, white text — use for the primary CTA |
-| `secondary` | Accent-colored border, transparent fill |
+| Variant     | Description                                                   |
+| ----------- | ------------------------------------------------------------- |
+| `primary`   | Solid accent background, white text — use for the primary CTA |
+| `secondary` | Accent-colored border, transparent fill                       |
 
 ## Button Layout
 
@@ -63,12 +63,12 @@ buttons, or the default `"vertical"` for a stacked column.
 
 The four most common actions on buttons:
 
-| Action | Behavior |
-|--------|----------|
-| `submit` | POST to the snap server, receive the next page |
-| `open_url` | Open a URL in the browser |
-| `open_mini_app` | Open a URL as a Farcaster mini app |
-| client actions | `view_cast`, `view_profile`, `compose_cast`, `send_token`, etc. |
+| Action          | Behavior                                                        |
+| --------------- | --------------------------------------------------------------- |
+| `submit`        | POST to the snap server, receive the next page                  |
+| `open_url`      | Open a URL in the browser                                       |
+| `open_mini_app` | Open a URL as a Farcaster mini app                              |
+| client actions  | `view_cast`, `view_profile`, `compose_cast`, `send_token`, etc. |
 
 See [Actions](/snap/actions) for parameters and examples for each type.
 
@@ -82,18 +82,22 @@ For local development, `http://` is valid only when the host is loopback: `local
 
 ## Input Data in POST Requests
 
-When a `submit` action fires, the client collects values from all field components on the
-current page and includes them in the POST body under `inputs`.
+When a `submit` action fires, the client collects values from all field components on
+the current page and includes them in the POST body under `inputs`.
 
-| Component | POST value |
-|-----------|------------|
-| `input` | string |
-| `slider` | number |
-| `switch` | boolean |
-| `toggle_group` (single) | string |
-| `toggle_group` (multiple) | string[] |
+| Component                 | POST value |
+| ------------------------- | ---------- |
+| `input`                   | string     |
+| `slider`                  | number     |
+| `switch`                  | boolean    |
+| `toggle_group` (single)   | string     |
+| `toggle_group` (multiple) | string[]   |
 
 Field components without a user interaction are included with their default values.
+
+Each `submit` button specifies a **target URL**; the client POSTs to that URL, so
+multiple buttons are distinguished by different targets (for example `?action=save` vs
+`?action=cancel`), not by a separate index field.
 
 ```json
 {
@@ -104,8 +108,9 @@ Field components without a user interaction are included with their default valu
     "notifications": true,
     "plan": "Pro"
   },
-  "button_index": 0,
-  "timestamp": 1717200000
+  "timestamp": 1717200000,
+  "nonce": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "audience": "https://my-snap.example.com"
 }
 ```
 

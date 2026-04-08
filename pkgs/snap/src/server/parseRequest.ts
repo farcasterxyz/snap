@@ -29,6 +29,10 @@ export type ParseRequestError =
   | {
       type: "signature";
       message: string;
+    }
+  | {
+      type: "origin_mismatch";
+      message: string;
     };
 
 export type ParseRequestOptions = {
@@ -43,6 +47,11 @@ export type ParseRequestOptions = {
    * potential replays. Defaults to 300 (5 minutes) when not provided.
    */
   maxSkewSeconds?: number;
+
+  /**
+   * The origin of the request. Derived from the request when not provided.
+   */
+  requestOrigin?: string;
 };
 
 export type ParseRequestResult =
@@ -137,6 +146,36 @@ export async function parseRequest(
       },
     };
   }
+
+  let expectedOrigin = options.requestOrigin;
+  if (expectedOrigin === undefined) {
+    try {
+      expectedOrigin = new URL(request.url).origin;
+    } catch {
+      // do nothing
+    }
+  }
+
+  if (expectedOrigin === undefined) {
+    return {
+      success: false,
+      error: {
+        type: "origin_mismatch",
+        message: "request origin is required for validation",
+      },
+    };
+  }
+
+  if (body.audience !== expectedOrigin) {
+    return {
+      success: false,
+      error: {
+        type: "origin_mismatch",
+        message: `payload audience "${body.audience}" does not match expected origin "${expectedOrigin}"`,
+      },
+    };
+  }
+
   return {
     success: true,
     action: {

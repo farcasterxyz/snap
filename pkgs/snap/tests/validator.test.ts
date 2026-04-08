@@ -48,9 +48,9 @@ describe("Schema basics", () => {
     expect(validateSnapResponse(null).valid).toBe(false);
   });
 
-  it("requires version 1.0", () => {
+  it("requires a supported version", () => {
     expectInvalid({ ui: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
-    expectInvalid({ version: "2.0", ui: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
+    expectInvalid({ version: "3.0", ui: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
   });
 
   it("requires ui with root and elements", () => {
