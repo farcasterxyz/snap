@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^1.0.0",
+    "@hono/node-server": "^1.19.13",
     "hono": "^4.0.0",
     "@farcaster/snap": "workspace:*",
     "@farcaster/snap-hono": "workspace:*",
