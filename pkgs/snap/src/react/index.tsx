@@ -270,6 +270,15 @@ export function SnapView({
 
   const showConfetti = snap.effects?.includes("confetti");
 
+  // Increment key each time a new snap with confetti arrives so the overlay
+  // unmounts/remounts and restarts its animation on every trigger.
+  const confettiEpochRef = useRef(0);
+  const lastConfettiSnapRef = useRef<typeof snap | null>(null);
+  if (showConfetti && snap !== lastConfettiSnapRef.current) {
+    confettiEpochRef.current++;
+    lastConfettiSnapRef.current = snap;
+  }
+
   const accentName = snap.theme?.accent ?? "purple";
 
   const accentHex = useMemo(
@@ -347,7 +356,7 @@ export function SnapView({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {showConfetti && <ConfettiOverlay />}
+      {showConfetti && <ConfettiOverlay key={confettiEpochRef.current} />}
       <SnapLoadingOverlay
         appearance={appearance}
         accentHex={accentHex}

@@ -123,6 +123,17 @@ function SnapViewInner({
   const spec = snap.ui;
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
 
+  const showConfetti = snap.effects?.includes("confetti");
+
+  // Increment key each time a new snap with confetti arrives so the overlay
+  // unmounts/remounts and restarts its animation on every trigger.
+  const confettiEpochRef = useRef(0);
+  const lastConfettiSnapRef = useRef<typeof snap | null>(null);
+  if (showConfetti && snap !== lastConfettiSnapRef.current) {
+    confettiEpochRef.current++;
+    lastConfettiSnapRef.current = snap;
+  }
+
   const initialState = useMemo(
     () => ({
       ...(spec.state ?? {}),
@@ -230,7 +241,7 @@ function SnapViewInner({
           <ActivityIndicator size="large" color={accentHex} />
         </View>
       ) : null}
-      {snap.effects?.includes("confetti") ? <ConfettiOverlay /> : null}
+      {showConfetti ? <ConfettiOverlay key={confettiEpochRef.current} /> : null}
       <SnapCatalogView
         key={pageKey}
         spec={spec}
