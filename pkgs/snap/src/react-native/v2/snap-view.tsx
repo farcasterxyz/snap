@@ -64,7 +64,7 @@ export function SnapViewV2Inner({
         onValidationError(validation);
       } else {
         // eslint-disable-next-line no-console
-        console.warn("[SnapView] validation issues:", validation.issues);
+        console.warn("[Snap] validation issues:", validation.issues);
       }
     }
   }, [valid, validation, onValidationError]);

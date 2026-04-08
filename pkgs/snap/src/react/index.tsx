@@ -3,8 +3,9 @@
 import type { Spec } from "@json-render/core";
 import type { ReactNode } from "react";
 import type { ValidationResult } from "../validator.js";
-import { SnapViewV1, SnapCardV1 } from "./v1/snap-view";
-import { SnapViewV2, SnapCardV2 } from "./v2/snap-view";
+import { SPEC_VERSION_2 } from "../constants";
+import { SnapCardV1 } from "./v1/snap-view";
+import { SnapCardV2 } from "./v2/snap-view";
 
 // ─── Public types ──────────────────────────────────────
 
@@ -44,46 +45,6 @@ export type SnapActionHandlers = {
   swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
 };
 
-// ─── SnapView ──────────────────────────────────────────
-
-export function SnapView({
-  snap,
-  handlers,
-  loading = false,
-  appearance = "dark",
-  onValidationError,
-  validationErrorFallback,
-}: {
-  snap: SnapPage;
-  handlers: SnapActionHandlers;
-  loading?: boolean;
-  appearance?: "light" | "dark";
-  onValidationError?: (result: ValidationResult) => void;
-  validationErrorFallback?: ReactNode;
-}) {
-  if (snap.version === "2.0") {
-    return (
-      <SnapViewV2
-        snap={snap}
-        handlers={handlers}
-        loading={loading}
-        appearance={appearance}
-        onValidationError={onValidationError}
-        validationErrorFallback={validationErrorFallback}
-      />
-    );
-  }
-
-  return (
-    <SnapViewV1
-      snap={snap}
-      handlers={handlers}
-      loading={loading}
-      appearance={appearance}
-    />
-  );
-}
-
 // ─── SnapCard ────────────────────────────────────────
 
 export function SnapCard({
@@ -106,7 +67,7 @@ export function SnapCard({
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
 }) {
-  if (snap.version === "2.0") {
+  if (snap.version === SPEC_VERSION_2) {
     return (
       <SnapCardV2
         snap={snap}

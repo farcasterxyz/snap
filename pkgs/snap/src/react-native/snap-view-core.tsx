@@ -104,7 +104,7 @@ export function SnapViewCoreInner({
     const catalogResult = snapJsonRenderCatalog.validate(spec);
     if (!catalogResult.success) {
       // eslint-disable-next-line no-console
-      console.warn("[SnapView] catalog validation issues:", catalogResult.error);
+      console.warn("[Snap] catalog validation issues:", catalogResult.error);
     }
   }, [spec]);
 

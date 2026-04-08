@@ -4,6 +4,8 @@ export type {
 } from "@json-render/core";
 export {
   SPEC_VERSION,
+  SPEC_VERSION_1,
+  SPEC_VERSION_2,
   SUPPORTED_SPEC_VERSIONS,
   type SpecVersion,
   MEDIA_TYPE,

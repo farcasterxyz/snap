@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { snapResponseSchema } from "./schemas";
-import { MAX_CHILDREN, MAX_DEPTH, MAX_ELEMENTS, MAX_ROOT_CHILDREN } from "./constants";
+import { MAX_CHILDREN, MAX_DEPTH, MAX_ELEMENTS, MAX_ROOT_CHILDREN, SPEC_VERSION_1 } from "./constants";
 
 export type ValidationResult = {
   valid: boolean;
@@ -230,10 +230,7 @@ export function validateSnapResponse(json: unknown): ValidationResult {
     };
   }
 
-  const ui = parsed.data.ui as {
-    root: string;
-    elements: Record<string, unknown>;
-  };
+  const ui = parsed.data.ui;
 
   // Root reference check applies to all versions
   if (!(ui.root in ui.elements)) {
@@ -248,7 +245,7 @@ export function validateSnapResponse(json: unknown): ValidationResult {
   }
 
   // Structural limits and URL validation only apply to v2+ snaps
-  if (parsed.data.version !== "1.0") {
+  if (parsed.data.version !== SPEC_VERSION_1) {
     const structuralIssues = validateStructure(ui);
     if (structuralIssues.length > 0) {
       return { valid: false, issues: structuralIssues };
