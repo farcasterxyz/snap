@@ -5,19 +5,30 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { PanelLeftClose, PanelLeftOpen, Sun, Moon } from "lucide-react";
 import FarcasterLogo from "./FarcasterLogo";
-import { DOC_SECTIONS } from "@/lib/docs-pages";
+import VersionDropdown, {
+  parseVersionFromPathname,
+} from "./VersionDropdown";
+import { VERSION_DOC_SECTIONS } from "@/lib/docs-pages";
+import { DEFAULT_VERSION } from "@/lib/version-config";
 
-type NavItem = { label: string; href: string; external?: boolean };
+type NavItem = { label: string; href: string };
 type NavSection = { title: string; untitled?: boolean; items: NavItem[] };
 
-const NAV: NavSection[] = DOC_SECTIONS.map((section) => ({
-  title: section.title,
-  untitled: section.untitled,
-  items: section.pages.map((page) => ({
-    label: page.title,
-    href: page.pathname,
-  })),
-})).filter((section) => section.items.length > 0);
+function buildNav(version: string): NavSection[] {
+  const sections = VERSION_DOC_SECTIONS[version] ?? VERSION_DOC_SECTIONS[DEFAULT_VERSION]!;
+  const prefix = version === DEFAULT_VERSION ? "" : `/${version}`;
+
+  return sections
+    .map((section) => ({
+      title: section.title,
+      untitled: section.untitled,
+      items: section.pages.map((page) => ({
+        label: page.title,
+        href: page.pathname === "/" ? `${prefix}/` : `${prefix}${page.pathname}`,
+      })),
+    }))
+    .filter((section) => section.items.length > 0);
+}
 
 function getInitialTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
@@ -30,6 +41,9 @@ function getInitialTheme(): "light" | "dark" {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { version, slug } = parseVersionFromPathname(pathname);
+  const nav = buildNav(version);
+
   const [collapsed, setCollapsed] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
@@ -52,7 +66,7 @@ export default function Sidebar() {
     <nav className={`sidebar${collapsed ? " sidebar--collapsed" : ""}`}>
       <div className="sidebar-header">
         <Link
-          href="/"
+          href={version === DEFAULT_VERSION ? "/" : `/${version}`}
           style={{ textDecoration: "none", color: "inherit" }}
           className="sidebar-logo"
         >
@@ -79,8 +93,12 @@ export default function Sidebar() {
 
       {!collapsed && (
         <>
+          <div className="sidebar-version">
+            <VersionDropdown />
+          </div>
+
           <div className="sidebar-nav">
-            {NAV.map((section) => (
+            {nav.map((section) => (
               <div key={section.title} className="sidebar-section">
                 {!section.untitled && (
                   <div className="sidebar-section-title">{section.title}</div>

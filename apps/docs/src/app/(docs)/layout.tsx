@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { VersionProvider } from "@/components/VersionContext";
 
 export default function DocsLayout({
   children,
@@ -6,11 +7,13 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="main-content" style={{ position: "relative" }}>
-      <Link href="/llms.txt" className="docs-llms-link">
-        llms.txt
-      </Link>
-      <article className="docs-content">{children}</article>
-    </main>
+    <VersionProvider>
+      <main className="main-content" style={{ position: "relative" }}>
+        <Link href="/llms.txt" className="docs-llms-link">
+          llms.txt
+        </Link>
+        <article className="docs-content">{children}</article>
+      </main>
+    </VersionProvider>
   );
 }
