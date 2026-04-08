@@ -135,6 +135,46 @@ describe("registerSnapHandler content type", () => {
     expect(res.headers.get("Content-Type")).toMatch(/^application\/json/);
   });
 
+  it("POST with mismatched audience returns 400 origin_mismatch", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+    });
+
+    const res = await app.request("http://localhost/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: jfsPostBody("https://evil.com"),
+    });
+
+    expect(res.status).toBe(400);
+    const json = (await res.json()) as { error: string };
+    expect(json.error).toContain("audience");
+    expect(json.error).toContain("evil.com");
+  });
+
+  it("POST succeeds when SNAP_PUBLIC_BASE_URL has a path (origin extracted)", async () => {
+    const prev = process.env.SNAP_PUBLIC_BASE_URL;
+    process.env.SNAP_PUBLIC_BASE_URL = "https://example.com/snap";
+    try {
+      const app = new Hono();
+      registerSnapHandler(app, minimalSnapFn, {
+        skipJFSVerification: true,
+      });
+
+      const res = await app.request("https://example.com/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: jfsPostBody("https://example.com"),
+      });
+
+      expect(res.status).toBe(200);
+    } finally {
+      if (prev === undefined) delete process.env.SNAP_PUBLIC_BASE_URL;
+      else process.env.SNAP_PUBLIC_BASE_URL = prev;
+    }
+  });
+
   it("POST with invalid body returns application/json (not snap type)", async () => {
     const app = new Hono();
     registerSnapHandler(app, minimalSnapFn, {

@@ -306,18 +306,14 @@ async function getFallbackHtml(
 function snapOriginFromRequest(request: Request): string {
   const fromEnv = process.env.SNAP_PUBLIC_BASE_URL?.trim();
   if (fromEnv) {
-    return fromEnv.replace(/\/$/, "");
+    try {
+      return new URL(fromEnv).origin;
+    } catch {
+      return fromEnv.replace(/\/$/, "");
+    }
   }
 
-  const proto =
-    request.headers.get("x-forwarded-proto")?.trim() ??
-    new URL(request.url).protocol.replace(":", "");
-  const host =
-    request.headers.get("x-forwarded-host")?.trim() ??
-    request.headers.get("host")?.trim() ??
-    new URL(request.url).host;
-
-  return `${proto}://${host}`.replace(/\/$/, "");
+  return new URL(request.url).origin;
 }
 
 function clientWantsSnapResponse(accept: string | undefined): boolean {

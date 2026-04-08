@@ -129,6 +129,22 @@ describe("parseRequest", () => {
     }
   });
 
+  it("strips legacy button_index from payload (backward compat)", async () => {
+    const body = postBody({ button_index: 0 });
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.action.type).toBe("post");
+      expect("button_index" in res.action).toBe(false);
+    }
+  });
+
   it("accepts POST when payload audience matches request origin", async () => {
     const res = await parseRequest(
       new Request("https://example.com/snap", {
