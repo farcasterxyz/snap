@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import type { SnapHandlerResult } from "@farcaster/snap";
 
-type View = "home" | "text" | "inputs" | "inputs_result" | "dataviz" | "grid";
+type View = "home" | "text" | "inputs" | "inputs_result" | "dataviz" | "grid" | "links";
 
 const app = new Hono();
 
@@ -10,7 +10,7 @@ registerSnapHandler(app, async (ctx) => {
   const url = new URL(ctx.request.url);
   const rawView = url.searchParams.get("view") ?? "home";
   const view = (
-    ["home", "text", "inputs", "inputs_result", "dataviz", "grid"].includes(
+    ["home", "text", "inputs", "inputs_result", "dataviz", "grid", "links"].includes(
       rawView,
     )
       ? rawView
@@ -33,6 +33,8 @@ registerSnapHandler(app, async (ctx) => {
       return dataVizPage(base);
     case "grid":
       return gridPage(base);
+    case "links":
+      return linksPage(base);
     default:
       return homePage(base);
   }
@@ -75,7 +77,7 @@ function homePage(base: string): SnapHandlerResult {
         "btn-row": {
           type: "stack",
           props: { direction: "horizontal" },
-          children: ["btn-text", "btn-inputs", "btn-dataviz", "btn-grid"],
+          children: ["btn-text", "btn-inputs", "btn-dataviz", "btn-grid", "btn-links"],
         },
         "btn-text": {
           type: "button",
@@ -114,6 +116,16 @@ function homePage(base: string): SnapHandlerResult {
             press: {
               action: "submit",
               params: { target: `${base}/?view=grid` },
+            },
+          },
+        },
+        "btn-links": {
+          type: "button",
+          props: { label: "Links" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=links` },
             },
           },
         },
@@ -534,6 +546,68 @@ function gridPage(base: string): SnapHandlerResult {
         "btn-home": {
           type: "button",
           props: { label: "Home" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=home` },
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
+function linksPage(base: string): SnapHandlerResult {
+  return {
+    version: "1.0",
+    theme: { accent: "blue" },
+    ui: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "description", "sep", "btn-farcaster", "btn-poll-snap", "sep2", "btn-home"],
+        },
+        title: {
+          type: "item",
+          props: { title: "Links" },
+        },
+        description: {
+          type: "item",
+          props: {
+            description: "Open external URLs and other snaps.",
+          },
+        },
+        sep: { type: "separator", props: {} },
+        "btn-farcaster": {
+          type: "button",
+          props: { label: "farcaster.xyz" },
+          on: {
+            press: {
+              action: "open_url",
+              params: { target: "https://farcaster.xyz", is_snap: false },
+            },
+          },
+        },
+        "btn-poll-snap": {
+          type: "button",
+          props: { label: "Future Poll (snap)" },
+          on: {
+            press: {
+              action: "open_url",
+              params: {
+                target: "https://future-poll-snap.host.neynar.app/",
+                is_snap: true,
+              },
+            },
+          },
+        },
+        sep2: { type: "separator", props: {} },
+        "btn-home": {
+          type: "button",
+          props: { label: "← Home" },
           on: {
             press: {
               action: "submit",
