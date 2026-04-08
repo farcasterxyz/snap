@@ -58,6 +58,7 @@ Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
+- Set `version: "1.0"` in the snap response.
 - Conform to the published spec for overall snap response shape and behavior.
 - Use the `ui.root` / `ui.elements` format: a flat map of named elements with `type`,
   `props`, optional `children` (element IDs), and optional `on` (event bindings).

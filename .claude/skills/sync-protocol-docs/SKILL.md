@@ -11,8 +11,9 @@ in `pkgs/snap/src/ui/`.
 
 ## Step 1: Read the schema source of truth
 
-Read every `.ts` file in `pkgs/snap/src/ui/`, `pkgs/snap/src/colors.ts`, and
-`pkgs/snap/src/constants.ts`. Extract the current valid values for each component:
+Read every `.ts` file in `pkgs/snap/src/ui/`, `pkgs/snap/src/colors.ts`,
+`pkgs/snap/src/constants.ts`, and `apps/docs/src/lib/version-config.ts`. Extract the
+current valid values for each component and the current `DEFAULT_VERSION`:
 variants, sizes, weights, aspect ratios, icon names, gap values, orientations, char
 limits, grid/bar-chart limits, and default values.
 
@@ -48,30 +49,44 @@ these file groups:
 
 - All component props, variants, values, and examples must match schema
 
-**Home docs** (`apps/docs/src/app/(docs)/(home)/`):
+**Versioned docs** (`apps/docs/src/app/(docs)/{version}/`):
 
-- `page.mdx` — landing page
-- `agents/page.mdx` — agent-oriented entrypoint
+Docs are organized in version folders (`1.0/`, `2.0/`). The default version is set in
+`apps/docs/src/lib/version-config.ts`. When syncing, update BOTH version folders — they
+share the same component schema but may differ in spec-level details (e.g. auth payload
+shape, structural constraints).
 
-**Snap spec docs** (`apps/docs/src/app/(docs)/(spec)/`):
+For each version folder, check:
 
-- `spec-overview/page.mdx` — Overview
-- `elements/page.mdx` — props tables, variants tables, usage narrative, examples
-- `buttons/page.mdx` — button variants, defaults, examples
-- `actions/page.mdx` — button examples in action demos
-- `effects/page.mdx` — component usage in examples
-- `constraints/page.mdx` — char limits and validation rules
+- `(home)/page.mdx` — landing page
+- `(home)/agents/page.mdx` — agent-oriented entrypoint
+- `(spec)/spec-overview/page.mdx` — Overview
+- `(spec)/elements/page.mdx` — props tables, variants tables, usage narrative, examples
+- `(spec)/buttons/page.mdx` — button variants, defaults, examples
+- `(spec)/actions/page.mdx` — button examples in action demos
+- `(spec)/effects/page.mdx` — component usage in examples
+- `(spec)/constraints/page.mdx` — char limits and validation rules
+- `(spec)/auth/page.mdx` — payload shape (differs between v1 and v2)
+- `(learn)/examples/page.mdx` — full snap response examples
+- `(learn)/building/page.mdx` — code example
+- `(learn)/upgrading/page.mdx` — (v2.0 only) upgrade guide from previous version
 
-**Learn docs** (`apps/docs/src/app/(docs)/(learn)/`):
+**Version-specific differences to maintain**:
 
-- `examples/page.mdx` — full snap response examples
-- `building/page.mdx` — code example
+- v1.0 auth: `button_index` in payload, no `nonce`/`audience`
+- v2.0 auth: `nonce`/`audience` in payload, no `button_index`
+- v2.0 constraints: structural limits (64 elements, 7 root children, 4 depth, 6 children/container)
+- v1.0 constraints: no structural limits
 
 **LLM / agent docs**:
 
-- `apps/docs/public/SKILL.md` — agent skill with design guidance
+- `apps/docs/public/SKILL.md` — root agent skill (matches default version)
+- `apps/docs/public/1.0/SKILL.md` — v1.0 agent skill
+- `apps/docs/public/2.0/SKILL.md` — v2.0 agent skill
 - `AGENTS.md` — protocol references
 - `template/AGENTS.md` — protocol references
+
+When `DEFAULT_VERSION` changes, copy the corresponding versioned SKILL.md to the root.
 
 **Integration docs**:
 

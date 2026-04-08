@@ -58,13 +58,17 @@ Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
+- Set `version: "2.0"` in the snap response.
 - Conform to the published spec for overall snap response shape and behavior.
 - Use the `ui.root` / `ui.elements` format: a flat map of named elements with `type`,
   `props`, optional `children` (element IDs), and optional `on` (event bindings).
 - Button actions are bound via `on.press` with an `action` and `params` object.
+- Use distinct submit target URLs for each button to distinguish which was pressed.
 - Target URLs must be HTTPS in production; `http://` only on loopback for local dev.
 - Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
   @farcaster/snap-hono)
+- Structural limits: max 64 elements, max 7 root children, max 6 children per
+  container, max 4 nesting depth.
 
 Design guidance:
 
