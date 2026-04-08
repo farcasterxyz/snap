@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@neynar/ui/badge";
-import { useSnapColors, pickForegroundForBg } from "../hooks/use-snap-colors";
+import { useSnapColors } from "../hooks/use-snap-colors";
 import { ICON_MAP } from "./icon";
 
 export function SnapBadge({
@@ -16,14 +16,13 @@ export function SnapBadge({
   const colors = useSnapColors();
 
   const badgeColor = colors.colorHex(color);
-  const badgeFg = variant === "default" ? pickForegroundForBg(badgeColor) : badgeColor;
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
 
   const style =
     variant === "outline"
       ? { borderColor: badgeColor, color: badgeColor, backgroundColor: "transparent" }
-      : { backgroundColor: badgeColor, color: badgeFg, borderColor: "transparent" };
+      : { backgroundColor: `${badgeColor}20`, color: badgeColor, borderColor: "transparent" };
 
   return (
     <Badge variant={variant} className="gap-1" style={style}>
