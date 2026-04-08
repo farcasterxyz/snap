@@ -1,4 +1,5 @@
 export const SPEC_VERSION = "1.0" as const;
+export const SPEC_VERSION_COMPUTE = "1.1" as const;
 
 export const MEDIA_TYPE = "application/vnd.farcaster.snap+json" as const;
 

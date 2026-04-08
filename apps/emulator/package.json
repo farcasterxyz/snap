@@ -15,6 +15,7 @@
     "@base-ui/react": "1.0.0",
     "@farcaster/jfs": "0.2.2",
     "@farcaster/snap": "workspace:*",
+    "@farcaster/snap-compute": "workspace:*",
     "@json-render/core": "^0.15.0",
     "@json-render/react": "^0.15.0",
     "@neynar/ui": "^1.2.2",

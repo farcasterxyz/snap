@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { Spec } from "@json-render/core";
-import { EFFECT_VALUES, SPEC_VERSION } from "./constants";
+import { EFFECT_VALUES, SPEC_VERSION, SPEC_VERSION_COMPUTE } from "./constants";
 import { DEFAULT_THEME_ACCENT, PALETTE_COLOR_VALUES } from "./colors";
 
 // ─── Theme ─────────────────────────────────────────────
@@ -19,11 +19,31 @@ const themeSchema = z
 // `ui` is a json-render Spec — validated by the catalog at runtime,
 // typed here via the json-render Spec type.
 
+// ─── Compute ──────────────────────────────────────────
+
+export const snapComputeSchema = z
+  .object({
+    bytecode: z.string(),
+    entrypoint: z.string().default("main"),
+    gas_limit: z.number().int().positive().max(2000000).default(500000),
+    capabilities: z
+      .array(z.enum(["shared_state", "user_state", "cast", "react", "link", "user_data"]))
+      .optional(),
+    exports: z.array(z.string()).optional(),
+    state_schema: z.record(z.string(), z.string()).optional(),
+  })
+  .strict();
+
+export type SnapCompute = z.infer<typeof snapComputeSchema>;
+
+// ─── Snap response ────────────────────────────────────
+
 export const snapResponseSchema = z
   .object({
-    version: z.literal(SPEC_VERSION),
+    version: z.union([z.literal(SPEC_VERSION), z.literal(SPEC_VERSION_COMPUTE)]),
     theme: themeSchema.optional().default({ accent: DEFAULT_THEME_ACCENT }),
     effects: z.array(z.enum(EFFECT_VALUES)).optional(),
+    compute: snapComputeSchema.optional(),
     ui: z.custom<Spec>(
       (val) =>
         val != null &&
@@ -66,9 +86,10 @@ export type SnapSpecInput = {
  * without type casts. Runtime validation via the Zod schema still catches invalid shapes.
  */
 export type SnapHandlerResult = {
-  version: typeof SPEC_VERSION;
+  version: typeof SPEC_VERSION | typeof SPEC_VERSION_COMPUTE;
   theme?: { accent?: z.input<typeof themeAccentSchema> };
   effects?: z.input<typeof snapResponseSchema>["effects"];
+  compute?: z.input<typeof snapComputeSchema>;
   ui: SnapSpecInput;
 };
 

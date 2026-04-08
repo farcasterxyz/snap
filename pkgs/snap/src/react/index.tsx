@@ -25,10 +25,19 @@ export type JsonValue =
   | JsonValue[]
   | { [key: string]: JsonValue };
 
+export type SnapCompute = {
+  bytecode: string;
+  entrypoint?: string;
+  gas_limit?: number;
+  exports?: string[];
+  state_schema?: Record<string, string>;
+};
+
 export type SnapPage = {
   version: string;
   theme?: { accent?: string };
   effects?: string[];
+  compute?: SnapCompute;
   ui: Spec;
 };
 

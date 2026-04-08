@@ -6,10 +6,19 @@ export type JsonValue =
   | JsonValue[]
   | { [key: string]: JsonValue };
 
+export type SnapCompute = {
+  bytecode: string;              // base64url-encoded SnapVM bytecode
+  entrypoint?: string;           // default "main"
+  gas_limit?: number;            // default 500000
+  exports?: string[];
+  state_schema?: Record<string, string>;
+};
+
 export type SnapPageResponse = {
   version: string;
   theme?: { accent?: string };
   effects?: string[];
+  compute?: SnapCompute;
   ui: {
     root: string;
     elements: Record<string, Record<string, JsonValue>>;
@@ -79,6 +88,7 @@ export function parseSnapPayload(payload: unknown): SnapPageResponse {
     version: candidate.version,
     theme: candidate.theme as SnapPageResponse["theme"],
     effects: candidate.effects as SnapPageResponse["effects"],
+    compute: candidate.compute as SnapPageResponse["compute"],
     ui: candidate.ui as SnapPageResponse["ui"],
   };
 }

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@farcaster/snap": "workspace:*",
+    "@farcaster/snap-compute": "workspace:*",
     "@json-render/core": "^0.15.0",
     "@json-render/react-native": "^0.15.0",
     "@react-native-community/slider": "^5.0.1",

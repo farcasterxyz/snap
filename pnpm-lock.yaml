@@ -87,6 +87,9 @@ importers:
       '@farcaster/snap':
         specifier: workspace:*
         version: link:../../pkgs/snap
+      '@farcaster/snap-compute':
+        specifier: workspace:*
+        version: link:../../pkgs/snap-compute
       '@json-render/core':
         specifier: ^0.15.0
         version: 0.15.0(zod@4.3.6)
@@ -492,6 +495,15 @@ importers:
       zod:
         specifier: ^4.0.0
         version: 4.3.6
+
+  pkgs/snap-compute:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@25.5.0)(lightningcss@1.32.0)(terser@5.46.1)
 
   pkgs/turso:
     dependencies:

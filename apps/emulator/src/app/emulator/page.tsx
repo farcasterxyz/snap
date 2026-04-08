@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SnapRenderer, type SnapPage } from "@/components/SnapRenderer";
 import {
   coerceUpstreamUrlToMatchCurrentSnap,
@@ -23,6 +23,11 @@ import { EmulatorForm } from "./components/emulator-form";
 import { ExchangeLog } from "./components/exchange-log";
 import { SpecViewer } from "./components/spec-viewer";
 
+/** Check if a snap has an embedded compute program. */
+function isComputeSnap(snap: SnapPage | null): boolean {
+  return snap != null && snap.compute != null && typeof snap.compute.bytecode === "string";
+}
+
 export default function EmulatorPage() {
   const [urlInput, setUrlInput] = useState("");
   const [fidInput, setFidInput] = useState("");
@@ -33,6 +38,11 @@ export default function EmulatorPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<LogPair[]>([]);
+  // Compute snap state (in-memory, keyed by snap URL) — refs for synchronous access
+  const localStateRef = useRef<Record<string, Record<string, unknown>>>({});
+  const sharedStateRef = useRef<Record<string, Record<string, unknown>>>({});
+  // Capability approval tracking (keyed by snap URL)
+  const [approvedCapabilities, setApprovedCapabilities] = useState<Record<string, string[]>>({});
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(
     () => new Set(),
   );
@@ -214,9 +224,65 @@ export default function EmulatorPage() {
       }
 
       const load = body as { snap: SnapPage };
-      setSnap(load.snap);
       setCurrentSourceUrl(parsedUrl.toString());
       setActiveUrl(trimmed);
+
+      // If this is a compute snap, run the VM for the initial "get" render
+      if (isComputeSnap(load.snap)) {
+        try {
+          const { SnapVM, decodeBytecode, SYSCALL } =
+            await import("@farcaster/snap-compute");
+
+          const bytecodeStr = load.snap.compute!.bytecode;
+          const binaryStr = atob(bytecodeStr.replace(/-/g, "+").replace(/_/g, "/"));
+          const bytes = new Uint8Array(binaryStr.length);
+          for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+
+          const mod = decodeBytecode(bytes);
+          const fidParsed = Number.parseInt(fidInput.trim(), 10) || 0;
+          const snapUrl = parsedUrl.toString();
+
+          const vm = new SnapVM(mod, {
+            gasLimit: load.snap.compute!.gas_limit ?? 500000,
+            syscallHandler: (index: number, args: unknown[]) => {
+              const store = localStateRef.current[snapUrl] ?? {};
+              if (index === SYSCALL.SELF_FID) return { type: "i64" as const, value: BigInt(fidParsed) };
+              if (index === SYSCALL.STATE_GET) {
+                const key = (args[0] as any)?.value;
+                return (store[key] as any) ?? { type: "null" as const };
+              }
+              if (index === SYSCALL.STATE_SET) {
+                const key = (args[0] as any)?.value;
+                if (!localStateRef.current[snapUrl]) localStateRef.current[snapUrl] = {};
+                localStateRef.current[snapUrl][key] = args[1];
+                return { type: "null" as const };
+              }
+              if (index === SYSCALL.UI_RENDER) return { type: "null" as const };
+              if (index === SYSCALL.FARCASTER_TIMESTAMP) return { type: "i64" as const, value: BigInt(Math.floor(Date.now() / 1000) - 1609459200) };
+              return { type: "null" as const };
+            },
+          });
+
+          const entrypoint = load.snap.compute!.entrypoint ?? "main";
+          const result = await vm.execute(entrypoint, [
+            { type: "string", value: "get" },
+            { type: "map", value: new Map() },
+            { type: "i64", value: BigInt(0) },
+          ]);
+
+          if (result.success && result.renderedUi != null) {
+            setSnap({ ...load.snap, ui: result.renderedUi as SnapPage["ui"] });
+          } else {
+            setSnap(load.snap);
+            if (result.error) setError(`VM init error: ${result.error}`);
+          }
+        } catch (vmErr) {
+          setSnap(load.snap);
+          setError(`VM init failed: ${vmErr instanceof Error ? vmErr.message : String(vmErr)}`);
+        }
+      } else {
+        setSnap(load.snap);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
@@ -326,10 +392,183 @@ export default function EmulatorPage() {
     ],
   );
 
+  /**
+   * Handle button press for compute snaps — execute the VM locally instead of
+   * POSTing to a server. Checks capability approval before execution.
+   */
+  const handleComputeSubmit = async (
+    inputs: Record<string, unknown>,
+  ) => {
+    if (!snap?.compute) { console.log("[SnapCompute] no compute field"); return; }
+    const snapUrl = currentSourceUrl ?? "";
+    const fidParsed = Number.parseInt(fidInput.trim(), 10) || 0;
+    console.log("[SnapCompute] executing VM", { snapUrl, fid: fidParsed, localState: localStateRef.current[snapUrl] });
+
+    // Check capability approval — state operations are implicit,
+    // only protocol message emissions require explicit user approval
+    const declaredCaps = snap.compute.capabilities ?? [];
+    const needsApproval = declaredCaps.filter(
+      (c: string) => c !== "user_state" && c !== "shared_state"
+    );
+    if (needsApproval.length > 0 && !approvedCapabilities[snapUrl]) {
+      const approved = window.confirm(
+        `This snap requests permission to:\n\n` +
+        needsApproval.map((c: string) => `  - ${c}`).join("\n") +
+        `\n\nApprove?`
+      );
+      if (!approved) {
+        setError("Capabilities not approved");
+        return;
+      }
+      setApprovedCapabilities((prev) => ({ ...prev, [snapUrl]: declaredCaps }));
+    }
+
+    appendPairRequest({
+      title: "Emulator \u00b7 VM Execute (local)",
+      content: JSON.stringify(
+        { action: "post", fid: fidParsed, inputs, button_index: 0, capabilities: declaredCaps },
+        null,
+        2,
+      ),
+      emulatorFetchHeaders: {},
+    });
+
+    try {
+      const { SnapVM, decodeBytecode, SYSCALL } =
+        await import("@farcaster/snap-compute");
+
+      const bytecodeStr = snap.compute.bytecode;
+      const binaryStr = atob(bytecodeStr.replace(/-/g, "+").replace(/_/g, "/"));
+      const bytes = new Uint8Array(binaryStr.length);
+      for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+
+      const mod = decodeBytecode(bytes);
+
+      const vm = new SnapVM(mod, {
+        gasLimit: snap.compute.gas_limit ?? 500000,
+        maxStackDepth: 1024,
+        maxCallDepth: 64,
+        syscallHandler: (index: number, args: unknown[]) => {
+          const lStore = localStateRef.current[snapUrl] ?? {};
+          const sStore = sharedStateRef.current[snapUrl] ?? {};
+          switch (index) {
+            case SYSCALL.SELF_FID:
+              return { type: "i64", value: BigInt(fidParsed) };
+            case SYSCALL.UI_RENDER:
+              return { type: "null" };
+            case SYSCALL.STATE_GET: {
+              const key = (args[0] as any)?.value;
+              return (lStore[key] as any) ?? { type: "null" };
+            }
+            case SYSCALL.STATE_SET: {
+              const key = (args[0] as any)?.value;
+              if (!localStateRef.current[snapUrl]) localStateRef.current[snapUrl] = {};
+              localStateRef.current[snapUrl][key] = args[1];
+              return { type: "null" };
+            }
+            case SYSCALL.SHARED_GET: {
+              const key = (args[0] as any)?.value;
+              return (sStore[key] as any) ?? { type: "null" };
+            }
+            case SYSCALL.SHARED_SET: {
+              const key = (args[0] as any)?.value;
+              if (!sharedStateRef.current[snapUrl]) sharedStateRef.current[snapUrl] = {};
+              sharedStateRef.current[snapUrl][key] = args[1];
+              return { type: "null" };
+            }
+            case SYSCALL.SHARED_COUNT: {
+              const key = (args[0] as any)?.value;
+              return { type: "i64", value: BigInt(sStore[key] != null ? 1 : 0) };
+            }
+            case SYSCALL.FARCASTER_TIMESTAMP:
+              return { type: "i64", value: BigInt(Math.floor(Date.now() / 1000) - 1609459200) };
+            case SYSCALL.EMIT_CAST:
+            case SYSCALL.EMIT_REACT:
+            case SYSCALL.EMIT_UNREACT:
+            case SYSCALL.EMIT_FOLLOW:
+            case SYSCALL.EMIT_UNFOLLOW:
+            case SYSCALL.EMIT_USER_DATA:
+              return { type: "null" };
+            default:
+              return { type: "null" };
+          }
+        },
+      });
+
+      const entrypoint = snap.compute.entrypoint ?? "main";
+      // Convert inputs to a SnapValue map
+      const { jsonToSnapValue } = await import("@farcaster/snap-compute");
+      const inputsMap = jsonToSnapValue(inputs);
+
+      const result = await vm.execute(entrypoint, [
+        { type: "string", value: "post" },
+        inputsMap,
+        { type: "i64", value: BigInt(0) },
+      ]);
+
+      console.log("[SnapCompute] VM result", { success: result.success, error: result.error, gasUsed: result.gasUsed, hasUi: result.renderedUi != null, stateWrites: result.userStateWrites.length, localStateAfter: localStateRef.current[snapUrl] });
+
+      if (result.success && result.renderedUi != null) {
+        setSnap({ ...snap, ui: result.renderedUi as SnapPage["ui"] });
+
+        // Surface the full execution output log
+        const bundle: Record<string, unknown> = {
+          gasUsed: result.gasUsed,
+          ui: result.renderedUi,
+        };
+        if (result.userStateWrites.length > 0) {
+          bundle.userStateWrites = result.userStateWrites.map((w) => ({
+            key: w.key,
+            value: new TextDecoder().decode(w.value),
+          }));
+        }
+        if (result.sharedStateWrites.length > 0) {
+          bundle.sharedStateWrites = result.sharedStateWrites.map((w) => ({
+            key: w.key,
+            value: new TextDecoder().decode(w.value),
+          }));
+        }
+        if (result.emittedMessages.length > 0) {
+          bundle.emittedMessages = result.emittedMessages.map((m) => ({
+            type: m.type,
+            args: m.args.map((a: any) => a.type === "i64" ? Number(a.value) : a.value ?? null),
+          }));
+        }
+
+        completePairResponse({
+          title: `VM Result (${result.gasUsed} gas)`,
+          content: JSON.stringify(bundle, null, 2),
+          responseStatus: 200,
+        });
+      } else {
+        completePairResponse({
+          title: "VM Error",
+          content: JSON.stringify({ error: result.error, gasUsed: result.gasUsed }, null, 2),
+          responseStatus: 500,
+        });
+        setError(result.error ?? "VM execution failed");
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "VM execution error";
+      completePairResponse({
+        title: "VM Error",
+        content: JSON.stringify({ error: message }, null, 2),
+        responseStatus: 500,
+      });
+      setError(message);
+    }
+  };
+
   const handlePostButton = async (
     target: string,
     inputs: Record<string, unknown>,
   ) => {
+    // If this is a compute snap, run the VM locally instead of POSTing
+    if (isComputeSnap(snap)) {
+      console.log("[SnapCompute] handlePostButton → compute submit", { inputs, snapCompute: !!snap?.compute });
+      await handleComputeSubmit(inputs);
+      return;
+    }
     if (!currentSourceUrl) {
       setError("Missing current source URL");
       return;
@@ -500,6 +739,21 @@ export default function EmulatorPage() {
                   minWidth: 0,
                 }}
               >
+                {isComputeSnap(snap) && (
+                  <div
+                    style={{
+                      padding: "6px 12px",
+                      background: "rgba(139, 92, 246, 0.15)",
+                      border: "1px solid rgba(139, 92, 246, 0.3)",
+                      borderRadius: 6,
+                      fontSize: 12,
+                      color: "#a78bfa",
+                      fontFamily: "monospace",
+                    }}
+                  >
+                    Snap Compute enabled — interactions execute locally via SnapVM
+                  </div>
+                )}
                 <SnapRenderer
                   snap={snap}
                   handlers={{

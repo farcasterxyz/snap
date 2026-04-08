@@ -1,8 +1,19 @@
 import type { SnapPayload } from "@farcaster/snap";
 import { validateSnapResponse } from "@farcaster/snap";
 import { encodePayload } from "@farcaster/snap/server";
+import {
+  SnapVM,
+  decodeBytecode,
+  SYSCALL,
+  jsonToSnapValue,
+  snapNull,
+  snapString,
+  snapI64,
+  snapValueToJSON,
+  type SnapValue,
+} from "@farcaster/snap-compute";
 import * as Linking from "expo-linking";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -130,6 +141,55 @@ function portDiffersFromLoadedLocalSnap(
   return fieldPort !== loadedPort;
 }
 
+function isComputeSnap(snap: SnapPageResponse | null): boolean {
+  return snap != null && snap.compute != null && typeof snap.compute.bytecode === "string";
+}
+
+function decodeBase64Url(str: string): Uint8Array {
+  const base64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  const binaryStr = atob(base64);
+  const bytes = new Uint8Array(binaryStr.length);
+  for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+  return bytes;
+}
+
+function createSyscallHandler(
+  fid: number,
+  localStore: Record<string, unknown>,
+  sharedStore: Record<string, unknown>,
+): (index: number, args: SnapValue[]) => SnapValue {
+  return (index, args) => {
+    switch (index) {
+      case SYSCALL.SELF_FID: return snapI64(BigInt(fid));
+      case SYSCALL.UI_RENDER: return snapNull();
+      case SYSCALL.FARCASTER_TIMESTAMP: return snapI64(BigInt(Math.floor(Date.now() / 1000) - 1609459200));
+      case SYSCALL.STATE_GET: {
+        const key = args[0]?.type === "string" ? args[0].value : "";
+        return (localStore[key] as SnapValue) ?? snapNull();
+      }
+      case SYSCALL.STATE_SET: {
+        const key = args[0]?.type === "string" ? args[0].value : "";
+        localStore[key] = args[1];
+        return snapNull();
+      }
+      case SYSCALL.SHARED_GET: {
+        const key = args[0]?.type === "string" ? args[0].value : "";
+        return (sharedStore[key] as SnapValue) ?? snapNull();
+      }
+      case SYSCALL.SHARED_SET: {
+        const key = args[0]?.type === "string" ? args[0].value : "";
+        sharedStore[key] = args[1];
+        return snapNull();
+      }
+      case SYSCALL.SHARED_COUNT: {
+        const key = args[0]?.type === "string" ? args[0].value : "";
+        return snapI64(BigInt(sharedStore[key] != null ? 1 : 0));
+      }
+      default: return snapNull();
+    }
+  };
+}
+
 function AppContent() {
   const { mode, colors, toggleMode } = useTheme();
   const [portInput, setPortInput] = useState(DEFAULT_LOCAL_PORT);
@@ -138,6 +198,8 @@ function AppContent() {
   const [currentSourceUrl, setCurrentSourceUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const localStateRef = useRef<Record<string, Record<string, unknown>>>({});
+  const sharedStateRef = useRef<Record<string, Record<string, unknown>>>({});
 
   const handleLoad = useCallback(async () => {
     const url = snapUrlForLocalPort(portInput);
@@ -170,15 +232,39 @@ function AppContent() {
       }
 
       const parsed = parseSnapPayload(json);
-      setSnap(parsed);
-      setCurrentSourceUrl(new URL(url).href);
+      const snapUrl = new URL(url).href;
+      setCurrentSourceUrl(snapUrl);
+
+      if (isComputeSnap(parsed)) {
+        try {
+          const bytes = decodeBase64Url(parsed.compute!.bytecode);
+          const mod = decodeBytecode(bytes);
+          const fid = parseUserFid(fidInput);
+          if (!localStateRef.current[snapUrl]) localStateRef.current[snapUrl] = {};
+          if (!sharedStateRef.current[snapUrl]) sharedStateRef.current[snapUrl] = {};
+          const handler = createSyscallHandler(fid, localStateRef.current[snapUrl]!, sharedStateRef.current[snapUrl]!);
+          const vm = new SnapVM(mod, { gasLimit: parsed.compute!.gas_limit ?? 500000, syscallHandler: handler });
+          const result = await vm.execute(parsed.compute!.entrypoint ?? "main", [snapString("get"), { type: "map", value: new Map() }, snapI64(0)]);
+          if (result.success && result.renderedUi != null) {
+            setSnap({ ...parsed, ui: result.renderedUi as SnapPageResponse["ui"] });
+          } else {
+            setSnap(parsed);
+            if (result.error) setError(`VM: ${result.error}`);
+          }
+        } catch (vmErr) {
+          setSnap(parsed);
+          setError(`VM init: ${vmErr instanceof Error ? vmErr.message : String(vmErr)}`);
+        }
+      } else {
+        setSnap(parsed);
+      }
     } catch (e) {
       const message = e instanceof Error ? e.message : "Load failed";
       setError(message);
     } finally {
       setLoading(false);
     }
-  }, [portInput]);
+  }, [portInput, fidInput]);
 
   const handlePostButton = useCallback(
     async (
@@ -187,6 +273,34 @@ function AppContent() {
     ) => {
       if (!currentSourceUrl) {
         setError("Missing current source URL");
+        return;
+      }
+
+      // Compute snap: run VM locally
+      if (isComputeSnap(snap)) {
+        setLoading(true);
+        setError(null);
+        try {
+          const bytes = decodeBase64Url(snap!.compute!.bytecode);
+          const mod = decodeBytecode(bytes);
+          const fid = parseUserFid(fidInput);
+          const snapUrl = currentSourceUrl;
+          if (!localStateRef.current[snapUrl]) localStateRef.current[snapUrl] = {};
+          if (!sharedStateRef.current[snapUrl]) sharedStateRef.current[snapUrl] = {};
+          const handler = createSyscallHandler(fid, localStateRef.current[snapUrl]!, sharedStateRef.current[snapUrl]!);
+          const vm = new SnapVM(mod, { gasLimit: snap!.compute!.gas_limit ?? 500000, syscallHandler: handler });
+          const inputsMap = jsonToSnapValue(inputs);
+          const result = await vm.execute(snap!.compute!.entrypoint ?? "main", [snapString("post"), inputsMap, snapI64(0)]);
+          if (result.success && result.renderedUi != null) {
+            setSnap({ ...snap!, ui: result.renderedUi as SnapPageResponse["ui"] });
+          } else if (result.error) {
+            setError(`VM: ${result.error}`);
+          }
+        } catch (vmErr) {
+          setError(`VM: ${vmErr instanceof Error ? vmErr.message : String(vmErr)}`);
+        } finally {
+          setLoading(false);
+        }
         return;
       }
 
@@ -252,7 +366,7 @@ function AppContent() {
         setLoading(false);
       }
     },
-    [currentSourceUrl, fidInput],
+    [currentSourceUrl, fidInput, snap],
   );
 
   const handleLinkButton = useCallback(async (target: string) => {
