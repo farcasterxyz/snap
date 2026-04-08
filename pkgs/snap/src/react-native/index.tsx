@@ -36,7 +36,7 @@ export type SnapPage = {
 
 export type SnapActionHandlers = {
   submit: (target: string, inputs: Record<string, JsonValue>) => void;
-  open_url: (target: string, options?: { is_snap?: boolean }) => void;
+  open_url: (target: string, options?: { isSnap?: boolean }) => void;
   open_mini_app: (target: string) => void;
   view_cast: (params: { hash: string }) => void;
   view_profile: (params: { fid: number }) => void;
@@ -185,7 +185,7 @@ function SnapViewInner({
         break;
       case "open_url":
         h.open_url(String(p.target ?? ""), {
-          is_snap: p.is_snap === true,
+          isSnap: p.isSnap === true,
         });
         break;
       case "open_mini_app":

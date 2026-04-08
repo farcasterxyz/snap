@@ -120,7 +120,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       description: "Open target snap or external URL.",
       params: z.object({
         target: z.string(),
-        is_snap: z.boolean().optional(),
+        isSnap: z.boolean().optional(),
       }),
     },
     open_mini_app: {
