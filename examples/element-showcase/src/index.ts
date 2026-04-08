@@ -253,11 +253,7 @@ function inputsPage(base: string): SnapHandlerResult {
           type: "toggle_group",
           props: {
             name: "pick",
-            options: [
-              { value: "alpha", label: "Alpha" },
-              { value: "beta", label: "Beta" },
-              { value: "gamma", label: "Gamma" },
-            ],
+            options: ["Alpha", "Beta", "Gamma"],
           },
         },
         "rating-slider": {
