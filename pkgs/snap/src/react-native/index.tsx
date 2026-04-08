@@ -9,6 +9,7 @@ import {
 import { hexToRgba } from "./use-snap-palette";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ConfettiOverlay } from "./confetti-overlay";
 import {
   DEFAULT_THEME_ACCENT,
   PALETTE_LIGHT_HEX,
@@ -229,6 +230,7 @@ function SnapViewInner({
           <ActivityIndicator size="large" color={accentHex} />
         </View>
       ) : null}
+      {snap.effects?.includes("confetti") ? <ConfettiOverlay /> : null}
       <SnapCatalogView
         key={pageKey}
         spec={spec}
