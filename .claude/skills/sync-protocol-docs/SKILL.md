@@ -88,6 +88,13 @@ For each version folder, check:
 
 When `DEFAULT_VERSION` changes, copy the corresponding versioned SKILL.md to the root.
 
+**llms.txt** (`apps/docs/src/app/llms.txt/route.ts`):
+
+- Dynamic route that concatenates all docs for a given version
+- Serves `DEFAULT_VERSION` by default, accepts `?version=X` query param
+- 2.0 SKILL.md points agents to `/snap/2.0/` docs; markdown content negotiation
+  handles version routing automatically
+
 **Integration docs**:
 
 - `MERKLE_INTEGRATION.md` — component type list and count
