@@ -9,6 +9,7 @@ import {
 import { hexToRgba } from "./use-snap-palette";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ConfettiOverlay } from "./confetti-overlay";
 import {
   DEFAULT_THEME_ACCENT,
   PALETTE_LIGHT_HEX,
@@ -122,6 +123,17 @@ function SnapViewInner({
   const spec = snap.ui;
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
 
+  const showConfetti = snap.effects?.includes("confetti");
+
+  // Increment key each time a new snap with confetti arrives so the overlay
+  // unmounts/remounts and restarts its animation on every trigger.
+  const confettiEpochRef = useRef(0);
+  const lastConfettiSnapRef = useRef<typeof snap | null>(null);
+  if (showConfetti && snap !== lastConfettiSnapRef.current) {
+    confettiEpochRef.current++;
+    lastConfettiSnapRef.current = snap;
+  }
+
   const initialState = useMemo(
     () => ({
       ...(spec.state ?? {}),
@@ -229,6 +241,7 @@ function SnapViewInner({
           <ActivityIndicator size="large" color={accentHex} />
         </View>
       ) : null}
+      {showConfetti ? <ConfettiOverlay key={confettiEpochRef.current} /> : null}
       <SnapCatalogView
         key={pageKey}
         spec={spec}
