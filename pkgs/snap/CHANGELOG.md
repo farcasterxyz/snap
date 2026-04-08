@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.15.2
+
+### Patch Changes
+
+- [#90](https://github.com/farcasterxyz/snap/pull/90) [`4511666`](https://github.com/farcasterxyz/snap/commit/45116663b43adf0587d41152850e923ba38cde87) Thanks [@lyoshenka](https://github.com/lyoshenka)! - add React Native component for confetti
+
 ## 1.15.1
 
 ### Patch Changes
