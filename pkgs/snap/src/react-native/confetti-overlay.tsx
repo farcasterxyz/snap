@@ -87,7 +87,7 @@ export function ConfettiOverlay() {
   }, [pieces, anims, height]);
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View style={[StyleSheet.absoluteFill, styles.container]} pointerEvents="none">
       {pieces.map((piece, i) => {
         const anim = anims[i]!;
         const rotate = anim.rotate.interpolate({
@@ -123,6 +123,9 @@ export function ConfettiOverlay() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    overflow: "hidden",
+  },
   piece: {
     position: "absolute",
     top: 0,
