@@ -63,6 +63,8 @@ Express the UI as the object your snap handler returns.
   `props`, optional `children` (element IDs), and optional `on` (event bindings).
 - Button actions are bound via `on.press` with an `action` and `params` object.
 - Target URLs must be HTTPS in production; `http://` only on loopback for local dev.
+- Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
+  @farcaster/snap-hono)
 
 Design guidance:
 
