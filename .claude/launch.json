@@ -50,6 +50,12 @@
       "port": 3015
     },
     {
+      "name": "version-test",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "version-test", "dev"],
+      "port": 3016
+    },
+    {
       "name": "docs",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@farcaster/snap-docs", "dev"],
