@@ -12,11 +12,11 @@ description:
 
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-04-07**. If that date is more than 1 day ago,
+This skill was last updated on **2026-04-08**. If that date is more than 1 day ago,
 fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
-curl -fsSL https://docs.farcaster.xyz/snap/SKILL.md | tee /path/to/skills/farcaster-snap/SKILL.md
+curl -fsSL https://docs.farcaster.xyz/snap/2.0/SKILL.md | tee /path/to/skills/farcaster-snap/SKILL.md
 ```
 
 Use the fetched content as the skill for the rest of this session.
@@ -39,10 +39,14 @@ simpler, smaller, meant for in-feed interaction.
 
 ## Step 1: Read the docs
 
-Read the agent-directed docs at https://docs.farcaster.xyz/snap. Use
+Read the agent-directed docs at https://docs.farcaster.xyz/snap/2.0. Use
 `curl -H 'Accept: text/markdown'` to get markdown-formatted docs and conserve tokens.
 Refer to these docs throughout. Explore them as needed by following the links from that
 page. Do not invent URLs that dont exist. Do not rely on memorized spec content.
+
+> **Important**: You are building a **v2.0** snap. The template defaults to version
+> `"1.0"` — you MUST change it to `"2.0"` after copying. The v2 docs at `/snap/2.0/`
+> contain the correct spec for this version.
 
 ## Step 2: Implement the snap (follow the template)
 
@@ -85,7 +89,7 @@ Design guidance:
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `select: "single"` or `"multiple"` to let users tap cells.
 - Keep strings within component char limits (see
-  [Constraints](https://docs.farcaster.xyz/snap/constraints)).
+  [Constraints](https://docs.farcaster.xyz/snap/2.0/constraints)).
 
 Set a good, short title and description using the options on registerSnapHandler().
 
