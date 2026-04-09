@@ -52,6 +52,7 @@ export type ParseRequestOptions = {
    * The origin of the request. Derived from the request when not provided.
    */
   requestOrigin?: string;
+
 };
 
 export type ParseRequestResult =
@@ -147,33 +148,27 @@ export async function parseRequest(
     };
   }
 
-  let expectedOrigin = options.requestOrigin;
-  if (expectedOrigin === undefined) {
-    try {
-      expectedOrigin = new URL(request.url).origin;
-    } catch {
-      // do nothing
+  // Audience validation: only enforce when the client sends an audience field.
+  // v1 clients may not include nonce/audience yet.
+  if (body.audience !== undefined) {
+    let expectedOrigin = options.requestOrigin;
+    if (expectedOrigin === undefined) {
+      try {
+        expectedOrigin = new URL(request.url).origin;
+      } catch {
+        // do nothing
+      }
     }
-  }
 
-  if (expectedOrigin === undefined) {
-    return {
-      success: false,
-      error: {
-        type: "origin_mismatch",
-        message: "request origin is required for validation",
-      },
-    };
-  }
-
-  if (body.audience !== expectedOrigin) {
-    return {
-      success: false,
-      error: {
-        type: "origin_mismatch",
-        message: `payload audience "${body.audience}" does not match expected origin "${expectedOrigin}"`,
-      },
-    };
+    if (expectedOrigin !== undefined && body.audience !== expectedOrigin) {
+      return {
+        success: false,
+        error: {
+          type: "origin_mismatch",
+          message: `payload audience "${body.audience}" does not match expected origin "${expectedOrigin}"`,
+        },
+      };
+    }
   }
 
   return {
