@@ -6,9 +6,12 @@ const LIGHT = {
   surface: "#ffffff",
   text: "#111111",
   textSecondary: "#6b7280",
-  border: "#d1d5db",
-  inputBg: "#ffffff",
-  muted: "#f9fafb",
+  border: "#E5E7EB",
+  inputBg: "rgba(0,0,0,0.06)",
+  muted: "rgba(0,0,0,0.08)",
+  mutedSubtle: "rgba(0,0,0,0.04)",
+  mutedHover: "rgba(0,0,0,0.12)",
+  mutedSelected: "rgba(0,0,0,0.16)",
 };
 
 const DARK = {
@@ -16,9 +19,12 @@ const DARK = {
   surface: "#1a1d24",
   text: "#fafafa",
   textSecondary: "#a1a1aa",
-  border: "#374151",
-  inputBg: "#1a1d24",
-  muted: "#27272a",
+  border: "#2D2D44",
+  inputBg: "rgba(255,255,255,0.04)",
+  muted: "rgba(255,255,255,0.06)",
+  mutedSubtle: "rgba(255,255,255,0.03)",
+  mutedHover: "rgba(255,255,255,0.08)",
+  mutedSelected: "rgba(255,255,255,0.12)",
 };
 
 export type ThemeColors = typeof LIGHT;

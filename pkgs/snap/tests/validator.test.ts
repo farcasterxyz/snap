@@ -64,7 +64,7 @@ describe("Schema basics", () => {
       version: "1.0",
       ui: makeSpec({
         a: { type: "item", props: { title: "Test" } },
-        b: { type: "badge", props: { content: "New" } },
+        b: { type: "badge", props: { label: "New" } },
         c: { type: "image", props: { url: "https://example.com/img.jpg", aspect: "16:9" } },
         d: { type: "separator" },
         e: { type: "progress", props: { value: 50, max: 100 } },

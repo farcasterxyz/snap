@@ -14,12 +14,12 @@ export function SnapItem({
     : undefined;
   const variant = String(props.variant ?? "default");
 
-  const containerVariant = { paddingVertical: 8, paddingHorizontal: 10 };
+  const containerVariant = { paddingVertical: 6, paddingHorizontal: 10 };
 
   return (
     <View style={[styles.container, containerVariant]}>
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+        {title ? <Text style={[styles.title, { color: colors.text }]}>{title}</Text> : null}
         {description ? (
           <Text style={[styles.description, { color: colors.textSecondary }]}>
             {description}
@@ -37,7 +37,6 @@ export function SnapItem({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -46,10 +45,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
+    lineHeight: 20,
     fontWeight: "500",
   },
   description: {
     fontSize: 13,
+    lineHeight: 18,
     marginTop: 1,
   },
   actions: {

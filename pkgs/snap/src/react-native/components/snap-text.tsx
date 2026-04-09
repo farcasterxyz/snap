@@ -4,7 +4,7 @@ import { useSnapTheme } from "../theme";
 
 const SIZE_STYLES: Record<string, { fontSize: number; lineHeight?: number; fontWeight?: "400" | "500" | "600" | "700" }> = {
   md: { fontSize: 16, lineHeight: 24 },
-  sm: { fontSize: 13 },
+  sm: { fontSize: 13, lineHeight: 18 },
 };
 
 const WEIGHT_MAP: Record<string, "400" | "500" | "600" | "700"> = {

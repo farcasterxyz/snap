@@ -38,8 +38,7 @@ registerSnapHandler(app, async (): Promise<SnapHandlerResult> => {
         caption: {
           type: "badge",
           props: {
-            content:
-              "Green accent = snap two; blue = snap one. Button below returns to snap one.",
+            label: "Green = snap two, blue = one",
           },
         },
         "btn-snap-one": {

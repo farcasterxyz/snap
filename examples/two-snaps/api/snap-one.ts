@@ -31,8 +31,7 @@ registerSnapHandler(app, async (): Promise<SnapHandlerResult> => {
         caption: {
           type: "badge",
           props: {
-            content:
-              "Snap one: two links below — grin.io (browser) and snap two (same emulator).",
+            label: "Snap one: two links below",
           },
         },
         "btn-grin": {

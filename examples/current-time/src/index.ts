@@ -42,8 +42,7 @@ registerSnapHandler(app, async (ctx): Promise<SnapHandlerResult> => {
         caption: {
           type: "badge",
           props: {
-            content:
-              "Choose format, then refresh. Time is from this server when it responds.",
+            label: "Choose format, then refresh",
           },
         },
         "btn-refresh": {

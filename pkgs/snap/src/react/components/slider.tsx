@@ -16,6 +16,7 @@ export function SnapSlider({
   const max = Number(props.max ?? 100);
   const step = Number(props.step ?? 1);
   const label = props.label ? String(props.label) : undefined;
+  const showValue = props.showValue === true;
   const path = `/inputs/${name}`;
   const raw = get(path);
   const value =
@@ -27,7 +28,16 @@ export function SnapSlider({
 
   return (
     <div className="flex w-full flex-col gap-1.5">
-      {label && <Label style={{ color: colors.text }}>{label}</Label>}
+      {label && (
+        <div className="flex items-center justify-between">
+          <Label style={{ color: colors.text }}>{label}</Label>
+          {showValue && (
+            <span style={{ color: colors.textMuted, fontSize: 13, lineHeight: "18px" }}>
+              {Math.round(value)}
+            </span>
+          )}
+        </div>
+      )}
       <input
         type="range"
         min={min}

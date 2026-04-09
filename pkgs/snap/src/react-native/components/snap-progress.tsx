@@ -27,7 +27,7 @@ export function SnapProgress({
 
 const styles = StyleSheet.create({
   wrap: { flex: 1, width: "100%", gap: 4 },
-  label: { fontSize: 13 },
+  label: { fontSize: 13, lineHeight: 18 },
   track: {
     height: 10,
     borderRadius: 9999,

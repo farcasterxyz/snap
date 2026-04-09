@@ -72,8 +72,8 @@ function parseUserFid(raw: string): number {
   return n;
 }
 
-/** Default example port (`examples/ui-catalog-elements` universal catalog). */
-const DEFAULT_LOCAL_PORT = "3015";
+/** Default example port (`examples/version-test`). */
+const DEFAULT_LOCAL_PORT = "3016";
 
 const LOCAL_SNAP_ORIGIN = "http://localhost";
 
@@ -138,6 +138,7 @@ function AppContent() {
   const [currentSourceUrl, setCurrentSourceUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [snapHeight, setSnapHeight] = useState<number | null>(null);
 
   const handleLoad = useCallback(async () => {
     const url = snapUrlForLocalPort(portInput);
@@ -393,7 +394,10 @@ function AppContent() {
 
           {snap ? (
             <>
-              <View style={styles.previewWrap}>
+              <View
+                style={styles.previewWrap}
+                onLayout={(e) => setSnapHeight(Math.round(e.nativeEvent.layout.height))}
+              >
                 <SnapCard
                   snap={snap as SnapPage}
                   loading={loading}
@@ -430,6 +434,13 @@ function AppContent() {
                     },
                   } satisfies SnapActionHandlers}
                 />
+                {snapHeight !== null && (
+                  <View style={styles.heightOverlay}>
+                    <Text style={styles.heightText}>
+                      {snapHeight}px{snapHeight > 500 ? " (over 500px limit)" : ""}
+                    </Text>
+                  </View>
+                )}
               </View>
               {error ? <Text style={styles.previewError}>{error}</Text> : null}
             </>
@@ -549,5 +560,19 @@ const styles = StyleSheet.create({
     marginHorizontal: -16,
     paddingHorizontal: 16,
     paddingBottom: 4,
+  },
+  heightOverlay: {
+    alignSelf: "flex-end",
+    marginTop: 4,
+    marginRight: 4,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  heightText: {
+    color: "#fff",
+    fontSize: 11,
+    fontFamily: "Menlo",
   },
 });

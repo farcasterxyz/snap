@@ -172,15 +172,15 @@ function textPage(base: string): SnapHandlerResult {
         },
         "badge-pts": {
           type: "badge",
-          props: { content: "42 pts", variant: "secondary" },
+          props: { label: "42 pts", variant: "secondary" },
         },
         "badge-rank": {
           type: "badge",
-          props: { content: "Rank #1", variant: "secondary" },
+          props: { label: "Rank #1", variant: "secondary" },
         },
         "badge-level": {
           type: "badge",
-          props: { content: "Level 5", variant: "secondary" },
+          props: { label: "Level 5", variant: "secondary" },
         },
         body: {
           type: "item",
@@ -193,7 +193,7 @@ function textPage(base: string): SnapHandlerResult {
         caption: {
           type: "badge",
           props: {
-            content: "Caption (100 chars) — timestamps, attribution, metadata",
+            label: "Caption — metadata",
           },
         },
         "btn-row": {
@@ -382,7 +382,7 @@ function inputsResultPage(
         caption: {
           type: "badge",
           props: {
-            content: `POST target ${postTargetPathAndSearch}. Use distinct submit URLs (for example query params) to distinguish buttons.`,
+            label: "POST submitted",
           },
         },
         "btn-row": {

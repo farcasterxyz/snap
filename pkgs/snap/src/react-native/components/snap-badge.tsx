@@ -13,7 +13,7 @@ export function SnapBadge({
   const iconName = props.icon ? String(props.icon) : undefined;
   const isAccent = !color || color === "accent";
   const resolvedColor = isAccent ? accentHex : hex(color);
-  const isFilled = variant === "default";
+  const isFilled = variant !== "outline";
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
 
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
+    lineHeight: 16,
     fontWeight: "500",
   },
 });

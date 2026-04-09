@@ -244,7 +244,7 @@ function buildHomePage(args: { snapBaseUrl: string }): SnapHandlerResult {
         },
         caption: {
           type: "badge",
-          props: { content: "All games update from shared server state." },
+          props: { label: "Shared server state" },
         },
         "btn-open": {
           type: "button",
@@ -305,8 +305,8 @@ function buildWordlePage(args: {
     caption: {
       type: "badge",
       props: {
-        content:
-          caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
+        label:
+          caption.length > 30 ? caption.slice(0, 27) + "..." : caption,
       },
     },
     "btn-row": {
@@ -420,9 +420,9 @@ function buildCanvasPage(args: {
         caption: {
           type: "badge",
           props: {
-            content:
-              caption.length > 100
-                ? caption.slice(0, 97) + "..."
+            label:
+              caption.length > 30
+                ? caption.slice(0, 27) + "..."
                 : caption,
           },
         },
@@ -513,8 +513,8 @@ function buildStoryPage(args: {
     caption: {
       type: "badge",
       props: {
-        content:
-          caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
+        label:
+          caption.length > 30 ? caption.slice(0, 27) + "..." : caption,
       },
     },
     "btn-row": {
@@ -640,8 +640,8 @@ function buildEstimatePage(args: {
     caption: {
       type: "badge",
       props: {
-        content:
-          caption.length > 100 ? caption.slice(0, 97) + "..." : caption,
+        label:
+          caption.length > 30 ? caption.slice(0, 27) + "..." : caption,
       },
     },
     "btn-row": {
@@ -764,9 +764,9 @@ function buildPredictionPage(args: {
         caption: {
           type: "badge",
           props: {
-            content:
-              caption.length > 100
-                ? caption.slice(0, 97) + "..."
+            label:
+              caption.length > 30
+                ? caption.slice(0, 27) + "..."
                 : caption,
           },
         },
