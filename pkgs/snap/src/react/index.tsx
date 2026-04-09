@@ -57,6 +57,7 @@ export function SnapCard({
   onValidationError,
   validationErrorFallback,
   actionError,
+  plain = false,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -69,6 +70,8 @@ export function SnapCard({
   validationErrorFallback?: ReactNode;
   /** Server-side action error message to display inline. */
   actionError?: string | null;
+  /** When true, renders without card frame (no border, background, or padding). */
+  plain?: boolean;
 }) {
   if (snap.version === SPEC_VERSION_2) {
     return (
@@ -82,6 +85,7 @@ export function SnapCard({
         onValidationError={onValidationError}
         validationErrorFallback={validationErrorFallback}
         actionError={actionError}
+        plain={plain}
       />
     );
   }
@@ -94,6 +98,7 @@ export function SnapCard({
       appearance={appearance}
       maxWidth={maxWidth}
       actionError={actionError}
+      plain={plain}
     />
   );
 }

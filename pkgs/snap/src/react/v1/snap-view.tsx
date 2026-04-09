@@ -31,6 +31,7 @@ export function SnapCardV1({
   appearance = "dark",
   maxWidth = 480,
   actionError,
+  plain = false,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -38,15 +39,34 @@ export function SnapCardV1({
   appearance?: "light" | "dark";
   maxWidth?: number;
   actionError?: string | null;
+  plain?: boolean;
 }) {
+  const isDark = appearance === "dark";
+  const borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+  const surfaceBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.02)";
+
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth }}>
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        maxWidth,
+        overflow: "hidden",
+        ...(plain ? {} : {
+          borderRadius: 16,
+          border: `1px solid ${borderColor}`,
+          backgroundColor: surfaceBg,
+        }),
+      }}
+    >
+      <div style={plain ? undefined : { padding: 16 }}>
       <SnapViewV1
         snap={snap}
         handlers={handlers}
         loading={loading}
         appearance={appearance}
       />
+      </div>
       {actionError && (
         <div
           style={{

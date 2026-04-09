@@ -123,6 +123,7 @@ function SnapCardV2Inner({
   validationErrorFallback,
   actionError,
   appearance,
+  plain,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -133,25 +134,27 @@ function SnapCardV2Inner({
   validationErrorFallback?: ReactNode;
   actionError?: string | null;
   appearance: "light" | "dark";
+  plain: boolean;
 }) {
   const { colors } = useSnapTheme();
-  const maxHeight = showOverflowWarning ? SNAP_WARNING_HEIGHT : SNAP_MAX_HEIGHT;
 
   return (
     <>
       <View style={cardStyles.frameRing}>
         <View
           style={[
-            cardStyles.card,
+            plain ? undefined : cardStyles.card,
             {
-              borderRadius,
-              ...(!showOverflowWarning && { maxHeight: SNAP_MAX_HEIGHT }),
-              borderColor: colors.border,
-              backgroundColor: colors.surface,
+              ...(plain ? {} : {
+                borderRadius,
+                borderColor: colors.border,
+                backgroundColor: colors.surface,
+              }),
+              ...(!showOverflowWarning && !plain && { maxHeight: SNAP_MAX_HEIGHT }),
             },
           ]}
         >
-          <View style={cardStyles.body}>
+          <View style={plain ? undefined : cardStyles.body}>
             <SnapViewV2Inner
               snap={snap}
               handlers={handlers}
@@ -200,6 +203,7 @@ export function SnapCardV2({
   onValidationError,
   validationErrorFallback,
   actionError,
+  plain = false,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -211,6 +215,7 @@ export function SnapCardV2({
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
   actionError?: string | null;
+  plain?: boolean;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -224,6 +229,7 @@ export function SnapCardV2({
         validationErrorFallback={validationErrorFallback}
         actionError={actionError}
         appearance={appearance}
+        plain={plain}
       />
     </SnapThemeProvider>
   );

@@ -48,6 +48,7 @@ function SnapCardV1Inner({
   borderRadius,
   actionError,
   appearance,
+  plain,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -55,6 +56,7 @@ function SnapCardV1Inner({
   borderRadius: number;
   actionError?: string | null;
   appearance: "light" | "dark";
+  plain: boolean;
 }) {
   const { colors } = useSnapTheme();
 
@@ -63,15 +65,15 @@ function SnapCardV1Inner({
       <View style={cardStyles.frameRing}>
         <View
           style={[
-            cardStyles.card,
-            {
+            plain ? undefined : cardStyles.card,
+            plain ? undefined : {
               borderRadius,
               borderColor: colors.border,
               backgroundColor: colors.surface,
             },
           ]}
         >
-          <View style={cardStyles.body}>
+          <View style={plain ? undefined : cardStyles.body}>
             <SnapViewV1Inner snap={snap} handlers={handlers} loading={loading} />
           </View>
         </View>
@@ -103,6 +105,7 @@ export function SnapCardV1({
   colors,
   borderRadius = 16,
   actionError,
+  plain = false,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -111,6 +114,7 @@ export function SnapCardV1({
   colors?: Partial<SnapNativeColors>;
   borderRadius?: number;
   actionError?: string | null;
+  plain?: boolean;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -121,6 +125,7 @@ export function SnapCardV1({
         borderRadius={borderRadius}
         actionError={actionError}
         appearance={appearance}
+        plain={plain}
       />
     </SnapThemeProvider>
   );

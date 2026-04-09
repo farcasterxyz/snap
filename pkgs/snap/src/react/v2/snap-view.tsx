@@ -95,6 +95,7 @@ export function SnapCardV2({
   onValidationError,
   validationErrorFallback,
   actionError,
+  plain = false,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -105,9 +106,13 @@ export function SnapCardV2({
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
   actionError?: string | null;
+  plain?: boolean;
 }) {
   const maxHeight = showOverflowWarning ? SNAP_WARNING_HEIGHT : SNAP_MAX_HEIGHT;
-  const bg = appearance === "dark" ? "rgba(0,0,0,0.85)" : "rgba(255,255,255,0.9)";
+  const isDark = appearance === "dark";
+  const bg = isDark ? "rgba(0,0,0,0.85)" : "rgba(255,255,255,0.9)";
+  const borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+  const surfaceBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.02)";
 
   return (
     <>
@@ -118,8 +123,14 @@ export function SnapCardV2({
         maxWidth,
         maxHeight,
         overflow: "hidden",
+        ...(plain ? {} : {
+          borderRadius: 16,
+          border: `1px solid ${borderColor}`,
+          backgroundColor: surfaceBg,
+        }),
       }}
     >
+      <div style={plain ? undefined : { padding: 16 }}>
       <SnapViewV2
         snap={snap}
         handlers={handlers}
@@ -128,6 +139,7 @@ export function SnapCardV2({
         onValidationError={onValidationError}
         validationErrorFallback={validationErrorFallback}
       />
+      </div>
       {showOverflowWarning && (
         <div
           style={{
