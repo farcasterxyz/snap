@@ -30,12 +30,14 @@ export function SnapCardV1({
   loading = false,
   appearance = "dark",
   maxWidth = 480,
+  actionError,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
   appearance?: "light" | "dark";
   maxWidth?: number;
+  actionError?: string | null;
 }) {
   return (
     <div style={{ position: "relative", width: "100%", maxWidth }}>
@@ -45,6 +47,20 @@ export function SnapCardV1({
         loading={loading}
         appearance={appearance}
       />
+      {actionError && (
+        <div
+          style={{
+            padding: "8px 12px",
+            fontSize: 13,
+            color:
+              appearance === "dark"
+                ? "rgba(255,100,100,0.9)"
+                : "rgba(200,0,0,0.8)",
+          }}
+        >
+          {actionError}
+        </div>
+      )}
     </div>
   );
 }

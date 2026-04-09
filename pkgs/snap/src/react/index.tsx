@@ -56,6 +56,7 @@ export function SnapCard({
   showOverflowWarning = false,
   onValidationError,
   validationErrorFallback,
+  actionError,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -66,6 +67,8 @@ export function SnapCard({
   showOverflowWarning?: boolean;
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
+  /** Server-side action error message to display inline. */
+  actionError?: string | null;
 }) {
   if (snap.version === SPEC_VERSION_2) {
     return (
@@ -78,6 +81,7 @@ export function SnapCard({
         showOverflowWarning={showOverflowWarning}
         onValidationError={onValidationError}
         validationErrorFallback={validationErrorFallback}
+        actionError={actionError}
       />
     );
   }
@@ -89,6 +93,7 @@ export function SnapCard({
       loading={loading}
       appearance={appearance}
       maxWidth={maxWidth}
+      actionError={actionError}
     />
   );
 }
