@@ -489,6 +489,9 @@ export default function EmulatorPage() {
                   open_url: (target) => {
                     if (target) window.open(target, "_blank", "noopener,noreferrer");
                   },
+                  open_snap: (target) => {
+                    window.alert(`open_snap\n\n${target}`);
+                  },
                   open_mini_app: (target) => {
                     window.alert(`open_mini_app\n\n${target}`);
                   },
