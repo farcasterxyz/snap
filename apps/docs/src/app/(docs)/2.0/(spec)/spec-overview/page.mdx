@@ -104,7 +104,7 @@ Every element in `ui.elements` follows this shape:
 | Field      | Type     | Required | Description                                                            |
 | ---------- | -------- | -------- | ---------------------------------------------------------------------- |
 | `type`     | string   | Yes      | Component name (see [Elements](/snap/elements))                        |
-| `props`    | object   | Yes      | Component-specific properties (use `{}` if none)                       |
+| `props`    | object   | No       | Component-specific properties (omit or use `{}` if none)               |
 | `children` | string[] | No       | Child element IDs (for containers and action slots)                    |
 | `on`       | object   | No       | Event bindings — `on.press` triggers an action when a button is tapped |
 

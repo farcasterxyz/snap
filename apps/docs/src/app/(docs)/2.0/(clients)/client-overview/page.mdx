@@ -1,0 +1,36 @@
+# Building a Farcaster Client with Snaps
+
+This section is for developers building a Farcaster client that wants to display and
+interact with snaps. If you're building a snap server, see the [Learn](/snap/building)
+section instead.
+
+## What Clients Do
+
+A Farcaster client is responsible for:
+
+1. **Fetching** snap JSON from a URL via content negotiation
+2. **Rendering** the snap UI from the JSON response
+3. **Handling interactions** — when a user taps a button, the client builds a signed
+   POST payload and sends it to the snap server
+4. **Displaying the response** — the server returns a new snap page, and the client
+   renders it
+
+## Package
+
+The `@farcaster/snap` package provides everything a client needs:
+
+- **React and React Native components** for rendering snap UI (`SnapCard`)
+- **Type definitions** for snap pages, actions, and handlers
+- **Payload encoding** utilities for building POST requests
+
+```bash
+pnpm add @farcaster/snap
+```
+
+## Guides
+
+- [Rendering Snaps](/snap/client-rendering) — how to fetch, render, and handle snap
+  interactions using `SnapCard`
+- [Upgrading from v1.0](/snap/client-upgrade) — breaking changes between v1 and v2
+  that clients must handle, including the v2 POST payload format and fallback behavior
+  for older servers
