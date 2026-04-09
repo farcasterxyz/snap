@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.16.2
+
+### Patch Changes
+
+- [#101](https://github.com/farcasterxyz/snap/pull/101) [`9b04d3b`](https://github.com/farcasterxyz/snap/commit/9b04d3b9b16ca03a3827ec7895a02f4c498c2f79) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Deprecate optional nonce and audience in POST payload schema. Both fields will become required in a future major version. Servers now log a warning when either field is missing.
+
 ## 1.16.1
 
 ### Patch Changes
