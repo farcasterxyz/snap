@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { SnapThemeProvider, useSnapTheme, type SnapNativeColors } from "../theme";
 import { SnapViewCoreInner } from "../snap-view-core";
 import type { SnapPage, SnapActionHandlers } from "../types";
@@ -46,31 +46,52 @@ function SnapCardV1Inner({
   handlers,
   loading = false,
   borderRadius,
+  actionError,
+  appearance,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
   borderRadius: number;
+  actionError?: string | null;
+  appearance: "light" | "dark";
 }) {
   const { colors } = useSnapTheme();
 
   return (
-    <View style={cardStyles.frameRing}>
-      <View
-        style={[
-          cardStyles.card,
-          {
-            borderRadius,
-            borderColor: colors.border,
-            backgroundColor: colors.surface,
-          },
-        ]}
-      >
-        <View style={cardStyles.body}>
-          <SnapViewV1Inner snap={snap} handlers={handlers} loading={loading} />
+    <>
+      <View style={cardStyles.frameRing}>
+        <View
+          style={[
+            cardStyles.card,
+            {
+              borderRadius,
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
+            },
+          ]}
+        >
+          <View style={cardStyles.body}>
+            <SnapViewV1Inner snap={snap} handlers={handlers} loading={loading} />
+          </View>
         </View>
       </View>
-    </View>
+      {actionError && (
+        <Text
+          style={[
+            cardStyles.actionError,
+            {
+              color:
+                appearance === "dark"
+                  ? "rgba(255,100,100,0.9)"
+                  : "rgba(200,0,0,0.8)",
+            },
+          ]}
+        >
+          {actionError}
+        </Text>
+      )}
+    </>
   );
 }
 
@@ -81,6 +102,7 @@ export function SnapCardV1({
   appearance = "dark",
   colors,
   borderRadius = 16,
+  actionError,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -88,6 +110,7 @@ export function SnapCardV1({
   appearance?: "light" | "dark";
   colors?: Partial<SnapNativeColors>;
   borderRadius?: number;
+  actionError?: string | null;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -96,6 +119,8 @@ export function SnapCardV1({
         handlers={handlers}
         loading={loading}
         borderRadius={borderRadius}
+        actionError={actionError}
+        appearance={appearance}
       />
     </SnapThemeProvider>
   );
@@ -105,4 +130,5 @@ const cardStyles = StyleSheet.create({
   frameRing: { alignSelf: "stretch" },
   card: { overflow: "hidden", borderWidth: 1, minHeight: 120 },
   body: { paddingHorizontal: 16, paddingVertical: 16 },
+  actionError: { paddingHorizontal: 12, paddingVertical: 8, fontSize: 13 },
 });
