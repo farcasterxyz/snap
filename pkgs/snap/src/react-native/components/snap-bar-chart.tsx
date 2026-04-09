@@ -64,7 +64,7 @@ export function SnapBarChart({
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, width: "100%", gap: 8 },
+  wrap: { width: "100%", gap: 8 },
   row: { flexDirection: "row", alignItems: "center", gap: 8 },
   label: { width: 80, fontSize: 12, lineHeight: 16, textAlign: "right" },
   track: { flex: 1, height: 10, borderRadius: 9999, overflow: "hidden" },
