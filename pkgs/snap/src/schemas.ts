@@ -81,20 +81,13 @@ const postInputValueSchema = z.union([
   z.array(z.string()),
 ]);
 
-/**
- * @deprecated `nonce` and `audience` are currently optional for backward
- * compatibility but will become **required** in a future major version.
- * Clients should always include both fields.
- */
 export const payloadSchema = z
   .object({
     fid: z.number().int().nonnegative(),
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
-    /** @deprecated Will become required. Clients should always send a unique nonce. */
-    nonce: z.string().optional(),
-    /** @deprecated Will become required. Clients should always send the target server origin. */
-    audience: z.string().optional(),
+    nonce: z.string(),
+    audience: z.string(),
   })
   .strip();
 
