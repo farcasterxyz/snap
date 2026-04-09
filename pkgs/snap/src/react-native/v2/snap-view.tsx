@@ -138,19 +138,18 @@ function SnapCardV2Inner({
 }) {
   const { colors } = useSnapTheme();
 
+  const clipHeight = !showOverflowWarning && !plain ? SNAP_MAX_HEIGHT : undefined;
+
   return (
     <>
-      <View style={cardStyles.frameRing}>
+      <View style={[cardStyles.frameRing, clipHeight ? { maxHeight: clipHeight, overflow: "hidden" } : undefined]}>
         <View
           style={[
             plain ? undefined : cardStyles.card,
-            {
-              ...(plain ? {} : {
-                borderRadius,
-                borderColor: colors.border,
-                backgroundColor: colors.surface,
-              }),
-              ...(!showOverflowWarning && !plain && { maxHeight: SNAP_MAX_HEIGHT }),
+            plain ? undefined : {
+              borderRadius,
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
             },
           ]}
         >
@@ -237,7 +236,7 @@ export function SnapCardV2({
 
 const cardStyles = StyleSheet.create({
   frameRing: { alignSelf: "stretch" },
-  card: { overflow: "hidden", borderWidth: 1, minHeight: 120 },
+  card: { borderWidth: 1, minHeight: 120, overflow: "hidden" },
   body: { paddingHorizontal: 16, paddingVertical: 16 },
   actionError: { paddingHorizontal: 12, paddingVertical: 8, fontSize: 13 },
   warningOverlay: {
