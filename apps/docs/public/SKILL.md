@@ -75,9 +75,9 @@ Design guidance:
   `size: "sm"` for captions/metadata.
 - Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
   default to `"secondary"`.
-- 9 action types: `submit` (server round-trip), `open_url` (browser), `open_mini_app`
-  (in-app), and client actions: `view_cast`, `view_profile`, `compose_cast`,
-  `view_token`, `send_token`, `swap_token`.
+- 10 action types: `submit` (server round-trip), `open_url` (external browser),
+  `open_snap` (open snap inline), `open_mini_app` (in-app), and client actions:
+  `view_cast`, `view_profile`, `compose_cast`, `view_token`, `send_token`, `swap_token`.
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `select: "single"` or `"multiple"` to let users tap cells.
