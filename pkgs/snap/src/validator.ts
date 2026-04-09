@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { snapResponseSchema } from "./schemas";
 import { MAX_CHILDREN, MAX_DEPTH, MAX_ELEMENTS, MAX_ROOT_CHILDREN, SPEC_VERSION_1 } from "./constants";
+import { snapJsonRenderCatalog } from "./ui/catalog.js";
 
 export type ValidationResult = {
   valid: boolean;
@@ -254,6 +255,11 @@ export function validateSnapResponse(json: unknown): ValidationResult {
     const urlIssues = validateUrls(ui.elements);
     if (urlIssues.length > 0) {
       return { valid: false, issues: urlIssues };
+    }
+
+    const catalogResult = snapJsonRenderCatalog.validate(ui);
+    if (!catalogResult.success) {
+      return { valid: false, issues: catalogResult.error?.issues ?? [] };
     }
   }
 
