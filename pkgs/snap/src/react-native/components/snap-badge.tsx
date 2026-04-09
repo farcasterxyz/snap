@@ -22,7 +22,7 @@ export function SnapBadge({
       style={[
         styles.badge,
         isFilled
-          ? { backgroundColor: resolvedColor + "33", borderColor: "transparent" }
+          ? { backgroundColor: resolvedColor + "20", borderColor: "transparent" }
           : { borderColor: resolvedColor },
       ]}
     >
