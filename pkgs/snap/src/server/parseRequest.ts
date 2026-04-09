@@ -161,7 +161,12 @@ export async function parseRequest(
     let expectedOrigin = options.requestOrigin;
     if (expectedOrigin === undefined) {
       try {
-        expectedOrigin = new URL(request.url).origin;
+        const url = new URL(request.url);
+        const proto =
+          request.headers.get("x-forwarded-proto") ??
+          url.protocol.replace(":", "");
+        const host = request.headers.get("x-forwarded-host") ?? url.host;
+        expectedOrigin = `${proto}://${host}`;
       } catch {
         // do nothing
       }
