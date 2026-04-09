@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.17.1
+
+### Patch Changes
+
+- [#109](https://github.com/farcasterxyz/snap/pull/109) [`c6dc2c3`](https://github.com/farcasterxyz/snap/commit/c6dc2c3edf6101cf469723b1fa79ddce61f9e42b) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add `actionError` prop to React Native `SnapCard`, `SnapCardV1`, and `SnapCardV2` for displaying server-side action errors inline below the snap card.
+
 ## 1.17.0
 
 ### Minor Changes
