@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.16.1
+
+### Patch Changes
+
+- [#99](https://github.com/farcasterxyz/snap/pull/99) [`4cf9210`](https://github.com/farcasterxyz/snap/commit/4cf921010deb9be803966f8c99c9c1091ab3c1a2) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Make nonce and audience optional in POST payload schema for backward compatibility with existing clients. When present, audience is validated against the server origin.
+
 ## 1.16.0
 
 ### Minor Changes
