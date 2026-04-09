@@ -153,14 +153,15 @@ Field values are sent in POST `inputs[name]` when a `submit` action fires.
 - `label` (string, optional, max 60)
 - POST value: string (single) or string[] (multiple)
 
-## Actions (9 types)
+## Actions (10 types)
 
 Bound to buttons via `on.press`:
 
 | Action | Params | Description |
 |--------|--------|-------------|
 | `submit` | `target` (URL) | POST to server, get next page |
-| `open_url` | `target` (URL) | Open in system browser |
+| `open_url` | `target` (URL) | Open external URL in browser |
+| `open_snap` | `target` (URL) | Open a snap URL inline |
 | `open_mini_app` | `target` (URL) | Open as Farcaster mini app |
 | `view_cast` | `hash` (string) | Navigate to a cast |
 | `view_profile` | `fid` (number) | Navigate to a profile |

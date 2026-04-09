@@ -117,10 +117,12 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       params: z.object({ target: z.string() }),
     },
     open_url: {
-      description: "Open URL in browser.",
-      params: z.object({
-        target: z.string(),
-      }),
+      description: "Open external URL in browser.",
+      params: z.object({ target: z.string() }),
+    },
+    open_snap: {
+      description: "Open a snap URL inline. The client renders the target as a snap rather than opening a browser.",
+      params: z.object({ target: z.string() }),
     },
     open_mini_app: {
       description: "Open target URL as a Farcaster mini app.",

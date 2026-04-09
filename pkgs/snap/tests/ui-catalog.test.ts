@@ -31,6 +31,7 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
         "compose_cast",
         "send_token",
         "open_url",
+        "open_snap",
         "open_mini_app",
         "submit",
         "swap_token",
