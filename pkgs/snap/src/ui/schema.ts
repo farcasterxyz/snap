@@ -11,7 +11,7 @@ export const snapJsonRenderSchema = defineSchema(
       elements: s.record(
         s.object({
           type: s.ref("catalog.components"),
-          props: s.propsOf("catalog.components"),
+          props: { ...s.propsOf("catalog.components"), optional: true },
           children: { ...s.array(s.string()), optional: true },
         }),
       ),
