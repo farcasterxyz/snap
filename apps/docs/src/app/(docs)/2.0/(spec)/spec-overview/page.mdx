@@ -42,7 +42,7 @@ Valid snap responses have roughly this shape:
 
 ```json
 {
-  "version": "1.0",
+  "version": "2.0",
   "theme": { "accent": "purple" },
   "effects": ["confetti"],
   "ui": {
@@ -80,7 +80,7 @@ Valid snap responses have roughly this shape:
 
 | Field          | Type             | Required | Default                | Description                                                    |
 | -------------- | ---------------- | -------- | ---------------------- | -------------------------------------------------------------- |
-| `version`      | `"1.0"`          | Yes      |                        | Spec version                                                   |
+| `version`      | `"2.0"`          | Yes      |                        | Spec version                                                   |
 | `theme`        | object           | No       | `{ accent: "purple" }` | Theme configuration                                            |
 | `theme.accent` | PaletteColor     | No       | `"purple"`             | Accent color for buttons, progress bars, etc.                  |
 | `effects`      | string[]         | No       |                        | Visual effects applied on render. See [Effects](/snap/effects) |
