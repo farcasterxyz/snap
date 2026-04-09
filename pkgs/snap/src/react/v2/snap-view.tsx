@@ -94,6 +94,7 @@ export function SnapCardV2({
   showOverflowWarning = false,
   onValidationError,
   validationErrorFallback,
+  actionError,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -103,11 +104,13 @@ export function SnapCardV2({
   showOverflowWarning?: boolean;
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
+  actionError?: string | null;
 }) {
   const maxHeight = showOverflowWarning ? SNAP_WARNING_HEIGHT : SNAP_MAX_HEIGHT;
   const bg = appearance === "dark" ? "rgba(0,0,0,0.85)" : "rgba(255,255,255,0.9)";
 
   return (
+    <>
     <div
       style={{
         position: "relative",
@@ -164,5 +167,21 @@ export function SnapCardV2({
         </div>
       )}
     </div>
+    {actionError && (
+      <div
+        style={{
+          maxWidth,
+          padding: "8px 12px",
+          fontSize: 13,
+          color:
+            appearance === "dark"
+              ? "rgba(255,100,100,0.9)"
+              : "rgba(200,0,0,0.8)",
+        }}
+      >
+        {actionError}
+      </div>
+    )}
+    </>
   );
 }
