@@ -148,39 +148,29 @@ export async function parseRequest(
     };
   }
 
-  // Deprecation: nonce and audience will become required in a future major version.
-  if (body.nonce === undefined || body.audience === undefined) {
-    console.warn(
-      "[snap] POST payload is missing nonce and/or audience. " +
-        "These fields will be required in a future major version. " +
-        "Please update your client to include both fields.",
-    );
+  // Audience validation: ensure the payload audience matches the server origin.
+  let expectedOrigin = options.requestOrigin;
+  if (expectedOrigin === undefined) {
+    try {
+      const url = new URL(request.url);
+      const proto =
+        request.headers.get("x-forwarded-proto") ??
+        url.protocol.replace(":", "");
+      const host = request.headers.get("x-forwarded-host") ?? url.host;
+      expectedOrigin = `${proto}://${host}`;
+    } catch {
+      // do nothing
+    }
   }
 
-  if (body.audience !== undefined) {
-    let expectedOrigin = options.requestOrigin;
-    if (expectedOrigin === undefined) {
-      try {
-        const url = new URL(request.url);
-        const proto =
-          request.headers.get("x-forwarded-proto") ??
-          url.protocol.replace(":", "");
-        const host = request.headers.get("x-forwarded-host") ?? url.host;
-        expectedOrigin = `${proto}://${host}`;
-      } catch {
-        // do nothing
-      }
-    }
-
-    if (expectedOrigin !== undefined && body.audience !== expectedOrigin) {
-      return {
-        success: false,
-        error: {
-          type: "origin_mismatch",
-          message: `payload audience "${body.audience}" does not match expected origin "${expectedOrigin}"`,
-        },
-      };
-    }
+  if (expectedOrigin !== undefined && body.audience !== expectedOrigin) {
+    return {
+      success: false,
+      error: {
+        type: "origin_mismatch",
+        message: `payload audience "${body.audience}" does not match expected origin "${expectedOrigin}"`,
+      },
+    };
   }
 
   return {
