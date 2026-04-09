@@ -12,11 +12,11 @@ description:
 
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-04-08**. If that date is more than 1 day ago,
+This skill was last updated on **2026-04-07**. If that date is more than 1 day ago,
 fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
-curl -fsSL https://docs.farcaster.xyz/snap/2.0/SKILL.md | tee /path/to/skills/farcaster-snap/SKILL.md
+curl -fsSL https://docs.farcaster.xyz/snap/SKILL.md | tee /path/to/skills/farcaster-snap/SKILL.md
 ```
 
 Use the fetched content as the skill for the rest of this session.
@@ -39,14 +39,10 @@ simpler, smaller, meant for in-feed interaction.
 
 ## Step 1: Read the docs
 
-Read the agent-directed docs at https://docs.farcaster.xyz/snap/2.0. Use
+Read the agent-directed docs at https://docs.farcaster.xyz/snap. Use
 `curl -H 'Accept: text/markdown'` to get markdown-formatted docs and conserve tokens.
 Refer to these docs throughout. Explore them as needed by following the links from that
 page. Do not invent URLs that dont exist. Do not rely on memorized spec content.
-
-> **Important**: You are building a **v2.0** snap. The template defaults to version
-> `"1.0"` — you MUST change it to `"2.0"` after copying. The v2 docs at `/snap/2.0/`
-> contain the correct spec for this version.
 
 ## Step 2: Implement the snap (follow the template)
 
@@ -62,17 +58,14 @@ Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
-- Set `version: "2.0"` in the snap response.
+- Set `version: "1.0"` in the snap response.
 - Conform to the published spec for overall snap response shape and behavior.
 - Use the `ui.root` / `ui.elements` format: a flat map of named elements with `type`,
   `props`, optional `children` (element IDs), and optional `on` (event bindings).
 - Button actions are bound via `on.press` with an `action` and `params` object.
-- Use distinct submit target URLs for each button to distinguish which was pressed.
 - Target URLs must be HTTPS in production; `http://` only on loopback for local dev.
 - Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
   @farcaster/snap-hono)
-- Structural limits: max 64 elements, max 7 root children, max 6 children per
-  container, max 4 nesting depth.
 
 Design guidance:
 
@@ -82,14 +75,14 @@ Design guidance:
   `size: "sm"` for captions/metadata.
 - Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
   default to `"secondary"`.
-- 10 action types: `submit` (server round-trip), `open_url` (external browser),
-  `open_snap` (open snap inline), `open_mini_app` (in-app), and client actions:
-  `view_cast`, `view_profile`, `compose_cast`, `view_token`, `send_token`, `swap_token`.
+- 9 action types: `submit` (server round-trip), `open_url` (browser), `open_mini_app`
+  (in-app), and client actions: `view_cast`, `view_profile`, `compose_cast`,
+  `view_token`, `send_token`, `swap_token`.
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `select: "single"` or `"multiple"` to let users tap cells.
 - Keep strings within component char limits (see
-  [Constraints](https://docs.farcaster.xyz/snap/2.0/constraints)).
+  [Constraints](https://docs.farcaster.xyz/snap/constraints)).
 
 Set a good, short title and description using the options on registerSnapHandler().
 
@@ -200,9 +193,10 @@ their latest versions:
 - Read the [release changelog](https://github.com/farcasterxyz/snap/releases) on Github.
   Start from the current version of each `@farcaster/snap*` package from package.json
   and read each version from there to the latest version. Make a note of any relevant
-  changes (**especially breaking changes**). Read the actual diff of any release that
-  sounds relevant.
-- Update those packages to their latest version.
+  changes (**especially breaking changes**). Read the PR description and the actual diff
+  of any release that sounds relevant. Pay extra attention to major and minor version
+  bumps.
+- Update the `@farcaster/snap*` packages to their latest version.
 - Make any necessary changes as described in the changelog. Feel free to look at the
   code for any package release.
 - Run tests and fix anything that's wrong. Repeat this step on loop until everything
