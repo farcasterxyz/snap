@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.17.2
+
+### Patch Changes
+
+- [#111](https://github.com/farcasterxyz/snap/pull/111) [`675720f`](https://github.com/farcasterxyz/snap/commit/675720f36b451cd4e3341ab558722b15d93ea252) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add per-component prop and action param validation to `validateSnapResponse` using the json-render catalog. Also makes `props` optional in the schema so elements with no required props (separator, stack) don't need `props: {}`.
+
 ## 1.17.1
 
 ### Patch Changes
