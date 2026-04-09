@@ -16,17 +16,18 @@ action when tapped.
 }
 ```
 
-| # | Action | Description |
-|---|--------|-------------|
-| 1 | [submit](#submit) | POST to server, get next page |
-| 2 | [open_url](#open_url) | Open URL in browser |
-| 3 | [open_mini_app](#open_mini_app) | Launch mini app |
-| 4 | [view_cast](#view_cast) | Navigate to a cast |
-| 5 | [view_profile](#view_profile) | Navigate to a profile |
-| 6 | [compose_cast](#compose_cast) | Open cast composer |
-| 7 | [view_token](#view_token) | View token in wallet |
-| 8 | [send_token](#send_token) | Open send token flow |
-| 9 | [swap_token](#swap_token) | Open swap token flow |
+| Action | Description |
+|--------|-------------|
+| [submit](#submit) | POST to server, get next page |
+| [open_url](#open_url) | Open external URL in browser |
+| [open_snap](#open_snap) | Open a snap URL inline |
+| [open_mini_app](#open_mini_app) | Launch mini app |
+| [view_cast](#view_cast) | Navigate to a cast |
+| [view_profile](#view_profile) | Navigate to a profile |
+| [compose_cast](#compose_cast) | Open cast composer |
+| [view_token](#view_token) | View token in wallet |
+| [send_token](#send_token) | Open send token flow |
+| [swap_token](#swap_token) | Open swap token flow |
 
 ---
 
@@ -76,6 +77,30 @@ Open a URL in the system browser. No server round-trip. No input collection.
     "press": {
       "action": "open_url",
       "params": { "target": "https://docs.farcaster.xyz/snap" }
+    }
+  }
+}
+```
+
+---
+
+## open_snap
+
+Open a snap URL inline. Unlike `open_url`, the client renders the target as a snap
+rather than opening a browser. Use this when linking to another snap from a button.
+
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `target` | string | Yes | Snap URL to open |
+
+```json
+{
+  "type": "button",
+  "props": { "label": "View Poll" },
+  "on": {
+    "press": {
+      "action": "open_snap",
+      "params": { "target": "https://poll.example.com/" }
     }
   }
 }

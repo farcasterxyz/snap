@@ -64,7 +64,8 @@ action type maps to a handler function that the client must implement.
 | Handler | Params | Description |
 |---------|--------|-------------|
 | `submit` | `(target: string, inputs: Record<string, value>)` | POST signed payload to `target` with collected input values. Returns the next snap page. This is the only handler that involves a server round-trip. |
-| `open_url` | `(target: string)` | Open a URL in the system browser or in-app browser. |
+| `open_url` | `(target: string)` | Open an external URL in the system browser or in-app browser. |
+| `open_snap` | `(target: string)` | Open a snap URL inline — render the target as a snap rather than opening a browser. |
 | `open_mini_app` | `(target: string)` | Open a URL as a Farcaster mini app (in-app webview). |
 | `view_cast` | `({ hash: string })` | Navigate to a cast by its hash. |
 | `view_profile` | `({ fid: number })` | Navigate to a user profile by Farcaster ID. |
@@ -157,6 +158,7 @@ function SnapRenderer({
   const handlers: SnapActionHandlers = {
     submit: (target, inputs) => void handleSubmit(target, inputs),
     open_url: (target) => window.open(target, "_blank"),
+    open_snap: (target) => navigateToSnap(target),
     open_mini_app: (target) => openMiniApp(target),
     view_cast: ({ hash }) => navigateToCast(hash),
     view_profile: ({ fid }) => navigateToProfile(fid),

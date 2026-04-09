@@ -411,6 +411,9 @@ function AppContent() {
                     open_url: (target) => {
                       if (target) void handleLinkButton(target);
                     },
+                    open_snap: (target) => {
+                      Alert.alert("Client Action", `open_snap\n${target || "(no url)"}`);
+                    },
                     open_mini_app: (url) => {
                       Alert.alert("Client Action", `open_mini_app\n${url || "(no url)"}`);
                     },

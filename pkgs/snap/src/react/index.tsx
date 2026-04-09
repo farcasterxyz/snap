@@ -27,6 +27,7 @@ export type SnapPage = {
 export type SnapActionHandlers = {
   submit: (target: string, inputs: Record<string, JsonValue>) => void;
   open_url: (target: string) => void;
+  open_snap: (target: string) => void;
   open_mini_app: (target: string) => void;
   view_cast: (params: { hash: string }) => void;
   view_profile: (params: { fid: number }) => void;

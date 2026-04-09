@@ -14,8 +14,8 @@ function isExternalLinkAction(
   const press = on.press as
     | { action?: string; params?: Record<string, unknown> }
     | undefined;
-  if (!press || press.action !== "open_url") return false;
-  return press.params?.isSnap !== true;
+  if (!press) return false;
+  return press.action === "open_url";
 }
 
 export function SnapActionButton({
