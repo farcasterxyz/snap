@@ -58,6 +58,7 @@ Express the UI as the object your snap handler returns.
 
 **Hard rules (enforced by schema/validator):**
 
+- Set `version: "1.0"` in the snap response.
 - Conform to the published spec for overall snap response shape and behavior.
 - Use the `ui.root` / `ui.elements` format: a flat map of named elements with `type`,
   `props`, optional `children` (element IDs), and optional `on` (event bindings).
@@ -119,7 +120,7 @@ without real signatures. The body must still be JFS-shaped. The payload must be
 base64url-encoded:
 
 ```bash
-PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"button_index\":0,\"timestamp\":$(date +%s)}" \
+PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"nonce\":\"dev-nonce\",\"audience\":\"http://localhost:<port>\",\"timestamp\":$(date +%s)}" \
   | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
 curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
   -H 'Content-Type: application/json' \

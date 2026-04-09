@@ -1,5 +1,4 @@
 import type { SnapPayload } from "@farcaster/snap";
-import { validateSnapResponse } from "@farcaster/snap";
 import { encodePayload } from "@farcaster/snap/server";
 import * as Linking from "expo-linking";
 import { useCallback, useState } from "react";
@@ -15,7 +14,11 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { SnapPreview } from "./components/SnapPreview";
+import {
+  SnapCard,
+  type SnapActionHandlers,
+  type SnapPage,
+} from "@farcaster/snap/react-native";
 import { ThemeProvider, useTheme } from "./ThemeContext";
 import { SNAP_UPSTREAM_ACCEPT } from "./lib/snapUpstreamConstants";
 import {
@@ -25,7 +28,6 @@ import {
 import {
   parseSnapPayload,
   type SnapPageResponse,
-  unwrapSnapResponseJsonForValidation,
 } from "./lib/snapPayload";
 
 function formatValidationIssues(
@@ -34,9 +36,7 @@ function formatValidationIssues(
   return issues
     .map((i) => {
       const p =
-        i.path && i.path.length > 0
-          ? i.path.map(String).join(".")
-          : "(root)";
+        i.path && i.path.length > 0 ? i.path.map(String).join(".") : "(root)";
       return `${p}: ${i.message}`;
     })
     .join("\n");
@@ -123,8 +123,8 @@ function portDiffersFromLoadedLocalSnap(
     loaded.port !== ""
       ? Number.parseInt(loaded.port, 10)
       : loaded.protocol === "https:"
-        ? 443
-        : 80;
+      ? 443
+      : 80;
   const fieldPort = parsePort(portInput);
   if (fieldPort === null) return false;
   return fieldPort !== loadedPort;
@@ -163,12 +163,6 @@ function AppContent() {
         throw new Error(formatUpstreamSnapFailure(json, res.status, "GET"));
       }
 
-      const toValidate = unwrapSnapResponseJsonForValidation(json);
-      const validation = validateSnapResponse(toValidate);
-      if (!validation.valid) {
-        throw new Error(formatValidationIssues(validation.issues));
-      }
-
       const parsed = parseSnapPayload(json);
       setSnap(parsed);
       setCurrentSourceUrl(new URL(url).href);
@@ -181,10 +175,7 @@ function AppContent() {
   }, [portInput]);
 
   const handlePostButton = useCallback(
-    async (
-      target: string,
-      inputs: Record<string, unknown>,
-    ) => {
+    async (target: string, inputs: Record<string, unknown>) => {
       if (!currentSourceUrl) {
         setError("Missing current source URL");
         return;
@@ -194,17 +185,17 @@ function AppContent() {
 
       const fid = parseUserFid(fidInput);
       const timestamp = Math.floor(Date.now() / 1000);
-      const payload: SnapPayload = {
-        fid,
-        inputs: inputs as SnapPayload["inputs"],
-        button_index: 0,
-        timestamp,
-      };
-
       const nextSourceUrl = coerceUpstreamUrlToMatchCurrentSnap(
         new URL(toAbsoluteSnapTarget(currentSourceUrl, target)),
         new URL(currentSourceUrl),
       ).toString();
+      const payload: SnapPayload = {
+        fid,
+        inputs: inputs as SnapPayload["inputs"],
+        timestamp,
+        nonce: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        audience: new URL(nextSourceUrl).origin,
+      };
 
       setLoading(true);
       setError(null);
@@ -229,17 +220,13 @@ function AppContent() {
           json = JSON.parse(text) as unknown;
         } catch {
           throw new Error(
-            res.ok ? "Snap response is not JSON" : `POST failed (${res.status})`,
+            res.ok
+              ? "Snap response is not JSON"
+              : `POST failed (${res.status})`,
           );
         }
         if (!res.ok) {
           throw new Error(formatUpstreamSnapFailure(json, res.status, "POST"));
-        }
-
-        const toValidate = unwrapSnapResponseJsonForValidation(json);
-        const validation = validateSnapResponse(toValidate);
-        if (!validation.valid) {
-          throw new Error(formatValidationIssues(validation.issues));
         }
 
         const parsed = parseSnapPayload(json);
@@ -286,12 +273,6 @@ function AppContent() {
         await Linking.openURL(target);
         return;
       }
-      const toValidate = unwrapSnapResponseJsonForValidation(json);
-      const validation = validateSnapResponse(toValidate);
-      if (!validation.valid) {
-        await Linking.openURL(target);
-        return;
-      }
       const parsedSnap = parseSnapPayload(json);
       setSnap(parsedSnap);
       setCurrentSourceUrl(target);
@@ -330,7 +311,10 @@ function AppContent() {
               Snap emulator (native)
             </Text>
             <Pressable
-              style={[styles.modeToggle, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={[
+                styles.modeToggle,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
               onPress={toggleMode}
             >
               <Text style={[styles.modeToggleText, { color: colors.text }]}>
@@ -339,9 +323,19 @@ function AppContent() {
             </Pressable>
           </View>
 
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Port</Text>
-          <View style={[styles.portRow, { borderColor: colors.border, backgroundColor: colors.inputBg }]}>
-            <Text style={[styles.portPrefix, { color: colors.textSecondary }]} selectable>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>
+            Port
+          </Text>
+          <View
+            style={[
+              styles.portRow,
+              { borderColor: colors.border, backgroundColor: colors.inputBg },
+            ]}
+          >
+            <Text
+              style={[styles.portPrefix, { color: colors.textSecondary }]}
+              selectable
+            >
               {LOCAL_SNAP_ORIGIN}:
             </Text>
             <TextInput
@@ -357,9 +351,18 @@ function AppContent() {
             />
           </View>
 
-          <Text style={[styles.label, { color: colors.textSecondary }]}>User FID</Text>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>
+            User FID
+          </Text>
           <TextInput
-            style={[styles.input, { borderColor: colors.border, backgroundColor: colors.inputBg, color: colors.text }]}
+            style={[
+              styles.input,
+              {
+                borderColor: colors.border,
+                backgroundColor: colors.inputBg,
+                color: colors.text,
+              },
+            ]}
             value={fidInput}
             onChangeText={setFidInput}
             placeholder="e.g. 12345"
@@ -391,22 +394,52 @@ function AppContent() {
           {snap ? (
             <>
               <View style={styles.previewWrap}>
-                <SnapPreview
-                  snap={snap}
+                <SnapCard
+                  snap={snap as SnapPage}
                   loading={loading}
-                  onPostButton={handlePostButton}
-                  onLinkButton={handleLinkButton}
+                  appearance={mode}
+                  colors={colors}
+                  showOverflowWarning
+                  handlers={{
+                    submit: (target, inputs) => {
+                      void handlePostButton(target, inputs);
+                    },
+                    open_url: (target) => {
+                      if (target) void handleLinkButton(target);
+                    },
+                    open_mini_app: (url) => {
+                      Alert.alert("Client Action", `open_mini_app\n${url || "(no url)"}`);
+                    },
+                    view_cast: ({ hash }) => {
+                      Alert.alert("Client Action", `view_cast\nhash: ${hash || "(none)"}`);
+                    },
+                    view_profile: ({ fid }) => {
+                      Alert.alert("Client Action", `view_profile\nfid: ${fid || "(none)"}`);
+                    },
+                    compose_cast: ({ text }) => {
+                      Alert.alert("Client Action", `compose_cast\n${text || "(no text)"}`);
+                    },
+                    view_token: ({ token }) => {
+                      Alert.alert("Client Action", `view_token\n${token || "(no token)"}`);
+                    },
+                    send_token: ({ token }) => {
+                      Alert.alert("Client Action", `send_token\n${token || "(no token)"}`);
+                    },
+                    swap_token: ({ sellToken, buyToken }) => {
+                      Alert.alert("Client Action", `swap_token\nsell: ${sellToken || "(none)"} buy: ${buyToken || "(none)"}`);
+                    },
+                  } satisfies SnapActionHandlers}
                 />
               </View>
-              {error ? (
-                <Text style={styles.previewError}>{error}</Text>
-              ) : null}
+              {error ? <Text style={styles.previewError}>{error}</Text> : null}
             </>
           ) : (
             <View style={styles.placeholderWrap}>
-              <Text style={[styles.placeholder, { color: colors.textSecondary }]}>
-                Enter a port and tap Load ({LOCAL_SNAP_ORIGIN}
-                :{DEFAULT_LOCAL_PORT}/ by default).
+              <Text
+                style={[styles.placeholder, { color: colors.textSecondary }]}
+              >
+                Enter a port and tap Load ({LOCAL_SNAP_ORIGIN}:
+                {DEFAULT_LOCAL_PORT}/ by default).
               </Text>
             </View>
           )}
@@ -453,7 +486,9 @@ const styles = StyleSheet.create({
   },
   modeToggleText: { fontSize: 13, fontWeight: "600" },
   hint: { fontSize: 13, marginBottom: 8 },
-  hintMono: { fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }) },
+  hintMono: {
+    fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
+  },
   label: { fontSize: 12, fontWeight: "600" },
   portRow: {
     flexDirection: "row",

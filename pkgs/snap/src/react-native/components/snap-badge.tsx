@@ -22,17 +22,17 @@ export function SnapBadge({
       style={[
         styles.badge,
         isFilled
-          ? { backgroundColor: resolvedColor, borderColor: resolvedColor }
+          ? { backgroundColor: resolvedColor + "20", borderColor: "transparent" }
           : { borderColor: resolvedColor },
       ]}
     >
       {Icon && (
-        <Icon size={12} color={isFilled ? "#fff" : resolvedColor} />
+        <Icon size={12} color={resolvedColor} />
       )}
       <Text
         style={[
           styles.label,
-          { color: isFilled ? "#fff" : resolvedColor },
+          { color: resolvedColor },
         ]}
       >
         {label}

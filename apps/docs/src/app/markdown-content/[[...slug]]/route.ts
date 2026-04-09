@@ -1,4 +1,5 @@
 import { getDocMarkdownByPathname } from "@/lib/docs-markdown";
+import { DEFAULT_VERSION, isValidVersion } from "@/lib/version-config";
 
 type RouteContext = {
   params: Promise<{
@@ -6,10 +7,13 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(_request: Request, { params }: RouteContext) {
+export async function GET(request: Request, { params }: RouteContext) {
   const { slug } = await params;
   const pathname = slug?.length ? `/${slug.join("/")}` : "/";
-  const content = getDocMarkdownByPathname(pathname);
+  const url = new URL(request.url);
+  const versionParam = url.searchParams.get("version") ?? DEFAULT_VERSION;
+  const version = isValidVersion(versionParam) ? versionParam : DEFAULT_VERSION;
+  const content = getDocMarkdownByPathname(pathname, version);
 
   if (!content) {
     return new Response("Not found", { status: 404 });

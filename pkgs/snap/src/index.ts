@@ -4,9 +4,17 @@ export type {
 } from "@json-render/core";
 export {
   SPEC_VERSION,
+  SPEC_VERSION_1,
+  SPEC_VERSION_2,
+  SUPPORTED_SPEC_VERSIONS,
+  type SpecVersion,
   MEDIA_TYPE,
   EFFECT_VALUES,
   POST_GRID_TAP_KEY,
+  MAX_ELEMENTS,
+  MAX_ROOT_CHILDREN,
+  MAX_CHILDREN,
+  MAX_DEPTH,
 } from "./constants";
 export {
   DEFAULT_THEME_ACCENT,

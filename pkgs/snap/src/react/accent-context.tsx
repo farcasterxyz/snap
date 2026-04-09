@@ -5,7 +5,7 @@ import { createContext, useContext, type ReactNode } from "react";
 type SnapPreviewContextValue = {
   /** From loaded snap `page.theme.accent` (undefined if the snap omits it). */
   pageAccent: string | undefined;
-  /** Light/dark appearance passed from SnapView. */
+  /** Light/dark appearance passed from SnapCard. */
   appearance: "light" | "dark";
 };
 

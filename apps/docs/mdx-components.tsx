@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import CodeBlock from "@/components/CodeBlock";
+import DocLink from "@/components/DocLink";
 import InteractiveGrid from "@/components/docs/InteractiveGrid";
 import InteractiveButtonGroup from "@/components/docs/InteractiveButtonGroup";
 import SnapCard from "@/components/docs/SnapCard";
@@ -59,6 +60,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h2: (props) => <Heading level={2} {...props} />,
     h3: (props) => <Heading level={3} {...props} />,
     h4: (props) => <Heading level={4} {...props} />,
+    a: (props) => <DocLink {...props} />,
     pre: (props) => <CodeBlock {...props} />,
     InteractiveGrid,
     InteractiveButtonGroup,

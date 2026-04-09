@@ -30,7 +30,7 @@ export const snapJsonRenderSchema = defineSchema(
   {
     defaultRules: [
       "You are generating auxiliary UI for a Farcaster Snap. Prefer components matching snap element types (Item, Badge, ButtonGroup, Input, Switch, ToggleGroup, Slider, Progress, Image, Separator).",
-      "Snap pages use a Stack root with at most 6 body children and 1 media element (Image); keep generated trees small.",
+      "Snap structural limits: max 64 elements, max 7 children on root, max 6 children per non-root container, max 4 levels of nesting. Keep generated trees small.",
       "Bottom-of-card snap buttons are Button components; use actions post / link / mini_app / sdk per SPEC.md.",
     ],
   },

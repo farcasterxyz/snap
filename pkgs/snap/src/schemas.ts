@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { Spec } from "@json-render/core";
-import { EFFECT_VALUES, SPEC_VERSION } from "./constants";
+import { EFFECT_VALUES, SUPPORTED_SPEC_VERSIONS, type SpecVersion } from "./constants";
 import { DEFAULT_THEME_ACCENT, PALETTE_COLOR_VALUES } from "./colors";
 
 // ─── Theme ─────────────────────────────────────────────
@@ -21,7 +21,7 @@ const themeSchema = z
 
 export const snapResponseSchema = z
   .object({
-    version: z.literal(SPEC_VERSION),
+    version: z.enum(SUPPORTED_SPEC_VERSIONS),
     theme: themeSchema.optional().default({ accent: DEFAULT_THEME_ACCENT }),
     effects: z.array(z.enum(EFFECT_VALUES)).optional(),
     ui: z.custom<Spec>(
@@ -66,7 +66,7 @@ export type SnapSpecInput = {
  * without type casts. Runtime validation via the Zod schema still catches invalid shapes.
  */
 export type SnapHandlerResult = {
-  version: typeof SPEC_VERSION;
+  version: SpecVersion;
   theme?: { accent?: z.input<typeof themeAccentSchema> };
   effects?: z.input<typeof snapResponseSchema>["effects"];
   ui: SnapSpecInput;
@@ -85,10 +85,11 @@ export const payloadSchema = z
   .object({
     fid: z.number().int().nonnegative(),
     inputs: z.record(z.string(), postInputValueSchema).default({}),
-    button_index: z.number().int().nonnegative(),
     timestamp: z.number().int(),
+    nonce: z.string(),
+    audience: z.string(),
   })
-  .strict();
+  .strip();
 
 export type SnapPayload = z.infer<typeof payloadSchema>;
 
@@ -101,11 +102,9 @@ const snapGetActionSchema = z.object({
 
 export type SnapGetAction = z.infer<typeof snapGetActionSchema>;
 
-const snapPostActionSchema = payloadSchema
-  .extend({
-    type: z.literal(ACTION_TYPE_POST),
-  })
-  .strict();
+const snapPostActionSchema = payloadSchema.extend({
+  type: z.literal(ACTION_TYPE_POST),
+});
 
 export type SnapPostAction = z.infer<typeof snapPostActionSchema>;
 

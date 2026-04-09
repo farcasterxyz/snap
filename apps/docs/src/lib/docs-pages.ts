@@ -1,3 +1,5 @@
+import { DEFAULT_VERSION } from "./version-config";
+
 export type DocPage = {
   pathname: string;
   title: string;
@@ -10,15 +12,15 @@ export type DocSection = {
   pages: DocPage[];
 };
 
-/** Route group folder under `src/app/(docs)/` for each sidebar section (URLs unchanged). */
+/** Route group folder under the version directory for each sidebar section. */
 const SECTION_APP_FOLDER: Record<string, string> = {
   Home: "(home)",
   Learn: "(learn)",
   Spec: "(spec)",
 };
 
-// NOTE: keep this in sync with snap-sidebar.json and apps/docs/src/app/(docs)/(home)/page.mdx
-export const DOC_SECTIONS: DocSection[] = [
+// NOTE: keep this in sync with snap-sidebar.json and the home page of each version
+const SHARED_SECTIONS: DocSection[] = [
   {
     title: "Home",
     untitled: true,
@@ -53,6 +55,31 @@ export const DOC_SECTIONS: DocSection[] = [
   },
 ];
 
+const V2_SECTIONS: DocSection[] = [
+  SHARED_SECTIONS[0],
+  {
+    ...SHARED_SECTIONS[1],
+    pages: [
+      ...SHARED_SECTIONS[1].pages,
+      { pathname: "/upgrading", title: "Upgrading from v1.0" },
+    ],
+  },
+  SHARED_SECTIONS[2],
+];
+
+/** Per-version section definitions. Versions can override pages if needed. */
+export const VERSION_DOC_SECTIONS: Record<string, DocSection[]> = {
+  "1.0": SHARED_SECTIONS,
+  "2.0": V2_SECTIONS,
+};
+
+/** Sections for the default version (backward compat). */
+export const DOC_SECTIONS = VERSION_DOC_SECTIONS[DEFAULT_VERSION]!;
+
+export function getDocSectionsForVersion(version: string): DocSection[] {
+  return VERSION_DOC_SECTIONS[version] ?? DOC_SECTIONS;
+}
+
 export function normalizeDocPathname(pathname: string): string {
   if (pathname === "") {
     return "/";
@@ -65,11 +92,15 @@ export function normalizeDocPathname(pathname: string): string {
   return pathname;
 }
 
-/** Relative path under `src/app/(docs)/` for the page's MDX source. */
-export function docPathnameToMdxFile(pathname: string): string {
+/** Relative path under `src/app/(docs)/` for the page's MDX source, including version prefix. */
+export function docPathnameToMdxFile(
+  pathname: string,
+  version: string = DEFAULT_VERSION,
+): string {
   const normalized = normalizeDocPathname(pathname);
+  const sections = getDocSectionsForVersion(version);
 
-  for (const section of DOC_SECTIONS) {
+  for (const section of sections) {
     const folder = SECTION_APP_FOLDER[section.title];
     if (!folder) {
       throw new Error(`No app folder mapped for section: ${section.title}`);
@@ -79,19 +110,23 @@ export function docPathnameToMdxFile(pathname: string): string {
         continue;
       }
       if (normalized === "/") {
-        return `${folder}/page.mdx`;
+        return `${version}/${folder}/page.mdx`;
       }
-      return `${folder}/${page.pathname.slice(1)}/page.mdx`;
+      return `${version}/${folder}/${page.pathname.slice(1)}/page.mdx`;
     }
   }
 
-  throw new Error(`Unknown doc pathname: ${pathname}`);
+  throw new Error(`Unknown doc pathname: ${pathname} (version ${version})`);
 }
 
-export function getDocPageByPathname(pathname: string): DocPage | null {
+export function getDocPageByPathname(
+  pathname: string,
+  version: string = DEFAULT_VERSION,
+): DocPage | null {
   const normalizedPathname = normalizeDocPathname(pathname);
+  const sections = getDocSectionsForVersion(version);
 
-  for (const section of DOC_SECTIONS) {
+  for (const section of sections) {
     const page = section.pages.find((p) => p.pathname === normalizedPathname);
     if (page) {
       return page;
@@ -101,6 +136,9 @@ export function getDocPageByPathname(pathname: string): DocPage | null {
   return null;
 }
 
-export function isDocPathname(pathname: string): boolean {
-  return getDocPageByPathname(pathname) !== null;
+export function isDocPathname(
+  pathname: string,
+  version: string = DEFAULT_VERSION,
+): boolean {
+  return getDocPageByPathname(pathname, version) !== null;
 }

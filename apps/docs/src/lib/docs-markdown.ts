@@ -4,7 +4,9 @@ import {
   DOC_SECTIONS,
   docPathnameToMdxFile,
   getDocPageByPathname,
+  getDocSectionsForVersion,
 } from "@/lib/docs-pages";
+import { DEFAULT_VERSION } from "@/lib/version-config";
 
 const DOCS_DIR = join(process.cwd(), "src/app/(docs)");
 const INTERACTIVE_PREVIEW_PLACEHOLDER = "[Interactive preview on docs site]";
@@ -54,31 +56,38 @@ export function readDocMarkdown(file: string): string {
   return sanitizeDocMarkdown(content);
 }
 
-export function getDocMarkdownByPathname(pathname: string): string | null {
-  const page = getDocPageByPathname(pathname);
+export function getDocMarkdownByPathname(
+  pathname: string,
+  version: string = DEFAULT_VERSION,
+): string | null {
+  const page = getDocPageByPathname(pathname, version);
 
   if (!page) {
     return null;
   }
 
-  return readDocMarkdown(docPathnameToMdxFile(page.pathname));
+  return readDocMarkdown(docPathnameToMdxFile(page.pathname, version));
 }
 
-export function getAllDocsMarkdown(): string {
+export function getAllDocsMarkdown(
+  version: string = DEFAULT_VERSION,
+): string {
   const sections: string[] = [
     "# Farcaster Snap Documentation",
     "",
-    "> This file aggregates all Farcaster Snap documentation for LLM consumption.",
+    `> This file aggregates all Farcaster Snap documentation (${version}) for LLM consumption.`,
     "> Source: https://docs.farcaster.xyz/snap/",
     "",
   ];
 
-  for (const section of DOC_SECTIONS) {
+  const docSections = getDocSectionsForVersion(version);
+
+  for (const section of docSections) {
     for (const page of section.pages) {
       try {
         sections.push(
           `---\n\n## ${page.title}\n\n${readDocMarkdown(
-            docPathnameToMdxFile(page.pathname),
+            docPathnameToMdxFile(page.pathname, version),
           )}\n`,
         );
       } catch {

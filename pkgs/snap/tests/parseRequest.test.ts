@@ -7,8 +7,9 @@ describe("parseRequest", () => {
     const payload: SnapPayload = {
       fid: 42,
       inputs: { guess: "HELLO" },
-      button_index: 0,
       timestamp: Math.floor(Date.now() / 1000),
+      nonce: "test-nonce-abc",
+      audience: "https://example.com",
       ...overrides,
     };
     return {
@@ -43,8 +44,9 @@ describe("parseRequest", () => {
         type: "post",
         fid: 42,
         inputs: { guess: "HELLO" },
-        button_index: 0,
         timestamp: payload.timestamp,
+        nonce: "test-nonce-abc",
+        audience: "https://example.com",
       },
     });
   });
@@ -53,8 +55,9 @@ describe("parseRequest", () => {
     const payload: SnapPayload = {
       fid: 42,
       inputs: { guess: "HELLO" },
-      button_index: 0,
       timestamp: Math.floor(Date.now() / 1000),
+      nonce: "n",
+      audience: "https://example.com",
     };
     const res = await parseRequest(
       new Request("https://example.com/snap", {
@@ -106,5 +109,50 @@ describe("parseRequest", () => {
     );
     expect(res.success).toBe(false);
     if (!res.success) expect(res.error.type).toBe("signature");
+  });
+
+  it("fails when payload audience does not match request origin", async () => {
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        body: JSON.stringify(postBody({ audience: "https://evil.com" })),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(false);
+    if (!res.success) {
+      expect(res.error.type).toBe("origin_mismatch");
+      if (res.error.type === "origin_mismatch") {
+        expect(res.error.message).toContain("https://evil.com");
+        expect(res.error.message).toContain("https://example.com");
+      }
+    }
+  });
+
+  it("strips legacy button_index from payload (backward compat)", async () => {
+    const body = postBody({ button_index: 0 });
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.action.type).toBe("post");
+      expect("button_index" in res.action).toBe(false);
+    }
+  });
+
+  it("accepts POST when payload audience matches request origin", async () => {
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        body: JSON.stringify(postBody({ audience: "https://example.com" })),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(true);
   });
 });
