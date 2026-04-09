@@ -148,8 +148,15 @@ export async function parseRequest(
     };
   }
 
-  // Audience validation: only enforce when the client sends an audience field.
-  // v1 clients may not include nonce/audience yet.
+  // Deprecation: nonce and audience will become required in a future major version.
+  if (body.nonce === undefined || body.audience === undefined) {
+    console.warn(
+      "[snap] POST payload is missing nonce and/or audience. " +
+        "These fields will be required in a future major version. " +
+        "Please update your client to include both fields.",
+    );
+  }
+
   if (body.audience !== undefined) {
     let expectedOrigin = options.requestOrigin;
     if (expectedOrigin === undefined) {
