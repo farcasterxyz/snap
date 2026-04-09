@@ -313,7 +313,12 @@ function snapOriginFromRequest(request: Request): string {
     }
   }
 
-  return new URL(request.url).origin;
+  const url = new URL(request.url);
+  const proto =
+    request.headers.get("x-forwarded-proto") ??
+    url.protocol.replace(":", "");
+  const host = request.headers.get("x-forwarded-host") ?? url.host;
+  return `${proto}://${host}`;
 }
 
 function clientWantsSnapResponse(accept: string | undefined): boolean {
