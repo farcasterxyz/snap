@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.19.0
+
+### Minor Changes
+
+- [#116](https://github.com/farcasterxyz/snap/pull/116) [`a9d42ad`](https://github.com/farcasterxyz/snap/commit/a9d42addd669409364f17a90c9a99e937c29bc0d) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add `showValue` prop to slider component for displaying the current value next to the label. Fix native item layout collapse (remove flex:1), fix native badge variant fallback, and tighten native component spacing.
+
 ## 1.18.0
 
 ### Minor Changes
