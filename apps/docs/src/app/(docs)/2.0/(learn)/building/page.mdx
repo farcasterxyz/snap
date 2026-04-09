@@ -19,7 +19,7 @@ If you use a coding agent like [Claude Code](https://claude.ai/code), you can as
 install a skill that generates snaps from natural language:
 
 ```bash
-install the farcaster-snap skill from https://docs.farcaster.xyz/snap/SKILL.md
+install the farcaster-snap skill from https://docs.farcaster.xyz/snap/2.0/SKILL.md
 make me a Farcaster Snap poll asking users to pick their favorite variety of mole
 ```
 
@@ -54,7 +54,7 @@ const app = new Hono();
 registerSnapHandler(app, async (ctx) => {
   if (ctx.action.type === "get") {
     return {
-      version: "1.0",
+      version: "2.0",
       theme: { accent: "purple" },
       ui: {
         root: "page",
@@ -87,9 +87,11 @@ registerSnapHandler(app, async (ctx) => {
     };
   }
 
-  // Handle POST interactions
+  // Handle POST interactions (v2: nonce/audience are verified automatically)
   const { fid, inputs } = ctx.action;
-  // Use ctx.request.url (or parse query params) to tell which submit target was used
+  // v2 uses distinct submit target URLs instead of button_index
+  const url = new URL(ctx.request.url);
+  const action = url.searchParams.get("action"); // e.g. ?action=vote
   // ... your logic here
 });
 ```

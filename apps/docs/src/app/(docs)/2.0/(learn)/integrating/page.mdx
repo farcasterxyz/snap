@@ -27,7 +27,7 @@ app.get("/", async (c, next) => {
   // Return snap JSON
   return c.json(
     {
-      version: "1.0",
+      version: "2.0",
       theme: { accent: "purple" },
       ui: {
         root: "page",
@@ -82,7 +82,7 @@ app.get("/", (req, res, next) => {
   res.set("Content-Type", "application/vnd.farcaster.snap+json");
   res.set("Vary", "Accept");
   res.json({
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",
