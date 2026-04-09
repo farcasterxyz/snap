@@ -1,5 +1,12 @@
 # @farcaster/snap-hono
 
+## 1.5.9
+
+### Patch Changes
+
+- Updated dependencies [[`968505d`](https://github.com/farcasterxyz/snap/commit/968505d417fe69cf2e22888b7cbaeeb3e1a9e15c), [`968505d`](https://github.com/farcasterxyz/snap/commit/968505d417fe69cf2e22888b7cbaeeb3e1a9e15c)]:
+  - @farcaster/snap@1.20.0
+
 ## 1.5.8
 
 ### Patch Changes

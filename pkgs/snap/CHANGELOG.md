@@ -1,5 +1,15 @@
 # @farcaster/snap
 
+## 1.20.0
+
+### Minor Changes
+
+- [#118](https://github.com/farcasterxyz/snap/pull/118) [`968505d`](https://github.com/farcasterxyz/snap/commit/968505d417fe69cf2e22888b7cbaeeb3e1a9e15c) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add card frame styling to web SnapCard (border, border-radius, background, padding) matching the native implementation. Add `plain` prop to skip the card frame on both web and native. Remove undocumented `isSnap` param from `open_url` action. Convert theme text and border colors to rgba.
+
+### Patch Changes
+
+- [#118](https://github.com/farcasterxyz/snap/pull/118) [`968505d`](https://github.com/farcasterxyz/snap/commit/968505d417fe69cf2e22888b7cbaeeb3e1a9e15c) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add V1 show more/show less overflow handling on web and native while preserving V2 clipping and emulator overflow warnings.
+
 ## 1.19.0
 
 ### Minor Changes
