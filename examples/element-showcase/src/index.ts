@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import type { SnapHandlerResult } from "@farcaster/snap";
+import type { SnapHandlerResult, SnapElementInput } from "@farcaster/snap";
 
 type View = "home" | "text" | "inputs" | "inputs_result" | "dataviz" | "grid" | "tall" | "links";
 
@@ -570,7 +570,7 @@ function gridPage(base: string): SnapHandlerResult {
 
 function tallPage(base: string): SnapHandlerResult {
   const children: string[] = ["title"];
-  const elements: Record<string, unknown> = {
+  const elements: Record<string, SnapElementInput> = {
     page: { type: "stack", props: {}, children },
     title: { type: "item", props: { title: "Tall Snap Example" } },
   };
