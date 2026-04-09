@@ -1,5 +1,14 @@
 # @farcaster/snap-hono
 
+## 1.5.4
+
+### Patch Changes
+
+- [#105](https://github.com/farcasterxyz/snap/pull/105) [`d967427`](https://github.com/farcasterxyz/snap/commit/d9674276e69f5f26e1cad76b0af2d431859720e4) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Fix audience validation behind reverse proxies in the Hono handler. The origin derivation now checks X-Forwarded-Proto and X-Forwarded-Host headers before falling back to request.url.
+
+- Updated dependencies [[`675d7ae`](https://github.com/farcasterxyz/snap/commit/675d7ae9e3f176c5a24f9ebb24de87b5ce62c389)]:
+  - @farcaster/snap@1.17.0
+
 ## 1.5.3
 
 ### Patch Changes
