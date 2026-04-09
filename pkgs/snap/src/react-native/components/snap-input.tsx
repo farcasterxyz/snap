@@ -46,12 +46,13 @@ export function SnapInput({
 
 const styles = StyleSheet.create({
   wrap: { width: "100%", gap: 4 },
-  label: { fontSize: 13, fontWeight: "500" },
+  label: { fontSize: 13, lineHeight: 18, fontWeight: "500" },
   input: {
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
+    lineHeight: 18,
   },
 });

@@ -134,6 +134,7 @@ Field values are sent in POST `inputs[name]` when a `submit` action fires.
 - `step` (number, optional, > 0. Default: 1)
 - `defaultValue` (number, optional, between min and max)
 - `label` (string, optional, max 60)
+- `showValue` (boolean, optional): display the current value next to the label
 - POST value: number
 
 **switch** — Boolean toggle.

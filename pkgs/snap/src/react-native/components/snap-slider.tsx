@@ -26,6 +26,7 @@ export function SnapSlider({
     : fallback;
 
   const label = props.label != null ? String(props.label) : null;
+  const showValue = props.showValue === true;
   const minLabel = props.minLabel != null ? String(props.minLabel) : null;
   const maxLabel = props.maxLabel != null ? String(props.maxLabel) : null;
 
@@ -34,9 +35,11 @@ export function SnapSlider({
       {label ? (
         <View style={styles.labelRow}>
           <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
-          <Text style={[styles.valueText, { color: colors.textSecondary }]}>
-            {String(Math.round(clamped))}
-          </Text>
+          {showValue && (
+            <Text style={[styles.valueText, { color: colors.textSecondary }]}>
+              {String(Math.round(clamped))}
+            </Text>
+          )}
         </View>
       ) : null}
       <Slider
@@ -65,18 +68,18 @@ export function SnapSlider({
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: "100%", gap: 6 },
+  wrap: { width: "100%", gap: 2 },
   labelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  label: { fontSize: 13, fontWeight: "500", flex: 1 },
-  valueText: { fontSize: 13 },
+  label: { fontSize: 13, lineHeight: 18, fontWeight: "500", flex: 1 },
+  valueText: { fontSize: 13, lineHeight: 18 },
   slider: { width: "100%", height: 40 },
   minMaxRow: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  minMax: { fontSize: 12 },
+  minMax: { fontSize: 12, lineHeight: 16 },
 });

@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
+    lineHeight: 18,
     fontWeight: "400",
     flex: 1,
   },

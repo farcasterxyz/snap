@@ -12,6 +12,8 @@ export const sliderProps = z
     step: z.number().optional(),
     defaultValue: z.number().optional(),
     label: z.string().max(SLIDER_MAX_LABEL_CHARS).optional(),
+    /** When true, display the current value next to the label. */
+    showValue: z.boolean().optional(),
   })
   .superRefine((val, ctx) => {
     if (val.min > val.max) {

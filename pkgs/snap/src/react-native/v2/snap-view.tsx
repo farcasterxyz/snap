@@ -145,7 +145,7 @@ function SnapCardV2Inner({
             cardStyles.card,
             {
               borderRadius,
-              maxHeight,
+              ...(!showOverflowWarning && { maxHeight: SNAP_MAX_HEIGHT }),
               borderColor: colors.border,
               backgroundColor: colors.surface,
             },

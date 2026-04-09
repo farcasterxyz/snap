@@ -65,7 +65,7 @@ export function SnapActionButton({
               return <I size={16} color={iconColor} />;
             })()
           : null}
-        <Text style={{ color: textColor, fontSize: 14, fontWeight: "600" }}>
+        <Text style={{ color: textColor, fontSize: 14, lineHeight: 18, fontWeight: "600" }}>
           {label}
         </Text>
         {showExternalIcon ? (

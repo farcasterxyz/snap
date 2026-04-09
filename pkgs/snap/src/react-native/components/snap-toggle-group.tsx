@@ -97,7 +97,7 @@ export function SnapToggleGroup({
 
 const styles = StyleSheet.create({
   wrap: { width: "100%", gap: 6 },
-  label: { fontSize: 13, fontWeight: "500" },
+  label: { fontSize: 13, lineHeight: 18, fontWeight: "500" },
   group: {
     padding: 4,
     borderRadius: 8,
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 13,
+    lineHeight: 18,
     fontWeight: "500",
   },
 });

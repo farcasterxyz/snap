@@ -147,6 +147,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  cellText: { fontSize: 12, fontWeight: "600" },
+  cellText: { fontSize: 12, lineHeight: 16, fontWeight: "600" },
   selectionText: { fontSize: 11, fontFamily: "monospace", marginTop: 6 },
 });

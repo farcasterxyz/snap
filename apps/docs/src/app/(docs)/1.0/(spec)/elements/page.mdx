@@ -422,11 +422,12 @@ Numeric range slider for bounded choices like ratings, quantities, or percentage
 | `step` | number | No | `1` | Increment step (must be > 0, finite) |
 | `defaultValue` | number | No | midpoint | Initial value (must be between min and max) |
 | `label` | string | No | | Label text above slider. Max 60 chars |
+| `showValue` | boolean | No | `false` | Display the current value next to the label |
 
 POST value: number.
 
 ```json
-{ "type": "slider", "props": { "name": "rating", "label": "Rating (1–10)", "min": 1, "max": 10 } }
+{ "type": "slider", "props": { "name": "rating", "label": "Rating (1–10)", "min": 1, "max": 10, "showValue": true } }
 ```
 
 ---

@@ -117,7 +117,7 @@ registerSnapHandler(
               "your-vote": {
                 type: "badge",
                 props: {
-                  content: `You placed yourself: ${posLabel} (${position}/100)`,
+                  label: `${posLabel} (${position}/100)`,
                 },
               },
               "btn-vote-again": {
@@ -248,9 +248,7 @@ registerSnapHandler(
           caption: {
             type: "badge",
             props: {
-              content: `$650M fund at $5.4B market cap — investors paying ${PREMIUM.toFixed(
-                1,
-              )}x NAV for pre-IPO access`,
+              label: `${PREMIUM.toFixed(1)}x NAV premium`,
             },
           },
           "btn-try-again": {

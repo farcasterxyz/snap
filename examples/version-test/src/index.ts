@@ -139,7 +139,7 @@ function v1LoosePage(base: string): SnapHandlerResult {
         title: { type: "item", props: { title: "V1 Loose Mode" } },
         "badge-v1": {
           type: "badge",
-          props: { content: "version 1.0 — 10 root children", variant: "secondary" },
+          props: { label: "v1 — 10 root children" },
         },
         desc: {
           type: "item",
@@ -196,7 +196,7 @@ function v2StrictPage(base: string): SnapHandlerResult {
         title: { type: "item", props: { title: "V2 Strict Mode" } },
         "badge-v2": {
           type: "badge",
-          props: { content: "version 2.0 — 7 root children (at limit)", variant: "secondary" },
+          props: { label: "v2 — 7 root children (limit)" },
         },
         desc: {
           type: "item",
@@ -217,7 +217,7 @@ function v2StrictPage(base: string): SnapHandlerResult {
         },
         slider: {
           type: "slider",
-          props: { name: "rating", min: 0, max: 10, step: 1, value: 5, label: "Rating" },
+          props: { name: "rating", min: 0, max: 10, step: 1, defaultValue: 5, label: "Rating", showValue: true },
         },
         toggle: {
           type: "toggle_group",
@@ -257,7 +257,7 @@ function v2TallPage(base: string): SnapHandlerResult {
         title: { type: "item", props: { title: "V2 Tall Page" } },
         badge: {
           type: "badge",
-          props: { content: "version 2.0 — should clip at 500px", variant: "secondary" },
+          props: { label: "v2 — clips at 500px" },
         },
         items: {
           type: "stack",
@@ -313,7 +313,7 @@ function v2InvalidPage(base: string): SnapHandlerResult {
         title: { type: "item", props: { title: "V2 Invalid" } },
         badge: {
           type: "badge",
-          props: { content: "version 2.0 — 8 root children (over limit!)", variant: "secondary" },
+          props: { label: "v2 — 8 children (over limit)" },
         },
         desc: {
           type: "item",

@@ -151,7 +151,7 @@ function buildSnapRoot(
       };
       elements["group-badge"] = {
         type: "badge",
-        props: { content: "Group wrapper" },
+        props: { label: "Group wrapper" },
       };
       elements["group-progress"] = {
         type: "progress",
@@ -220,15 +220,15 @@ function buildSnapRoot(
       };
       elements["cell-a1"] = {
         type: "badge",
-        props: { content: "A1", variant: "secondary" },
+        props: { label: "A1", variant: "secondary" },
       };
       elements["cell-a2"] = {
         type: "badge",
-        props: { content: "A2", variant: "secondary" },
+        props: { label: "A2", variant: "secondary" },
       };
       elements["cell-a3"] = {
         type: "badge",
-        props: { content: "A3", variant: "secondary" },
+        props: { label: "A3", variant: "secondary" },
       };
       elements["row-b"] = {
         type: "stack",
@@ -237,15 +237,15 @@ function buildSnapRoot(
       };
       elements["cell-b1"] = {
         type: "badge",
-        props: { content: "B1", variant: "secondary" },
+        props: { label: "B1", variant: "secondary" },
       };
       elements["cell-b2"] = {
         type: "badge",
-        props: { content: "B2", variant: "secondary" },
+        props: { label: "B2", variant: "secondary" },
       };
       elements["cell-b3"] = {
         type: "badge",
-        props: { content: "B3", variant: "secondary" },
+        props: { label: "B3", variant: "secondary" },
       };
       elements.sep1 = { type: "separator", props: {} };
       break;
