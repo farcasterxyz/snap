@@ -198,20 +198,9 @@ Make sure your snap's button targets point to the snap server URL, not the stati
 
 ## Rendering snaps in a client
 
-If you're building a Farcaster client that displays snaps, keep these display guidelines
-in mind:
-
-- **Width**: Snaps are designed for a fixed width of ~480px. Render them in a
-  fixed-width container.
-- **Height**: Clip snap content at around **500px**. Content taller than this should be
-  hidden or require user interaction to reveal. The spec does not mandate a specific
-  height — 500px is the conventional limit used by existing clients.
-- **No client-side code execution**: Snaps are pure JSON rendered by the client. Never
-  execute scripts or inject user-provided HTML.
-
-The `@farcaster/snap` package provides a `SnapCard` React component for
-rendering snaps. `SnapCard` accepts a `showOverflowWarning` prop — when `false` (default)
-it clips at 500px; when `true` it extends to 700px with a visual overflow indicator.
+If you're building a Farcaster client that displays snaps, see the
+[Clients](/snap/client-overview) section for rendering guides, action handler
+documentation, and the client upgrade guide.
 
 ## Testing
 

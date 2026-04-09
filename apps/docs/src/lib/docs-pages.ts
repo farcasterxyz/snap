@@ -17,6 +17,7 @@ const SECTION_APP_FOLDER: Record<string, string> = {
   Home: "(home)",
   Learn: "(learn)",
   Spec: "(spec)",
+  Clients: "(clients)",
 };
 
 // NOTE: keep this in sync with snap-sidebar.json and the home page of each version
@@ -65,6 +66,14 @@ const V2_SECTIONS: DocSection[] = [
     ],
   },
   SHARED_SECTIONS[2],
+  {
+    title: "Clients",
+    pages: [
+      { pathname: "/client-overview", title: "Overview" },
+      { pathname: "/client-rendering", title: "Rendering Snaps" },
+      { pathname: "/client-upgrade", title: "Upgrading from v1.0" },
+    ],
+  },
 ];
 
 /** Per-version section definitions. Versions can override pages if needed. */

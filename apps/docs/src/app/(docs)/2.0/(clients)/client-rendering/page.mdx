@@ -1,0 +1,205 @@
+# Rendering Snaps
+
+This guide covers how to fetch, render, and interact with snap content using the
+`@farcaster/snap` package.
+
+## Fetching Snaps
+
+Request snap JSON by sending an `Accept` header with the snap media type:
+
+```typescript
+const response = await fetch(snapUrl, {
+  headers: {
+    Accept: "application/vnd.farcaster.snap+json",
+  },
+});
+
+const snap = await response.json();
+```
+
+If the server supports snaps, it returns JSON with `version`, `theme`, and `ui`
+fields. If not, it returns its normal HTML response.
+
+## SnapCard Component
+
+`SnapCard` is the primary component for rendering a snap. It handles version
+detection, validation, and rendering automatically.
+
+### React (Web)
+
+```tsx
+import { SnapCard } from "@farcaster/snap/react";
+import type { SnapPage, SnapActionHandlers } from "@farcaster/snap/react";
+```
+
+### React Native
+
+```tsx
+import { SnapCard } from "@farcaster/snap/react-native";
+import type { SnapPage, SnapActionHandlers } from "@farcaster/snap/react-native";
+```
+
+The React Native `SnapCard` accepts the same props plus optional `colors` and
+`borderRadius` for native styling.
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `snap` | `SnapPage` | required | The snap JSON response |
+| `handlers` | `SnapActionHandlers` | required | Action callbacks |
+| `loading` | `boolean` | `false` | Show loading state |
+| `appearance` | `"light" \| "dark"` | `"dark"` | Color scheme |
+| `maxWidth` | `number` | `480` | Maximum width in pixels |
+| `showOverflowWarning` | `boolean` | `false` | Show overflow indicator at 500px |
+| `actionError` | `string \| null` | - | Error message to display below the snap |
+| `onValidationError` | `(result) => void` | - | Called when validation fails |
+| `validationErrorFallback` | `ReactNode` | - | Custom fallback for validation errors |
+
+## Action Handlers
+
+The `handlers` prop defines how the client responds to user interactions. Every snap
+action type maps to a handler function that the client must implement.
+
+| Handler | Params | Description |
+|---------|--------|-------------|
+| `submit` | `(target: string, inputs: Record<string, value>)` | POST signed payload to `target` with collected input values. Returns the next snap page. This is the only handler that involves a server round-trip. |
+| `open_url` | `(target: string)` | Open a URL in the system browser or in-app browser. |
+| `open_mini_app` | `(target: string)` | Open a URL as a Farcaster mini app (in-app webview). |
+| `view_cast` | `({ hash: string })` | Navigate to a cast by its hash. |
+| `view_profile` | `({ fid: number })` | Navigate to a user profile by Farcaster ID. |
+| `compose_cast` | `({ text?, channelKey?, embeds? })` | Open the cast composer with optional pre-filled text, channel, and embeds. |
+| `view_token` | `({ token: string })` | View a token in the wallet. Token is a [CAIP-19](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-19.md) identifier. |
+| `send_token` | `({ token, amount?, recipientFid?, recipientAddress? })` | Open the send flow for a token (CAIP-19). Optional pre-filled amount and recipient. |
+| `swap_token` | `({ sellToken?, buyToken? })` | Open the swap flow between two tokens (CAIP-19). |
+
+The `submit` handler is the most important — it's how snaps navigate between pages.
+All input values from `input`, `slider`, `switch`, and `toggle_group` elements are
+automatically collected and passed as the `inputs` parameter. See
+[Upgrading from v1.0](/snap/client-upgrade) for the POST payload format.
+
+## Full Example
+
+This example shows the complete flow: rendering a snap, handling submit with a signed
+POST, parsing the server response, and displaying errors.
+
+```tsx
+import { useState, useCallback } from "react";
+import { SnapCard } from "@farcaster/snap/react";
+import { encodePayload } from "@farcaster/snap/server";
+import type { SnapPage, SnapActionHandlers } from "@farcaster/snap/react";
+
+function SnapRenderer({
+  initialSnap,
+  snapUrl,
+  user,
+}: {
+  initialSnap: SnapPage;
+  snapUrl: string;
+  user: { fid: number; signerKey: SignerKey };
+}) {
+  const [snap, setSnap] = useState(initialSnap);
+  const [currentUrl, setCurrentUrl] = useState(snapUrl);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = useCallback(
+    async (target: string, inputs: Record<string, unknown>) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Build the v2 payload
+        const payload = {
+          fid: user.fid,
+          inputs,
+          timestamp: Math.floor(Date.now() / 1000),
+          nonce: crypto.randomUUID(),
+          audience: new URL(target).origin,
+        };
+
+        // Sign with JFS and send
+        const body = {
+          header: encodeJFSHeader(user.signerKey),
+          payload: encodePayload(payload),
+          signature: signPayload(payload, user.signerKey),
+        };
+
+        const res = await fetch(target, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/vnd.farcaster.snap+json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        // Parse the response
+        const json = await res.json();
+
+        if (!res.ok) {
+          // Server returns { error: string } on failure
+          throw new Error(json.error ?? `Server error (${res.status})`);
+        }
+
+        // Success — render the next snap page
+        setSnap(json as SnapPage);
+        setCurrentUrl(target);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Action failed");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user],
+  );
+
+  const handlers: SnapActionHandlers = {
+    submit: (target, inputs) => void handleSubmit(target, inputs),
+    open_url: (target) => window.open(target, "_blank"),
+    open_mini_app: (target) => openMiniApp(target),
+    view_cast: ({ hash }) => navigateToCast(hash),
+    view_profile: ({ fid }) => navigateToProfile(fid),
+    compose_cast: (params) => openComposer(params),
+    view_token: ({ token }) => openTokenView(token),
+    send_token: (params) => openSendFlow(params),
+    swap_token: (params) => openSwapFlow(params),
+  };
+
+  return (
+    <SnapCard
+      snap={snap}
+      handlers={handlers}
+      loading={loading}
+      appearance="dark"
+      actionError={error}
+    />
+  );
+}
+```
+
+### How errors flow
+
+When a submit action fails, the error flows through to the user like this:
+
+1. The client POSTs the signed payload to the snap server
+2. The server returns a 4xx response with `{ "error": "..." }` — for example
+   `{ "error": "payload audience does not match expected origin" }`
+3. The client catches the error and sets it in state
+4. `SnapCard` receives the error via the `actionError` prop and renders it below
+   the snap content, outside the 500px clipped area so it's always visible
+5. On the next successful submit, the client clears the error
+
+Common server errors include:
+
+- **400** — invalid payload (missing fields, validation failure)
+- **401** — JFS signature verification failed
+- **400** `origin_mismatch` — audience doesn't match the server origin
+- **400** `replay` — timestamp outside allowed skew
+
+## Display Guidelines
+
+- **Width**: Snaps are designed for a fixed width of ~480px
+- **Height**: Snaps clip at **500px**. Content below this is hidden
+- **No client-side code execution**: Snaps are pure JSON — never execute scripts or
+  inject user-provided HTML

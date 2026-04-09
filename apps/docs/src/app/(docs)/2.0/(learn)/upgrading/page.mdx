@@ -70,6 +70,13 @@ has large or deeply nested UIs, you may need to restructure.
 
 See [Constraints](/snap/constraints) for the full list.
 
+## Client upgrade required
+
+Farcaster clients **must** be updated to send `nonce` and `audience` in every POST
+payload. v2 snap servers will reject requests that omit these fields. See the
+[Client Upgrade Guide](/snap/client-upgrade) for the full payload format and
+fallback behavior for older servers.
+
 ## Package updates
 
 Update your dependencies to the latest versions:
@@ -95,4 +102,5 @@ your snap violates any v2 constraints.
 - [ ] Use distinct submit target URLs to distinguish buttons
 - [ ] Verify your UI tree fits within structural constraints
 - [ ] Update `@farcaster/snap` and `@farcaster/snap-hono` packages
+- [ ] Ensure your Farcaster client sends `nonce` and `audience` in POST payloads ([details](/snap/client-upgrade))
 - [ ] Test in the emulator
