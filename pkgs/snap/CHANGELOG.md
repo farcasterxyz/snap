@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.16.3
+
+### Patch Changes
+
+- [#103](https://github.com/farcasterxyz/snap/pull/103) [`cb41e17`](https://github.com/farcasterxyz/snap/commit/cb41e17c0769aa14a98afa1b0be9d4337b4d7cd3) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Fix audience validation behind reverse proxies (e.g. ngrok). The origin fallback now checks X-Forwarded-Proto and X-Forwarded-Host headers to reconstruct the external origin instead of using the internal request URL.
+
 ## 1.16.2
 
 ### Patch Changes
