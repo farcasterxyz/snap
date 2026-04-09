@@ -1,5 +1,16 @@
 # @farcaster/snap-hono
 
+## 1.5.0
+
+### Minor Changes
+
+- [#95](https://github.com/farcasterxyz/snap/pull/95) [`145297b`](https://github.com/farcasterxyz/snap/commit/145297b8d9dcb06182a8292a830aa5c9c33b24a5) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add audience origin validation for v2 snap requests. The server now passes the request origin to `parseRequest` and handles the new `origin_mismatch` error case. Also improves origin detection to use `URL.origin` for more reliable parsing.
+
+### Patch Changes
+
+- Updated dependencies [[`145297b`](https://github.com/farcasterxyz/snap/commit/145297b8d9dcb06182a8292a830aa5c9c33b24a5), [`145297b`](https://github.com/farcasterxyz/snap/commit/145297b8d9dcb06182a8292a830aa5c9c33b24a5)]:
+  - @farcaster/snap@1.16.0
+
 ## 1.4.11
 
 ### Patch Changes
