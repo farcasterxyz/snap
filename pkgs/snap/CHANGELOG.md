@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.21.0
+
+### Minor Changes
+
+- [#120](https://github.com/farcasterxyz/snap/pull/120) [`5101555`](https://github.com/farcasterxyz/snap/commit/51015553c63491b3499912f81aa4790e0ccf12dd) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add `open_snap` action for opening snap URLs inline. Unlike `open_url` which opens an external browser, `open_snap` tells the client to render the target as a snap. Removes undocumented `isSnap` param from `open_url`. Buttons with `open_url` now always show the external link icon.
+
 ## 1.20.0
 
 ### Minor Changes
