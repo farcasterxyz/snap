@@ -2,7 +2,13 @@ import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import type { SnapHandlerResult } from "@farcaster/snap";
 
-type View = "home" | "v1-loose" | "v2-strict" | "v2-tall" | "v2-invalid";
+type View =
+  | "home"
+  | "v1-loose"
+  | "v1-tall"
+  | "v2-strict"
+  | "v2-tall"
+  | "v2-invalid";
 
 const app = new Hono();
 
@@ -10,7 +16,7 @@ registerSnapHandler(app, async (ctx) => {
   const url = new URL(ctx.request.url);
   const rawView = url.searchParams.get("view") ?? "home";
   const view = (
-    ["home", "v1-loose", "v2-strict", "v2-tall", "v2-invalid"].includes(rawView)
+    ["home", "v1-loose", "v1-tall", "v2-strict", "v2-tall", "v2-invalid"].includes(rawView)
       ? rawView
       : "home"
   ) as View;
@@ -23,6 +29,8 @@ registerSnapHandler(app, async (ctx) => {
   switch (view) {
     case "v1-loose":
       return v1LoosePage(base);
+    case "v1-tall":
+      return v1TallPage(base);
     case "v2-strict":
       return v2StrictPage(base);
     case "v2-tall":
@@ -51,7 +59,15 @@ function homePage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
-          children: ["title", "desc", "btn-v1", "btn-v2", "btn-v2-tall", "btn-v2-invalid"],
+          children: [
+            "title",
+            "desc",
+            "btn-v1",
+            "btn-v1-tall",
+            "btn-v2",
+            "btn-v2-tall",
+            "btn-v2-invalid",
+          ],
         },
         title: {
           type: "item",
@@ -71,6 +87,16 @@ function homePage(base: string): SnapHandlerResult {
             press: {
               action: "submit",
               params: { target: `${base}/?view=v1-loose` },
+            },
+          },
+        },
+        "btn-v1-tall": {
+          type: "button",
+          props: { label: "V1 Tall (expand test)" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=v1-tall` },
             },
           },
         },
@@ -157,6 +183,53 @@ function v1LoosePage(base: string): SnapHandlerResult {
         "btn-home": {
           type: "button",
           props: { label: "← Home" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=home` },
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
+/**
+ * V1 tall page — mirrors the V2 tall content so V1 expandable overflow
+ * behavior can be compared directly against V2 clipping.
+ */
+function v1TallPage(base: string): SnapHandlerResult {
+  return {
+    version: "1.0",
+    theme: { accent: "red" },
+    ui: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "badge", "items", "btn-home"],
+        },
+        title: { type: "item", props: { title: "V1 Tall Page" } },
+        badge: {
+          type: "badge",
+          props: { label: "v1 — expands past 500px with show more" },
+        },
+        items: {
+          type: "stack",
+          props: {},
+          children: ["i1", "i2", "i3", "i4", "i5", "i6"],
+        },
+        i1: { type: "item", props: { title: "Section 1", description: "Padding content to push the page past the 500px height limit for testing expandable overflow behavior." } },
+        i2: { type: "item", props: { title: "Section 2", description: "More content to increase total height. V1 should collapse first, then expand when Show more is pressed." } },
+        i3: { type: "item", props: { title: "Section 3", description: "Continuing to add vertical content so the snap exceeds the collapsed area and makes the toggle appear." } },
+        i4: { type: "item", props: { title: "Section 4", description: "Below the fold. This content should be hidden in the collapsed state and visible once expanded." } },
+        i5: { type: "item", props: { title: "Section 5", description: "Still going. This helps compare the V1 expandable card path against the V2 clipped card path." } },
+        i6: { type: "item", props: { title: "Section 6", description: "The bottom of the tall page. After expansion, Show less should collapse the card again." } },
+        "btn-home": {
+          type: "button",
+          props: { label: "← Home (v1)" },
           on: {
             press: {
               action: "submit",

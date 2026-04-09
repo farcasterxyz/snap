@@ -46,6 +46,6 @@ export function SnapText({
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, width: "100%" },
+  wrap: { width: "100%" },
   base: {},
 });

@@ -123,6 +123,7 @@ function SnapCardV2Inner({
   validationErrorFallback,
   actionError,
   appearance,
+  plain,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -133,54 +134,62 @@ function SnapCardV2Inner({
   validationErrorFallback?: ReactNode;
   actionError?: string | null;
   appearance: "light" | "dark";
+  plain: boolean;
 }) {
   const { colors } = useSnapTheme();
-  const maxHeight = showOverflowWarning ? SNAP_WARNING_HEIGHT : SNAP_MAX_HEIGHT;
+  const clipHeight = showOverflowWarning ? undefined : SNAP_MAX_HEIGHT;
+
+  const content = (
+    <SnapViewV2Inner
+      snap={snap}
+      handlers={handlers}
+      loading={loading}
+      onValidationError={onValidationError}
+      validationErrorFallback={validationErrorFallback}
+    />
+  );
+
+  if (plain) {
+    return content;
+  }
 
   return (
     <>
-      <View style={cardStyles.frameRing}>
-        <View
-          style={[
-            cardStyles.card,
-            {
-              borderRadius,
-              ...(!showOverflowWarning && { maxHeight: SNAP_MAX_HEIGHT }),
-              borderColor: colors.border,
-              backgroundColor: colors.surface,
-            },
-          ]}
-        >
-          <View style={cardStyles.body}>
-            <SnapViewV2Inner
-              snap={snap}
-              handlers={handlers}
-              loading={loading}
-              onValidationError={onValidationError}
-              validationErrorFallback={validationErrorFallback}
-            />
-          </View>
-          {showOverflowWarning && (
-            <View style={cardStyles.warningOverlay}>
-              <View style={cardStyles.warningLine} />
-              <View style={cardStyles.warningLabel}>
-                <Text style={cardStyles.warningLabelText}>{SNAP_MAX_HEIGHT}px</Text>
-              </View>
-            </View>
-          )}
+      <View
+        style={{
+          borderRadius,
+          borderWidth: 1,
+          borderColor: colors.border,
+          backgroundColor: colors.surface,
+          maxHeight: clipHeight,
+          overflow: "hidden",
+          minHeight: 120,
+        }}
+      >
+        <View style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
+          {content}
         </View>
+        {showOverflowWarning && (
+          <View style={{ position: "absolute", top: SNAP_MAX_HEIGHT, left: 0, right: 0, bottom: 0, zIndex: 10, pointerEvents: "none" }}>
+            <View style={{ height: 1, borderTopWidth: 1, borderStyle: "dashed", borderColor: "rgba(255,100,100,0.6)" }} />
+            <View style={{ position: "absolute", top: -10, right: 4, backgroundColor: "rgba(0,0,0,0.7)", paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>
+              <Text style={{ fontSize: 10, color: "rgba(255,100,100,0.7)", fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }) }}>{SNAP_MAX_HEIGHT}px</Text>
+            </View>
+            <View style={{ flex: 1, backgroundColor: "rgba(255,50,50,0.15)" }} />
+          </View>
+        )}
       </View>
       {actionError && (
         <Text
-          style={[
-            cardStyles.actionError,
-            {
-              color:
-                appearance === "dark"
-                  ? "rgba(255,100,100,0.9)"
-                  : "rgba(200,0,0,0.8)",
-            },
-          ]}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            fontSize: 13,
+            color:
+              appearance === "dark"
+                ? "rgba(255,100,100,0.9)"
+                : "rgba(200,0,0,0.8)",
+          }}
         >
           {actionError}
         </Text>
@@ -200,6 +209,7 @@ export function SnapCardV2({
   onValidationError,
   validationErrorFallback,
   actionError,
+  plain = false,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -211,6 +221,7 @@ export function SnapCardV2({
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
   actionError?: string | null;
+  plain?: boolean;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -224,6 +235,7 @@ export function SnapCardV2({
         validationErrorFallback={validationErrorFallback}
         actionError={actionError}
         appearance={appearance}
+        plain={plain}
       />
     </SnapThemeProvider>
   );
@@ -231,7 +243,7 @@ export function SnapCardV2({
 
 const cardStyles = StyleSheet.create({
   frameRing: { alignSelf: "stretch" },
-  card: { overflow: "hidden", borderWidth: 1, minHeight: 120 },
+  card: { borderWidth: 1, minHeight: 120, overflow: "hidden" },
   body: { paddingHorizontal: 16, paddingVertical: 16 },
   actionError: { paddingHorizontal: 12, paddingVertical: 8, fontSize: 13 },
   warningOverlay: {
