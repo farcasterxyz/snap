@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.18.0
+
+### Minor Changes
+
+- [#113](https://github.com/farcasterxyz/snap/pull/113) [`960973d`](https://github.com/farcasterxyz/snap/commit/960973d329022c7fdbfa9be66178fba18d42bb38) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Make `nonce` and `audience` required in the POST payload schema. Clients must now include both fields. Audience is always validated against the server origin.
+
 ## 1.17.2
 
 ### Patch Changes
