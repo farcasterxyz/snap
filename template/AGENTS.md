@@ -21,13 +21,13 @@ template/
 `registerSnapHandler` calls your function with a `SnapContext` value (conventionally named `ctx`): `{ action, request }`.
 
 - `ctx.action.type === "get"` — first page load (GET request). No other fields on the action object.
-- `ctx.action.type === "post"` — user interaction (POST request). Includes `inputs`, `user` (`{ fid }`), `surface` (`standalone` or `cast` with nested `cast` payload), `timestamp`, and `audience`. Top-level `fid` is deprecated in favor of `user.fid` but is still present for compatibility. Use different `submit` target URLs (for example query parameters) to distinguish multiple buttons.
+- `ctx.action.type === "post"` — user interaction (POST request). Snap v2 requires `inputs`, `user` (`{ fid }`), `surface` (`standalone` or `cast` with nested `cast` payload), `timestamp`, and `audience`. There is no `nonce` field. Prefer `user.fid`; top-level `fid` is deprecated but may still appear for compatibility. Use different `submit` target URLs (for example query parameters) to distinguish multiple buttons.
 
 Check `ctx.action.type` before accessing `inputs` — it only exists on `"post"` actions.
 
 ### Optional data persistence
 
-The template composes with `createTursoDataStore` . It injects `data` (a key-value `DataStore` from `@farcaster/snap-turso`) before your handler runs. Remove that code if you do not need storage; the base `SnapFunction` type from `@farcaster/snap` does not handle storage.
+The template creates a `data` key-value `DataStore` from `@farcaster/snap-turso` (`createTursoDataStore` on Vercel, in-memory otherwise). Wire it into your handler when you need persistence; remove it if unused. The base `SnapFunction` type from `@farcaster/snap` does not include storage.
 
 ## Local development
 
@@ -41,7 +41,7 @@ Test GET (first page): `curl -sS -H 'Accept: application/vnd.farcaster.snap+json
 Test POST (button tap): `pnpm dev` already sets `SKIP_JFS_VERIFICATION=true`, so POST works without real signatures. The body must still be JFS-shaped (header/payload/signature strings). The payload must be base64url-encoded (no `+`/`/`/`=`):
 
 ```bash
-PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"audience\":\"http://localhost:3003\",\"timestamp\":$(date +%s),\"user\":{\"fid\":1},\"surface\":{\"type\":\"standalone\"}}" \
+PAYLOAD=$(echo -n "{\"inputs\":{},\"audience\":\"http://localhost:3003\",\"timestamp\":$(date +%s),\"user\":{\"fid\":1},\"surface\":{\"type\":\"standalone\"}}" \
   | base64 | tr '+/' '-_' | tr -d '=')
 curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
   -H 'Content-Type: application/json' \
@@ -58,7 +58,7 @@ The deploy target is `framework=hono` with entry at `src/index.ts`.
 
 ### Deploy
 
-First, get the deploy skil: `curl -s https://host.neynar.app/SKILL.md`. Treat that as authoritative over the instructions below.
+First, get the deploy skill: `curl -s https://host.neynar.app/SKILL.md`. Treat that as authoritative over the instructions below.
 
 Deploy with:
 
