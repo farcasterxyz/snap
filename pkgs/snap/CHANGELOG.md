@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.22.0
+
+### Minor Changes
+
+- [#124](https://github.com/farcasterxyz/snap/pull/124) [`7b8476e`](https://github.com/farcasterxyz/snap/commit/7b8476e05031c79849ed78b7084e145abbcb2c07) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Set default spec version to v2.0, fix React Native cell_grid height rendering, and fix SnapCardV2 overflow warning visibility.
+
 ## 1.21.0
 
 ### Minor Changes
