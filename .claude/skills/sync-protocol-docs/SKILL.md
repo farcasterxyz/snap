@@ -92,7 +92,7 @@ When `DEFAULT_VERSION` changes, copy the corresponding versioned SKILL.md to the
 
 - Dynamic route that concatenates all docs for a given version
 - Serves `DEFAULT_VERSION` by default, accepts `?version=X` query param
-- 2.0 SKILL.md points agents to `/snap/2.0/` docs; markdown content negotiation
+- 2.0 SKILL.md points agents to `/snap/` docs (default version); markdown content negotiation
   handles version routing automatically
 
 **Integration docs**:

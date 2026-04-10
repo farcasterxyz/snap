@@ -10,7 +10,7 @@ const COLORS = [
   "#22C55E",
   "#06B6D4",
   "#3B82F6",
-  "#8B5CF6",
+  "#907AA9",
   "#000000",
 ];
 
@@ -60,8 +60,8 @@ function createInitialGrid(): (string | null)[][] {
   fillPixel(8, 4, "#EF4444");
   fillPixel(8, 11, "#EF4444");
 
-  fillPixel(0, 0, "#8B5CF6");
-  fillPixel(0, 15, "#8B5CF6");
+  fillPixel(0, 0, "#907AA9");
+  fillPixel(0, 15, "#907AA9");
   fillPixel(15, 0, "#22C55E");
   fillPixel(15, 15, "#22C55E");
   fillPixel(14, 7, "#06B6D4");
@@ -83,7 +83,7 @@ interface ActivityEntry {
 const RECENT_ACTIVITY: ActivityEntry[] = [
   { user: "@dwr.eth", color: "#3B82F6", row: 4, col: 7, time: "2s ago" },
   { user: "@jessepollak", color: "#EAB308", row: 13, col: 8, time: "5s ago" },
-  { user: "@linda.eth", color: "#8B5CF6", row: 1, col: 3, time: "12s ago" },
+  { user: "@linda.eth", color: "#907AA9", row: 1, col: 3, time: "12s ago" },
 ];
 
 const COLOR_NAMES: Record<string, string> = {
@@ -93,7 +93,7 @@ const COLOR_NAMES: Record<string, string> = {
   "#22C55E": "green",
   "#06B6D4": "cyan",
   "#3B82F6": "blue",
-  "#8B5CF6": "purple",
+  "#907AA9": "purple",
   "#000000": "black",
 };
 

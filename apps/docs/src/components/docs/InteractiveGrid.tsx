@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const COLORS = ["#22C55E", "#6B7280", "#CA8A04", "#8B5CF6", "#006BFF"];
+const COLORS = ["#22C55E", "#6B7280", "#CA8A04", "#907AA9", "#286983"];
 
 export default function InteractiveGrid() {
   const [tapped, setTapped] = useState<string | null>(null);
@@ -13,11 +13,11 @@ export default function InteractiveGrid() {
     { r: 0, c: 2, color: "#22C55E", text: "A" },
     { r: 0, c: 3, color: "#CA8A04", text: "N" },
     { r: 0, c: 4, color: "#22C55E", text: "E" },
-    { r: 1, c: 0, color: "#8B5CF6", text: "S" },
+    { r: 1, c: 0, color: "#907AA9", text: "S" },
     { r: 1, c: 1, color: "#22C55E", text: "N" },
     { r: 1, c: 2, color: "#22C55E", text: "A" },
     { r: 1, c: 3, color: "#22C55E", text: "P" },
-    { r: 1, c: 4, color: "#006BFF", text: "S" },
+    { r: 1, c: 4, color: "#286983", text: "S" },
   ];
 
   const filledKeys = new Set(cells.map((c) => `${c.r},${c.c}`));
@@ -74,7 +74,7 @@ export default function InteractiveGrid() {
               style={{
                 background: "transparent",
                 border: isTapped
-                  ? "2px solid #8B5CF6"
+                  ? "2px solid #907AA9"
                   : "1px solid var(--border)",
                 borderRadius: 4,
                 height: 36,

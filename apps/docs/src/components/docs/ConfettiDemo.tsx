@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const COLORS = [
-  "#8B5CF6",
+  "#907AA9",
   "#EC4899",
   "#3B82F6",
   "#10B981",

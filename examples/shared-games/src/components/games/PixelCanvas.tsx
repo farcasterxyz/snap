@@ -11,7 +11,7 @@ const COLORS = [
   "#22C55E", // green
   "#06B6D4", // cyan
   "#3B82F6", // blue
-  "#8B5CF6", // purple
+  "#907AA9", // purple
   "#000000", // black
 ];
 
@@ -74,8 +74,8 @@ function createInitialGrid(): (string | null)[][] {
   fillPixel(8, 11, "#EF4444");
 
   // Some scattered art pixels (other people's contributions)
-  fillPixel(0, 0, "#8B5CF6");
-  fillPixel(0, 15, "#8B5CF6");
+  fillPixel(0, 0, "#907AA9");
+  fillPixel(0, 15, "#907AA9");
   fillPixel(15, 0, "#22C55E");
   fillPixel(15, 15, "#22C55E");
   fillPixel(14, 7, "#06B6D4");
