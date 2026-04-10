@@ -98,7 +98,7 @@ export default app;
 function homePage(base: string): SnapHandlerResult {
   id = 0;
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "purple" },
     ui: {
       root: "page",
@@ -145,7 +145,7 @@ function castPage(base: string): SnapHandlerResult {
   id = 0;
   const { id: navId, elements: navEls } = navRow(base);
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",
@@ -191,7 +191,7 @@ function profilePage(base: string): SnapHandlerResult {
   id = 0;
   const { id: navId, elements: navEls } = navRow(base);
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "green" },
     ui: {
       root: "page",
@@ -235,7 +235,7 @@ function tokenPage(base: string): SnapHandlerResult {
   id = 0;
   const { id: navId, elements: navEls } = navRow(base);
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "amber" },
     ui: {
       root: "page",
@@ -294,7 +294,7 @@ function sendSwapPage(base: string): SnapHandlerResult {
   id = 0;
   const { id: navId, elements: navEls } = navRow(base);
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "teal" },
     ui: {
       root: "page",

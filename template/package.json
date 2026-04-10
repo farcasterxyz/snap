@@ -9,9 +9,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@farcaster/snap": "*",
-    "@farcaster/snap-hono": "*",
-    "@farcaster/snap-turso": "*",
+    "@farcaster/snap": "^1.20.0",
+    "@farcaster/snap-hono": "^1.5.9",
+    "@farcaster/snap-turso": "^1.0.18",
     "@hono/node-server": "^1.19.13",
     "@noble/curves": "^2.0.0",
     "hono": "^4.0.0",

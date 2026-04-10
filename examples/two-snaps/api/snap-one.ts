@@ -7,7 +7,7 @@ const app = new Hono();
 
 registerSnapHandler(app, async (): Promise<SnapHandlerResult> => {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",

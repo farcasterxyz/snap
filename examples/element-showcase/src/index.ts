@@ -54,7 +54,7 @@ export default app;
 
 function homePage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "purple" },
     ui: {
       root: "page",
@@ -144,7 +144,7 @@ function homePage(base: string): SnapHandlerResult {
 
 function textPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",
@@ -228,7 +228,7 @@ function textPage(base: string): SnapHandlerResult {
 
 function inputsPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "teal" },
     ui: {
       root: "page",
@@ -335,7 +335,7 @@ function inputsResultPage(
   const notify = inputs.notify === true ? "ON" : "OFF";
 
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "green" },
     ui: {
       root: "page",
@@ -417,7 +417,7 @@ function inputsResultPage(
 
 function dataVizPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "amber" },
     ui: {
       root: "page",
@@ -509,7 +509,7 @@ function dataVizPage(base: string): SnapHandlerResult {
 function gridPage(base: string): SnapHandlerResult {
   // Grid doesn't exist in the new format — show the pixel art as an image instead
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "pink" },
     effects: ["confetti"],
     ui: {
@@ -608,7 +608,7 @@ function tallPage(base: string): SnapHandlerResult {
 
 function linksPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",

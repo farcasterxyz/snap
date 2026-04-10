@@ -51,7 +51,7 @@ export default app;
  */
 function homePage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "purple" },
     ui: {
       root: "page",
@@ -141,7 +141,7 @@ function homePage(base: string): SnapHandlerResult {
  */
 function v1LoosePage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",
@@ -201,7 +201,7 @@ function v1LoosePage(base: string): SnapHandlerResult {
  */
 function v1TallPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "red" },
     ui: {
       root: "page",
