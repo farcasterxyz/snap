@@ -1,7 +1,6 @@
 import {
   compact,
   decode,
-  decodeHeader,
   decodePayload as jfsDecodePayload,
   encodePayload as jfsEncodePayload,
   verify,
