@@ -21,6 +21,35 @@ const SECTION_APP_FOLDER: Record<string, string> = {
 };
 
 // NOTE: keep this in sync with snap-sidebar.json and the home page of each version
+const SPEC_PAGES: Record<string, DocPage[]> = {
+  V1: [
+    { pathname: "/spec-overview", title: "Overview" },
+    { pathname: "/http-headers", title: "HTTP Headers" },
+    { pathname: "/elements", title: "Elements" },
+    { pathname: "/buttons", title: "Buttons" },
+    { pathname: "/effects", title: "Effects" },
+    { pathname: "/theme", title: "Theme & Styling" },
+    { pathname: "/colors", title: "Color Palette" },
+    { pathname: "/actions", title: "Actions" },
+    { pathname: "/constraints", title: "Constraints" },
+    { pathname: "/auth", title: "Authentication" },
+  ],
+  V2: [
+    { pathname: "/spec-overview", title: "Overview" },
+    { pathname: "/http-headers", title: "HTTP Headers" },
+    { pathname: "/elements", title: "Elements" },
+    { pathname: "/buttons", title: "Buttons" },
+    { pathname: "/surfaces", title: "Surfaces" },
+    { pathname: "/effects", title: "Effects" },
+    { pathname: "/theme", title: "Theme & Styling" },
+    { pathname: "/colors", title: "Color Palette" },
+    { pathname: "/actions", title: "Actions" },
+    { pathname: "/constraints", title: "Constraints" },
+    { pathname: "/auth", title: "Authentication" },
+  ],
+};
+
+// NOTE: keep Spec page lists in sync with snap-sidebar.json (run `pnpm generate-sidebar` in apps/docs)
 const SHARED_SECTIONS: DocSection[] = [
   {
     title: "Home",
@@ -41,18 +70,7 @@ const SHARED_SECTIONS: DocSection[] = [
   },
   {
     title: "Spec",
-    pages: [
-      { pathname: "/spec-overview", title: "Overview" },
-      { pathname: "/http-headers", title: "HTTP Headers" },
-      { pathname: "/elements", title: "Elements" },
-      { pathname: "/buttons", title: "Buttons" },
-      { pathname: "/effects", title: "Effects" },
-      { pathname: "/theme", title: "Theme & Styling" },
-      { pathname: "/colors", title: "Color Palette" },
-      { pathname: "/actions", title: "Actions" },
-      { pathname: "/constraints", title: "Constraints" },
-      { pathname: "/auth", title: "Authentication" },
-    ],
+    pages: SPEC_PAGES["V1"],
   },
 ];
 
@@ -65,7 +83,10 @@ const V2_SECTIONS: DocSection[] = [
       { pathname: "/upgrading", title: "Upgrading from v1.0" },
     ],
   },
-  SHARED_SECTIONS[2],
+  {
+    title: "Spec",
+    pages: SPEC_PAGES["V2"],
+  },
   {
     title: "Clients",
     pages: [

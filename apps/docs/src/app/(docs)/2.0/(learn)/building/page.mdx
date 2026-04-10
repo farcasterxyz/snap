@@ -87,9 +87,9 @@ registerSnapHandler(app, async (ctx) => {
     };
   }
 
-  // Handle POST interactions (v2: nonce/audience are verified automatically)
-  const { fid, inputs } = ctx.action;
-  // v2 uses distinct submit target URLs instead of button_index
+  // Handle POST interactions
+  const { user, inputs } = ctx.action;
+  const fid = user.fid;
   const url = new URL(ctx.request.url);
   const action = url.searchParams.get("action"); // e.g. ?action=vote
   // ... your logic here

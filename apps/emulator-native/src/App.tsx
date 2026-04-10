@@ -26,10 +26,7 @@ import {
   coerceUpstreamUrlToMatchCurrentSnap,
   toAbsoluteSnapTarget,
 } from "./lib/snapUrl";
-import {
-  parseSnapPayload,
-  type SnapPageResponse,
-} from "./lib/snapPayload";
+import { parseSnapPayload, type SnapPageResponse } from "./lib/snapPayload";
 
 function formatValidationIssues(
   issues: readonly { path?: PropertyKey[]; message: string }[],
@@ -137,7 +134,9 @@ async function loadUrlHistory(): Promise<string[]> {
     const raw = await SecureStore.getItemAsync(URL_HISTORY_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((s): s is string => typeof s === "string") : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((s): s is string => typeof s === "string")
+      : [];
   } catch {
     return [];
   }
@@ -227,8 +226,9 @@ function AppContent() {
         fid,
         inputs: inputs as SnapPayload["inputs"],
         timestamp,
-        nonce: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         audience: new URL(nextSourceUrl).origin,
+        user: { fid },
+        surface: { type: "standalone" },
       };
 
       setLoading(true);
@@ -321,10 +321,7 @@ function AppContent() {
     }
   }, []);
 
-  const previewIsStale = urlDiffersFromLoadedSnap(
-    urlInput,
-    currentSourceUrl,
-  );
+  const previewIsStale = urlDiffersFromLoadedSnap(urlInput, currentSourceUrl);
   const urlValid = normalizeSnapUrl(urlInput) !== null;
 
   return (
@@ -373,21 +370,29 @@ function AppContent() {
                   },
                 ]}
                 value={urlInput}
-                onChangeText={(t) => { setUrlInput(t); setShowHistory(false); }}
+                onChangeText={(t) => {
+                  setUrlInput(t);
+                  setShowHistory(false);
+                }}
                 placeholder="http://localhost:3016 or https://..."
                 placeholderTextColor={colors.textSecondary}
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="default"
                 maxLength={512}
-                onFocus={() => { if (urlHistory.length > 0) setShowHistory(true); }}
+                onFocus={() => {
+                  if (urlHistory.length > 0) setShowHistory(true);
+                }}
               />
               {urlHistory.length > 0 && (
                 <Pressable
                   onPress={() => setShowHistory((v) => !v)}
                   style={[
                     styles.historyToggle,
-                    { borderColor: colors.border, backgroundColor: colors.inputBg },
+                    {
+                      borderColor: colors.border,
+                      backgroundColor: colors.inputBg,
+                    },
                   ]}
                 >
                   <Text style={{ color: colors.text, fontSize: 13 }}>
@@ -400,7 +405,10 @@ function AppContent() {
               <View
                 style={[
                   styles.historyDropdown,
-                  { borderColor: colors.border, backgroundColor: colors.surface },
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface,
+                  },
                 ]}
               >
                 {urlHistory.map((url) => (
@@ -411,7 +419,10 @@ function AppContent() {
                       pressed && { backgroundColor: colors.inputBg },
                       url === urlInput && { backgroundColor: colors.inputBg },
                     ]}
-                    onPress={() => { setUrlInput(url); setShowHistory(false); }}
+                    onPress={() => {
+                      setUrlInput(url);
+                      setShowHistory(false);
+                    }}
                   >
                     <Text
                       style={[styles.historyItemText, { color: colors.text }]}
@@ -469,7 +480,9 @@ function AppContent() {
             <>
               <View
                 style={styles.previewWrap}
-                onLayout={(e) => setSnapHeight(Math.round(e.nativeEvent.layout.height))}
+                onLayout={(e) =>
+                  setSnapHeight(Math.round(e.nativeEvent.layout.height))
+                }
               >
                 <SnapCard
                   snap={snap as SnapPage}
@@ -477,43 +490,70 @@ function AppContent() {
                   appearance={mode}
                   colors={colors}
                   showOverflowWarning
-                  handlers={{
-                    submit: (target, inputs) => {
-                      void handlePostButton(target, inputs);
-                    },
-                    open_url: (target) => {
-                      if (target) void handleLinkButton(target);
-                    },
-                    open_snap: (target) => {
-                      Alert.alert("Client Action", `open_snap\n${target || "(no url)"}`);
-                    },
-                    open_mini_app: (url) => {
-                      Alert.alert("Client Action", `open_mini_app\n${url || "(no url)"}`);
-                    },
-                    view_cast: ({ hash }) => {
-                      Alert.alert("Client Action", `view_cast\nhash: ${hash || "(none)"}`);
-                    },
-                    view_profile: ({ fid }) => {
-                      Alert.alert("Client Action", `view_profile\nfid: ${fid || "(none)"}`);
-                    },
-                    compose_cast: ({ text }) => {
-                      Alert.alert("Client Action", `compose_cast\n${text || "(no text)"}`);
-                    },
-                    view_token: ({ token }) => {
-                      Alert.alert("Client Action", `view_token\n${token || "(no token)"}`);
-                    },
-                    send_token: ({ token }) => {
-                      Alert.alert("Client Action", `send_token\n${token || "(no token)"}`);
-                    },
-                    swap_token: ({ sellToken, buyToken }) => {
-                      Alert.alert("Client Action", `swap_token\nsell: ${sellToken || "(none)"} buy: ${buyToken || "(none)"}`);
-                    },
-                  } satisfies SnapActionHandlers}
+                  handlers={
+                    {
+                      submit: (target, inputs) => {
+                        void handlePostButton(target, inputs);
+                      },
+                      open_url: (target) => {
+                        if (target) void handleLinkButton(target);
+                      },
+                      open_snap: (target) => {
+                        Alert.alert(
+                          "Client Action",
+                          `open_snap\n${target || "(no url)"}`,
+                        );
+                      },
+                      open_mini_app: (url) => {
+                        Alert.alert(
+                          "Client Action",
+                          `open_mini_app\n${url || "(no url)"}`,
+                        );
+                      },
+                      view_cast: ({ hash }) => {
+                        Alert.alert(
+                          "Client Action",
+                          `view_cast\nhash: ${hash || "(none)"}`,
+                        );
+                      },
+                      view_profile: ({ fid }) => {
+                        Alert.alert(
+                          "Client Action",
+                          `view_profile\nfid: ${fid || "(none)"}`,
+                        );
+                      },
+                      compose_cast: ({ text }) => {
+                        Alert.alert(
+                          "Client Action",
+                          `compose_cast\n${text || "(no text)"}`,
+                        );
+                      },
+                      view_token: ({ token }) => {
+                        Alert.alert(
+                          "Client Action",
+                          `view_token\n${token || "(no token)"}`,
+                        );
+                      },
+                      send_token: ({ token }) => {
+                        Alert.alert(
+                          "Client Action",
+                          `send_token\n${token || "(no token)"}`,
+                        );
+                      },
+                      swap_token: ({ sellToken, buyToken }) => {
+                        Alert.alert(
+                          "Client Action",
+                          `swap_token\nsell: ${sellToken || "(none)"} buy: ${buyToken || "(none)"}`,
+                        );
+                      },
+                    } satisfies SnapActionHandlers
+                  }
                 />
                 {snapHeight !== null && (
                   <View style={styles.heightOverlay}>
                     <Text style={styles.heightText}>
-                      {snapHeight}px{snapHeight > 500 ? " (over 500px limit)" : ""}
+                      {snapHeight}px
+                      {snapHeight > 500 ? " (over 500px limit)" : ""}
                     </Text>
                   </View>
                 )}

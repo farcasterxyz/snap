@@ -45,8 +45,8 @@ Refer to these docs throughout. Explore them as needed by following the links fr
 page. Do not invent URLs that dont exist. Do not rely on memorized spec content.
 
 > **Important**: You are building a **v2.0** snap. The template defaults to version
-> `"1.0"` — you MUST change it to `"2.0"` after copying. The docs at `/snap/`
-> contain the correct spec for this version.
+> `"1.0"` — you MUST change it to `"2.0"` after copying. The docs at `/snap/` contain
+> the correct spec for this version.
 
 ## Step 2: Implement the snap (follow the template)
 
@@ -71,8 +71,8 @@ Express the UI as the object your snap handler returns.
 - Target URLs must be HTTPS in production; `http://` only on loopback for local dev.
 - Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
   @farcaster/snap-hono)
-- Structural limits: max 64 elements, max 7 root children, max 6 children per
-  container, max 4 nesting depth.
+- Structural limits: max 64 elements, max 7 root children, max 6 children per container,
+  max 4 nesting depth.
 
 Design guidance:
 
@@ -127,7 +127,7 @@ without real signatures. The body must still be JFS-shaped. The payload must be
 base64url-encoded:
 
 ```bash
-PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"nonce\":\"dev-nonce\",\"audience\":\"http://localhost:<port>\",\"timestamp\":$(date +%s)}" \
+PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"audience\":\"http://localhost:<port>\",\"timestamp\":$(date +%s),\"user\":{\"fid\":1},\"surface\":{\"type\":\"standalone\"}}" \
   | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
 curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
   -H 'Content-Type: application/json' \

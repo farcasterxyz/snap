@@ -1,9 +1,7 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import type { SnapHandlerResult, SnapAction } from "@farcaster/snap";
-
-const SPEC_VERSION = "1.0" as const;
+import { SPEC_VERSION, type SnapHandlerResult, type SnapAction } from "@farcaster/snap";
 
 type GameView =
   | "home"
@@ -869,7 +867,7 @@ registerSnapHandler(app, async (ctx) => {
       if (sanitized.length !== 5) {
         feedback = "Enter exactly 5 letters (A-Z).";
       } else {
-        wordle.guessesByFid.set(ctx.action.fid, sanitized);
+        wordle.guessesByFid.set(ctx.action.user.fid, sanitized);
         wordle.timeline.push({ guess: sanitized, at: ctx.action.timestamp });
         wordle.timeline = wordle.timeline.slice(-6);
       }
@@ -909,13 +907,13 @@ registerSnapHandler(app, async (ctx) => {
       } else if (proposed.length > 80) {
         feedback = "Keep the line under 80 characters.";
       } else {
-        const prev = story.votesByFid.get(ctx.action.fid);
+        const prev = story.votesByFid.get(ctx.action.user.fid);
         if (prev) {
           const prevCount = story.proposals.get(prev) ?? 0;
           if (prevCount <= 1) story.proposals.delete(prev);
           else story.proposals.set(prev, prevCount - 1);
         }
-        story.votesByFid.set(ctx.action.fid, proposed);
+        story.votesByFid.set(ctx.action.user.fid, proposed);
         story.proposals.set(proposed, (story.proposals.get(proposed) ?? 0) + 1);
 
         const top = getTopProposal();
@@ -947,7 +945,7 @@ registerSnapHandler(app, async (ctx) => {
         if (aligned !== guessNum) {
           feedback = "Estimate must align with the slider step.";
         } else {
-          estimate.guessesByFid.set(ctx.action.fid, guessNum);
+          estimate.guessesByFid.set(ctx.action.user.fid, guessNum);
         }
       }
     }
@@ -966,7 +964,7 @@ registerSnapHandler(app, async (ctx) => {
     if (!nextVote) {
       feedback = "Pick Yes or No first.";
     } else {
-      prediction.votesByFid.set(ctx.action.fid, nextVote);
+      prediction.votesByFid.set(ctx.action.user.fid, nextVote);
     }
   }
   return buildPredictionPage({ snapBaseUrl, feedback });

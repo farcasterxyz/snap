@@ -1,7 +1,7 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
-import { SnapFunction } from "@farcaster/snap";
+import { SPEC_VERSION, type SnapFunction } from "@farcaster/snap";
 import { registerSnapHandler } from "@farcaster/snap-hono";
 import {
   createInMemoryDataStore,
@@ -29,7 +29,7 @@ const snap: SnapFunction = async (ctx) => {
   const caption = onboardingCaption(pref, ctx.action.type === "post");
   const base = snapBaseUrlFromRequest(ctx.request);
   return {
-    version: "2.0",
+    version: SPEC_VERSION,
     theme: { accent: "purple" },
     ui: {
       root: "page",

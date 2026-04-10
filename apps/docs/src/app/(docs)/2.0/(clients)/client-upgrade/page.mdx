@@ -1,52 +1,65 @@
 # Upgrading from v1.0
 
-This guide covers what Farcaster clients must change when upgrading from snap spec
-v1.0 to v2.0. Both the POST payload format and the fallback behavior have changed.
+This guide covers what Farcaster clients must change when upgrading from snap spec v1.0
+to v2.0. Both the POST payload format and the fallback behavior have changed.
 
 ## POST Payload Changes
 
-### New required fields: nonce and audience
+### New required fields: `audience`, `user`, and `surface`
 
-v2 POST payloads must include `nonce` and `audience`:
+v2 POST payloads must include `audience`, `user`, and `surface`:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `nonce` | `string` | Unique string per request (e.g. `crypto.randomUUID()`) |
-| `audience` | `string` | Origin of the target snap server (`scheme://host`) |
+| Field      | Type                | Description                                                    |
+| ---------- | ------------------- | -------------------------------------------------------------- |
+| `audience` | `string`            | Origin of the target snap server (`scheme://host`)             |
+| `user`     | `{ fid: number }`   | User taking the action                                         |
+| `surface`  | discriminated union | Where the interaction happens — see [Surfaces](/snap/surfaces) |
 
-**`nonce`** prevents replay attacks. Generate a new UUID for every request.
+**`audience`** prevents a signed payload meant for one snap from being replayed against
+a different server. Set it to `new URL(snapUrl).origin`.
 
-**`audience`** prevents a signed payload meant for one snap from being replayed
-against a different server. Set it to `new URL(snapUrl).origin`.
+The top-level **`fid`** field is deprecated in favor of `user.fid` but MUST still be
+included with the same value until older integrations no longer depend on it.
 
 ### Removed: button_index
 
-The `button_index` field is no longer included in v2 POST payloads. Snap servers now
-use distinct `submit` target URLs to identify which button was pressed. Clients
-should set the POST URL from the button's `on.press.params.target`.
+The `button_index` field is no longer included in v2 POST payloads. Snap servers now use
+distinct `submit` target URLs to identify which button was pressed. Clients should set
+the POST URL from the button's `on.press.params.target`.
 
 ### v2 payload example
 
 ```typescript
+// When embedded in a cast, set castContext to { hash, authorFid }; otherwise undefined.
+declare const castContext: { hash: string; authorFid: number } | undefined;
 const payload = {
   fid: user.fid,
+  user: { fid: user.fid },
   inputs: collectInputValues(),
   timestamp: Math.floor(Date.now() / 1000),
-  nonce: crypto.randomUUID(),
   audience: new URL(targetUrl).origin,
+  surface: castContext
+    ? {
+        type: "cast",
+        cast: {
+          hash: castContext.hash,
+          author: { fid: castContext.authorFid },
+        },
+      }
+    : { type: "standalone" },
 };
 ```
 
 ## Fallback to v1 on Failure
 
-Not all snap servers have upgraded to v2 yet. Clients **must** handle the case where
-a v2 POST fails by falling back to the v1 payload format.
+Not all snap servers have upgraded to v2 yet. Clients **must** handle the case where a
+v2 POST fails by falling back to the v1 payload format.
 
 The recommended flow:
 
-1. Send the v2 payload (with `nonce` and `audience`, without `button_index`)
-2. If the server returns an error (4xx), retry with a v1 payload (with
-   `button_index`, without `nonce` and `audience`)
+1. Send the v2 payload (with `audience`, `user`, and `surface`, without `button_index`)
+2. If the server returns an error (4xx), retry with a v1 payload (with `button_index`,
+   without `audience` / `user` / `surface`)
 3. If the retry also fails, display the error to the user
 
 ```typescript
@@ -55,14 +68,24 @@ async function submitAction(
   user: User,
   inputs: Record<string, unknown>,
   buttonIndex: number,
+  castContext?: { hash: string; authorFid: number },
 ) {
   // Try v2 first
   const v2Payload = {
     fid: user.fid,
+    user: { fid: user.fid },
     inputs,
     timestamp: Math.floor(Date.now() / 1000),
-    nonce: crypto.randomUUID(),
     audience: new URL(targetUrl).origin,
+    surface: castContext
+      ? {
+          type: "cast" as const,
+          cast: {
+            hash: castContext.hash,
+            author: { fid: castContext.authorFid },
+          },
+        }
+      : { type: "standalone" as const },
   };
 
   let response = await sendSignedPost(targetUrl, v2Payload);
@@ -87,27 +110,30 @@ async function submitAction(
 }
 ```
 
-This fallback ensures clients work with both old (v1) and new (v2) snap servers
-during the transition period.
+This fallback ensures clients work with both old (v1) and new (v2) snap servers during
+the transition period.
 
 ## Structural Constraints
 
-v2 snaps enforce structural limits on the UI tree. Clients should expect all v2 snaps
-to fit within these bounds:
+v2 snaps enforce structural limits on the UI tree. Clients should expect all v2 snaps to
+fit within these bounds:
 
-| Constraint | Limit |
-|------------|-------|
-| Total elements | 64 |
-| Root children | 7 |
-| Children per container | 6 |
-| Nesting depth | 4 levels |
-| Height | 500px (clip content beyond this) |
+| Constraint             | Limit                            |
+| ---------------------- | -------------------------------- |
+| Total elements         | 64                               |
+| Root children          | 7                                |
+| Children per container | 6                                |
+| Nesting depth          | 4 levels                         |
+| Height                 | 500px (clip content beyond this) |
 
 ## Checklist
 
-- [ ] Send `nonce` (UUID) and `audience` (server origin) in every v2 POST
+- [ ] Send `audience`, `user: { fid }`, and `surface` in every v2 POST (keep top-level
+      `fid` equal to `user.fid` until deprecated field is removed)
+- [ ] Use `surface.type: "cast"` with `cast.hash` and `cast.author` when in cast
+      context; otherwise `surface.type: "standalone"`
 - [ ] Remove `button_index` from v2 payloads
-- [ ] Implement v1 fallback — retry with `button_index` and without `nonce`/`audience`
-  if the v2 POST fails
+- [ ] Implement v1 fallback — retry with `button_index` and without v2-only fields if
+      the v2 POST fails
 - [ ] Clip snap rendering at 500px height
 - [ ] Use the button's `target` URL as the POST destination
