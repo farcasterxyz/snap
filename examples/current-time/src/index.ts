@@ -17,7 +17,7 @@ registerSnapHandler(app, async (ctx): Promise<SnapHandlerResult> => {
   const body = timeBody(pref);
   const base = snapBaseUrlFromRequest(ctx.request);
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",

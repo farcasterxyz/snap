@@ -1,7 +1,8 @@
 import type { SnapPayload } from "@farcaster/snap";
 import { encodePayload } from "@farcaster/snap/server";
+import * as SecureStore from "expo-secure-store";
 import * as Linking from "expo-linking";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -72,67 +73,90 @@ function parseUserFid(raw: string): number {
   return n;
 }
 
-/** Default example port (`examples/version-test`). */
-const DEFAULT_LOCAL_PORT = "3016";
+const DEFAULT_SNAP_URL = "";
 
-const LOCAL_SNAP_ORIGIN = "http://localhost";
+/**
+ * Normalize user input to a valid snap URL.
+ * Accepts full URLs or bare `host:port` / `:port` / port-only shorthand.
+ */
+function normalizeSnapUrl(raw: string): string | null {
+  const t = raw.trim();
+  if (!t) return null;
 
-function parsePort(raw: string): number | null {
-  const n = Number.parseInt(raw.trim(), 10);
-  if (!Number.isFinite(n) || n < 1 || n > 65535 || !Number.isInteger(n)) {
+  // Bare port number → localhost
+  if (/^\d{1,5}$/.test(t)) {
+    const p = Number.parseInt(t, 10);
+    if (p < 1 || p > 65535) return null;
+    return `http://localhost:${p}/`;
+  }
+
+  // :port shorthand → localhost
+  if (/^:\d{1,5}(\/.*)?$/.test(t)) {
+    return normalizeSnapUrl(`http://localhost${t}`);
+  }
+
+  // host:port without protocol → add http://
+  if (/^[a-zA-Z0-9._-]+:\d{1,5}(\/.*)?$/.test(t)) {
+    return normalizeSnapUrl(`http://${t}`);
+  }
+
+  // Full URL
+  try {
+    const url = new URL(t);
+    if (!/^https?:$/i.test(url.protocol)) return null;
+    // Ensure trailing slash on bare origin
+    if (url.pathname === "" || url.pathname === "/") {
+      return `${url.origin}/`;
+    }
+    return url.href;
+  } catch {
     return null;
   }
-  return n;
 }
 
 /**
- * Port field accepts digits only, or a pasted `http://localhost:PORT` / `http://localhost: PORT` string.
+ * Stale preview: URL input differs from the currently loaded snap URL.
  */
-function coercePortInput(raw: string): string {
-  const t = raw.trim();
-  const fromLocalhost = t.match(/localhost\s*:\s*(\d{1,5})\b/i);
-  if (fromLocalhost?.[1]) return fromLocalhost[1]!;
-  return raw.replace(/\D/g, "").slice(0, 5);
-}
-
-/** Snap URL for the dev server on this machine (trailing slash). */
-function snapUrlForLocalPort(port: string): string | null {
-  const p = parsePort(port);
-  if (p === null) return null;
-  return `${LOCAL_SNAP_ORIGIN}:${p}/`;
-}
-
-/**
- * Stale preview: port digits differ from the loaded snap's origin port.
- */
-function portDiffersFromLoadedLocalSnap(
-  portInput: string,
+function urlDiffersFromLoadedSnap(
+  urlInput: string,
   currentSourceUrl: string | null,
 ): boolean {
   if (!currentSourceUrl) return false;
-  let loaded: URL;
+  const normalized = normalizeSnapUrl(urlInput);
+  if (!normalized) return null;
+  return normalized !== currentSourceUrl;
+}
+
+// ─── URL history (AsyncStorage) ─────────────────────
+
+const URL_HISTORY_KEY = "snap_emulator_url_history";
+const URL_HISTORY_MAX = 10;
+
+async function loadUrlHistory(): Promise<string[]> {
   try {
-    loaded = new URL(currentSourceUrl);
+    const raw = await SecureStore.getItemAsync(URL_HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((s): s is string => typeof s === "string") : [];
   } catch {
-    return false;
+    return [];
   }
-  if (loaded.hostname !== "localhost" && loaded.hostname !== "127.0.0.1") {
-    return false;
-  }
-  const loadedPort =
-    loaded.port !== ""
-      ? Number.parseInt(loaded.port, 10)
-      : loaded.protocol === "https:"
-      ? 443
-      : 80;
-  const fieldPort = parsePort(portInput);
-  if (fieldPort === null) return false;
-  return fieldPort !== loadedPort;
+}
+
+async function saveUrlToHistory(url: string): Promise<string[]> {
+  const history = await loadUrlHistory();
+  const filtered = history.filter((u) => u !== url);
+  const next = [url, ...filtered].slice(0, URL_HISTORY_MAX);
+  await SecureStore.setItemAsync(URL_HISTORY_KEY, JSON.stringify(next));
+  return next;
 }
 
 function AppContent() {
   const { mode, colors, toggleMode } = useTheme();
-  const [portInput, setPortInput] = useState(DEFAULT_LOCAL_PORT);
+  const [urlInput, setUrlInput] = useState("");
+  const [urlHistory, setUrlHistory] = useState<string[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [fidInput, setFidInput] = useState("3");
   const [snap, setSnap] = useState<SnapPageResponse | null>(null);
   const [currentSourceUrl, setCurrentSourceUrl] = useState<string | null>(null);
@@ -140,10 +164,18 @@ function AppContent() {
   const [error, setError] = useState<string | null>(null);
   const [snapHeight, setSnapHeight] = useState<number | null>(null);
 
+  useEffect(() => {
+    loadUrlHistory().then((history) => {
+      setUrlHistory(history);
+      if (history.length > 0) setUrlInput(history[0]!);
+      setHistoryLoaded(true);
+    });
+  }, []);
+
   const handleLoad = useCallback(async () => {
-    const url = snapUrlForLocalPort(portInput);
+    const url = normalizeSnapUrl(urlInput);
     if (!url) {
-      setError("Enter a valid port (1-65535)");
+      setError("Enter a valid URL (or just a port number)");
       return;
     }
 
@@ -167,13 +199,14 @@ function AppContent() {
       const parsed = parseSnapPayload(json);
       setSnap(parsed);
       setCurrentSourceUrl(new URL(url).href);
+      saveUrlToHistory(url).then(setUrlHistory);
     } catch (e) {
       const message = e instanceof Error ? e.message : "Load failed";
       setError(message);
     } finally {
       setLoading(false);
     }
-  }, [portInput]);
+  }, [urlInput]);
 
   const handlePostButton = useCallback(
     async (target: string, inputs: Record<string, unknown>) => {
@@ -251,8 +284,8 @@ function AppContent() {
       setError("Invalid link URL");
       return;
     }
-    if (parsed.protocol !== "https:") {
-      setError("Only https: links are supported");
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      setError("Only http: and https: links are supported");
       return;
     }
 
@@ -288,11 +321,11 @@ function AppContent() {
     }
   }, []);
 
-  const previewIsStale = portDiffersFromLoadedLocalSnap(
-    portInput,
+  const previewIsStale = urlDiffersFromLoadedSnap(
+    urlInput,
     currentSourceUrl,
   );
-  const portValid = snapUrlForLocalPort(portInput) !== null;
+  const urlValid = normalizeSnapUrl(urlInput) !== null;
 
   return (
     <KeyboardAvoidingView
@@ -325,31 +358,71 @@ function AppContent() {
           </View>
 
           <Text style={[styles.label, { color: colors.textSecondary }]}>
-            Port
+            Snap URL
           </Text>
-          <View
-            style={[
-              styles.portRow,
-              { borderColor: colors.border, backgroundColor: colors.inputBg },
-            ]}
-          >
-            <Text
-              style={[styles.portPrefix, { color: colors.textSecondary }]}
-              selectable
-            >
-              {LOCAL_SNAP_ORIGIN}:
-            </Text>
-            <TextInput
-              style={[styles.portInput, { color: colors.text }]}
-              value={portInput}
-              onChangeText={(t) => setPortInput(coercePortInput(t))}
-              placeholder={DEFAULT_LOCAL_PORT}
-              placeholderTextColor={colors.textSecondary}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="number-pad"
-              maxLength={64}
-            />
+          <View>
+            <View style={{ flexDirection: "row", gap: 6 }}>
+              <TextInput
+                style={[
+                  styles.urlInput,
+                  {
+                    flex: 1,
+                    borderColor: colors.border,
+                    backgroundColor: colors.inputBg,
+                    color: colors.text,
+                  },
+                ]}
+                value={urlInput}
+                onChangeText={(t) => { setUrlInput(t); setShowHistory(false); }}
+                placeholder="http://localhost:3016 or https://..."
+                placeholderTextColor={colors.textSecondary}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="default"
+                maxLength={512}
+                onFocus={() => { if (urlHistory.length > 0) setShowHistory(true); }}
+              />
+              {urlHistory.length > 0 && (
+                <Pressable
+                  onPress={() => setShowHistory((v) => !v)}
+                  style={[
+                    styles.historyToggle,
+                    { borderColor: colors.border, backgroundColor: colors.inputBg },
+                  ]}
+                >
+                  <Text style={{ color: colors.text, fontSize: 13 }}>
+                    {showHistory ? "▲" : "▼"}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            {showHistory && urlHistory.length > 0 && (
+              <View
+                style={[
+                  styles.historyDropdown,
+                  { borderColor: colors.border, backgroundColor: colors.surface },
+                ]}
+              >
+                {urlHistory.map((url) => (
+                  <Pressable
+                    key={url}
+                    style={({ pressed }) => [
+                      styles.historyItem,
+                      pressed && { backgroundColor: colors.inputBg },
+                      url === urlInput && { backgroundColor: colors.inputBg },
+                    ]}
+                    onPress={() => { setUrlInput(url); setShowHistory(false); }}
+                  >
+                    <Text
+                      style={[styles.historyItemText, { color: colors.text }]}
+                      numberOfLines={1}
+                    >
+                      {url}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
           </View>
 
           <Text style={[styles.label, { color: colors.textSecondary }]}>
@@ -375,17 +448,17 @@ function AppContent() {
             style={({ pressed }) => [
               styles.loadBtn,
               pressed && styles.loadBtnPressed,
-              (loading || !portValid) && styles.loadBtnDisabled,
+              (loading || !urlValid) && styles.loadBtnDisabled,
             ]}
             onPress={() => void handleLoad()}
-            disabled={loading || !portValid}
+            disabled={loading || !urlValid}
           >
             <Text style={styles.loadBtnText}>Load</Text>
           </Pressable>
 
           {previewIsStale ? (
             <Text style={styles.urlStaleHint}>
-              Port changed — tap Load to fetch this snap (preview below is still
+              URL changed — tap Load to fetch this snap (preview below is still
               the previous one).
             </Text>
           ) : null}
@@ -452,8 +525,8 @@ function AppContent() {
               <Text
                 style={[styles.placeholder, { color: colors.textSecondary }]}
               >
-                Enter a port and tap Load ({LOCAL_SNAP_ORIGIN}:
-                {DEFAULT_LOCAL_PORT}/ by default).
+                Enter a snap URL and tap Load. Supports full URLs, host:port, or
+                just a port number.
               </Text>
             </View>
           )}
@@ -504,24 +577,11 @@ const styles = StyleSheet.create({
     fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
   },
   label: { fontSize: 12, fontWeight: "600" },
-  portRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  urlInput: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 10,
-    paddingLeft: 12,
-    paddingRight: 4,
-    minHeight: 44,
-  },
-  portPrefix: {
-    fontSize: 15,
-    fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
-  },
-  portInput: {
-    flex: 1,
-    minWidth: 56,
+    paddingHorizontal: 12,
     paddingVertical: 10,
-    paddingHorizontal: 4,
     fontSize: 15,
     fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
   },
@@ -577,5 +637,26 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 11,
     fontFamily: "Menlo",
+  },
+  historyToggle: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 10,
+    width: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  historyDropdown: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 10,
+    marginTop: 4,
+    overflow: "hidden",
+  },
+  historyItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  historyItemText: {
+    fontSize: 14,
+    fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }),
   },
 });

@@ -265,7 +265,7 @@ function buildSnapRoot(
   };
 
   return {
-    version: "1.0",
+    version: "2.0",
     theme: sharedTheme,
     ui: {
       root: "page",
