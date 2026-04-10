@@ -1,6 +1,6 @@
 {
   "name": "@farcaster/snap-emulator-native",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "private": true,
   "main": "index.ts",
   "scripts": {

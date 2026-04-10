@@ -1,5 +1,12 @@
 # @farcaster/snap-turso
 
+## 1.0.21
+
+### Patch Changes
+
+- Updated dependencies [[`2ed9dc9`](https://github.com/farcasterxyz/snap/commit/2ed9dc91ff8f94a35b8cedf0b847ac7b44efd886)]:
+  - @farcaster/snap@1.22.1
+
 ## 1.0.20
 
 ### Patch Changes
