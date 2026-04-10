@@ -127,7 +127,7 @@ without real signatures. The body must still be JFS-shaped. The payload must be
 base64url-encoded:
 
 ```bash
-PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"audience\":\"http://localhost:<port>\",\"timestamp\":$(date +%s)}" \
+PAYLOAD=$(echo -n "{\"fid\":1,\"inputs\":{},\"audience\":\"http://localhost:<port>\",\"timestamp\":$(date +%s),\"user\":{\"fid\":1},\"surface\":{\"type\":\"standalone\"}}" \
   | base64 | tr -d '\n' | tr '+/' '-_' | tr -d '=')
 curl -sS -X POST -H 'Accept: application/vnd.farcaster.snap+json' \
   -H 'Content-Type: application/json' \

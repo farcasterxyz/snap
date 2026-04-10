@@ -112,12 +112,14 @@ Every element in `ui.elements` follows this shape:
 
 When a `submit` action fires, the client sends a JFS-signed envelope containing:
 
-| Field       | Type                    | Description                                                |
-| ----------- | ----------------------- | ---------------------------------------------------------- |
-| `fid`       | number                  | Farcaster user ID                                          |
-| `inputs`    | Record\<string, value\> | Field values keyed by component `name` prop                |
-| `timestamp` | number                  | Unix timestamp in seconds                                  |
-| `audience`  | string                  | Origin of the intended recipient; must match server origin |
+| Field       | Type                    | Description                                                 |
+| ----------- | ----------------------- | ----------------------------------------------------------- |
+| `fid`       | number                  | **Deprecated** — same as `user.fid`; kept for compatibility |
+| `inputs`    | Record\<string, value\> | Field values keyed by component `name` prop                 |
+| `timestamp` | number                  | Unix timestamp in seconds                                   |
+| `audience`  | string                  | Origin of the intended recipient; must match server origin  |
+| `user`      | `{ fid: number }`       | User taking the action (canonical identity)                 |
+| `surface`   | discriminated union     | Interaction context — see [Surfaces](/snap/surfaces)        |
 
 The POST is sent to the URL in the button’s `submit` action (`params.target`). The
 `audience` must match the snap server’s origin. Use **different targets** for different

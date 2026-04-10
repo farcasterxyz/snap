@@ -5,16 +5,21 @@ to v2.0. Both the POST payload format and the fallback behavior have changed.
 
 ## POST Payload Changes
 
-### New required field: audience
+### New required fields: `audience`, `user`, and `surface`
 
-v2 POST payloads must include `audience`:
+v2 POST payloads must include `audience`, `user`, and `surface`:
 
-| Field      | Type     | Description                                        |
-| ---------- | -------- | -------------------------------------------------- |
-| `audience` | `string` | Origin of the target snap server (`scheme://host`) |
+| Field      | Type                | Description                                                    |
+| ---------- | ------------------- | -------------------------------------------------------------- |
+| `audience` | `string`            | Origin of the target snap server (`scheme://host`)             |
+| `user`     | `{ fid: number }`   | User taking the action                                         |
+| `surface`  | discriminated union | Where the interaction happens — see [Surfaces](/snap/surfaces) |
 
 **`audience`** prevents a signed payload meant for one snap from being replayed against
 a different server. Set it to `new URL(snapUrl).origin`.
+
+The top-level **`fid`** field is deprecated in favor of `user.fid` but MUST still be
+included with the same value until older integrations no longer depend on it.
 
 ### Removed: button_index
 
@@ -25,11 +30,23 @@ the POST URL from the button's `on.press.params.target`.
 ### v2 payload example
 
 ```typescript
+// When embedded in a cast, set castContext to { hash, authorFid }; otherwise undefined.
+declare const castContext: { hash: string; authorFid: number } | undefined;
 const payload = {
   fid: user.fid,
+  user: { fid: user.fid },
   inputs: collectInputValues(),
   timestamp: Math.floor(Date.now() / 1000),
   audience: new URL(targetUrl).origin,
+  surface: castContext
+    ? {
+        type: "cast",
+        cast: {
+          hash: castContext.hash,
+          author: { fid: castContext.authorFid },
+        },
+      }
+    : { type: "standalone" },
 };
 ```
 
@@ -40,9 +57,9 @@ v2 POST fails by falling back to the v1 payload format.
 
 The recommended flow:
 
-1. Send the v2 payload (with `audience`, without `button_index`)
+1. Send the v2 payload (with `audience`, `user`, and `surface`, without `button_index`)
 2. If the server returns an error (4xx), retry with a v1 payload (with `button_index`,
-   without `audience`)
+   without `audience` / `user` / `surface`)
 3. If the retry also fails, display the error to the user
 
 ```typescript
@@ -51,13 +68,24 @@ async function submitAction(
   user: User,
   inputs: Record<string, unknown>,
   buttonIndex: number,
+  castContext?: { hash: string; authorFid: number },
 ) {
   // Try v2 first
   const v2Payload = {
     fid: user.fid,
+    user: { fid: user.fid },
     inputs,
     timestamp: Math.floor(Date.now() / 1000),
     audience: new URL(targetUrl).origin,
+    surface: castContext
+      ? {
+          type: "cast" as const,
+          cast: {
+            hash: castContext.hash,
+            author: { fid: castContext.authorFid },
+          },
+        }
+      : { type: "standalone" as const },
   };
 
   let response = await sendSignedPost(targetUrl, v2Payload);
@@ -100,9 +128,12 @@ fit within these bounds:
 
 ## Checklist
 
-- [ ] Send `audience` (server origin) in every v2 POST
+- [ ] Send `audience`, `user: { fid }`, and `surface` in every v2 POST (keep top-level
+      `fid` equal to `user.fid` until deprecated field is removed)
+- [ ] Use `surface.type: "cast"` with `cast.hash` and `cast.author` when in cast
+      context; otherwise `surface.type: "standalone"`
 - [ ] Remove `button_index` from v2 payloads
-- [ ] Implement v1 fallback — retry with `button_index` and without `audience` if the v2
-      POST fails
+- [ ] Implement v1 fallback — retry with `button_index` and without v2-only fields if
+      the v2 POST fails
 - [ ] Clip snap rendering at 500px height
 - [ ] Use the button's `target` URL as the POST destination

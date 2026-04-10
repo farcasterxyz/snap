@@ -30,6 +30,10 @@
       {
         "text": "Examples",
         "link": "/snap/examples"
+      },
+      {
+        "text": "Upgrading from v1.0",
+        "link": "/snap/upgrading"
       }
     ]
   },
@@ -51,6 +55,10 @@
       {
         "text": "Buttons",
         "link": "/snap/buttons"
+      },
+      {
+        "text": "Surfaces",
+        "link": "/snap/surfaces"
       },
       {
         "text": "Effects",
@@ -75,6 +83,23 @@
       {
         "text": "Authentication",
         "link": "/snap/auth"
+      }
+    ]
+  },
+  {
+    "text": "Clients",
+    "items": [
+      {
+        "text": "Overview",
+        "link": "/snap/client-overview"
+      },
+      {
+        "text": "Rendering Snaps",
+        "link": "/snap/client-rendering"
+      },
+      {
+        "text": "Upgrading from v1.0",
+        "link": "/snap/client-upgrade"
       }
     ]
   }

@@ -63,6 +63,7 @@ For each version folder, check:
 - `(spec)/spec-overview/page.mdx` — Overview
 - `(spec)/elements/page.mdx` — props tables, variants tables, usage narrative, examples
 - `(spec)/buttons/page.mdx` — button variants, defaults, examples
+- `(spec)/surfaces/page.mdx` — POST `surface` field (`standalone` vs `cast`) — **v2.0 only**
 - `(spec)/actions/page.mdx` — button examples in action demos
 - `(spec)/effects/page.mdx` — component usage in examples
 - `(spec)/constraints/page.mdx` — char limits and validation rules
@@ -74,7 +75,8 @@ For each version folder, check:
 **Version-specific differences to maintain**:
 
 - v1.0 auth: `button_index` in payload, no `audience`
-- v2.0 auth: `audience` in payload, no `button_index`
+- v2.0 auth: `audience`, `user`, and `surface` (`standalone` | `cast`) in payload, no
+  `button_index`. Top-level `fid` deprecated in favor of `user.fid`
 - v2.0 constraints: structural limits (64 elements, 7 root children, 4 depth, 6 children/container)
 - v1.0 constraints: no structural limits
 

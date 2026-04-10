@@ -1,0 +1,43 @@
+# Surfaces
+
+The `surface` field in the payload describes where the user interaction happened — for
+example in the feed on a cast, or outside cast context.
+
+Clients MUST include `surface` on every authenticated `submit` (see
+[Actions — submit](/snap/actions#submit)).
+
+## Discriminated shape
+
+`surface` is a discriminated object on `type`:
+
+| `surface.type` | Meaning                                                   |
+| -------------- | --------------------------------------------------------- |
+| `standalone`   | not tied to a specific cast (e.g. opened in an emulator). |
+| `cast`         | interaction in a cast context                             |
+
+### Standalone
+
+```json
+"surface": {
+  "type": "standalone"
+}
+```
+
+### Cast
+
+```json
+"surface": {
+  "type": "cast",
+  "cast": {
+    "hash": "0xb79dbbc1a9f31365f8c4f722c4a6c5a6b7c8d9e0",
+    "author": {
+      "fid": 67890
+    }
+  }
+}
+```
+
+## Client integration
+
+For a client-side upgrade checklist and TypeScript-oriented examples, see
+[Upgrading from v1.0 (clients)](/snap/client-upgrade).

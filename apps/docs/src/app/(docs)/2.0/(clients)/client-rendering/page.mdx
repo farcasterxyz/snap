@@ -94,10 +94,13 @@ function SnapRenderer({
   initialSnap,
   snapUrl,
   user,
+  castFromContext,
 }: {
   initialSnap: SnapPage;
   snapUrl: string;
   user: { fid: number; signerKey: SignerKey };
+  /** When the snap is shown inside a cast, pass hash + author FID for `surface`. */
+  castFromContext?: { hash: string; authorFid: number };
 }) {
   const [snap, setSnap] = useState(initialSnap);
   const [currentUrl, setCurrentUrl] = useState(snapUrl);
@@ -113,9 +116,19 @@ function SnapRenderer({
         // Build the v2 payload
         const payload = {
           fid: user.fid,
+          user: { fid: user.fid },
           inputs,
           timestamp: Math.floor(Date.now() / 1000),
           audience: new URL(target).origin,
+          surface: castFromContext
+            ? {
+                type: "cast" as const,
+                cast: {
+                  hash: castFromContext.hash,
+                  author: { fid: castFromContext.authorFid },
+                },
+              }
+            : { type: "standalone" as const },
         };
 
         // Sign with JFS and send
@@ -151,7 +164,7 @@ function SnapRenderer({
         setLoading(false);
       }
     },
-    [user],
+    [user, castFromContext],
   );
 
   const handlers: SnapActionHandlers = {

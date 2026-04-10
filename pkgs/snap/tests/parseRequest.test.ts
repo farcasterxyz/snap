@@ -3,12 +3,16 @@ import { parseRequest, encodePayload, decodePayload } from "../src/server";
 import { type SnapPayload } from "../src/schemas";
 
 describe("parseRequest", () => {
+  const surfaceStandalone = { type: "standalone" as const };
+
   function postBody(overrides: Record<string, unknown> = {}) {
     const payload: SnapPayload = {
       fid: 42,
       inputs: { guess: "HELLO" },
       timestamp: Math.floor(Date.now() / 1000),
       audience: "https://example.com",
+      user: { fid: 42 },
+      surface: surfaceStandalone,
       ...overrides,
     };
     return {
@@ -45,6 +49,8 @@ describe("parseRequest", () => {
         inputs: { guess: "HELLO" },
         timestamp: payload.timestamp,
         audience: "https://example.com",
+        user: { fid: 42 },
+        surface: surfaceStandalone,
       },
     });
   });
@@ -55,6 +61,8 @@ describe("parseRequest", () => {
       inputs: { guess: "HELLO" },
       timestamp: Math.floor(Date.now() / 1000),
       audience: "https://example.com",
+      user: { fid: 42 },
+      surface: surfaceStandalone,
     };
     const res = await parseRequest(
       new Request("https://example.com/snap", {
@@ -151,5 +159,35 @@ describe("parseRequest", () => {
       { skipJFSVerification: true },
     );
     expect(res.success).toBe(true);
+  });
+
+  it("accepts cast surface on POST payload", async () => {
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        body: JSON.stringify(
+          postBody({
+            surface: {
+              type: "cast",
+              cast: {
+                hash: "0xabc",
+                author: { fid: 99 },
+              },
+            },
+          }),
+        ),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(true);
+    if (res.success && res.action.type === "post") {
+      expect(res.action.surface).toEqual({
+        type: "cast",
+        cast: {
+          hash: "0xabc",
+          author: { fid: 99 },
+        },
+      });
+    }
   });
 });

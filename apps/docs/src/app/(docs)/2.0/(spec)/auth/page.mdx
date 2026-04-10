@@ -9,7 +9,8 @@ Every POST request from the client to a snap server MUST be authenticated with
 When a user taps a `post` button, the Farcaster client:
 
 1. Collects all input values from the current page
-2. Builds a payload with the user's FID, inputs, timestamp, and audience
+2. Builds a payload with the user's identity (user.fid), timestamp, audience, and other
+   payload fields that are unrelated to authentication.
 3. Signs the payload using the user's Farcaster signer key
 4. Sends the signed JFS compact string as the POST body
 
@@ -33,7 +34,13 @@ The decoded JFS payload (signed inside JFS, not sent as bare JSON):
     "vote": "Tabs"
   },
   "timestamp": 1710864000,
-  "audience": "https://snap.example.com"
+  "audience": "https://snap.example.com",
+  "user": {
+    "fid": 12345
+  },
+  "surface": {
+    "type": "standalone"
+  }
 }
 ```
 
@@ -54,11 +61,14 @@ The payload MUST contain a `timestamp` field (Unix seconds).
 Servers MUST reject requests with timestamps outside an allowed skew (default 5
 minutes).
 
+If strict replay protection is needed beyond that, clients should add a `nonce` field
+(unique per request) to the signed payload.
+
 ## Requirements
 
 - The client MUST send a valid JFS for every authenticated POST
-- The client MUST include `audience` (server origin) and `timestamp` (Unix seconds) in
-  every payload
+- The client MUST include the user's FID, `audience` (server origin) and `timestamp`
+  (Unix seconds) in every payload
 - The server MUST verify the JFS cryptographically and MUST verify the signing key
   against hub (or equivalent) state for the FID
 - The server MUST verify that `audience` matches its own origin

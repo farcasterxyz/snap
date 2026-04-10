@@ -17,7 +17,8 @@ Change the `version` field in your snap response from `"1.0"` to `"2.0"`:
 
 ## Authentication changes
 
-The POST payload shape has changed. v2 adds `audience` and removes `button_index`.
+The POST payload shape has changed. v2 adds `audience`, `user`, and `surface`, and
+removes `button_index`.
 
 ### Removed: `button_index`
 
@@ -34,20 +35,24 @@ const url = new URL(ctx.request.url);
 const action = url.searchParams.get("action"); // e.g. ?action=vote or ?action=skip
 ```
 
-### Added: `audience`
+### Added: `audience`, `user`, and `surface`
 
-Every v2 POST payload includes **`audience`** — the origin of the snap server the
-request is intended for.
+Every v2 POST payload includes `audience` (server origin), `user`, and `surface`. The
+top-level `fid` field is deprecated in favor of `user.fid` but is still temporarily
+necessary with the same value during a migration phase.
 
-If you use `@farcaster/snap-hono`, it is validated automatically by `parseRequest`. No
-code changes needed on your end — just upgrade the package.
+If you use `@farcaster/snap-hono`, these fields are validated automatically by
+`parseRequest`. No code changes needed on your end — just upgrade the package.
 
 If you handle verification manually, you MUST:
 
 1. Verify `audience` matches your server's origin
 2. Reject requests with timestamps outside your allowed skew (default 5 minutes)
 
-See [Authentication](/snap/auth) for the full spec.
+Prefer reading **`ctx.action.user.fid`** in new code; **`ctx.action.fid`** remains for
+compatibility.
+
+See [Authentication](/snap/auth) and [Surfaces](/snap/surfaces) for the full spec.
 
 ## Structural constraints (new)
 
@@ -68,8 +73,8 @@ See [Constraints](/snap/constraints) for the full list.
 
 ## Client upgrade required
 
-Farcaster clients **must** be updated to send `audience` in every POST payload. v2 snap
-servers will reject requests that omit this field. See the
+Farcaster clients **must** be updated to send `audience`, `user`, and `surface` in every
+POST payload. v2 snap servers will reject requests that omit these fields. See the
 [Client Upgrade Guide](/snap/client-upgrade) for the full payload format and fallback
 behavior for older servers.
 
@@ -82,7 +87,7 @@ pnpm update @farcaster/snap @farcaster/snap-hono
 ```
 
 The latest `@farcaster/snap-hono` handles all v2 changes automatically — `parseRequest`
-validates audience, and the response validator enforces structural constraints.
+validates the POST payload , and the response validator enforces structural constraints.
 
 ## Testing
 
@@ -97,6 +102,6 @@ violates any v2 constraints.
 - [ ] Use distinct submit target URLs to distinguish buttons
 - [ ] Verify your UI tree fits within structural constraints
 - [ ] Update `@farcaster/snap` and `@farcaster/snap-hono` packages
-- [ ] Ensure your Farcaster client sends `audience` in POST payloads
-      ([details](/snap/client-upgrade))
+- [ ] Ensure your Farcaster client sends `audience`, `user`, and `surface` in POST
+      payloads ([details](/snap/client-upgrade))
 - [ ] Test in the emulator

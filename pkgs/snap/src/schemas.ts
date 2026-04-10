@@ -85,12 +85,35 @@ const postInputValueSchema = z.union([
   z.array(z.string()),
 ]);
 
+const standaloneSurfaceSchema = z.object({
+  type: z.literal("standalone"),
+});
+
+const castSurfaceSchema = z.object({
+  type: z.literal("cast"),
+  cast: z.object({
+    hash: z.string(),
+    author: z.object({
+      fid: z.number().int().nonnegative(),
+    }),
+  }),
+});
+
+const surfaceSchema = z.discriminatedUnion("type", [
+  castSurfaceSchema,
+  standaloneSurfaceSchema,
+]);
+
 export const payloadSchema = z
   .object({
-    fid: z.number().int().nonnegative(),
+    fid: z.number().int().nonnegative(), // deprecated in favor of user.fid
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
     audience: z.string(),
+    user: z.object({
+      fid: z.number().int().nonnegative(),
+    }),
+    surface: surfaceSchema,
   })
   .strip();
 

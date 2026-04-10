@@ -160,6 +160,8 @@ export async function POST(request: NextRequest) {
     inputs: (body.inputs ?? {}) as SnapPayload["inputs"],
     timestamp,
     audience: targetUrl.origin,
+    user: { fid: userFid },
+    surface: { type: "standalone" },
   };
 
   const jfsEnvelope = {

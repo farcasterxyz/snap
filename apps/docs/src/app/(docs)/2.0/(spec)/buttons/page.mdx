@@ -109,9 +109,14 @@ multiple buttons are distinguished by different targets (for example `?action=sa
     "plan": "Pro"
   },
   "timestamp": 1717200000,
-  "audience": "https://my-snap.example.com"
+  "audience": "https://my-snap.example.com",
+  "user": {
+    "fid": 12345
+  },
+  "surface": {
+    "type": "standalone"
+  }
 }
 ```
 
-**Timeout**: The client waits up to 5 seconds. If the server doesn't respond, an error
-is shown on the current page and the user can retry.
+Set `surface.type` as appropriate. See [Surfaces](/snap/surfaces).

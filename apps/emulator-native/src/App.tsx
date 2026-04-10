@@ -227,6 +227,8 @@ function AppContent() {
         inputs: inputs as SnapPayload["inputs"],
         timestamp,
         audience: new URL(nextSourceUrl).origin,
+        user: { fid },
+        surface: { type: "standalone" },
       };
 
       setLoading(true);
