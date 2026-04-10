@@ -33,6 +33,10 @@ export type ParseRequestError =
   | {
       type: "origin_mismatch";
       message: string;
+    }
+  | {
+      type: "fid_mismatch";
+      message: string;
     };
 
 export type ParseRequestOptions = {
@@ -52,7 +56,6 @@ export type ParseRequestOptions = {
    * The origin of the request. Derived from the request when not provided.
    */
   requestOrigin?: string;
-
 };
 
 export type ParseRequestResult =
@@ -117,16 +120,6 @@ export async function parseRequest(
     };
   }
 
-  if (!options.skipJFSVerification) {
-    const jfs = await verifyJFSRequestBody(parsed.data);
-    if (!jfs.valid) {
-      return {
-        success: false,
-        error: { type: "signature", message: jfs.error.message },
-      };
-    }
-  }
-
   const payloadParsed = payloadSchema.safeParse(
     decodePayload(parsed.data.payload),
   );
@@ -138,6 +131,26 @@ export async function parseRequest(
   }
 
   const body = payloadParsed.data;
+
+  if (!options.skipJFSVerification) {
+    const jfs = await verifyJFSRequestBody(parsed.data);
+    if (!jfs.valid) {
+      return {
+        success: false,
+        error: { type: "signature", message: jfs.error.message },
+      };
+    }
+    if (jfs.signingUserFid !== body.user.fid) {
+      return {
+        success: false,
+        error: {
+          type: "fid_mismatch",
+          message: `JFS header fid "${jfs.signingUserFid}" does not match user.fid "${body.user.fid}"`,
+        },
+      };
+    }
+  }
+
   if (Math.abs(nowSec - body.timestamp) > maxSkew) {
     return {
       success: false,
@@ -169,6 +182,16 @@ export async function parseRequest(
       error: {
         type: "origin_mismatch",
         message: `payload audience "${body.audience}" does not match expected origin "${expectedOrigin}"`,
+      },
+    };
+  }
+
+  if (body.fid !== undefined && body.fid !== body.user.fid) {
+    return {
+      success: false,
+      error: {
+        type: "fid_mismatch",
+        message: `fid "${body.fid}" does not match user.fid "${body.user.fid}"`,
       },
     };
   }

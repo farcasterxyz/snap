@@ -1,6 +1,7 @@
 import {
   compact,
   decode,
+  decodeHeader,
   decodePayload as jfsDecodePayload,
   encodePayload as jfsEncodePayload,
   verify,
@@ -27,6 +28,7 @@ export async function verifyJFSRequestBody<TPayload>(
     }
   | {
       valid: true;
+      signingUserFid: number; // the FID of the user who signed the request
       data: TPayload;
     }
 > {
@@ -108,6 +110,7 @@ export async function verifyJFSRequestBody<TPayload>(
   return {
     valid: true,
     data: payload,
+    signingUserFid: header.fid,
   };
 }
 
