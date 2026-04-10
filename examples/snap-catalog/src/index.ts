@@ -100,7 +100,7 @@ function step(current: View): string {
 
 function welcomePage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "purple" },
     ui: {
       root: "page",
@@ -146,7 +146,7 @@ function welcomePage(base: string): SnapHandlerResult {
 
 function typographyPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "blue" },
     ui: {
       root: "page",
@@ -179,7 +179,7 @@ function typographyPage(base: string): SnapHandlerResult {
 
 function imagesPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "teal" },
     ui: {
       root: "page",
@@ -247,7 +247,7 @@ function imagesPage(base: string): SnapHandlerResult {
 
 function iconsPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "amber" },
     ui: {
       root: "page",
@@ -337,7 +337,7 @@ function iconsPage(base: string): SnapHandlerResult {
 
 function itemsPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "green" },
     ui: {
       root: "page",
@@ -436,7 +436,7 @@ function itemsPage(base: string): SnapHandlerResult {
 
 function layoutPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "amber" },
     ui: {
       root: "page",
@@ -500,7 +500,7 @@ function layoutPage(base: string): SnapHandlerResult {
 
 function dataPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "purple" },
     ui: {
       root: "page",
@@ -592,7 +592,7 @@ function dataPage(base: string): SnapHandlerResult {
 
 function formPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "teal" },
     ui: {
       root: "page",
@@ -654,7 +654,7 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
   const skills = Array.isArray(inputs.skills) ? inputs.skills.join(", ") : String(inputs.skills || "None");
 
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "green" },
     effects: ["confetti"],
     ui: {
@@ -710,7 +710,7 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
 
 function actionsPage(base: string): SnapHandlerResult {
   return {
-    version: "1.0",
+    version: "2.0",
     theme: { accent: "pink" },
     ui: {
       root: "page",

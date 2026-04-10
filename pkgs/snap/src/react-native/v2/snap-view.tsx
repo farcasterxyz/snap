@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { SnapThemeProvider, useSnapTheme, type SnapNativeColors } from "../theme";
 import { SnapViewCoreInner } from "../snap-view-core";
@@ -137,7 +137,7 @@ function SnapCardV2Inner({
   plain: boolean;
 }) {
   const { colors } = useSnapTheme();
-  const clipHeight = showOverflowWarning ? undefined : SNAP_MAX_HEIGHT;
+  const [contentHeight, setContentHeight] = useState(0);
 
   const content = (
     <SnapViewV2Inner
@@ -153,6 +153,8 @@ function SnapCardV2Inner({
     return content;
   }
 
+  const overflowAmount = showOverflowWarning ? contentHeight - SNAP_MAX_HEIGHT : 0;
+
   return (
     <>
       <View
@@ -161,16 +163,20 @@ function SnapCardV2Inner({
           borderWidth: 1,
           borderColor: colors.border,
           backgroundColor: colors.surface,
-          maxHeight: clipHeight,
+          maxHeight: showOverflowWarning ? undefined : SNAP_MAX_HEIGHT,
           overflow: "hidden",
           minHeight: 120,
         }}
       >
-        <View style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
+        <View
+          collapsable={false}
+          onLayout={(e) => setContentHeight(Math.round(e.nativeEvent.layout.height))}
+          style={{ paddingHorizontal: 16, paddingVertical: 16 }}
+        >
           {content}
         </View>
-        {showOverflowWarning && (
-          <View style={{ position: "absolute", top: SNAP_MAX_HEIGHT, left: 0, right: 0, bottom: 0, zIndex: 10, pointerEvents: "none" }}>
+        {showOverflowWarning && contentHeight > SNAP_MAX_HEIGHT && (
+          <View style={{ position: "absolute", top: SNAP_MAX_HEIGHT, left: 0, right: 0, height: overflowAmount, zIndex: 10, pointerEvents: "none" }}>
             <View style={{ height: 1, borderTopWidth: 1, borderStyle: "dashed", borderColor: "rgba(255,100,100,0.6)" }} />
             <View style={{ position: "absolute", top: -10, right: 4, backgroundColor: "rgba(0,0,0,0.7)", paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>
               <Text style={{ fontSize: 10, color: "rgba(255,100,100,0.7)", fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }) }}>{SNAP_MAX_HEIGHT}px</Text>

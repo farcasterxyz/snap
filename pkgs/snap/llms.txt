@@ -8,7 +8,7 @@ Every snap handler returns a `SnapResponse`:
 
 ```json
 {
-  "version": "1.0",
+  "version": "2.0",
   "theme": { "accent": "purple" },
   "effects": ["confetti"],
   "ui": {
@@ -26,7 +26,7 @@ Every snap handler returns a `SnapResponse`:
 }
 ```
 
-Top-level fields: `version` (required, `"1.0"`), `theme` (optional, `{ accent: PaletteColor }`), `effects` (optional, `["confetti"]`), `ui` (required).
+Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `{ accent: PaletteColor }`), `effects` (optional, `["confetti"]`), `ui` (required).
 
 `ui.root` is the ID of the root element. `ui.elements` is a flat map of element ID to element definition.
 

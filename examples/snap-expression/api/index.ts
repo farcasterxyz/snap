@@ -51,7 +51,7 @@ registerSnapHandler(
         const maxBucket = Math.max(...bucketValues);
 
         return {
-          version: "1.0",
+          version: "2.0",
           theme: { accent: "purple" },
           ui: {
             root: "page",
@@ -137,7 +137,7 @@ registerSnapHandler(
     }
 
     return {
-      version: "1.0",
+      version: "2.0",
       theme: { accent: "purple" },
       ui: {
         root: "page",
@@ -272,7 +272,7 @@ registerSnapHandler(
         }
 
         return {
-          version: "1.0",
+          version: "2.0",
           theme: { accent: "green" },
           ui: {
             root: "page",
@@ -283,7 +283,7 @@ registerSnapHandler(
     }
 
     return {
-      version: "1.0",
+      version: "2.0",
       theme: { accent: "green" },
       ui: {
         root: "page",

@@ -14,6 +14,7 @@ export function SnapCellGrid({
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const cells = Array.isArray(props.cells) ? props.cells : [];
+  const rowHeight = typeof props.rowHeight === "number" ? props.rowHeight : 28;
   const gap = String(props.gap ?? "sm");
   const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
   const gapPx = gapMap[gap] ?? 1;
@@ -74,7 +75,7 @@ export function SnapCellGrid({
 
       // Two-tone ring: outer View with contrasting border, inner View with inverse border
       const cellView = selected ? (
-        <View style={[styles.cell, { borderWidth: 1, borderColor: ringOuter, borderRadius: 4 }]}>
+        <View style={[styles.cell, { height: rowHeight, borderWidth: 1, borderColor: ringOuter, borderRadius: 4 }]}>
           <View
             style={[
               styles.innerCell,
@@ -85,7 +86,7 @@ export function SnapCellGrid({
           </View>
         </View>
       ) : (
-        <View style={[styles.cell, { backgroundColor: bg }]}>
+        <View style={[styles.cell, { height: rowHeight, backgroundColor: bg }]}>
           {cellContent}
         </View>
       );
@@ -134,16 +135,13 @@ const styles = StyleSheet.create({
   gridRow: { flexDirection: "row" },
   cellWrap: { flex: 1 },
   cell: {
-    flex: 1,
-    minHeight: 28,
     borderRadius: 4,
     alignItems: "center",
     justifyContent: "center",
   },
   innerCell: {
-    flex: 1,
     width: "100%",
-    minHeight: 26,
+    height: "100%",
     alignItems: "center",
     justifyContent: "center",
   },
