@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 1.22.1
+
+### Patch Changes
+
+- [#127](https://github.com/farcasterxyz/snap/pull/127) [`2ed9dc9`](https://github.com/farcasterxyz/snap/commit/2ed9dc91ff8f94a35b8cedf0b847ac7b44efd886) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Update color palette to new light/dark mode values
+
 ## 1.22.0
 
 ### Minor Changes
