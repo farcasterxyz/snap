@@ -106,7 +106,7 @@ const surfaceSchema = z.discriminatedUnion("type", [
 
 export const payloadSchema = z
   .object({
-    fid: z.number().int().nonnegative(), // deprecated in favor of user.fid
+    fid: z.number().int().nonnegative().optional(), // deprecated in favor of user.fid
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
     audience: z.string(),

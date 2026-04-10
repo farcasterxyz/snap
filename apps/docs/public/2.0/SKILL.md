@@ -210,3 +210,6 @@ their latest versions:
 - Do a review to make sure there are no functionality changes. If you find anything
   relevant, point it out to the user.
 - Deploy your changes.
+
+If you are starting from version 1.\*, read
+https://docs.farcaster.xyz/snap/client-upgrade for instructions on upgrading to 2.\*

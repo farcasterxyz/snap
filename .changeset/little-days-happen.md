@@ -12,3 +12,5 @@ Consumers must update requests that were sending the v1 payload shape:
 - treat `user` and `surface` as required in v2
 
 v1-style payloads are not forward-compatible with v2; callers should update request construction before upgrading.
+
+The easiest way to upgrade is to tell your agent `read https://docs.farcaster.xyz/snap/SKILL.md, then upgrade dependencies and the snap to the latest versions`
