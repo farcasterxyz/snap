@@ -214,6 +214,7 @@ export function registerSnapHandler(
         case "origin_mismatch":
           return c.json({ error: err.message }, 400);
         case "signature":
+        case "fid_mismatch":
           return c.json({ error: err.message }, 401);
         default: {
           const _exhaustive: never = err;
@@ -315,8 +316,7 @@ function snapOriginFromRequest(request: Request): string {
 
   const url = new URL(request.url);
   const proto =
-    request.headers.get("x-forwarded-proto") ??
-    url.protocol.replace(":", "");
+    request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
   const host = request.headers.get("x-forwarded-host") ?? url.host;
   return `${proto}://${host}`;
 }
