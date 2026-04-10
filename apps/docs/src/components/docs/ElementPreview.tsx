@@ -13,18 +13,18 @@ import {
   Play,
 } from "lucide-react";
 
-const ACCENT = "#8B5CF6";
-const ACCENT_BG = "rgba(139, 92, 246, 0.12)";
+const ACCENT = "#907AA9";
+const ACCENT_BG = "rgba(144, 122, 169, 0.12)";
 
 const PALETTE: Record<string, string> = {
-  gray: "#8F8F8F",
-  blue: "#006BFF",
-  red: "#FC0036",
-  amber: "#FFAE00",
-  green: "#28A948",
-  teal: "#00AC96",
-  purple: "#8B5CF6",
-  pink: "#F32782",
+  gray: "#6E6A86",
+  blue: "#286983",
+  red: "#B4637A",
+  amber: "#EA9D34",
+  green: "#3E8F8F",
+  teal: "#56949F",
+  purple: "#907AA9",
+  pink: "#D7827E",
 };
 
 function resolveColor(color?: string): string {

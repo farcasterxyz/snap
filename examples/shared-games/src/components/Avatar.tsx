@@ -1,8 +1,8 @@
 "use client";
 
 const COLORS = [
-  "#8B5CF6", "#EC4899", "#F59E0B", "#10B981", "#3B82F6",
-  "#EF4444", "#6366F1", "#14B8A6", "#F97316", "#8B5CF6",
+  "#907AA9", "#EC4899", "#F59E0B", "#10B981", "#3B82F6",
+  "#EF4444", "#6366F1", "#14B8A6", "#F97316", "#907AA9",
 ];
 
 export default function Avatar({ name, size = 40 }: { name: string; size?: number }) {

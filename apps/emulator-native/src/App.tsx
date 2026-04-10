@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   loadBtn: {
-    backgroundColor: "#006BFF",
+    backgroundColor: "#286983",
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: "center",

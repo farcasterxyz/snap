@@ -4,14 +4,14 @@ import React, { useState } from "react";
 import { Share } from "lucide-react";
 
 const PALETTE: Record<string, string> = {
-  gray: "#8F8F8F",
-  blue: "#006BFF",
-  red: "#FC0036",
-  amber: "#FFAE00",
-  green: "#28A948",
-  teal: "#00AC96",
-  purple: "#8B5CF6",
-  pink: "#F32782",
+  gray: "#6E6A86",
+  blue: "#286983",
+  red: "#B4637A",
+  amber: "#EA9D34",
+  green: "#3E8F8F",
+  teal: "#56949F",
+  purple: "#907AA9",
+  pink: "#D7827E",
 };
 
 function resolveAccent(accent?: string): string {

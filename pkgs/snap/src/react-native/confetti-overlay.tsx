@@ -7,7 +7,7 @@ import {
 } from "react-native";
 
 const CONFETTI_COLORS = [
-  "#8B5CF6",
+  "#907AA9",
   "#EC4899",
   "#3B82F6",
   "#10B981",

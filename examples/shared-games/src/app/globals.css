@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --fc-purple: #8B5CF6;
-  --fc-purple-light: #A78BFA;
+  --fc-purple: #907AA9;
+  --fc-purple-light: #C4A7E7;
   --fc-purple-dark: #7C3AED;
   --fc-bg: #FFFFFF;
   --fc-bg-secondary: #F9FAFB;
@@ -59,7 +59,7 @@ body {
 }
 
 .shimmer {
-  background: linear-gradient(90deg, transparent 25%, rgba(139, 92, 246, 0.1) 50%, transparent 75%);
+  background: linear-gradient(90deg, transparent 25%, rgba(144, 122, 169, 0.1) 50%, transparent 75%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }

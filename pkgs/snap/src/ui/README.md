@@ -8,14 +8,14 @@ Snaps use a fixed set of named colors called the **palette**:
 
 | Name     | Light hex | Dark hex  |
 | -------- | --------- | --------- |
-| `gray`   | `#8F8F8F` | `#8F8F8F` |
-| `blue`   | `#006BFF` | `#006FFE` |
-| `red`    | `#FC0036` | `#F13342` |
-| `amber`  | `#FFAE00` | `#FFAE00` |
-| `green`  | `#28A948` | `#00AC3A` |
-| `teal`   | `#00AC96` | `#00AA96` |
-| `purple` | `#8B5CF6` | `#A78BFA` |
-| `pink`   | `#F32782` | `#F12B82` |
+| `gray`   | `#6E6A86` | `#908CAA` |
+| `blue`   | `#286983` | `#9CCFD8` |
+| `red`    | `#B4637A` | `#EB6F92` |
+| `amber`  | `#EA9D34` | `#F6C177` |
+| `green`  | `#3E8F8F` | `#56D4A4` |
+| `teal`   | `#56949F` | `#3E8FB0` |
+| `purple` | `#907AA9` | `#C4A7E7` |
+| `pink`   | `#D7827E` | `#EBBCBA` |
 
 These are exported from `@farcaster/snap` as `PALETTE_LIGHT_HEX`, `PALETTE_DARK_HEX`, and the `PaletteColor` type. Clients resolve the correct hex for their current light/dark mode.
 

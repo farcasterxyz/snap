@@ -57,14 +57,14 @@ ${ogLines.join("\n")}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0A0A0A;color:#FAFAFA;min-height:100vh;display:flex;align-items:center;justify-content:center}
 .c{text-align:center;max-width:400px;padding:48px 32px}
-.logo{color:#8B5CF6;margin-bottom:24px}
+.logo{color:#907AA9;margin-bottom:24px}
 .logo svg{width:48px;height:42px}
 h1{font-size:24px;font-weight:700;margin-bottom:8px}
 p{color:#A1A1AA;font-size:15px;line-height:1.5;margin-bottom:32px}
 .btns{display:flex;flex-direction:column;gap:12px}
 a{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;transition:opacity .15s}
 a:hover{opacity:.85}
-.p{background:#8B5CF6;color:#fff}
+.p{background:#907AA9;color:#fff}
 .s{background:#1A1A2E;color:#FAFAFA;border:1px solid #2D2D44}
 .s svg{width:20px;height:18px}
 </style>

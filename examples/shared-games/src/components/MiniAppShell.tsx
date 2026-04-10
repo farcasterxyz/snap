@@ -75,7 +75,7 @@ export default function MiniAppShell({
               <svg
                 className="w-3.5 h-3.5"
                 viewBox="0 0 16 16"
-                fill="#8B5CF6"
+                fill="#907AA9"
               >
                 <path d="M8 0L10.2 2.4L13.4 2.1L13.7 5.3L16 7.5L13.7 9.7L13.4 12.9L10.2 12.6L8 15L5.8 12.6L2.6 12.9L2.3 9.7L0 7.5L2.3 5.3L2.6 2.1L5.8 2.4L8 0Z" />
                 <path
