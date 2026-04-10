@@ -73,8 +73,8 @@ For each version folder, check:
 
 **Version-specific differences to maintain**:
 
-- v1.0 auth: `button_index` in payload, no `nonce`/`audience`
-- v2.0 auth: `nonce`/`audience` in payload, no `button_index`
+- v1.0 auth: `button_index` in payload, no `audience`
+- v2.0 auth: `audience` in payload, no `button_index`
 - v2.0 constraints: structural limits (64 elements, 7 root children, 4 depth, 6 children/container)
 - v1.0 constraints: no structural limits
 

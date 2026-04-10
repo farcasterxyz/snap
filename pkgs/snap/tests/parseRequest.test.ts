@@ -8,7 +8,6 @@ describe("parseRequest", () => {
       fid: 42,
       inputs: { guess: "HELLO" },
       timestamp: Math.floor(Date.now() / 1000),
-      nonce: "test-nonce-abc",
       audience: "https://example.com",
       ...overrides,
     };
@@ -45,7 +44,6 @@ describe("parseRequest", () => {
         fid: 42,
         inputs: { guess: "HELLO" },
         timestamp: payload.timestamp,
-        nonce: "test-nonce-abc",
         audience: "https://example.com",
       },
     });
@@ -56,7 +54,6 @@ describe("parseRequest", () => {
       fid: 42,
       inputs: { guess: "HELLO" },
       timestamp: Math.floor(Date.now() / 1000),
-      nonce: "n",
       audience: "https://example.com",
     };
     const res = await parseRequest(

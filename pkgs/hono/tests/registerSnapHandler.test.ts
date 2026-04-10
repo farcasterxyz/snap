@@ -44,7 +44,6 @@ function jfsPostBody(audience = "http://localhost") {
     fid: 1,
     inputs: {},
     timestamp: Math.floor(Date.now() / 1000),
-    nonce: "test-nonce",
     audience,
   };
   return JSON.stringify({

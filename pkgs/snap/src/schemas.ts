@@ -1,6 +1,10 @@
 import { z } from "zod";
 import type { Spec } from "@json-render/core";
-import { EFFECT_VALUES, SUPPORTED_SPEC_VERSIONS, type SpecVersion } from "./constants";
+import {
+  EFFECT_VALUES,
+  SUPPORTED_SPEC_VERSIONS,
+  type SpecVersion,
+} from "./constants";
 import { DEFAULT_THEME_ACCENT, PALETTE_COLOR_VALUES } from "./colors";
 
 // ─── Theme ─────────────────────────────────────────────
@@ -86,7 +90,6 @@ export const payloadSchema = z
     fid: z.number().int().nonnegative(),
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
-    nonce: z.string(),
     audience: z.string(),
   })
   .strip();

@@ -87,7 +87,7 @@ registerSnapHandler(app, async (ctx) => {
     };
   }
 
-  // Handle POST interactions (v2: nonce/audience are verified automatically)
+  // Handle POST interactions (v2: audience is verified automatically)
   const { fid, inputs } = ctx.action;
   // v2 uses distinct submit target URLs instead of button_index
   const url = new URL(ctx.request.url);

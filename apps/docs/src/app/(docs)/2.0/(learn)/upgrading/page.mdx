@@ -17,14 +17,13 @@ Change the `version` field in your snap response from `"1.0"` to `"2.0"`:
 
 ## Authentication changes
 
-The POST payload shape has changed. v2 adds anti-replay fields and removes
-`button_index`.
+The POST payload shape has changed. v2 adds `audience` and removes `button_index`.
 
 ### Removed: `button_index`
 
-The `button_index` field is no longer included in POST payloads. If your server
-reads `ctx.action.button_index`, remove that code. Instead, use distinct `submit`
-target URLs for each button to distinguish which button was pressed:
+The `button_index` field is no longer included in POST payloads. If your server reads
+`ctx.action.button_index`, remove that code. Instead, use distinct `submit` target URLs
+for each button to distinguish which button was pressed:
 
 ```typescript
 // Before (v1): read button_index
@@ -35,21 +34,18 @@ const url = new URL(ctx.request.url);
 const action = url.searchParams.get("action"); // e.g. ?action=vote or ?action=skip
 ```
 
-### Added: `nonce` and `audience`
+### Added: `audience`
 
-Every v2 POST payload includes two new fields:
+Every v2 POST payload includes **`audience`** — the origin of the snap server the
+request is intended for.
 
-- **`nonce`** — a unique string per request (e.g. UUID) for replay prevention
-- **`audience`** — the origin of the snap server the request is intended for
-
-If you use `@farcaster/snap-hono`, these are validated automatically by
-`parseRequest`. No code changes needed on your end — just upgrade the package.
+If you use `@farcaster/snap-hono`, it is validated automatically by `parseRequest`. No
+code changes needed on your end — just upgrade the package.
 
 If you handle verification manually, you MUST:
 
 1. Verify `audience` matches your server's origin
 2. Reject requests with timestamps outside your allowed skew (default 5 minutes)
-3. Optionally track seen nonces to reject exact replays
 
 See [Authentication](/snap/auth) for the full spec.
 
@@ -58,24 +54,24 @@ See [Authentication](/snap/auth) for the full spec.
 v2 enforces structural limits on your snap's UI tree to prevent endlessly tall or
 complex snaps:
 
-| Constraint | Limit |
-|------------|-------|
-| Total elements | Max **64** in `ui.elements` |
-| Root children | Max **7** on the root element |
-| Children per container | Max **6** per `stack` or `item_group` |
-| Nesting depth | Max **4** levels from root to deepest leaf |
+| Constraint             | Limit                                      |
+| ---------------------- | ------------------------------------------ |
+| Total elements         | Max **64** in `ui.elements`                |
+| Root children          | Max **7** on the root element              |
+| Children per container | Max **6** per `stack` or `item_group`      |
+| Nesting depth          | Max **4** levels from root to deepest leaf |
 
-Snaps that exceed these limits will fail validation and not render. If your v1 snap
-has large or deeply nested UIs, you may need to restructure.
+Snaps that exceed these limits will fail validation and not render. If your v1 snap has
+large or deeply nested UIs, you may need to restructure.
 
 See [Constraints](/snap/constraints) for the full list.
 
 ## Client upgrade required
 
-Farcaster clients **must** be updated to send `nonce` and `audience` in every POST
-payload. v2 snap servers will reject requests that omit these fields. See the
-[Client Upgrade Guide](/snap/client-upgrade) for the full payload format and
-fallback behavior for older servers.
+Farcaster clients **must** be updated to send `audience` in every POST payload. v2 snap
+servers will reject requests that omit this field. See the
+[Client Upgrade Guide](/snap/client-upgrade) for the full payload format and fallback
+behavior for older servers.
 
 ## Package updates
 
@@ -85,15 +81,14 @@ Update your dependencies to the latest versions:
 pnpm update @farcaster/snap @farcaster/snap-hono
 ```
 
-The latest `@farcaster/snap-hono` handles all v2 changes automatically —
-`parseRequest` validates nonce/audience, and the response validator enforces
-structural constraints.
+The latest `@farcaster/snap-hono` handles all v2 changes automatically — `parseRequest`
+validates audience, and the response validator enforces structural constraints.
 
 ## Testing
 
-Use the [Emulator](https://farcaster.xyz/~/developers/snaps) to test your upgraded
-snap. The emulator supports both v1 and v2 snaps and will show validation errors if
-your snap violates any v2 constraints.
+Use the [Emulator](https://farcaster.xyz/~/developers/snaps) to test your upgraded snap.
+The emulator supports both v1 and v2 snaps and will show validation errors if your snap
+violates any v2 constraints.
 
 ## Checklist
 
@@ -102,5 +97,6 @@ your snap violates any v2 constraints.
 - [ ] Use distinct submit target URLs to distinguish buttons
 - [ ] Verify your UI tree fits within structural constraints
 - [ ] Update `@farcaster/snap` and `@farcaster/snap-hono` packages
-- [ ] Ensure your Farcaster client sends `nonce` and `audience` in POST payloads ([details](/snap/client-upgrade))
+- [ ] Ensure your Farcaster client sends `audience` in POST payloads
+      ([details](/snap/client-upgrade))
 - [ ] Test in the emulator

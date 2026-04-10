@@ -17,13 +17,13 @@ const response = await fetch(snapUrl, {
 const snap = await response.json();
 ```
 
-If the server supports snaps, it returns JSON with `version`, `theme`, and `ui`
-fields. If not, it returns its normal HTML response.
+If the server supports snaps, it returns JSON with `version`, `theme`, and `ui` fields.
+If not, it returns its normal HTML response.
 
 ## SnapCard Component
 
-`SnapCard` is the primary component for rendering a snap. It handles version
-detection, validation, and rendering automatically.
+`SnapCard` is the primary component for rendering a snap. It handles version detection,
+validation, and rendering automatically.
 
 ### React (Web)
 
@@ -44,38 +44,38 @@ The React Native `SnapCard` accepts the same props plus optional `colors` and
 
 ### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `snap` | `SnapPage` | required | The snap JSON response |
-| `handlers` | `SnapActionHandlers` | required | Action callbacks |
-| `loading` | `boolean` | `false` | Show loading state |
-| `appearance` | `"light" \| "dark"` | `"dark"` | Color scheme |
-| `maxWidth` | `number` | `480` | Maximum width in pixels |
-| `showOverflowWarning` | `boolean` | `false` | Show overflow indicator at 500px |
-| `actionError` | `string \| null` | - | Error message to display below the snap |
-| `onValidationError` | `(result) => void` | - | Called when validation fails |
-| `validationErrorFallback` | `ReactNode` | - | Custom fallback for validation errors |
+| Prop                      | Type                 | Default  | Description                             |
+| ------------------------- | -------------------- | -------- | --------------------------------------- |
+| `snap`                    | `SnapPage`           | required | The snap JSON response                  |
+| `handlers`                | `SnapActionHandlers` | required | Action callbacks                        |
+| `loading`                 | `boolean`            | `false`  | Show loading state                      |
+| `appearance`              | `"light" \| "dark"`  | `"dark"` | Color scheme                            |
+| `maxWidth`                | `number`             | `480`    | Maximum width in pixels                 |
+| `showOverflowWarning`     | `boolean`            | `false`  | Show overflow indicator at 500px        |
+| `actionError`             | `string \| null`     | -        | Error message to display below the snap |
+| `onValidationError`       | `(result) => void`   | -        | Called when validation fails            |
+| `validationErrorFallback` | `ReactNode`          | -        | Custom fallback for validation errors   |
 
 ## Action Handlers
 
 The `handlers` prop defines how the client responds to user interactions. Every snap
 action type maps to a handler function that the client must implement.
 
-| Handler | Params | Description |
-|---------|--------|-------------|
-| `submit` | `(target: string, inputs: Record<string, value>)` | POST signed payload to `target` with collected input values. Returns the next snap page. This is the only handler that involves a server round-trip. |
-| `open_url` | `(target: string)` | Open an external URL in the system browser or in-app browser. |
-| `open_snap` | `(target: string)` | Open a snap URL inline — render the target as a snap rather than opening a browser. |
-| `open_mini_app` | `(target: string)` | Open a URL as a Farcaster mini app (in-app webview). |
-| `view_cast` | `({ hash: string })` | Navigate to a cast by its hash. |
-| `view_profile` | `({ fid: number })` | Navigate to a user profile by Farcaster ID. |
-| `compose_cast` | `({ text?, channelKey?, embeds? })` | Open the cast composer with optional pre-filled text, channel, and embeds. |
-| `view_token` | `({ token: string })` | View a token in the wallet. Token is a [CAIP-19](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-19.md) identifier. |
-| `send_token` | `({ token, amount?, recipientFid?, recipientAddress? })` | Open the send flow for a token (CAIP-19). Optional pre-filled amount and recipient. |
-| `swap_token` | `({ sellToken?, buyToken? })` | Open the swap flow between two tokens (CAIP-19). |
+| Handler         | Params                                                   | Description                                                                                                                                          |
+| --------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `submit`        | `(target: string, inputs: Record<string, value>)`        | POST signed payload to `target` with collected input values. Returns the next snap page. This is the only handler that involves a server round-trip. |
+| `open_url`      | `(target: string)`                                       | Open an external URL in the system browser or in-app browser.                                                                                        |
+| `open_snap`     | `(target: string)`                                       | Open a snap URL inline — render the target as a snap rather than opening a browser.                                                                  |
+| `open_mini_app` | `(target: string)`                                       | Open a URL as a Farcaster mini app (in-app webview).                                                                                                 |
+| `view_cast`     | `({ hash: string })`                                     | Navigate to a cast by its hash.                                                                                                                      |
+| `view_profile`  | `({ fid: number })`                                      | Navigate to a user profile by Farcaster ID.                                                                                                          |
+| `compose_cast`  | `({ text?, channelKey?, embeds? })`                      | Open the cast composer with optional pre-filled text, channel, and embeds.                                                                           |
+| `view_token`    | `({ token: string })`                                    | View a token in the wallet. Token is a [CAIP-19](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-19.md) identifier.                      |
+| `send_token`    | `({ token, amount?, recipientFid?, recipientAddress? })` | Open the send flow for a token (CAIP-19). Optional pre-filled amount and recipient.                                                                  |
+| `swap_token`    | `({ sellToken?, buyToken? })`                            | Open the swap flow between two tokens (CAIP-19).                                                                                                     |
 
-The `submit` handler is the most important — it's how snaps navigate between pages.
-All input values from `input`, `slider`, `switch`, and `toggle_group` elements are
+The `submit` handler is the most important — it's how snaps navigate between pages. All
+input values from `input`, `slider`, `switch`, and `toggle_group` elements are
 automatically collected and passed as the `inputs` parameter. See
 [Upgrading from v1.0](/snap/client-upgrade) for the POST payload format.
 
@@ -115,7 +115,6 @@ function SnapRenderer({
           fid: user.fid,
           inputs,
           timestamp: Math.floor(Date.now() / 1000),
-          nonce: crypto.randomUUID(),
           audience: new URL(target).origin,
         };
 
@@ -188,8 +187,8 @@ When a submit action fails, the error flows through to the user like this:
 2. The server returns a 4xx response with `{ "error": "..." }` — for example
    `{ "error": "payload audience does not match expected origin" }`
 3. The client catches the error and sets it in state
-4. `SnapCard` receives the error via the `actionError` prop and renders it below
-   the snap content, outside the 500px clipped area so it's always visible
+4. `SnapCard` receives the error via the `actionError` prop and renders it below the
+   snap content, outside the 500px clipped area so it's always visible
 5. On the next successful submit, the client clears the error
 
 Common server errors include:

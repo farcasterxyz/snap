@@ -159,7 +159,6 @@ export async function POST(request: NextRequest) {
     fid: userFid,
     inputs: (body.inputs ?? {}) as SnapPayload["inputs"],
     timestamp,
-    nonce: crypto.randomUUID(),
     audience: targetUrl.origin,
   };
 

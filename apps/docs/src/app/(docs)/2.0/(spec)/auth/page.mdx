@@ -9,7 +9,7 @@ Every POST request from the client to a snap server MUST be authenticated with
 When a user taps a `post` button, the Farcaster client:
 
 1. Collects all input values from the current page
-2. Builds a payload with the user's FID, inputs, timestamp, nonce, and audience
+2. Builds a payload with the user's FID, inputs, timestamp, and audience
 3. Signs the payload using the user's Farcaster signer key
 4. Sends the signed JFS compact string as the POST body
 
@@ -18,7 +18,7 @@ The snap server then:
 1. Verifies the JFS signature cryptographically
 2. Checks the signing key against hub state for the claimed FID
 3. Validates that `audience` matches the server's origin
-4. Validates `timestamp` (and optionally `nonce`) for replay protection
+4. Validates `timestamp` for replay protection
 5. Processes the request and returns a new page
 
 ## JFS Payload Shape
@@ -33,7 +33,6 @@ The decoded JFS payload (signed inside JFS, not sent as bare JSON):
     "vote": "Tabs"
   },
   "timestamp": 1710864000,
-  "nonce": "b7f9c2a1-4d6e-4c3b-9a12-8f4e2d1c0b55",
   "audience": "https://snap.example.com"
 }
 ```
@@ -50,23 +49,20 @@ different snap server.
 
 ## Replay protection
 
-The payload MUST contain a `timestamp` field (Unix seconds) and a `nonce` field (a
-unique string per request, for example a UUID).
+The payload MUST contain a `timestamp` field (Unix seconds).
 
 Servers MUST reject requests with timestamps outside an allowed skew (default 5
-minutes). Servers MAY additionally track seen nonces to reject exact replays within the
-timestamp window.
+minutes).
 
 ## Requirements
 
 - The client MUST send a valid JFS for every authenticated POST
-- The client MUST include `audience` (server origin), `nonce` (unique string), and
-  `timestamp` (Unix seconds) in every payload
+- The client MUST include `audience` (server origin) and `timestamp` (Unix seconds) in
+  every payload
 - The server MUST verify the JFS cryptographically and MUST verify the signing key
   against hub (or equivalent) state for the FID
 - The server MUST verify that `audience` matches its own origin
 - The server MUST enforce timestamp skew checks
-- The server MAY use `nonce` for additional replay prevention
 
 ## JSON Farcaster Signatures (JFS) Format
 
