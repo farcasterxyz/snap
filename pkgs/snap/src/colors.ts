@@ -3,12 +3,12 @@
  * it to a hex value appropriate for its current light/dark mode.
  *
  * Light-mode hex values (used by emulator):
- *   gray=#8F8F8F  blue=#006BFF  red=#FC0036  amber=#FFAE00
- *   green=#28A948  teal=#00AC96  purple=#8B5CF6  pink=#F32782
+ *   gray=#6E6A86  blue=#286983  red=#B4637A  amber=#EA9D34
+ *   green=#3E8F8F  teal=#56949F  purple=#907AA9  pink=#D7827E
  *
  * Dark-mode hex values (for reference; client-owned):
- *   gray=#8F8F8F  blue=#006FFE  red=#F13342  amber=#FFAE00
- *   green=#00AC3A  teal=#00AA96  purple=#A78BFA  pink=#F12B82
+ *   gray=#908CAA  blue=#9CCFD8  red=#EB6F92  amber=#F6C177
+ *   green=#56D4A4  teal=#3E8FB0  purple=#C4A7E7  pink=#EBBCBA
  */
 export const PALETTE_COLOR = {
   gray: "gray",
@@ -40,26 +40,26 @@ export type PaletteColor = (typeof PALETTE_COLOR_VALUES)[number];
 
 /** Light-mode hex for each palette color (emulator / reference client). */
 export const PALETTE_LIGHT_HEX: Record<PaletteColor, string> = {
-  gray: "#8F8F8F",
-  blue: "#006BFF",
-  red: "#FC0036",
-  amber: "#FFAE00",
-  green: "#28A948",
-  teal: "#00AC96",
-  purple: "#8B5CF6",
-  pink: "#F32782",
+  gray: "#6E6A86",
+  blue: "#286983",
+  red: "#B4637A",
+  amber: "#EA9D34",
+  green: "#3E8F8F",
+  teal: "#56949F",
+  purple: "#907AA9",
+  pink: "#D7827E",
 };
 
 /** Dark-mode hex for each palette color (reference). */
 export const PALETTE_DARK_HEX: Record<PaletteColor, string> = {
-  gray: "#8F8F8F",
-  blue: "#006FFE",
-  red: "#F13342",
-  amber: "#FFAE00",
-  green: "#00AC3A",
-  teal: "#00AA96",
-  purple: "#A78BFA",
-  pink: "#F12B82",
+  gray: "#908CAA",
+  blue: "#9CCFD8",
+  red: "#EB6F92",
+  amber: "#F6C177",
+  green: "#56D4A4",
+  teal: "#3E8FB0",
+  purple: "#C4A7E7",
+  pink: "#EBBCBA",
 };
 
 export const PROGRESS_COLOR_VALUES = [
