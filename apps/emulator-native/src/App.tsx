@@ -123,7 +123,7 @@ function urlDiffersFromLoadedSnap(
 ): boolean {
   if (!currentSourceUrl) return false;
   const normalized = normalizeSnapUrl(urlInput);
-  if (!normalized) return null;
+  if (!normalized) return false;
   return normalized !== currentSourceUrl;
 }
 
