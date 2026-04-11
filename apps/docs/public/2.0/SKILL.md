@@ -37,11 +37,12 @@ Default process:
 Do NOT build a full Farcaster miniapp. This is a snap, which is a different thing:
 simpler, smaller, meant for in-feed interaction.
 
-## Step 1: Read the spec
+## Step 1: Read the docs
 
-Read the complete snap spec at https://docs.farcaster.xyz/snap/llms.txt (or
-`pkgs/snap/llms.txt` in the repo). This single file contains all schema definitions,
-components, constraints, actions, and examples. Refer to this spec throughout.
+Read the complete snap docs at https://docs.farcaster.xyz/snap/llms.txt. This single
+file contains all documentation concatenated — schema, components, constraints, actions,
+and examples. Refer to it throughout. Do not explore other URLs or rely on memorized
+spec content.
 
 > **Important**: You are building a **v2.0** snap. The template defaults to version
 > `"1.0"` — you MUST change it to `"2.0"` after copying.
