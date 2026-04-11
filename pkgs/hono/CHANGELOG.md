@@ -1,5 +1,27 @@
 # @farcaster/snap-hono
 
+## 1.6.0
+
+### Minor Changes
+
+- [#131](https://github.com/farcasterxyz/snap/pull/131) [`89796c1`](https://github.com/farcasterxyz/snap/commit/89796c13cbc5e64616b4a039de3d20fda9fe6997) Thanks [@lyoshenka](https://github.com/lyoshenka)! - This release upgrades `@farcaster/snap` to v2 and includes breaking changes to the POST payload schema.
+
+  Consumers must update requests that were sending the v1 payload shape:
+  - remove the previously required `nonce` field
+  - add the `user` field
+  - add the `surface` field
+  - treat `user` and `surface` as required in v2
+  - deprecate `fid` in favor of `user.fid`
+
+  v1-style payloads are not forward-compatible with v2; callers should update request construction before upgrading.
+
+  The easiest way to upgrade is to tell your agent `read https://docs.farcaster.xyz/snap/SKILL.md, then upgrade dependencies and the snap to the latest versions`
+
+### Patch Changes
+
+- Updated dependencies [[`89796c1`](https://github.com/farcasterxyz/snap/commit/89796c13cbc5e64616b4a039de3d20fda9fe6997)]:
+  - @farcaster/snap@2.0.0
+
 ## 1.5.12
 
 ### Patch Changes
