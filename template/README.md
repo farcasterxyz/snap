@@ -17,7 +17,7 @@ Then set dependencies in `package.json` to published versions of `@farcaster/sna
 
 - Hono app in **`src/index.ts`** with `@farcaster/snap-hono` (`registerSnapHandler`) for GET/POST handling and validation
 - Local server: **`src/server.ts`** (default port **3003**)
-- `registerSnapHandler` verifies JFS signatures. For local developopment, use SKIP_JFS_VERIFICATION=true.
+- `registerSnapHandler` verifies JFS signatures. For local development, use SKIP_JFS_VERIFICATION=true.
 
 ## What this starter shows
 
@@ -28,7 +28,7 @@ The first page is a short **onboarding** flow: a topic row and **Refresh** (POST
 - `GET /` without `Accept: application/vnd.farcaster.snap+json` returns a short plain-text hint for browsers
 - `GET /` with the snap Accept header returns the first page
 - `POST /` accepts a JFS-shaped snap interaction payload (signature verified in production only by default) and returns the next page
-- Response pages follow current spec limits (max 5 elements, text length constraints)
+- Response pages must satisfy [v2 structural limits](https://docs.farcaster.xyz/snap/constraints) (this starter uses a small element tree)
 
 ## Local development
 
