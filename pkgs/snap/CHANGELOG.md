@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 2.0.1
+
+### Patch Changes
+
+- [`f16ea0b`](https://github.com/farcasterxyz/snap/commit/f16ea0b7bbbe12a7e601d3625af8e8cf0cdb1bce) Thanks [@lyoshenka](https://github.com/lyoshenka)! - 2.0 was used and deprecated in the past. we need an new version
+
 ## 2.0.0
 
 ### Major Changes
