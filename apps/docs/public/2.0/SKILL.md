@@ -12,7 +12,7 @@ description:
 
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-04-08**. If that date is more than 1 day ago,
+This skill was last updated on **2026-04-11**. If that date is more than 1 day ago,
 fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
@@ -37,16 +37,14 @@ Default process:
 Do NOT build a full Farcaster miniapp. This is a snap, which is a different thing:
 simpler, smaller, meant for in-feed interaction.
 
-## Step 1: Read the docs
+## Step 1: Read the spec
 
-Read the agent-directed docs at https://docs.farcaster.xyz/snap. Use
-`curl -H 'Accept: text/markdown'` to get markdown-formatted docs and conserve tokens.
-Refer to these docs throughout. Explore them as needed by following the links from that
-page. Do not invent URLs that dont exist. Do not rely on memorized spec content.
+Read the complete snap spec at https://docs.farcaster.xyz/snap/llms.txt (or
+`pkgs/snap/llms.txt` in the repo). This single file contains all schema definitions,
+components, constraints, actions, and examples. Refer to this spec throughout.
 
 > **Important**: You are building a **v2.0** snap. The template defaults to version
-> `"1.0"` — you MUST change it to `"2.0"` after copying. The docs at `/snap/` contain
-> the correct spec for this version.
+> `"1.0"` — you MUST change it to `"2.0"` after copying.
 
 ## Step 2: Implement the snap (follow the template)
 

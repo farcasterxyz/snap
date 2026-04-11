@@ -1,0 +1,199 @@
+# @farcaster/snap
+
+> TypeScript SDK for building Farcaster Snaps — interactive feed cards driven by server-returned JSON. Provides schema validation, component catalog, React + React Native renderers, and server utilities.
+
+## SnapResponse Format
+
+Every snap handler returns a `SnapResponse`:
+
+```json
+{
+  "version": "2.0",
+  "theme": { "accent": "purple" },
+  "effects": ["confetti"],
+  "ui": {
+    "root": "page",
+    "elements": {
+      "page": { "type": "stack", "props": {}, "children": ["title", "btn"] },
+      "title": { "type": "text", "props": { "content": "Hello", "weight": "bold" } },
+      "btn": {
+        "type": "button",
+        "props": { "label": "Go", "variant": "primary" },
+        "on": { "press": { "action": "submit", "params": { "target": "https://example.com/" } } }
+      }
+    }
+  }
+}
+```
+
+Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `{ accent: PaletteColor }`), `effects` (optional, `["confetti"]`), `ui` (required).
+
+`ui.root` is the ID of the root element. `ui.elements` is a flat map of element ID to element definition.
+
+## Structural Constraints
+
+| Constraint | Limit |
+|------------|-------|
+| Total elements | Max **64** in `ui.elements` |
+| Root children | Max **7** children on the root element |
+| Children per element | Max **6** per non-root container (`stack`, `item_group`) |
+| Nesting depth | Max **4** levels from root to deepest leaf |
+
+## Components (16 total)
+
+### Display Components
+
+**badge** — Inline label with optional icon.
+- `label` (string, required, max 30)
+- `variant` (optional): `"default"` (filled) | `"outline"` (bordered). Default: `"default"`
+- `color` (optional): PaletteColor. Default: `"accent"`
+- `icon` (optional): IconName
+
+**button** — Action trigger. Bind via `on.press`.
+- `label` (string, required, max 30)
+- `variant` (optional): `"primary"` (filled accent) | `"secondary"` (bordered). Default: `"secondary"`
+- `icon` (optional): IconName
+
+**icon** — Standalone Lucide icon.
+- `name` (IconName, required)
+- `color` (optional): PaletteColor. Default: `"accent"`
+- `size` (optional): `"sm"` (16px) | `"md"` (20px). Default: `"md"`
+
+**image** — HTTPS image with fixed aspect ratio.
+- `url` (string, required)
+- `aspect` (required): `"1:1"` | `"16:9"` | `"4:3"` | `"9:16"`
+- `alt` (string, optional)
+
+**item** — Content row with title and right-side actions slot.
+- `title` (string, required, max 100)
+- `description` (string, optional, max 160)
+- `variant` (optional): `"default"`. Default: `"default"`
+- Children render in the actions slot (right side)
+
+**progress** — Horizontal progress bar.
+- `value` (number, required, 0 to max)
+- `max` (number, required, > 0)
+- `label` (string, optional, max 60)
+
+**separator** — Visual divider.
+- `orientation` (optional): `"horizontal"` | `"vertical"`. Default: `"horizontal"`
+
+**text** — Text block.
+- `content` (string, required, max 320)
+- `size` (optional): `"md"` (body) | `"sm"` (caption). Default: `"md"`
+- `weight` (optional): `"bold"` | `"normal"`. Default: `"normal"`
+- `align` (optional): `"left"` | `"center"` | `"right"`. Default: `"left"`
+
+### Data Components
+
+**bar_chart** — Horizontal bar chart with labeled bars.
+- `bars` (array, required, 1–6 items): each `{ label: string (max 40), value: number (≥0), color?: PaletteColor }`
+- `max` (number, optional, ≥0): ceiling value; defaults to max bar value
+- `color` (optional): PaletteColor. Default bar color. Default: `"accent"`
+
+**cell_grid** — Colored cell grid, optionally interactive.
+- `name` (string, optional): POST inputs key. Default: `"grid_tap"`
+- `cols` (number, required, 2–32)
+- `rows` (number, required, 2–16)
+- `cells` (array, required): sparse list of `{ row, col, color?: PaletteColor, content?: string }`
+- `gap` (optional): `"none"` (0px) | `"sm"` (1px) | `"md"` (2px) | `"lg"` (4px). Default: `"sm"`
+- `rowHeight` (number, optional, 8–64): pixel height per row. Default: 28. Grid height = rows × rowHeight
+- `select` (optional): `"off"` | `"single"` | `"multiple"`. Default: `"off"`. Taps write to `inputs[name]`
+
+### Container Components
+
+**stack** — Layout container.
+- `direction` (optional): `"vertical"` | `"horizontal"`. Default: `"vertical"`
+- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Default: `"md"`
+- `justify` (optional): `"start"` | `"center"` | `"end"` | `"between"` | `"around"`
+- Children are element IDs
+
+**item_group** — Groups item children.
+- `border` (boolean, optional)
+- `separator` (boolean, optional)
+- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`
+- Children must be item elements
+
+### Field Components
+
+Field values are sent in POST `inputs[name]` when a `submit` action fires.
+
+**input** — Text or number input.
+- `name` (string, required)
+- `type` (optional): `"text"` | `"number"`. Default: `"text"`
+- `label` (string, optional, max 60)
+- `placeholder` (string, optional, max 60)
+- `defaultValue` (string, optional)
+- `maxLength` (number, optional, 1-280)
+- POST value: string
+
+**slider** — Numeric range.
+- `name` (string, required)
+- `min` (number, required)
+- `max` (number, required, >= min)
+- `step` (number, optional, > 0. Default: 1)
+- `defaultValue` (number, optional, between min and max)
+- `label` (string, optional, max 60)
+- `showValue` (boolean, optional): display the current value next to the label
+- POST value: number
+
+**switch** — Boolean toggle.
+- `name` (string, required)
+- `label` (string, optional, max 60)
+- `defaultChecked` (boolean, optional)
+- POST value: boolean
+
+**toggle_group** — Single or multi-select choice group.
+- `name` (string, required)
+- `options` (string[], required, 2-6 items, each max 30 chars)
+- `multiple` (boolean, optional)
+- `orientation` (optional): `"horizontal"` | `"vertical"`. Default: `"horizontal"`
+- `defaultValue` (string | string[], optional)
+- `variant` (optional): `"default"` | `"outline"`. Default: `"default"`
+- `label` (string, optional, max 60)
+- POST value: string (single) or string[] (multiple)
+
+## Actions (10 types)
+
+Bound to buttons via `on.press`:
+
+| Action | Params | Description |
+|--------|--------|-------------|
+| `submit` | `target` (URL) | POST to server, get next page |
+| `open_url` | `target` (URL) | Open external URL in browser |
+| `open_snap` | `target` (URL) | Open a snap URL inline |
+| `open_mini_app` | `target` (URL) | Open as Farcaster mini app |
+| `view_cast` | `hash` (string) | Navigate to a cast |
+| `view_profile` | `fid` (number) | Navigate to a profile |
+| `compose_cast` | `text?`, `channelKey?`, `embeds?` | Open cast composer |
+| `view_token` | `token` (CAIP-19) | View token in wallet |
+| `send_token` | `token`, `amount?`, `recipientFid?`, `recipientAddress?` | Send token flow |
+| `swap_token` | `sellToken?`, `buyToken?` | Swap token flow |
+
+## Icon Names (34)
+
+`arrow-right`, `arrow-left`, `external-link`, `chevron-right`, `check`, `x`, `alert-triangle`, `info`, `clock`, `heart`, `message-circle`, `repeat`, `share`, `user`, `users`, `star`, `trophy`, `zap`, `flame`, `gift`, `image`, `play`, `pause`, `wallet`, `coins`, `plus`, `minus`, `refresh-cw`, `bookmark`, `thumbs-up`, `thumbs-down`, `trending-up`, `trending-down`
+
+## Color Palette
+
+`gray`, `blue`, `red`, `amber`, `green`, `teal`, `purple`, `pink`
+
+Plus the special value `"accent"` which references `theme.accent`.
+
+## Package Exports
+
+```ts
+import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
+import { parseRequest, verifyJFSRequestBody } from "@farcaster/snap/server";
+import { withTursoServerless, createInMemoryDataStore } from "@farcaster/snap-turso";
+```
+
+- `@farcaster/snap` — schemas, types, validation
+- `@farcaster/snap/ui` — json-render catalog, component schemas
+- `@farcaster/snap/server` — request parsing, JFS verification
+- `@farcaster/snap-hono` — Hono adapter (`registerSnapHandler`)
+- `@farcaster/snap-turso` — `withTursoServerless`, `DataStore` / `DataStoreValue`, in-memory and Turso helpers
+
+## Full Documentation
+
+https://docs.farcaster.xyz/snap
