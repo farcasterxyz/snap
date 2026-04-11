@@ -194,6 +194,13 @@ to share their snap. Otherwise they will be confused about what to do next.
 
 ## Updating an existing snap
 
+The latest major version of `@farcaster/snap*` packages is 2.x. You can get the exact
+version of each package with
+
+```
+npm search @farcaster/snap --parseable | cut -f1 | grep '^@farcaster/snap' | xargs -I{} sh -c 'echo "{}: $(npm view {} dist-tags.latest)"'
+```
+
 Follow this process to update the `@farcaster/snap*` packages of an existing app to
 their latest versions:
 
@@ -210,3 +217,6 @@ their latest versions:
 - Do a review to make sure there are no functionality changes. If you find anything
   relevant, point it out to the user.
 - Deploy your changes.
+
+If you are starting from version 1.\*, read
+https://docs.farcaster.xyz/snap/client-upgrade for instructions on upgrading to 2.\*
