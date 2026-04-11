@@ -149,7 +149,7 @@ function validateStructure(
     }
   }
 
-  const depth = measureDepth(
+  // Check for dangling child references   for (const [id, el] of Object.entries(elements)) {     if (el.children) {       for (const childId of el.children) {         if (!(childId in elements)) {           issues.push({             code: "custom",             message: `Element "${id}" references unknown child "${childId}"`,             path: ["ui", "elements", id, "children"],           });         }       }     }   }    const depth = measureDepth(
     elements as Record<string, { children?: string[] }>,
     ui.root,
   );
