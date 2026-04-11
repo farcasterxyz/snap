@@ -1,5 +1,11 @@
 # @farcaster/snap-hono
 
+## 2.0.0
+
+### Major Changes
+
+- [`f989ece`](https://github.com/farcasterxyz/snap/commit/f989ece61e1f1e368d1b9ab6e2826c1442c8a9e1) Thanks [@lyoshenka](https://github.com/lyoshenka)! - since we bumped snap to v2, might as well bump these too to stay in sync (also copilot suggested we do this)
+
 ## 1.6.0
 
 ### Minor Changes
