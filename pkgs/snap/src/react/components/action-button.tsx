@@ -39,19 +39,22 @@ export function SnapActionButton({
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
   const showExternalIcon = isExternalLinkAction(element.on);
 
-  const style = isPrimary
-    ? {
-        backgroundColor: hovered ? colors.accentHover : colors.accent,
-        color: colors.accentFg,
-        borderColor: "transparent",
-      }
-    : {
-        backgroundColor: hovered
-          ? `color-mix(in srgb, ${colors.accent} 15%, transparent)`
-          : colors.muted,
-        color: colors.text,
-        borderColor: "transparent",
-      };
+  const style = {
+    cursor: "pointer" as const,
+    ...(isPrimary
+      ? {
+          backgroundColor: hovered ? colors.accentHover : colors.accent,
+          color: colors.accentFg,
+          borderColor: "transparent",
+        }
+      : {
+          backgroundColor: hovered
+            ? `color-mix(in srgb, ${colors.accent} 15%, transparent)`
+            : colors.muted,
+          color: colors.text,
+          borderColor: "transparent",
+        }),
+  };
 
   return (
     <div className="w-full min-w-0 flex-1">
