@@ -2,7 +2,14 @@ import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./catalog-renderer";
 import { useSnapTheme } from "./theme";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import {
   DEFAULT_THEME_ACCENT,
@@ -66,10 +73,16 @@ export function SnapViewCoreInner({
   snap,
   handlers,
   loading = false,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
+  /**
+   * Custom content rendered while `loading` is true. When `undefined` (default)
+   * the built-in ActivityIndicator overlay is used. Pass `null` to render nothing.
+   */
+  loadingOverlay?: ReactNode;
 }) {
   const { mode } = useSnapTheme();
   const spec = snap.ui;
@@ -172,19 +185,16 @@ export function SnapViewCoreInner({
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <View
-          style={[
-            styles.overlay,
-            {
-              backgroundColor:
-                mode === "dark" ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)",
-            },
-          ]}
-        >
-          <ActivityIndicator size="large" color={accentHex} />
-        </View>
-      ) : null}
+      {loading
+        ? loadingOverlay === undefined
+          ? (
+            <SnapLoadingOverlay
+              appearance={mode}
+              accentHex={accentHex}
+            />
+          )
+          : loadingOverlay
+        : null}
       <SnapCatalogView
         key={pageKey}
         spec={spec}
@@ -195,6 +205,30 @@ export function SnapViewCoreInner({
         }}
         onAction={handleAction}
       />
+    </View>
+  );
+}
+
+export function SnapLoadingOverlay({
+  appearance,
+  accentHex,
+}: {
+  appearance: "light" | "dark";
+  accentHex: string;
+}) {
+  return (
+    <View
+      style={[
+        styles.overlay,
+        {
+          backgroundColor:
+            appearance === "dark"
+              ? "rgba(0,0,0,0.1)"
+              : "rgba(255,255,255,0.2)",
+        },
+      ]}
+    >
+      <ActivityIndicator size="large" color={accentHex} />
     </View>
   );
 }

@@ -3,7 +3,8 @@
 import { type ReactNode, useEffect, useMemo } from "react";
 import { validateSnapResponse } from "../../validator.js";
 import type { ValidationResult } from "../../validator.js";
-import { SnapViewCore } from "../snap-view-core";
+import { SnapViewCore, SnapLoadingOverlay } from "../snap-view-core";
+import { resolveSnapPaletteHex } from "../lib/resolve-palette-hex";
 import type { SnapPage, SnapActionHandlers } from "../index";
 
 const SNAP_MAX_HEIGHT = 500;
@@ -45,6 +46,7 @@ export function SnapViewV2({
   appearance = "dark",
   onValidationError,
   validationErrorFallback,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -52,6 +54,8 @@ export function SnapViewV2({
   appearance?: "light" | "dark";
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   const validation = useMemo(() => validateSnapResponse(snap), [snap]);
   const valid = validation.valid;
@@ -79,6 +83,7 @@ export function SnapViewV2({
       handlers={handlers}
       loading={loading}
       appearance={appearance}
+      loadingOverlay={loadingOverlay}
     />
   );
 }
@@ -96,6 +101,7 @@ export function SnapCardV2({
   validationErrorFallback,
   actionError,
   plain = false,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -107,12 +113,18 @@ export function SnapCardV2({
   validationErrorFallback?: ReactNode;
   actionError?: string | null;
   plain?: boolean;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   const maxHeight = showOverflowWarning ? SNAP_WARNING_HEIGHT : SNAP_MAX_HEIGHT;
   const isDark = appearance === "dark";
   const bg = isDark ? "rgba(0,0,0,0.85)" : "rgba(255,255,255,0.9)";
   const borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
   const surfaceBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.02)";
+  const accentHex = useMemo(
+    () => resolveSnapPaletteHex(snap.theme?.accent ?? "purple", appearance),
+    [snap.theme?.accent, appearance],
+  );
 
   return (
     <>
@@ -138,8 +150,18 @@ export function SnapCardV2({
         appearance={appearance}
         onValidationError={onValidationError}
         validationErrorFallback={validationErrorFallback}
+        loadingOverlay={null}
       />
       </div>
+      {loadingOverlay === undefined ? (
+        <SnapLoadingOverlay
+          appearance={appearance}
+          accentHex={accentHex}
+          active={loading}
+        />
+      ) : loading ? (
+        <>{loadingOverlay}</>
+      ) : null}
       {showOverflowWarning && (
         <div
           style={{

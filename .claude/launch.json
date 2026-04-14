@@ -8,6 +8,12 @@
       "port": 3000
     },
     {
+      "name": "emulator-native",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@farcaster/snap-emulator-native", "web"],
+      "port": 8081
+    },
+    {
       "name": "snap-catalog",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "snap-catalog", "dev"],

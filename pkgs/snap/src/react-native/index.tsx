@@ -31,6 +31,7 @@ export function SnapCard({
   validationErrorFallback,
   actionError,
   plain = false,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -49,6 +50,8 @@ export function SnapCard({
   actionError?: string | null;
   /** When true, renders without card frame (no border, background, or padding). */
   plain?: boolean;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   if (snap.version === SPEC_VERSION_2) {
     return (
@@ -64,6 +67,7 @@ export function SnapCard({
         validationErrorFallback={validationErrorFallback}
         actionError={actionError}
         plain={plain}
+        loadingOverlay={loadingOverlay}
       />
     );
   }
@@ -78,6 +82,7 @@ export function SnapCard({
       borderRadius={borderRadius}
       actionError={actionError}
       plain={plain}
+      loadingOverlay={loadingOverlay}
     />
   );
 }

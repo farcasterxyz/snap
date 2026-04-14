@@ -8,6 +8,7 @@ import { resolveSnapPaletteHex } from "./lib/resolve-palette-hex";
 import { snapPreviewPrimaryCssProperties } from "./lib/preview-primary-css";
 import {
   type CSSProperties,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -111,7 +112,7 @@ function ConfettiOverlay() {
   );
 }
 
-function SnapLoadingOverlay({
+export function SnapLoadingOverlay({
   appearance,
   accentHex,
   active,
@@ -197,11 +198,17 @@ export function SnapViewCore({
   handlers,
   loading = false,
   appearance = "dark",
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
   appearance?: "light" | "dark";
+  /**
+   * Custom content rendered while `loading` is true. When `undefined` (default)
+   * the built-in spinner + backdrop is used. Pass `null` to render nothing.
+   */
+  loadingOverlay?: ReactNode;
 }) {
   const spec = snap.ui;
   const initialState = useMemo(() => spec.state ?? { inputs: {} }, [spec]);
@@ -315,11 +322,15 @@ export function SnapViewCore({
   return (
     <div style={{ position: "relative", width: "100%" }}>
       {showConfetti && <ConfettiOverlay />}
-      <SnapLoadingOverlay
-        appearance={appearance}
-        accentHex={accentHex}
-        active={loading}
-      />
+      {loadingOverlay === undefined ? (
+        <SnapLoadingOverlay
+          appearance={appearance}
+          accentHex={accentHex}
+          active={loading}
+        />
+      ) : loading ? (
+        <>{loadingOverlay}</>
+      ) : null}
 
       <div style={previewSurfaceStyle}>
         <SnapPreviewAccentProvider
