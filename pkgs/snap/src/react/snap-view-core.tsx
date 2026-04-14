@@ -265,6 +265,9 @@ export function SnapViewCore({
         case "open_url":
           handlers.open_url(String(p.target ?? ""));
           break;
+        case "open_snap":
+          handlers.open_snap(String(p.target ?? ""));
+          break;
         case "open_mini_app":
           handlers.open_mini_app(String(p.target ?? ""));
           break;

@@ -127,6 +127,9 @@ export function SnapViewCoreInner({
       case "open_url":
         h.open_url(String(p.target ?? ""));
         break;
+      case "open_snap":
+        h.open_snap(String(p.target ?? ""));
+        break;
       case "open_mini_app":
         h.open_mini_app(String(p.target ?? ""));
         break;

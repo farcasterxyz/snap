@@ -370,6 +370,24 @@ describe("URL validation", () => {
     expect(result.issues[0].message).toContain("HTTPS");
   });
 
+  it("validates open_snap action targets", () => {
+    const result = expectInvalid({
+      version: "2.0",
+      ui: {
+        root: "page",
+        elements: {
+          page: { type: "stack", children: ["btn"] },
+          btn: {
+            type: "button",
+            props: { label: "Go" },
+            on: { press: { action: "open_snap", params: { target: "http://evil.com" } } },
+          },
+        },
+      },
+    });
+    expect(result.issues[0].message).toContain("HTTPS");
+  });
+
   it("does not validate URLs for non-URL actions", () => {
     expectValid({
       version: "2.0",

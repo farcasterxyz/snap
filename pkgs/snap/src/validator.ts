@@ -11,7 +11,12 @@ export type ValidationResult = {
 // ─── Helpers ──────────────────────────────────────────
 
 /** Actions whose `params.target` must be a valid URL. */
-const URL_TARGET_ACTIONS = new Set(["submit", "open_url", "open_mini_app"]);
+const URL_TARGET_ACTIONS = new Set([
+  "submit",
+  "open_url",
+  "open_snap",
+  "open_mini_app",
+]);
 
 /** Image file extensions allowed in image URLs. */
 const ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "gif", "webp"]);
@@ -169,7 +174,7 @@ function validateStructure(
 /**
  * Validate all URLs in the snap:
  * - image.url: must be HTTPS with allowed extension
- * - action target URLs (submit, open_url, open_mini_app): must be HTTPS
+ * - action target URLs (submit, open_url, open_snap, open_mini_app): must be HTTPS
  */
 function validateUrls(
   elements: Record<string, unknown>,
