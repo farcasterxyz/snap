@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { SnapViewCore } from "../snap-view-core";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { SnapViewCore, SnapLoadingOverlay } from "../snap-view-core";
+import { resolveSnapPaletteHex } from "../lib/resolve-palette-hex";
 import type { SnapPage, SnapActionHandlers } from "../index";
 
 const SNAP_MAX_HEIGHT = 500;
@@ -11,11 +12,14 @@ export function SnapViewV1({
   handlers,
   loading = false,
   appearance = "dark",
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
   appearance?: "light" | "dark";
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   return (
     <SnapViewCore
@@ -23,6 +27,7 @@ export function SnapViewV1({
       handlers={handlers}
       loading={loading}
       appearance={appearance}
+      loadingOverlay={loadingOverlay}
     />
   );
 }
@@ -35,6 +40,7 @@ export function SnapCardV1({
   maxWidth = 480,
   actionError,
   plain = false,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -43,6 +49,8 @@ export function SnapCardV1({
   maxWidth?: number;
   actionError?: string | null;
   plain?: boolean;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   const isDark = appearance === "dark";
   const borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
@@ -86,6 +94,11 @@ export function SnapCardV1({
 
   const isClipped = isExpandable && !isExpanded;
 
+  const accentHex = useMemo(
+    () => resolveSnapPaletteHex(snap.theme?.accent ?? "purple", appearance),
+    [snap.theme?.accent, appearance],
+  );
+
   return (
     <div
       style={{
@@ -116,9 +129,19 @@ export function SnapCardV1({
             handlers={handlers}
             loading={loading}
             appearance={appearance}
+            loadingOverlay={null}
           />
         </div>
       </div>
+      {loadingOverlay === undefined ? (
+        <SnapLoadingOverlay
+          appearance={appearance}
+          accentHex={accentHex}
+          active={loading}
+        />
+      ) : loading ? (
+        <>{loadingOverlay}</>
+      ) : null}
       {isExpandable ? (
         <div
           style={{

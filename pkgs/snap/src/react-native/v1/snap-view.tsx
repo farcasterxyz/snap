@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { SnapThemeProvider, useSnapTheme, type SnapNativeColors } from "../theme";
-import { SnapViewCoreInner } from "../snap-view-core";
+import {
+  SnapLoadingOverlay,
+  SnapViewCoreInner,
+  resolveAccentHex,
+} from "../snap-view-core";
 import type { SnapPage, SnapActionHandlers } from "../types";
 
 const SNAP_MAX_HEIGHT = 500;
@@ -12,13 +16,20 @@ export function SnapViewV1Inner({
   snap,
   handlers,
   loading = false,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
+  loadingOverlay?: ReactNode;
 }) {
   return (
-    <SnapViewCoreInner snap={snap} handlers={handlers} loading={loading} />
+    <SnapViewCoreInner
+      snap={snap}
+      handlers={handlers}
+      loading={loading}
+      loadingOverlay={loadingOverlay}
+    />
   );
 }
 
@@ -28,16 +39,24 @@ export function SnapViewV1({
   loading = false,
   appearance = "dark",
   colors,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
   appearance?: "light" | "dark";
   colors?: Partial<SnapNativeColors>;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
-      <SnapViewV1Inner snap={snap} handlers={handlers} loading={loading} />
+      <SnapViewV1Inner
+        snap={snap}
+        handlers={handlers}
+        loading={loading}
+        loadingOverlay={loadingOverlay}
+      />
     </SnapThemeProvider>
   );
 }
@@ -52,6 +71,7 @@ function SnapCardV1Inner({
   actionError,
   appearance,
   plain,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -60,8 +80,10 @@ function SnapCardV1Inner({
   actionError?: string | null;
   appearance: "light" | "dark";
   plain: boolean;
+  loadingOverlay?: ReactNode;
 }) {
-  const { colors } = useSnapTheme();
+  const { colors, mode } = useSnapTheme();
+  const accentHex = resolveAccentHex(snap.theme?.accent, mode);
   const [contentHeight, setContentHeight] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -107,9 +129,15 @@ function SnapCardV1Inner({
                 snap={snap}
                 handlers={handlers}
                 loading={loading}
+                loadingOverlay={null}
               />
             </View>
           </View>
+          {loading
+            ? loadingOverlay === undefined
+              ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
+              : loadingOverlay
+            : null}
           {isExpandable ? (
             <View
               style={[
@@ -170,6 +198,7 @@ export function SnapCardV1({
   borderRadius = 16,
   actionError,
   plain = false,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -179,6 +208,8 @@ export function SnapCardV1({
   borderRadius?: number;
   actionError?: string | null;
   plain?: boolean;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -190,6 +221,7 @@ export function SnapCardV1({
         actionError={actionError}
         appearance={appearance}
         plain={plain}
+        loadingOverlay={loadingOverlay}
       />
     </SnapThemeProvider>
   );

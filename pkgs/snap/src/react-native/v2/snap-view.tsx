@@ -2,7 +2,11 @@ import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { SnapThemeProvider, useSnapTheme, type SnapNativeColors } from "../theme";
-import { SnapViewCoreInner } from "../snap-view-core";
+import {
+  SnapLoadingOverlay,
+  SnapViewCoreInner,
+  resolveAccentHex,
+} from "../snap-view-core";
 import {
   validateSnapResponse,
   type ValidationResult,
@@ -47,12 +51,14 @@ export function SnapViewV2Inner({
   loading = false,
   onValidationError,
   validationErrorFallback,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
+  loadingOverlay?: ReactNode;
 }) {
   const validation = useMemo(() => validateSnapResponse(snap), [snap]);
   const valid = validation.valid;
@@ -77,7 +83,12 @@ export function SnapViewV2Inner({
   }
 
   return (
-    <SnapViewCoreInner snap={snap} handlers={handlers} loading={loading} />
+    <SnapViewCoreInner
+      snap={snap}
+      handlers={handlers}
+      loading={loading}
+      loadingOverlay={loadingOverlay}
+    />
   );
 }
 
@@ -89,6 +100,7 @@ export function SnapViewV2({
   colors,
   onValidationError,
   validationErrorFallback,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -97,6 +109,8 @@ export function SnapViewV2({
   colors?: Partial<SnapNativeColors>;
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -106,6 +120,7 @@ export function SnapViewV2({
         loading={loading}
         onValidationError={onValidationError}
         validationErrorFallback={validationErrorFallback}
+        loadingOverlay={loadingOverlay}
       />
     </SnapThemeProvider>
   );
@@ -124,6 +139,7 @@ function SnapCardV2Inner({
   actionError,
   appearance,
   plain,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -135,8 +151,10 @@ function SnapCardV2Inner({
   actionError?: string | null;
   appearance: "light" | "dark";
   plain: boolean;
+  loadingOverlay?: ReactNode;
 }) {
-  const { colors } = useSnapTheme();
+  const { colors, mode } = useSnapTheme();
+  const accentHex = resolveAccentHex(snap.theme?.accent, mode);
   const [contentHeight, setContentHeight] = useState(0);
 
   const content = (
@@ -146,11 +164,21 @@ function SnapCardV2Inner({
       loading={loading}
       onValidationError={onValidationError}
       validationErrorFallback={validationErrorFallback}
+      loadingOverlay={null}
     />
   );
 
   if (plain) {
-    return content;
+    return (
+      <>
+        {content}
+        {loading
+          ? loadingOverlay === undefined
+            ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
+            : loadingOverlay
+          : null}
+      </>
+    );
   }
 
   const overflowAmount = showOverflowWarning ? contentHeight - SNAP_MAX_HEIGHT : 0;
@@ -184,6 +212,11 @@ function SnapCardV2Inner({
             <View style={{ flex: 1, backgroundColor: "rgba(255,50,50,0.15)" }} />
           </View>
         )}
+        {loading
+          ? loadingOverlay === undefined
+            ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
+            : loadingOverlay
+          : null}
       </View>
       {actionError && (
         <Text
@@ -216,6 +249,7 @@ export function SnapCardV2({
   validationErrorFallback,
   actionError,
   plain = false,
+  loadingOverlay,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -228,6 +262,8 @@ export function SnapCardV2({
   validationErrorFallback?: ReactNode;
   actionError?: string | null;
   plain?: boolean;
+  /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
+  loadingOverlay?: ReactNode;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -242,6 +278,7 @@ export function SnapCardV2({
         actionError={actionError}
         appearance={appearance}
         plain={plain}
+        loadingOverlay={loadingOverlay}
       />
     </SnapThemeProvider>
   );
