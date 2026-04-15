@@ -385,7 +385,16 @@ function itemsPage(base: string): SnapHandlerResult {
         "a-button-v": {
           type: "button",
           props: { label: "Share", icon: "share" },
-          on: { press: { action: "compose_cast", params: { text: "Check out Snaps!" } } },
+          on: {
+            press: {
+              action: "compose_cast",
+              // Put URLs in `embeds`, not `text`.
+              params: {
+                text: "Check out Snaps!",
+                embeds: ["https://snap-catalog.example.com"],
+              },
+            },
+          },
         },
 
         // Group styles
@@ -787,7 +796,16 @@ function actionsPage(base: string): SnapHandlerResult {
         "a-compose-btn": {
           type: "button",
           props: { label: "Share", icon: "share" },
-          on: { press: { action: "compose_cast", params: { text: "Check out the Snap Component Catalog!" } } },
+          on: {
+            press: {
+              action: "compose_cast",
+              // Put URLs in `embeds`, not `text`.
+              params: {
+                text: "Check out the Snap Component Catalog!",
+                embeds: ["https://snap-catalog.example.com"],
+              },
+            },
+          },
         },
         sep3: { type: "separator", props: {} },
         "token-label": { type: "text", props: { content: "Tokens", weight: "bold" } },
