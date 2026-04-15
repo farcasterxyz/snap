@@ -388,8 +388,7 @@ function itemsPage(base: string): SnapHandlerResult {
           on: {
             press: {
               action: "compose_cast",
-              // Pass the snap URL via `embeds`, never baked into `text`.
-              // Embedded URLs are how clients render the snap inline in the cast.
+              // Put URLs in `embeds`, not `text`.
               params: {
                 text: "Check out Snaps!",
                 embeds: ["https://snap-catalog.example.com"],
@@ -800,8 +799,7 @@ function actionsPage(base: string): SnapHandlerResult {
           on: {
             press: {
               action: "compose_cast",
-              // Pass the snap URL via `embeds`, never baked into `text`.
-              // Embedded URLs are how clients render the snap inline in the cast.
+              // Put URLs in `embeds`, not `text`.
               params: {
                 text: "Check out the Snap Component Catalog!",
                 embeds: ["https://snap-catalog.example.com"],
