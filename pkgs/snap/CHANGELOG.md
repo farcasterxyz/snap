@@ -1,5 +1,13 @@
 # @farcaster/snap
 
+## 2.0.3
+
+### Patch Changes
+
+- [#145](https://github.com/farcasterxyz/snap/pull/145) [`f1831a0`](https://github.com/farcasterxyz/snap/commit/f1831a003f66d1b1264d8e6e57576c3e72221ff2) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add loadingOverlay prop to SnapView/SnapCard for replacing the built-in loading UI
+
+- [`a2fc8a9`](https://github.com/farcasterxyz/snap/commit/a2fc8a953a4d76e3ef8e7643f360f292d6727744) Thanks [@lyoshenka](https://github.com/lyoshenka)! - testing something. DO NOT MERGE THIS
+
 ## 2.0.2
 
 ### Patch Changes
