@@ -162,6 +162,11 @@ Open the cast composer with optional pre-filled content.
 | `channelKey` | string | No | Target channel key |
 | `embeds` | string[] | No | URLs to embed in the cast |
 
+> **Pass URLs via `embeds`, never inside `text`.** Clients detect URL embeds
+> from the `embeds` array. A URL baked into the `text` string may not be
+> recognized as an embed until the user edits the composer, which breaks the
+> share-flow UX. Always put the snap URL in `embeds`.
+
 ```json
 {
   "type": "button",

@@ -165,7 +165,7 @@ Bound to buttons via `on.press`:
 | `open_mini_app` | `target` (URL) | Open as Farcaster mini app |
 | `view_cast` | `hash` (string) | Navigate to a cast |
 | `view_profile` | `fid` (number) | Navigate to a profile |
-| `compose_cast` | `text?`, `channelKey?`, `embeds?` | Open cast composer |
+| `compose_cast` | `text?`, `channelKey?`, `embeds?` | Open cast composer. URLs go in `embeds`, never baked into `text` |
 | `view_token` | `token` (CAIP-19) | View token in wallet |
 | `send_token` | `token`, `amount?`, `recipientFid?`, `recipientAddress?` | Send token flow |
 | `swap_token` | `sellToken?`, `buyToken?` | Swap token flow |
