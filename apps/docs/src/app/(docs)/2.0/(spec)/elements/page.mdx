@@ -151,7 +151,7 @@ HTTPS image with fixed aspect ratio. Use `"16:9"` for hero and banner images, `"
 
 ## item
 
-The go-to component for structured content rows: leaderboards, settings, key-value info. Has a title, optional description, and an actions slot on the right side. Put badges, icons, or buttons in `children` for the action slot.
+The go-to component for structured content rows: leaderboards, settings, key-value info. Has a title, optional description, and an actions slot on the right side. Put badges, buttons, or icons in `children` for the action slot. Items are not interactive — don't use navigation-style affordances like `chevron-right`, `arrow-right`, or `external-link` that imply the row itself is clickable.
 
 <ElementPreview type="item" />
 
@@ -169,8 +169,7 @@ The go-to component for structured content rows: leaderboards, settings, key-val
 
 ### Children
 
-Rendered in the **actions slot** (right side). Use for badges, icons, buttons, or any
-trailing content.
+Rendered in the **actions slot** (right side). Badges, buttons, and icons are all fair game — the item itself is not clickable, so pick trailing content that reads as content (status icon, badge, button), not navigation. Avoid `chevron-right`, `arrow-right`, or `external-link` on a plain item; they imply the row itself navigates.
 
 ```json
 "score": {
@@ -182,12 +181,16 @@ trailing content.
 ```
 
 ```json
-"nav": {
+"share": {
   "type": "item",
-  "props": { "title": "Settings" },
-  "children": ["nav-arrow"]
+  "props": { "title": "Share this Snap", "description": "Pre-fill the composer" },
+  "children": ["share-btn"]
 },
-"nav-arrow": { "type": "icon", "props": { "name": "chevron-right", "color": "gray" } }
+"share-btn": {
+  "type": "button",
+  "props": { "label": "Share", "icon": "share" },
+  "on": { "press": { "action": "compose_cast", "params": { "text": "Check out Snaps!" } } }
+}
 ```
 
 ---

@@ -58,7 +58,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     item: {
       props: itemProps,
       description:
-        "Content row with title and optional description. Children render in the actions slot (right side) — use badge, button, or text elements.",
+        "Content row with title and optional description. Children render in the actions slot (right side) — badge, button, and icon elements are all valid. The item itself is not interactive, so avoid navigation-style icons (`chevron-right`, `arrow-right`, `external-link`) that imply the row navigates.",
     },
     item_group: {
       props: itemGroupProps,
