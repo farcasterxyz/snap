@@ -68,7 +68,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `title` (string, required, max 100)
 - `description` (string, optional, max 160)
 - `variant` (optional): `"default"`. Default: `"default"`
-- Children render in the actions slot (right side). Items are not interactive — put badges or buttons in the actions slot, and do not use `chevron-right` as a disclosure affordance.
+- Children render in the actions slot (right side). Badges, buttons, and icons are all valid — but the item itself is not interactive, so avoid navigation-style icons (`chevron-right`, `arrow-right`, `external-link`) that imply the row navigates.
 
 **progress** — Horizontal progress bar.
 - `value` (number, required, 0 to max)
@@ -174,7 +174,7 @@ Bound to buttons via `on.press`:
 
 `arrow-right`, `arrow-left`, `external-link`, `chevron-right`, `check`, `x`, `alert-triangle`, `info`, `clock`, `heart`, `message-circle`, `repeat`, `share`, `user`, `users`, `star`, `trophy`, `zap`, `flame`, `gift`, `image`, `play`, `pause`, `wallet`, `coins`, `plus`, `minus`, `refresh-cw`, `bookmark`, `thumbs-up`, `thumbs-down`, `trending-up`, `trending-down`
 
-`chevron-right` is a disclosure/navigation affordance — only use it when the surrounding element actually navigates (e.g. a button bound to `open_url` or `open_snap`). Never place it inside an `item`'s actions slot; `item` is not interactive.
+`chevron-right`, `arrow-right`, and `external-link` are navigation/disclosure affordances — only use them when the surrounding element actually navigates (e.g. a button bound to `open_url` or `open_snap`). Never place them inside an `item`'s actions slot; `item` is not interactive.
 
 ## Color Palette
 
