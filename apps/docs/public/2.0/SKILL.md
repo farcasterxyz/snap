@@ -77,6 +77,9 @@ Design guidance:
   `size: "sm"` for captions/metadata.
 - Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
   default to `"secondary"`.
+- `item` is not interactive — put badges or buttons in its actions slot. Never place a
+  `chevron-right` icon inside an item; the chevron is a disclosure affordance and items
+  don't navigate.
 - 10 action types: `submit` (server round-trip), `open_url` (external browser),
   `open_snap` (open snap inline), `open_mini_app` (in-app), and client actions:
   `view_cast`, `view_profile`, `compose_cast`, `view_token`, `send_token`, `swap_token`.

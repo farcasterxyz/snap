@@ -575,8 +575,8 @@ export default function ElementPreview({
             <ItemPreview title="Engagement Score" description="Based on 24h activity">
               <BadgePreview label="92" color="green" />
             </ItemPreview>
-            <ItemPreview title="Settings">
-              <ChevronRight size={16} color="var(--text-muted)" />
+            <ItemPreview title="Share this Snap" description="Pre-fill the composer">
+              <ButtonPreview label="Share" variant="secondary" icon="share" />
             </ItemPreview>
           </div>
         );
