@@ -12,11 +12,16 @@ guess-and-probe with snap-specific headers in order to discover a snap.
 ## `Accept` (requests)
 
 When making an HTTP request, a client MAY include `application/vnd.farcaster.snap+json`
-in the `Accept` header to indicate snap support. A content-negotiating server MAY use
+in the `Accept` header to indicate snap support. A content-negotiating server MUST use
 this header to decide which representation to return.
 
-Even when a snap is requested, the server MAY return a different content type (for
-example, if there was an internal error).
+- If `application/vnd.farcaster.snap+json` is the highest-priority acceptable type, the
+  server MUST return a snap response
+- If the request does not indicate snap support, the server MAY return a snap response
+  only when snap is the only representation the server supports; otherwise it SHOULD
+  return valid HTML so that shared links render in a browser
+- Even when a snap is requested, the server MAY return a different content type (for
+  example, if there was an internal error)
 
 ## `Content-Type` (responses)
 
