@@ -19,7 +19,7 @@ const URL_TARGET_ACTIONS = new Set([
 ]);
 
 /** Image file extensions allowed in image URLs. */
-const ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "gif", "webp"]);
+const ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "gif", "webp", "avif", "svg"]);
 
 /**
  * Returns true if the URL is a loopback address (localhost dev exception).
