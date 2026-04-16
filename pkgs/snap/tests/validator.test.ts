@@ -1,13 +1,30 @@
 import { describe, it, expect } from "vitest";
 import { DEFAULT_THEME_ACCENT } from "../src/colors";
-import { MAX_CHILDREN, MAX_DEPTH, MAX_ELEMENTS, MAX_ROOT_CHILDREN } from "../src/constants";
+import {
+  MAX_CHILDREN,
+  MAX_DEPTH,
+  MAX_ELEMENTS,
+  MAX_ROOT_CHILDREN,
+} from "../src/constants";
 import { snapResponseSchema } from "../src/schemas";
 import { validateSnapResponse } from "../src/validator";
 
 // ─── Helpers ────────────────────────────────────────────
 
-function makeSpec(elements: Record<string, { type: string; props?: Record<string, unknown>; children?: string[] }>, root = "page") {
-  return { root, elements: { [root]: { type: "stack", children: Object.keys(elements) }, ...elements } };
+function makeSpec(
+  elements: Record<
+    string,
+    { type: string; props?: Record<string, unknown>; children?: string[] }
+  >,
+  root = "page",
+) {
+  return {
+    root,
+    elements: {
+      [root]: { type: "stack", children: Object.keys(elements) },
+      ...elements,
+    },
+  };
 }
 
 function validMinimalSnap() {
@@ -49,8 +66,13 @@ describe("Schema basics", () => {
   });
 
   it("requires a supported version", () => {
-    expectInvalid({ ui: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
-    expectInvalid({ version: "3.0", ui: makeSpec({ t: { type: "item", props: { title: "x" } } }) });
+    expectInvalid({
+      ui: makeSpec({ t: { type: "item", props: { title: "x" } } }),
+    });
+    expectInvalid({
+      version: "3.0",
+      ui: makeSpec({ t: { type: "item", props: { title: "x" } } }),
+    });
   });
 
   it("requires ui with root and elements", () => {
@@ -65,7 +87,10 @@ describe("Schema basics", () => {
       ui: makeSpec({
         a: { type: "item", props: { title: "Test" } },
         b: { type: "badge", props: { label: "New" } },
-        c: { type: "image", props: { url: "https://example.com/img.jpg", aspect: "16:9" } },
+        c: {
+          type: "image",
+          props: { url: "https://example.com/img.jpg", aspect: "16:9" },
+        },
         d: { type: "separator" },
         e: { type: "progress", props: { value: 50, max: 100 } },
       }),
@@ -78,9 +103,27 @@ describe("Schema basics", () => {
       ui: makeSpec({
         a: { type: "input", props: { name: "text" } },
         b: { type: "slider", props: { name: "val", min: 0, max: 100 } },
-        c: { type: "toggle_group", props: { name: "choice", options: [{ value: "a", label: "A" }, { value: "b", label: "B" }] } },
+        c: {
+          type: "toggle_group",
+          props: {
+            name: "choice",
+            options: [
+              { value: "a", label: "A" },
+              { value: "b", label: "B" },
+            ],
+          },
+        },
         d: { type: "switch", props: { name: "sw", label: "On" } },
-        e: { type: "toggle_group", props: { name: "tg", options: [{ value: "a", label: "A" }, { value: "b", label: "B" }] } },
+        e: {
+          type: "toggle_group",
+          props: {
+            name: "tg",
+            options: [
+              { value: "a", label: "A" },
+              { value: "b", label: "B" },
+            ],
+          },
+        },
       }),
     });
   });
@@ -96,7 +139,12 @@ describe("Schema basics", () => {
           submit: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "submit", params: { target: "https://example.com/" } } },
+            on: {
+              press: {
+                action: "submit",
+                params: { target: "https://example.com/" },
+              },
+            },
           },
         },
       },
@@ -110,7 +158,11 @@ describe("Schema basics", () => {
         root: "page",
         elements: {
           page: { type: "stack", children: ["row"] },
-          row: { type: "stack", props: { direction: "horizontal" }, children: ["a", "b"] },
+          row: {
+            type: "stack",
+            props: { direction: "horizontal" },
+            children: ["a", "b"],
+          },
           a: { type: "item", props: { title: "Left" } },
           b: { type: "item", props: { title: "Right" } },
         },
@@ -174,7 +226,10 @@ describe("URL validation", () => {
     expectValid({
       version: "1.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "http://evil.com/photo.jpg", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "http://evil.com/photo.jpg", aspect: "16:9" },
+        },
       }),
     });
   });
@@ -183,7 +238,10 @@ describe("URL validation", () => {
     expectValid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "https://example.com/photo.jpg", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "https://example.com/photo.jpg", aspect: "16:9" },
+        },
       }),
     });
   });
@@ -192,7 +250,10 @@ describe("URL validation", () => {
     expectValid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "https://example.com/photo.png", aspect: "1:1" } },
+        img: {
+          type: "image",
+          props: { url: "https://example.com/photo.png", aspect: "1:1" },
+        },
       }),
     });
   });
@@ -201,7 +262,10 @@ describe("URL validation", () => {
     expectValid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "https://example.com/anim.gif", aspect: "4:3" } },
+        img: {
+          type: "image",
+          props: { url: "https://example.com/anim.gif", aspect: "4:3" },
+        },
       }),
     });
   });
@@ -210,7 +274,10 @@ describe("URL validation", () => {
     expectValid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "https://example.com/img.webp", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "https://example.com/img.webp", aspect: "16:9" },
+        },
       }),
     });
   });
@@ -219,7 +286,10 @@ describe("URL validation", () => {
     expectValid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "http://localhost:3000/photo.jpg", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "http://localhost:3000/photo.jpg", aspect: "16:9" },
+        },
       }),
     });
   });
@@ -228,37 +298,47 @@ describe("URL validation", () => {
     const result = expectInvalid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "http://evil.com/photo.jpg", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "http://evil.com/photo.jpg", aspect: "16:9" },
+        },
       }),
     });
     expect(result.issues[0].message).toContain("HTTPS");
   });
 
-  it("rejects image URL with unsupported extension", () => {
-    const result = expectInvalid({
+  it("accepts image URL with any extension", () => {
+    expectValid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "https://example.com/file.svg", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "https://example.com/file.svg", aspect: "16:9" },
+        },
       }),
     });
-    expect(result.issues[0].message).toContain("unsupported extension");
   });
 
-  it("rejects image URL without extension", () => {
-    const result = expectInvalid({
+  it("accepts image URL without extension", () => {
+    expectValid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "https://example.com/photo", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "https://example.com/photo", aspect: "16:9" },
+        },
       }),
     });
-    expect(result.issues[0].message).toContain("supported extension");
   });
 
   it("rejects javascript: URI in image", () => {
     const result = expectInvalid({
       version: "2.0",
       ui: makeSpec({
-        img: { type: "image", props: { url: "javascript:alert(1)", aspect: "16:9" } },
+        img: {
+          type: "image",
+          props: { url: "javascript:alert(1)", aspect: "16:9" },
+        },
       }),
     });
     expect(result.issues[0].message).toContain("javascript");
@@ -274,7 +354,12 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "submit", params: { target: "https://example.com/api" } } },
+            on: {
+              press: {
+                action: "submit",
+                params: { target: "https://example.com/api" },
+              },
+            },
           },
         },
       },
@@ -291,7 +376,12 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "submit", params: { target: "http://localhost:3000/api" } } },
+            on: {
+              press: {
+                action: "submit",
+                params: { target: "http://localhost:3000/api" },
+              },
+            },
           },
         },
       },
@@ -308,7 +398,12 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "submit", params: { target: "http://evil.com/api" } } },
+            on: {
+              press: {
+                action: "submit",
+                params: { target: "http://evil.com/api" },
+              },
+            },
           },
         },
       },
@@ -326,7 +421,12 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "open_url", params: { target: "javascript:alert(1)" } } },
+            on: {
+              press: {
+                action: "open_url",
+                params: { target: "javascript:alert(1)" },
+              },
+            },
           },
         },
       },
@@ -344,7 +444,12 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "open_url", params: { target: "http://evil.com" } } },
+            on: {
+              press: {
+                action: "open_url",
+                params: { target: "http://evil.com" },
+              },
+            },
           },
         },
       },
@@ -362,7 +467,12 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "open_mini_app", params: { target: "http://evil.com" } } },
+            on: {
+              press: {
+                action: "open_mini_app",
+                params: { target: "http://evil.com" },
+              },
+            },
           },
         },
       },
@@ -380,7 +490,12 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "Go" },
-            on: { press: { action: "open_snap", params: { target: "http://evil.com" } } },
+            on: {
+              press: {
+                action: "open_snap",
+                params: { target: "http://evil.com" },
+              },
+            },
           },
         },
       },
@@ -398,7 +513,9 @@ describe("URL validation", () => {
           btn: {
             type: "button",
             props: { label: "View" },
-            on: { press: { action: "view_cast", params: { hash: "0xabc123" } } },
+            on: {
+              press: { action: "view_cast", params: { hash: "0xabc123" } },
+            },
           },
         },
       },
@@ -411,7 +528,10 @@ describe("URL validation", () => {
 describe("Structural constraints", () => {
   it("skips structural validation for v1 snaps", () => {
     // v1 snap with 11 root children — would fail for v2 but passes for v1
-    const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; props?: Record<string, unknown> }
+    > = {};
     const childIds: string[] = [];
     for (let i = 0; i < 11; i++) {
       const id = `child_${i}`;
@@ -431,7 +551,10 @@ describe("Structural constraints", () => {
   });
 
   it("rejects a snap with too many elements", () => {
-    const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; props?: Record<string, unknown> }
+    > = {};
     const childIds: string[] = [];
     for (let i = 0; i < MAX_ELEMENTS + 1; i++) {
       const id = `el_${i}`;
@@ -457,7 +580,10 @@ describe("Structural constraints", () => {
     // Build a tree with exactly MAX_ELEMENTS elements.
     // Root gets MAX_ROOT_CHILDREN groups, each group gets up to MAX_CHILDREN leaves.
     // Some groups use a nested subgroup to consume remaining elements.
-    const elements: Record<string, { type: string; children?: string[]; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; children?: string[]; props?: Record<string, unknown> }
+    > = {};
     let remaining = MAX_ELEMENTS - 1; // minus root
     const topChildren: string[] = [];
     let uid = 0;
@@ -504,7 +630,10 @@ describe("Structural constraints", () => {
   });
 
   it("rejects root with too many children", () => {
-    const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; props?: Record<string, unknown> }
+    > = {};
     const childIds: string[] = [];
     for (let i = 0; i < MAX_ROOT_CHILDREN + 1; i++) {
       const id = `child_${i}`;
@@ -526,7 +655,10 @@ describe("Structural constraints", () => {
   });
 
   it("accepts root at the root children limit", () => {
-    const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; props?: Record<string, unknown> }
+    > = {};
     const childIds: string[] = [];
     for (let i = 0; i < MAX_ROOT_CHILDREN; i++) {
       const id = `child_${i}`;
@@ -546,7 +678,10 @@ describe("Structural constraints", () => {
   });
 
   it("rejects a non-root element with too many children", () => {
-    const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; props?: Record<string, unknown> }
+    > = {};
     const childIds: string[] = [];
     for (let i = 0; i < MAX_CHILDREN + 1; i++) {
       const id = `child_${i}`;
@@ -569,7 +704,10 @@ describe("Structural constraints", () => {
   });
 
   it("accepts a non-root element at the children limit", () => {
-    const elements: Record<string, { type: string; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; props?: Record<string, unknown> }
+    > = {};
     const childIds: string[] = [];
     for (let i = 0; i < MAX_CHILDREN; i++) {
       const id = `child_${i}`;
@@ -591,7 +729,10 @@ describe("Structural constraints", () => {
 
   it("rejects a snap that exceeds max nesting depth", () => {
     // Build a chain deeper than MAX_DEPTH
-    const elements: Record<string, { type: string; children?: string[]; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; children?: string[]; props?: Record<string, unknown> }
+    > = {};
     let prevId = "";
     for (let i = MAX_DEPTH; i >= 0; i--) {
       const id = `level_${i}`;
@@ -611,7 +752,10 @@ describe("Structural constraints", () => {
 
   it("accepts a snap at the max nesting depth", () => {
     // Build a chain exactly at MAX_DEPTH
-    const elements: Record<string, { type: string; children?: string[]; props?: Record<string, unknown> }> = {};
+    const elements: Record<
+      string,
+      { type: string; children?: string[]; props?: Record<string, unknown> }
+    > = {};
     let prevId = "";
     for (let i = MAX_DEPTH - 1; i >= 0; i--) {
       const id = `level_${i}`;

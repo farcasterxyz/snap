@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { snapResponseSchema } from "./schemas";
-import { MAX_CHILDREN, MAX_DEPTH, MAX_ELEMENTS, MAX_ROOT_CHILDREN, SPEC_VERSION_1 } from "./constants";
+import {
+  MAX_CHILDREN,
+  MAX_DEPTH,
+  MAX_ELEMENTS,
+  MAX_ROOT_CHILDREN,
+  SPEC_VERSION_1,
+} from "./constants";
 import { snapJsonRenderCatalog } from "./ui/catalog.js";
 
 export type ValidationResult = {
@@ -18,15 +24,12 @@ const URL_TARGET_ACTIONS = new Set([
   "open_mini_app",
 ]);
 
-/** Image file extensions allowed in image URLs. */
-const ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "gif", "webp"]);
-
 /**
  * Returns true if the URL is a loopback address (localhost dev exception).
  */
 function isLoopback(url: URL): boolean {
   const host = url.hostname;
-  return host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
+  return host === "localhost" || host === "127.0.0.1" || host === "::1";
 }
 
 /**
@@ -46,34 +49,6 @@ function validateUrl(raw: string): string | null {
   if (url.protocol === "javascript:") return `javascript: URIs are not allowed`;
 
   return `URL must use HTTPS (got ${url.protocol.replace(":", "")}): "${raw}"`;
-}
-
-/**
- * Validate an image URL: must pass URL validation + have an allowed extension.
- */
-function validateImageUrl(raw: string): string | null {
-  const urlError = validateUrl(raw);
-  if (urlError) return urlError;
-
-  let url: URL;
-  try {
-    url = new URL(raw);
-  } catch {
-    return null; // already caught above
-  }
-
-  const pathname = url.pathname;
-  const lastDot = pathname.lastIndexOf(".");
-  if (lastDot === -1) {
-    return `Image URL must end with a supported extension (${[...ALLOWED_IMAGE_EXTENSIONS].join(", ")}): "${raw}"`;
-  }
-
-  const ext = pathname.slice(lastDot + 1).toLowerCase();
-  if (!ALLOWED_IMAGE_EXTENSIONS.has(ext)) {
-    return `Image URL has unsupported extension ".${ext}" (allowed: ${[...ALLOWED_IMAGE_EXTENSIONS].join(", ")}): "${raw}"`;
-  }
-
-  return null;
 }
 
 // ─── Depth measurement ────────────────────────────────
@@ -118,9 +93,10 @@ type ElementShape = {
  * - Children per element ≤ MAX_CHILDREN
  * - Nesting depth ≤ MAX_DEPTH
  */
-function validateStructure(
-  ui: { root: string; elements: Record<string, unknown> },
-): z.core.$ZodIssue[] {
+function validateStructure(ui: {
+  root: string;
+  elements: Record<string, unknown>;
+}): z.core.$ZodIssue[] {
   const issues: z.core.$ZodIssue[] = [];
   const elements = ui.elements as Record<string, ElementShape>;
 
@@ -173,19 +149,17 @@ function validateStructure(
 
 /**
  * Validate all URLs in the snap:
- * - image.url: must be HTTPS with allowed extension
- * - action target URLs (submit, open_url, open_snap, open_mini_app): must be HTTPS
+ * - image.url: must use HTTPS (or HTTP on loopback for dev)
+ * - action target URLs (submit, open_url, open_snap, open_mini_app): must use HTTPS (or HTTP on loopback for dev)
  */
-function validateUrls(
-  elements: Record<string, unknown>,
-): z.core.$ZodIssue[] {
+function validateUrls(elements: Record<string, unknown>): z.core.$ZodIssue[] {
   const issues: z.core.$ZodIssue[] = [];
   const els = elements as Record<string, ElementShape>;
 
   for (const [id, el] of Object.entries(els)) {
     // Validate image URLs
     if (el.type === "image" && typeof el.props?.url === "string") {
-      const error = validateImageUrl(el.props.url);
+      const error = validateUrl(el.props.url);
       if (error) {
         issues.push({
           code: "custom",
@@ -242,11 +216,13 @@ export function validateSnapResponse(json: unknown): ValidationResult {
   if (!(ui.root in ui.elements)) {
     return {
       valid: false,
-      issues: [{
-        code: "custom",
-        message: `ui.root "${ui.root}" does not exist in ui.elements`,
-        path: ["ui", "root"],
-      }],
+      issues: [
+        {
+          code: "custom",
+          message: `ui.root "${ui.root}" does not exist in ui.elements`,
+          path: ["ui", "root"],
+        },
+      ],
     };
   }
 
