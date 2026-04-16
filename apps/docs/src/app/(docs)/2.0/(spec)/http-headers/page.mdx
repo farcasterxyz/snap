@@ -3,18 +3,20 @@
 Snaps use the media type `application/vnd.farcaster.snap+json`. Clients and servers
 coordinate snap responses with `Accept`, `Content-Type`, `Vary`, and `Link` headers.
 
+The goal of this spec is that **a snap URL is never silently missed**. Discovery is the
+server's responsibility: any client that performs a plain GET on a snap URL must be
+able to tell it is a snap, either from the response itself or from a `Link` header
+advertising the snap as an alternate representation. A client is never required to
+guess-and-probe with snap-specific headers in order to discover a snap.
+
 ## `Accept` (requests)
 
 When making an HTTP request, a client MAY include `application/vnd.farcaster.snap+json`
-in the `Accept` header to indicate snap support.
+in the `Accept` header to indicate snap support. A content-negotiating server MAY use
+this header to decide which representation to return.
 
-- If `application/vnd.farcaster.snap+json` is the highest-priority acceptable type, the
-  server MAY return a snap response
-- If the request does not indicate snap support, the server MUST NOT return a snap
-  response. Instead it SHOULD return another content type (for example, a `text/html`
-  fallback)
-- Even when a snap is requested, the server MAY return a different content type (for
-  example, if there was an internal error)
+Even when a snap is requested, the server MAY return a different content type (for
+example, if there was an internal error).
 
 ## `Content-Type` (responses)
 
@@ -26,19 +28,38 @@ render it as a snap.
 
 ## `Vary` (responses)
 
-When the representation depends on `Accept` (e.g., snap JSON versus a plain-text
-fallback on GET), the server MUST include `Vary: Accept` on those responses so caches
-and intermediaries key correctly.
+When the representation depends on `Accept` (e.g., snap JSON versus an HTML fallback on
+GET), the server MUST include `Vary: Accept` on those responses so caches and
+intermediaries key correctly.
 
 ## `Link` (responses)
 
-When multiple content types are available (e.g. snap and HTML), the server SHOULD return
-a `Link` header listing the available types. For example:
+A URL that is available as a snap MUST be discoverable on a plain `GET`, regardless of
+whether the client signaled snap support. A server MUST satisfy this in one of two
+ways:
+
+1. Return the snap directly with
+   `Content-Type: application/vnd.farcaster.snap+json`, **or**
+2. Return valid HTML with a `Link` header advertising the snap as an alternate
+   representation.
+
+For example, option 2 on an HTML response:
 
 ```
+HTTP/1.1 200 OK
+Content-Type: text/html
 Link: </resource>; rel="alternate"; type="application/vnd.farcaster.snap+json",
       </resource>; rel="alternate"; type="text/html"
 ```
+
+A server MAY content-negotiate between the two options based on the client's `Accept`
+header (returning the snap when `application/vnd.farcaster.snap+json` is requested and
+HTML otherwise), but this is not required — a snap-only server that always returns
+option 1 is compliant.
+
+A server that does neither — e.g., returns HTML without a `Link` header, or returns a
+5xx on non-snap `Accept` headers — is non-compliant. Its snap will be silently missed
+by any client that did not already know to ask for snap content.
 
 ## Caching
 
