@@ -30,7 +30,10 @@ export function ConfettiOverlay() {
           CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)]!,
         size: 6 + Math.random() * 8,
         startRotation: Math.random() * 360,
-        driftX: (Math.random() > 0.5 ? 1 : -1) * Math.random() * 40,
+        // Per-piece swirl: amplitude, frequency (full oscillations), phase.
+        swirlAmp: 20 + Math.random() * 40,
+        swirlFreq: 1 + Math.random() * 1.5,
+        swirlPhase: Math.random() * Math.PI * 2,
       })),
     // width captured once on mount; intentional stable dep
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,45 +42,21 @@ export function ConfettiOverlay() {
 
   const anims = useRef(
     pieces.map(() => ({
-      translateY: new Animated.Value(-20),
-      opacity: new Animated.Value(1),
-      rotate: new Animated.Value(0),
-      translateX: new Animated.Value(0),
+      progress: new Animated.Value(0),
     })),
   ).current;
 
   useEffect(() => {
     const animations = pieces.map((piece, i) => {
       const anim = anims[i]!;
-      anim.translateY.setValue(-20);
-      anim.opacity.setValue(1);
-      anim.rotate.setValue(0);
-      anim.translateX.setValue(0);
-
+      anim.progress.setValue(0);
       return Animated.sequence([
         Animated.delay(piece.delay),
-        Animated.parallel([
-          Animated.timing(anim.translateY, {
-            toValue: height + 20,
-            duration: piece.duration,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim.opacity, {
-            toValue: 0,
-            duration: piece.duration,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim.rotate, {
-            toValue: 720,
-            duration: piece.duration,
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim.translateX, {
-            toValue: piece.driftX,
-            duration: piece.duration,
-            useNativeDriver: true,
-          }),
-        ]),
+        Animated.timing(anim.progress, {
+          toValue: 1,
+          duration: piece.duration,
+          useNativeDriver: true,
+        }),
       ]);
     });
 
@@ -86,16 +65,40 @@ export function ConfettiOverlay() {
     return () => composite.stop();
   }, [pieces, anims, height]);
 
+  // Sample the sine curve at fixed progress points to build an interpolation
+  // that drives horizontal swirl on the native driver.
+  const SAMPLE_COUNT = 21;
+  const samplePoints = Array.from(
+    { length: SAMPLE_COUNT },
+    (_, k) => k / (SAMPLE_COUNT - 1),
+  );
+
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]} pointerEvents="none">
       {pieces.map((piece, i) => {
         const anim = anims[i]!;
-        const rotate = anim.rotate.interpolate({
-          inputRange: [0, 720],
+        const translateY = anim.progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-20, height + 20],
+        });
+        const rotate = anim.progress.interpolate({
+          inputRange: [0, 1],
           outputRange: [
             `${piece.startRotation}deg`,
             `${piece.startRotation + 720}deg`,
           ],
+        });
+        const opacity = anim.progress.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [1, 1, 0],
+        });
+        const translateX = anim.progress.interpolate({
+          inputRange: samplePoints,
+          outputRange: samplePoints.map(
+            (t) =>
+              Math.sin(t * piece.swirlFreq * Math.PI * 2 + piece.swirlPhase) *
+              piece.swirlAmp,
+          ),
         });
         return (
           <Animated.View
@@ -107,10 +110,10 @@ export function ConfettiOverlay() {
                 width: piece.size,
                 height: piece.size * 0.6,
                 backgroundColor: piece.color,
-                opacity: anim.opacity,
+                opacity,
                 transform: [
-                  { translateY: anim.translateY },
-                  { translateX: anim.translateX },
+                  { translateY },
+                  { translateX },
                   { rotate },
                 ],
               },
