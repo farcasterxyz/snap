@@ -22,7 +22,10 @@ function buildNav(version: string): NavSection[] {
       untitled: section.untitled,
       items: section.pages.map((page) => ({
         label: page.title,
-        href: page.pathname === "/" ? `${prefix}/` : `${prefix}${page.pathname}`,
+        href:
+          page.pathname === "/"
+            ? prefix || "/"
+            : `${prefix}${page.pathname}`,
       })),
     }))
     .filter((section) => section.items.length > 0);

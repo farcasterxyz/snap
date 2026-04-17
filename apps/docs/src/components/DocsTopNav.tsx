@@ -1,11 +1,28 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import FarcasterLogo from "./FarcasterLogo";
 import Search from "./Search";
+import { parseVersionFromPathname } from "./VersionDropdown";
+import { DEFAULT_VERSION } from "@/lib/version-config";
 
 const DOCS = "https://docs.farcaster.xyz";
 
+function snapNavActive(pathname: string, version: string): boolean {
+  if (version !== DEFAULT_VERSION) {
+    const root = `/${version}`;
+    return pathname === root || pathname.startsWith(`${root}/`);
+  }
+  return !/^\/[\d]+\.[\d]+(\/|$)/.test(pathname);
+}
+
 export default function DocsTopNav() {
+  const pathname = usePathname();
+  const { version } = parseVersionFromPathname(pathname);
+  const snapHref = version === DEFAULT_VERSION ? "/" : `/${version}`;
+
   return (
     <header className="top-nav">
       <div className="top-nav-left">
@@ -25,7 +42,10 @@ export default function DocsTopNav() {
           <a className="top-nav-link" href={`${DOCS}/auth-kit`}>
             AuthKit
           </a>
-          <Link className="top-nav-link active" href="/">
+          <Link
+            className={`top-nav-link${snapNavActive(pathname, version) ? " active" : ""}`}
+            href={snapHref}
+          >
             Snap
           </Link>
           <a className="top-nav-link" href={`${DOCS}/reference`}>

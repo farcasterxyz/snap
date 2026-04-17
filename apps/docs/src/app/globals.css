@@ -26,6 +26,7 @@
   --log-error-bg: #fee2e2;
   --log-error-border: #fecaca;
   --input-bg: #ffffff;
+  --top-nav-height: 52px;
   color-scheme: light;
 }
 
@@ -104,7 +105,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 52px;
+  height: var(--top-nav-height);
   padding: 0 20px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
@@ -266,8 +267,8 @@ body {
 
 .app-shell {
   display: flex;
-  height: calc(100dvh - 52px);
-  max-height: calc(100dvh - 52px);
+  height: calc(100dvh - var(--top-nav-height));
+  max-height: calc(100dvh - var(--top-nav-height));
   overflow: hidden;
 }
 
@@ -283,7 +284,7 @@ body {
 .sidebar {
   width: 240px;
   min-width: 240px;
-  height: calc(100dvh - 52px);
+  height: calc(100dvh - var(--top-nav-height));
   overflow-y: auto;
   background: var(--bg-surface);
   border-right: 1px solid var(--border);
