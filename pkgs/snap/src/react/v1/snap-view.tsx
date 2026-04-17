@@ -105,80 +105,86 @@ export function SnapCardV1({
         position: "relative",
         width: "100%",
         maxWidth,
-        overflow: "hidden",
-        ...(plain ? {} : {
-          borderRadius: 16,
-          border: `1px solid ${borderColor}`,
-          backgroundColor: surfaceBg,
-        }),
       }}
     >
       <div
-        style={
-          isClipped
-            ? {
-                maxHeight: SNAP_MAX_HEIGHT,
-                overflow: "hidden",
-              }
-            : undefined
-        }
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          ...(plain ? {} : {
+            borderRadius: 16,
+            border: `1px solid ${borderColor}`,
+            backgroundColor: surfaceBg,
+          }),
+        }}
       >
-        <div ref={contentRef} style={plain ? undefined : { padding: 16 }}>
-          <SnapViewV1
-            snap={snap}
-            handlers={handlers}
-            loading={loading}
-            appearance={appearance}
-            loadingOverlay={null}
-          />
-        </div>
-      </div>
-      {loadingOverlay === undefined ? (
-        <SnapLoadingOverlay
-          appearance={appearance}
-          accentHex={accentHex}
-          active={loading}
-        />
-      ) : loading ? (
-        <>{loadingOverlay}</>
-      ) : null}
-      {isExpandable ? (
         <div
+          style={
+            isClipped
+              ? {
+                  maxHeight: SNAP_MAX_HEIGHT,
+                  overflow: "hidden",
+                }
+              : undefined
+          }
+        >
+          <div ref={contentRef} style={plain ? undefined : { padding: 16 }}>
+            <SnapViewV1
+              snap={snap}
+              handlers={handlers}
+              loading={loading}
+              appearance={appearance}
+              loadingOverlay={null}
+            />
+          </div>
+        </div>
+        {loadingOverlay === undefined ? (
+          <SnapLoadingOverlay
+            appearance={appearance}
+            accentHex={accentHex}
+            active={loading}
+          />
+        ) : loading ? (
+          <>{loadingOverlay}</>
+        ) : null}
+      </div>
+      {isExpandable ? (
+        <button
+          type="button"
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((value) => !value)}
           style={{
-            display: "flex",
-            justifyContent: "center",
-            padding: plain ? "8px 0 0" : "10px 16px 12px",
-            ...(plain
-              ? {}
-              : { borderTop: `1px solid ${borderColor}` }),
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            transform: "translate(-50%, 50%)",
+            appearance: "none",
+            border: `1px solid ${borderColor}`,
+            borderRadius: 9999,
+            backgroundColor: isDark ? "rgba(30,30,30,0.6)" : "rgba(255,255,255,0.6)",
+            backdropFilter: "blur(12px) saturate(180%)",
+            WebkitBackdropFilter: "blur(12px) saturate(180%)",
+            color: toggleText,
+            padding: "2px 10px",
+            fontSize: 12,
+            lineHeight: "16px",
+            fontWeight: 600,
+            cursor: "pointer",
+            zIndex: 11,
+          }}
+          onMouseEnter={(event) => {
+            event.currentTarget.style.backgroundColor = isDark
+              ? "rgba(50,50,50,0.7)"
+              : "rgba(245,245,245,0.75)";
+          }}
+          onMouseLeave={(event) => {
+            event.currentTarget.style.backgroundColor = isDark
+              ? "rgba(30,30,30,0.6)"
+              : "rgba(255,255,255,0.6)";
           }}
         >
-          <button
-            type="button"
-            aria-expanded={isExpanded}
-            onClick={() => setIsExpanded((value) => !value)}
-            style={{
-              appearance: "none",
-              border: "none",
-              borderRadius: 9999,
-              backgroundColor: toggleBg,
-              color: toggleText,
-              padding: "6px 10px",
-              fontSize: 13,
-              lineHeight: "18px",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-            onMouseEnter={(event) => {
-              event.currentTarget.style.backgroundColor = toggleBgHover;
-            }}
-            onMouseLeave={(event) => {
-              event.currentTarget.style.backgroundColor = toggleBg;
-            }}
-          >
-            {isExpanded ? "Show less" : "Show more"}
-          </button>
-        </div>
+          {isExpanded ? "Show less" : "Show more"}
+        </button>
       ) : null}
       {actionError && (
         <div
