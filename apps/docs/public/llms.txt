@@ -196,6 +196,26 @@ import { withTursoServerless, createInMemoryDataStore } from "@farcaster/snap-tu
 - `@farcaster/snap-hono` — Hono adapter (`registerSnapHandler`)
 - `@farcaster/snap-turso` — `withTursoServerless`, `DataStore` / `DataStoreValue`, in-memory and Turso helpers
 
+## Template Project Setup
+
+The `template/` directory is the starting point for a snap. It's an ESM project
+(`"type": "module"`) with `moduleResolution: "NodeNext"`.
+
+**ESM import rule (CRITICAL)**: all local relative imports must include the `.js`
+extension, even though the source files are `.ts`:
+
+```ts
+// ✅ correct
+import { foo } from "./foo.js";
+
+// ❌ wrong — fails `pnpm build`; on deploy every route returns 500 FUNCTION_INVOCATION_FAILED
+import { foo } from "./foo";
+```
+
+`tsx` dev accepts bare imports, so the bug only surfaces on deploy. Always run
+`pnpm build` (`tsc --noEmit`) before deploying — NodeNext makes this a build-time error.
+Bare package imports (`hono`, `@farcaster/snap`, etc.) do not need an extension.
+
 ## Full Documentation
 
 https://docs.farcaster.xyz/snap

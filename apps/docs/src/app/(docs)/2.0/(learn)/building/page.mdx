@@ -125,3 +125,27 @@ curl -sS -H 'Accept: application/vnd.farcaster.snap+json' https://your-snap-url.
 ```
 
 You should get valid JSON with content type `application/vnd.farcaster.snap+json`.
+
+## Common pitfalls
+
+### Missing `.js` on local imports
+
+The template is an ESM project (`"type": "module"`). All relative imports **must include
+the `.js` extension**, even though the source files are `.ts`:
+
+```ts
+// ✅ correct
+import { foo } from "./foo.js";
+
+// ❌ wrong — breaks on deploy with `500 FUNCTION_INVOCATION_FAILED`
+import { foo } from "./foo";
+```
+
+Omitting the extension is a silent trap: `tsx` accepts bare imports in local dev, and the
+TypeScript `"bundler"` module resolution used to accept them at typecheck too — but the
+Vercel Edge / Node ESM runtime enforces the extension, so every route returns
+`500 FUNCTION_INVOCATION_FAILED` after deploy. The current template's `tsconfig.json`
+uses `"moduleResolution": "NodeNext"` so `pnpm build` (`tsc --noEmit`) now catches this
+at build time.
+
+Bare package imports (`hono`, `@farcaster/snap`, etc.) do not need an extension.
