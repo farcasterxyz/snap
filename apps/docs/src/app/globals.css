@@ -20,7 +20,7 @@
   --text-secondary: #374151;
   --text-muted: #6b7280;
   --text-faint: #9ca3af;
-  --accent: #907AA9;
+  --accent: #907aa9;
   --accent-dim: #f5f3ff;
   --log-error-color: #991b1b;
   --log-error-bg: #fee2e2;
@@ -44,7 +44,7 @@
   --text-secondary: #d1d5db;
   --text-muted: #9ca3af;
   --text-faint: #6b7280;
-  --accent: #C4A7E7;
+  --accent: #c4a7e7;
   --accent-dim: #1e1b2e;
   --log-error-color: #fca5a5;
   --log-error-bg: #450a0a;
@@ -69,7 +69,7 @@
     --text-secondary: #d1d5db;
     --text-muted: #9ca3af;
     --text-faint: #6b7280;
-    --accent: #C4A7E7;
+    --accent: #c4a7e7;
     --accent-dim: #1e1b2e;
     --log-error-color: #fca5a5;
     --log-error-bg: #450a0a;
@@ -88,18 +88,186 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100dvh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
 }
 
 /* ── Layout shell ── */
 
+/* Top nav (aligned with docs.farcaster.xyz) */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 20px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+
+.top-nav-logo {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.top-nav-logo-text {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.top-nav-logo-dim {
+  color: var(--text-muted);
+  margin-left: 3px;
+  font-weight: 400;
+}
+
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.top-nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 6px;
+  transition:
+    color 0.1s,
+    background 0.1s;
+}
+
+.top-nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.top-nav-link.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.top-nav-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--text-faint);
+  border-radius: 6px;
+  transition:
+    color 0.1s,
+    background 0.1s;
+}
+
+.top-nav-social:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* ── DocSearch (aligned with farcasterxyz/docs) ── */
+
+:root {
+  --docsearch-primary-color: var(--accent) !important;
+  --docsearch-text-color: var(--text-primary) !important;
+  --docsearch-muted-color: var(--text-muted) !important;
+  --docsearch-container-background: rgba(0, 0, 0, 0.5) !important;
+  --docsearch-modal-background: var(--bg-surface) !important;
+  --docsearch-modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+  --docsearch-searchbox-background: var(--bg-primary) !important;
+  --docsearch-searchbox-focus-background: var(--bg-primary) !important;
+  --docsearch-hit-background: var(--bg-surface) !important;
+  --docsearch-hit-active-color: #fff !important;
+  --docsearch-hit-color: var(--text-secondary) !important;
+  --docsearch-highlight-color: var(--accent) !important;
+  --docsearch-footer-background: var(--bg-surface) !important;
+  --docsearch-footer-shadow: 0 -1px 0 var(--border) !important;
+  --docsearch-key-gradient: linear-gradient(
+    -26.5deg,
+    var(--bg-hover),
+    var(--bg-code)
+  ) !important;
+  --docsearch-key-shadow: none !important;
+}
+
+.DocSearch-Button {
+  border-radius: 6px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-primary) !important;
+  color: var(--text-muted) !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+  margin: 0 8px !important;
+}
+
+.DocSearch-Button:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+}
+
+.DocSearch-Button-Placeholder {
+  font-size: 13px !important;
+}
+
+.DocSearch-Search-Icon {
+  width: 14px !important;
+  height: 14px !important;
+  color: var(--text-faint) !important;
+}
+
+.DocSearch-Button-Keys {
+  min-width: auto !important;
+}
+
+.DocSearch-Button-Key {
+  font-size: 11px !important;
+  padding: 0 4px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 3px !important;
+  background: var(--bg-code) !important;
+  color: var(--text-faint) !important;
+  box-shadow: none !important;
+  width: auto !important;
+  height: 18px !important;
+}
+
 .app-shell {
   display: flex;
-  height: 100dvh;
-  max-height: 100dvh;
+  height: calc(100dvh - 52px);
+  max-height: calc(100dvh - 52px);
   overflow: hidden;
 }
 
@@ -115,13 +283,15 @@ body {
 .sidebar {
   width: 240px;
   min-width: 240px;
-  height: 100dvh;
+  height: calc(100dvh - 52px);
   overflow-y: auto;
   background: var(--bg-surface);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  transition: width 0.15s ease, min-width 0.15s ease;
+  transition:
+    width 0.15s ease,
+    min-width 0.15s ease;
 }
 
 .sidebar--collapsed {
@@ -129,35 +299,14 @@ body {
   min-width: 48px;
 }
 
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 12px;
-  gap: 8px;
-}
-
-.sidebar--collapsed .sidebar-header {
-  flex-direction: column;
-  padding: 12px 6px;
-  gap: 8px;
-}
-
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-primary);
-}
-
-.sidebar-logo-text {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
 .sidebar-version {
-  padding: 0 20px 8px;
+  padding: 16px 20px 8px;
+  flex-shrink: 0;
+}
+
+.sidebar-spacer {
+  flex: 1;
+  min-height: 0;
 }
 
 .version-dropdown {
@@ -176,12 +325,6 @@ body {
   border-color: var(--accent);
 }
 
-.sidebar-logo-dim {
-  color: var(--text-muted);
-  font-weight: 400;
-  margin-left: 3px;
-}
-
 .sidebar-icon-btn {
   display: flex;
   align-items: center;
@@ -193,7 +336,9 @@ body {
   color: var(--text-muted);
   cursor: pointer;
   border-radius: 6px;
-  transition: background 0.1s, color 0.1s;
+  transition:
+    background 0.1s,
+    color 0.1s;
 }
 
 .sidebar-icon-btn:hover {
@@ -226,7 +371,9 @@ body {
   color: var(--text-muted);
   text-decoration: none;
   line-height: 1.5;
-  transition: color 0.1s, background 0.1s;
+  transition:
+    color 0.1s,
+    background 0.1s;
 }
 
 .sidebar-link--top {
@@ -251,12 +398,19 @@ body {
 }
 
 .sidebar-footer {
+  margin-top: auto;
   padding: 12px 20px 16px;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar--collapsed .sidebar-footer {
+  padding: 12px 6px 16px;
+  justify-content: flex-start;
 }
 
 /* ── Docs prose styles ── */
@@ -451,7 +605,10 @@ body {
   border-radius: 6px;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s, color 0.1s, background 0.1s;
+  transition:
+    opacity 0.15s,
+    color 0.1s,
+    background 0.1s;
 }
 
 .code-block-wrapper:hover .code-copy-btn {
@@ -597,7 +754,9 @@ body {
   color: var(--text-muted);
   cursor: pointer;
   border-radius: 6px;
-  transition: background 0.1s, color 0.1s;
+  transition:
+    background 0.1s,
+    color 0.1s;
 }
 
 .theme-toggle:hover {

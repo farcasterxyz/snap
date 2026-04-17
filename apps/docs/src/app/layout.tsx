@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@docsearch/css";
+import DocsTopNav from "@/components/DocsTopNav";
 import Sidebar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
@@ -40,6 +42,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <DocsTopNav />
         <div className="app-shell">
           <Sidebar />
           {children}
