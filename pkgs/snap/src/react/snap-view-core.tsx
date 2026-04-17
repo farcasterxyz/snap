@@ -239,7 +239,11 @@ export function SnapViewCore({
     setPageKey((k) => k + 1);
   }, [spec]);
 
-  const showConfetti = snap.effects?.includes("confetti");
+  const showConfetti = snap.effects?.includes("confetti") ?? false;
+  const [confettiKey, setConfettiKey] = useState(0);
+  useEffect(() => {
+    if (showConfetti) setConfettiKey((k) => k + 1);
+  }, [showConfetti, snap]);
 
   const accentName = snap.theme?.accent ?? "purple";
 
@@ -321,7 +325,7 @@ export function SnapViewCore({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {showConfetti && <ConfettiOverlay />}
+      {showConfetti && <ConfettiOverlay key={confettiKey} />}
       {loadingOverlay === undefined ? (
         <SnapLoadingOverlay
           appearance={appearance}

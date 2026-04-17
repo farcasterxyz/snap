@@ -8,7 +8,8 @@ type View =
   | "v1-tall"
   | "v2-strict"
   | "v2-tall"
-  | "v2-invalid";
+  | "v2-invalid"
+  | "confetti";
 
 const app = new Hono();
 
@@ -16,7 +17,7 @@ registerSnapHandler(app, async (ctx) => {
   const url = new URL(ctx.request.url);
   const rawView = url.searchParams.get("view") ?? "home";
   const view = (
-    ["home", "v1-loose", "v1-tall", "v2-strict", "v2-tall", "v2-invalid"].includes(rawView)
+    ["home", "v1-loose", "v1-tall", "v2-strict", "v2-tall", "v2-invalid", "confetti"].includes(rawView)
       ? rawView
       : "home"
   ) as View;
@@ -37,6 +38,8 @@ registerSnapHandler(app, async (ctx) => {
       return v2TallPage(base);
     case "v2-invalid":
       return v2InvalidPage(base);
+    case "confetti":
+      return confettiPage(base);
     default:
       return homePage(base);
   }
@@ -59,15 +62,29 @@ function homePage(base: string): SnapHandlerResult {
         page: {
           type: "stack",
           props: {},
+          children: ["title", "desc", "buttons"],
+        },
+        buttons: {
+          type: "stack",
+          props: {},
           children: [
-            "title",
-            "desc",
             "btn-v1",
             "btn-v1-tall",
             "btn-v2",
             "btn-v2-tall",
             "btn-v2-invalid",
+            "btn-confetti",
           ],
+        },
+        "btn-confetti": {
+          type: "button",
+          props: { label: "🎉 Confetti" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=confetti` },
+            },
+          },
         },
         title: {
           type: "item",
@@ -398,6 +415,58 @@ function v2InvalidPage(base: string): SnapHandlerResult {
         "item-2": { type: "item", props: { title: "Extra 2" } },
         "item-3": { type: "item", props: { title: "Extra 3" } },
         "item-4": { type: "item", props: { title: "Extra 4" } },
+        "btn-home": {
+          type: "button",
+          props: { label: "← Home" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=home` },
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
+/**
+ * Confetti page — triggers the confetti effect to verify the overlay
+ * renders (web + React Native). Pressing the button re-submits to verify
+ * repeat-trigger remounting.
+ */
+function confettiPage(base: string): SnapHandlerResult {
+  return {
+    version: "2.0",
+    theme: { accent: "pink" },
+    effects: ["confetti"],
+    ui: {
+      root: "page",
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "badge", "desc", "btn-again", "btn-home"],
+        },
+        title: { type: "item", props: { title: "🎉 Confetti!" } },
+        badge: { type: "badge", props: { label: "effects: [\"confetti\"]" } },
+        desc: {
+          type: "item",
+          props: {
+            description:
+              "Server returned effects: [\"confetti\"]. Press Again to re-trigger and verify the animation restarts.",
+          },
+        },
+        "btn-again": {
+          type: "button",
+          props: { label: "Again 🎉" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?view=confetti` },
+            },
+          },
+        },
         "btn-home": {
           type: "button",
           props: { label: "← Home" },
