@@ -95,6 +95,9 @@ function SnapCardV1Inner({
   const isExpandable = contentHeight > SNAP_MAX_HEIGHT + 1;
   const isClipped = isExpandable && !isExpanded;
 
+  const isDark = mode === "dark";
+  const pillBg = isDark ? "rgba(40,40,40,0.92)" : "rgba(255,255,255,0.92)";
+  const pillBgPressed = isDark ? "rgba(60,60,60,0.95)" : "rgba(240,240,240,0.95)";
   return (
     <>
       <View style={cardStyles.frameRing}>
@@ -138,37 +141,29 @@ function SnapCardV1Inner({
               ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
               : loadingOverlay
             : null}
-          {isExpandable ? (
-            <View
-              style={[
-                cardStyles.expandRow,
-                plain
-                  ? cardStyles.expandRowPlain
-                  : { borderTopColor: colors.border },
-              ]}
-            >
-              <Pressable
-                style={({ pressed }) => [
-                  cardStyles.expandButton,
-                  {
-                    backgroundColor: pressed
-                      ? colors.mutedHover
-                      : colors.muted,
-                  },
-                ]}
-                onPress={() => {
-                  setIsExpanded((value) => !value);
-                }}
-              >
-                <Text
-                  style={[cardStyles.expandButtonText, { color: colors.text }]}
-                >
-                  {isExpanded ? "Show less" : "Show more"}
-                </Text>
-              </Pressable>
-            </View>
-          ) : null}
         </View>
+        {isExpandable ? (
+          <View pointerEvents="box-none" style={cardStyles.expandFloat}>
+            <Pressable
+              style={({ pressed }) => [
+                cardStyles.expandButton,
+                {
+                  backgroundColor: pressed ? pillBgPressed : pillBg,
+                  borderColor: colors.border,
+                },
+              ]}
+              onPress={() => {
+                setIsExpanded((value) => !value);
+              }}
+            >
+              <Text
+                style={[cardStyles.expandButtonText, { color: colors.text }]}
+              >
+                {isExpanded ? "Show less" : "Show more"}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
       </View>
       {actionError && (
         <Text
@@ -231,30 +226,27 @@ const cardStyles = StyleSheet.create({
   frameRing: { alignSelf: "stretch" },
   card: { overflow: "hidden", borderWidth: 1, minHeight: 120 },
   body: { paddingHorizontal: 16, paddingVertical: 16 },
-  expandRow: {
+  expandFloat: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: -14,
+    height: 28,
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  expandRowPlain: {
-    paddingHorizontal: 0,
-    paddingTop: 8,
-    paddingBottom: 0,
-    borderTopWidth: 0,
+    justifyContent: "center",
   },
   expandButton: {
     minWidth: 92,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 9999,
+    borderWidth: 1,
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   expandButtonText: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 16,
     fontWeight: "600",
   },
   actionError: { paddingHorizontal: 12, paddingVertical: 8, fontSize: 13 },

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { SnapThemeProvider, useSnapTheme, type SnapNativeColors } from "../theme";
 import {
   SnapLoadingOverlay,
@@ -156,6 +156,15 @@ function SnapCardV2Inner({
   const { colors, mode } = useSnapTheme();
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
   const [contentHeight, setContentHeight] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    setIsExpanded(false);
+    setContentHeight(0);
+  }, [snap]);
+
+  const isExpandable = !showOverflowWarning && contentHeight > SNAP_MAX_HEIGHT + 1;
+  const isClipped = isExpandable && !isExpanded;
 
   const content = (
     <SnapViewV2Inner
@@ -171,52 +180,117 @@ function SnapCardV2Inner({
   if (plain) {
     return (
       <>
-        {content}
+        <View style={isClipped ? { maxHeight: SNAP_MAX_HEIGHT, overflow: "hidden" } : undefined}>
+          <View
+            collapsable={false}
+            onLayout={(e) => {
+              const nextHeight = Math.round(e.nativeEvent.layout.height);
+              setContentHeight((current) =>
+                isClipped
+                  ? Math.max(current, nextHeight)
+                  : current === nextHeight
+                    ? current
+                    : nextHeight,
+              );
+            }}
+          >
+            {content}
+          </View>
+        </View>
         {loading
           ? loadingOverlay === undefined
             ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
             : loadingOverlay
           : null}
+        {isExpandable ? (
+          <View style={[cardStyles.expandRow, cardStyles.expandRowPlain]}>
+            <Pressable
+              style={({ pressed }) => [
+                cardStyles.expandButton,
+                {
+                  backgroundColor: pressed ? colors.mutedHover : colors.muted,
+                },
+              ]}
+              onPress={() => setIsExpanded((value) => !value)}
+            >
+              <Text style={[cardStyles.expandButtonText, { color: colors.text }]}>
+                {isExpanded ? "Show less" : "Show more"}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
       </>
     );
   }
 
   const overflowAmount = showOverflowWarning ? contentHeight - SNAP_MAX_HEIGHT : 0;
+  const isDark = mode === "dark";
+  const pillBg = isDark ? "rgba(40,40,40,0.92)" : "rgba(255,255,255,0.92)";
+  const pillBgPressed = isDark ? "rgba(60,60,60,0.95)" : "rgba(240,240,240,0.95)";
 
   return (
     <>
-      <View
-        style={{
-          borderRadius,
-          borderWidth: 1,
-          borderColor: colors.border,
-          backgroundColor: colors.surface,
-          maxHeight: showOverflowWarning ? undefined : SNAP_MAX_HEIGHT,
-          overflow: "hidden",
-          minHeight: 120,
-        }}
-      >
+      <View style={{ position: "relative" }}>
         <View
-          collapsable={false}
-          onLayout={(e) => setContentHeight(Math.round(e.nativeEvent.layout.height))}
-          style={{ paddingHorizontal: 16, paddingVertical: 16 }}
+          style={{
+            borderRadius,
+            borderWidth: 1,
+            borderColor: colors.border,
+            backgroundColor: colors.surface,
+            maxHeight: showOverflowWarning ? undefined : isClipped ? SNAP_MAX_HEIGHT : undefined,
+            overflow: "hidden",
+            minHeight: 120,
+          }}
         >
-          {content}
-        </View>
-        {showOverflowWarning && contentHeight > SNAP_MAX_HEIGHT && (
-          <View style={{ position: "absolute", top: SNAP_MAX_HEIGHT, left: 0, right: 0, height: overflowAmount, zIndex: 10, pointerEvents: "none" }}>
-            <View style={{ height: 1, borderTopWidth: 1, borderStyle: "dashed", borderColor: "rgba(255,100,100,0.6)" }} />
-            <View style={{ position: "absolute", top: -10, right: 4, backgroundColor: "rgba(0,0,0,0.7)", paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>
-              <Text style={{ fontSize: 10, color: "rgba(255,100,100,0.7)", fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }) }}>{SNAP_MAX_HEIGHT}px</Text>
-            </View>
-            <View style={{ flex: 1, backgroundColor: "rgba(255,50,50,0.15)" }} />
+          <View
+            collapsable={false}
+            onLayout={(e) => {
+              const nextHeight = Math.round(e.nativeEvent.layout.height);
+              setContentHeight((current) =>
+                isClipped
+                  ? Math.max(current, nextHeight)
+                  : current === nextHeight
+                    ? current
+                    : nextHeight,
+              );
+            }}
+            style={{ paddingHorizontal: 16, paddingVertical: 16 }}
+          >
+            {content}
           </View>
-        )}
-        {loading
-          ? loadingOverlay === undefined
-            ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
-            : loadingOverlay
-          : null}
+          {showOverflowWarning && contentHeight > SNAP_MAX_HEIGHT && (
+            <View style={{ position: "absolute", top: SNAP_MAX_HEIGHT, left: 0, right: 0, height: overflowAmount, zIndex: 10, pointerEvents: "none" }}>
+              <View style={{ height: 1, borderTopWidth: 1, borderStyle: "dashed", borderColor: "rgba(255,100,100,0.6)" }} />
+              <View style={{ position: "absolute", top: -10, right: 4, backgroundColor: "rgba(0,0,0,0.7)", paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>
+                <Text style={{ fontSize: 10, color: "rgba(255,100,100,0.7)", fontFamily: Platform.select({ ios: "Menlo", default: "monospace" }) }}>{SNAP_MAX_HEIGHT}px</Text>
+              </View>
+              <View style={{ flex: 1, backgroundColor: "rgba(255,50,50,0.15)" }} />
+            </View>
+          )}
+          {loading
+            ? loadingOverlay === undefined
+              ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
+              : loadingOverlay
+            : null}
+        </View>
+        {isExpandable ? (
+          <View pointerEvents="box-none" style={cardStyles.expandFloat}>
+            <Pressable
+              style={({ pressed }) => [
+                cardStyles.expandButton,
+                {
+                  backgroundColor: pressed ? pillBgPressed : pillBg,
+                  borderColor: colors.border,
+                },
+              ]}
+              onPress={() => setIsExpanded((value) => !value)}
+            >
+              <Text style={[cardStyles.expandButtonText, { color: colors.text }]}>
+                {isExpanded ? "Show less" : "Show more"}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
       </View>
       {actionError && (
         <Text
@@ -289,6 +363,33 @@ const cardStyles = StyleSheet.create({
   card: { borderWidth: 1, minHeight: 120, overflow: "hidden" },
   body: { paddingHorizontal: 16, paddingVertical: 16 },
   actionError: { paddingHorizontal: 12, paddingVertical: 8, fontSize: 13 },
+  expandFloat: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: -14,
+    height: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expandRowPlain: {
+    paddingTop: 8,
+    alignItems: "center",
+  },
+  expandButton: {
+    minWidth: 92,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 9999,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  expandButtonText: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "600",
+  },
   warningOverlay: {
     position: "absolute",
     top: SNAP_MAX_HEIGHT,
