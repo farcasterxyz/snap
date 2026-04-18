@@ -98,7 +98,8 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `cells` (array, required): sparse list of `{ row, col, color?: PaletteColor, content?: string }`
 - `gap` (optional): `"none"` (0px) | `"sm"` (1px) | `"md"` (2px) | `"lg"` (4px). Default: `"sm"`
 - `rowHeight` (number, optional, 8–64): pixel height per row. Default: 28. Grid height = rows × rowHeight
-- `select` (optional): `"off"` | `"single"` | `"multiple"`. Default: `"off"`. Taps write to `inputs[name]`
+- `select` (optional): `"off"` | `"single"` | `"multiple"`. Default: `"off"`. Taps write to `inputs[name]` and fire the `on.tap` event
+- Events: `tap` — fires on cell tap (when `select` is `"single"` or `"multiple"`); `inputs[name]` is updated before the bound action runs, so a `submit` POST includes the tapped cell
 
 ### Container Components
 

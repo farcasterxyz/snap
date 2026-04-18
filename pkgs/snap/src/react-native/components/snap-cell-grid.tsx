@@ -7,6 +7,7 @@ import { POST_GRID_TAP_KEY } from "@farcaster/snap";
 
 export function SnapCellGrid({
   element: { props },
+  emit,
 }: ComponentRenderProps<Record<string, unknown>>) {
   const { hex, appearance } = useSnapPalette();
   const { colors } = useSnapTheme();
@@ -46,6 +47,7 @@ export function SnapCellGrid({
     } else {
       set(tapPath, key);
     }
+    emit("tap");
   };
 
   const cellMap = new Map<string, { color?: string; content?: string }>();

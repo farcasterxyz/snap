@@ -70,9 +70,10 @@ Pair with an icon for scannability.
 
 ## button
 
-The only component that fires actions — bind them via `on.press`. Default variant is
+Fires actions via `on.press` — the standard way to commit user input. Default variant is
 `"secondary"` (bordered); use `"primary"` (filled) for the main CTA, typically one per
-page. See [Actions](/snap/actions) for the full list of action types.
+page. ([cell_grid](#cell_grid) also fires actions, via `on.tap` per cell.) See
+[Actions](/snap/actions) for the full list of action types.
 
 <ElementPreview type="button" />
 
@@ -385,7 +386,9 @@ leaderboards, or any ranked values.
 
 Grid of colored cells for pixel art, game boards, color pickers, and small data
 matrices. Cells are defined sparsely — only specify cells that have color or content.
-Use `select` to enable tap-to-select; taps write to POST inputs under `name`.
+Use `select` to enable tap interaction; taps write to POST inputs under `name` and fire
+the `on.tap` event, so you can bind a `submit` action and respond to each tap without
+requiring a separate button.
 
 <ElementPreview type="cell_grid" />
 
@@ -399,6 +402,12 @@ Use `select` to enable tap-to-select; taps write to POST inputs under `name`.
 | `rowHeight` | number   | No       | `28`         | Pixel height per row (8–64). Grid height = rows × rowHeight         |
 | `select`    | string   | No       | `"off"`      | Selection mode: `"off"` `"single"` `"multiple"`                     |
 
+### Events
+
+| Event | Fires when                                                                 |
+| ----- | -------------------------------------------------------------------------- |
+| `tap` | A cell is tapped (only when `select` is `"single"` or `"multiple"`). The latest selection is already written to `inputs[name]` before the action runs, so a bound `submit` POST includes the tapped cell. |
+
 ### Cell Object
 
 | Prop      | Type         | Required | Description            |
@@ -407,6 +416,30 @@ Use `select` to enable tap-to-select; taps write to POST inputs under `name`.
 | `col`     | number       | Yes      | Column index (0-based) |
 | `color`   | PaletteColor | No       | Cell fill color        |
 | `content` | string       | No       | Cell text content      |
+
+`select: "single"` — every tap submits the just-tapped cell:
+
+```json
+{
+  "type": "cell_grid",
+  "props": {
+    "name": "color_grid",
+    "cols": 4,
+    "rows": 4,
+    "cells": [
+      { "row": 0, "col": 0, "color": "red" },
+      { "row": 0, "col": 3, "color": "blue" }
+    ],
+    "select": "single"
+  },
+  "on": {
+    "tap": { "action": "submit", "params": { "target": "https://my-snap.com/" } }
+  }
+}
+```
+
+`select: "multiple"` — taps update the selection without posting; pair with a `button`
+that submits the accumulated selection:
 
 ```json
 {

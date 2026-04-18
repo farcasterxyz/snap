@@ -8,8 +8,10 @@ import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapCellGrid({
   element: { props },
+  emit,
 }: {
   element: { props: Record<string, unknown> };
+  emit: (name: string) => void;
 }) {
   const { get, set } = useStateStore();
   const colors = useSnapColors();
@@ -48,6 +50,7 @@ export function SnapCellGrid({
     } else {
       set(tapPath, key);
     }
+    emit("tap");
   };
 
   const cellMap = new Map<string, { color?: string; content?: string }>();

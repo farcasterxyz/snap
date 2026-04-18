@@ -107,7 +107,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     cell_grid: {
       props: cellGridProps,
       description:
-        "Cell grid — sparse colored cells on a rows×cols grid. Optional gap and selection mode (taps write to inputs[name]).",
+        "Cell grid — sparse colored cells on a rows×cols grid. Optional gap and selection mode (taps write to inputs[name]). Bind on.tap to a snap or client action to fire a request on each tap; the latest selection is in inputs[name] before the action runs.",
     },
   },
   actions: {
