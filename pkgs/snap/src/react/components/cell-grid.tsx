@@ -7,10 +7,10 @@ import { POST_GRID_TAP_KEY } from "@farcaster/snap";
 import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapCellGrid({
-  element: { props },
+  element: { props, on },
   emit,
 }: {
-  element: { props: Record<string, unknown> };
+  element: { props: Record<string, unknown>; on?: Record<string, unknown> };
   emit: (name: string) => void;
 }) {
   const { get, set } = useStateStore();
@@ -18,8 +18,10 @@ export function SnapCellGrid({
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const select = String(props.select ?? "off");
-  const interactive = select !== "off";
   const isMultiple = select === "multiple";
+  const isSelectable = select !== "off";
+  const hasPressAction = Boolean(on?.press);
+  const interactive = isSelectable || hasPressAction;
   const cells = Array.isArray(props.cells) ? props.cells : [];
   const gap = String(props.gap ?? "sm");
   const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
@@ -38,7 +40,8 @@ export function SnapCellGrid({
     }
   }
 
-  const isSelected = (r: number, c: number) => selectedSet.has(`${r},${c}`);
+  const isSelected = (r: number, c: number) =>
+    isSelectable && selectedSet.has(`${r},${c}`);
 
   const handleTap = (r: number, c: number) => {
     const key = `${r},${c}`;
@@ -50,7 +53,7 @@ export function SnapCellGrid({
     } else {
       set(tapPath, key);
     }
-    emit("tap");
+    if (hasPressAction) emit("press");
   };
 
   const cellMap = new Map<string, { color?: string; content?: string }>();
@@ -102,7 +105,7 @@ export function SnapCellGrid({
     }
   }
 
-  const selectionLabel = interactive && selectedSet.size > 0
+  const selectionLabel = isSelectable && selectedSet.size > 0
     ? `inputs.${name}: ${[...selectedSet].join(isMultiple ? " | " : "")}`
     : null;
 

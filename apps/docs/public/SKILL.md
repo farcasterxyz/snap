@@ -85,10 +85,11 @@ Design guidance:
   `view_cast`, `view_profile`, `compose_cast`, `view_token`, `send_token`, `swap_token`.
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
-  Set `select: "single"` or `"multiple"` to let users tap cells. Bind `on.tap` to a
-  `submit` action so each tap POSTs immediately (state is written to `inputs[name]`
-  before the action fires); pair `multiple` with a separate submit `button` if you want
-  the user to choose multiple cells before posting.
+  Two mutually exclusive interaction modes: leave `select: "off"` (default) and bind
+  `on.press` to a `submit` action so each press POSTs immediately (`inputs[name]` is
+  `"row,col"`); OR set `select: "single"` / `"multiple"` for press-to-select with a
+  visual ring and pair with a separate submit `button`. Don't combine `on.press` with a
+  non-`off` `select` — `on.press` is ignored when `select` is on.
 - Keep strings within component char limits (see
   [Constraints](https://docs.farcaster.xyz/snap/constraints)).
 

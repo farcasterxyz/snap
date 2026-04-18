@@ -2,4 +2,4 @@
 "@farcaster/snap": minor
 ---
 
-feat(cell_grid): add `on.tap` event so a single tap can fire an action (e.g. `submit`) without requiring a separate button. The latest selection is written to `inputs[name]` before the bound action runs, so the POST body includes the just-tapped cell. `select: "single"` is the natural fit for tap-to-submit; `select: "multiple"` can still pair with a separate submit button when the user should choose multiple cells before posting.
+feat(cell_grid): add `on.press` so a single press can fire an action (e.g. `submit`) without requiring a separate button. Two interaction modes, mutually exclusive: leave `select: "off"` (default) and bind `on.press` for press-to-act — `inputs[name]` is set to `"row,col"` before the action runs, so the POST body identifies the pressed cell; OR set `select: "single"` / `"multiple"` for press-to-select with a visual ring and pair with a separate submit `button`. `on.press` is ignored whenever `select` is on. Event name matches `button.on.press` for consistency.

@@ -130,11 +130,12 @@ remaining stale values.
 - `catalog.ts` description strings are human-readable and can go stale silently
 - `bar_chart` and `cell_grid` have their own constraint constants in `constants.ts` —
   check those when auditing the constraints page
-- Components can emit events bound via `on.<event>` (e.g. `button` → `on.press`,
-  `cell_grid` → `on.tap`) — these are part of the protocol surface even though they
-  aren't in the zod prop schemas. Audit the React + React Native components for the set
-  of `emit("…")` calls and make sure each event is documented on the elements page and
-  in `llms.txt`
+- Components can emit events bound via `on.<event>` — these are part of the protocol
+  surface even though they aren't in the zod prop schemas. Today both `button` and
+  `cell_grid` use `on.press`; keep new component events on the same `press` name when
+  the gesture matches. Audit the React + React Native components for the set of
+  `emit("…")` calls and make sure each event is documented on the elements page and in
+  `llms.txt`.
 - Component count strings (e.g. "16 components") appear in multiple places — grep for
   the old count when adding or removing components
 - The OG renderer (`og-image.ts`) has its own element mapping separate from the HTML

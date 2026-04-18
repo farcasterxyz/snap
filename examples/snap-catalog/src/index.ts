@@ -507,7 +507,7 @@ function layoutPage(base: string): SnapHandlerResult {
 
 function dataPage(base: string, inputs: Record<string, unknown>): SnapHandlerResult {
   const colorGrid = typeof inputs.color_grid === "string" ? inputs.color_grid : "";
-  const tappedLabel = colorGrid ? `Last tap: row ${colorGrid.split(",")[0]}, col ${colorGrid.split(",")[1]}` : "Tap a cell to submit";
+  const pressedLabel = colorGrid ? `Last press: row ${colorGrid.split(",")[0]}, col ${colorGrid.split(",")[1]}` : "Press a cell to submit";
   return {
     version: "2.0",
     theme: { accent: "purple" },
@@ -528,11 +528,11 @@ function dataPage(base: string, inputs: Record<string, unknown>): SnapHandlerRes
         "grid-section": {
           type: "stack",
           props: {},
-          children: ["sep", "grid-label", "grid", "grid-tapped"],
+          children: ["sep", "grid-label", "grid", "grid-pressed"],
         },
-        "grid-tapped": {
+        "grid-pressed": {
           type: "text",
-          props: { content: tappedLabel, size: "sm" },
+          props: { content: pressedLabel, size: "sm" },
         },
         "multi-section": {
           type: "stack",
@@ -565,7 +565,7 @@ function dataPage(base: string, inputs: Record<string, unknown>): SnapHandlerRes
         sep: { type: "separator", props: {} },
         "grid-label": {
           type: "text",
-          props: { content: "cell_grid — 4×4 color grid", size: "sm" },
+          props: { content: "cell_grid — press to act (on.press)", size: "sm" },
         },
         grid: {
           type: "cell_grid",
@@ -573,7 +573,6 @@ function dataPage(base: string, inputs: Record<string, unknown>): SnapHandlerRes
             name: "color_grid",
             cols: 4,
             rows: 4,
-            select: "single",
             cells: [
               { row: 0, col: 0, color: "red" },
               { row: 0, col: 1, color: "amber" },
@@ -588,7 +587,7 @@ function dataPage(base: string, inputs: Record<string, unknown>): SnapHandlerRes
             ],
           },
           on: {
-            tap: { action: "submit", params: { target: `${base}/?view=data` } },
+            press: { action: "submit", params: { target: `${base}/?view=data` } },
           },
         },
         sep2: { type: "separator", props: {} },
