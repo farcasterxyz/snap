@@ -33,7 +33,8 @@ registerSnapHandler(app, async (ctx) => {
   const view = (url.searchParams.get("view") ?? "welcome") as View;
   const base = snapBaseUrl(ctx.request);
 
-  if (ctx.action.type === "get") return dataPage(base);
+  const inputs = ctx.action.type === "post" ? ctx.action.inputs : {};
+  if (ctx.action.type === "get") return dataPage(base, inputs);
   if (view === "results" && ctx.action.type === "post") {
     return resultsPage(base, ctx.action.inputs);
   }
@@ -44,7 +45,7 @@ registerSnapHandler(app, async (ctx) => {
     case "icons": return iconsPage(base);
     case "items": return itemsPage(base);
     case "layout": return layoutPage(base);
-    case "data": return dataPage(base);
+    case "data": return dataPage(base, inputs);
     case "form": return formPage(base);
     case "actions": return actionsPage(base);
     default: return welcomePage(base);
@@ -504,17 +505,39 @@ function layoutPage(base: string): SnapHandlerResult {
   };
 }
 
-function dataPage(base: string): SnapHandlerResult {
+function dataPage(base: string, inputs: Record<string, unknown>): SnapHandlerResult {
+  const colorGrid = typeof inputs.color_grid === "string" ? inputs.color_grid : "";
+  const pressedLabel = colorGrid ? `Last press: row ${colorGrid.split(",")[0]}, col ${colorGrid.split(",")[1]}` : "Press a cell to submit";
   return {
     version: "2.0",
     theme: { accent: "purple" },
     ui: {
       root: "page",
+      state: { inputs: { color_grid: colorGrid } },
       elements: {
         page: {
           type: "stack",
           props: {},
-          children: ["heading", "step", "chart-label", "chart", "sep", "grid-label", "grid", "sep2", "multi-label", "multi-grid", "nav"],
+          children: ["heading", "step", "chart-section", "grid-section", "multi-section", "nav"],
+        },
+        "chart-section": {
+          type: "stack",
+          props: {},
+          children: ["chart-label", "chart"],
+        },
+        "grid-section": {
+          type: "stack",
+          props: {},
+          children: ["sep", "grid-label", "grid", "grid-pressed"],
+        },
+        "grid-pressed": {
+          type: "text",
+          props: { content: pressedLabel, size: "sm" },
+        },
+        "multi-section": {
+          type: "stack",
+          props: {},
+          children: ["sep2", "multi-label", "multi-grid"],
         },
         heading: {
           type: "text",
@@ -542,7 +565,7 @@ function dataPage(base: string): SnapHandlerResult {
         sep: { type: "separator", props: {} },
         "grid-label": {
           type: "text",
-          props: { content: "cell_grid — 4×4 color grid", size: "sm" },
+          props: { content: "cell_grid — press to act (on.press)", size: "sm" },
         },
         grid: {
           type: "cell_grid",
@@ -550,7 +573,6 @@ function dataPage(base: string): SnapHandlerResult {
             name: "color_grid",
             cols: 4,
             rows: 4,
-            select: "single",
             cells: [
               { row: 0, col: 0, color: "red" },
               { row: 0, col: 1, color: "amber" },
@@ -563,6 +585,9 @@ function dataPage(base: string): SnapHandlerResult {
               { row: 3, col: 0, color: "blue" },
               { row: 3, col: 3, color: "red" },
             ],
+          },
+          on: {
+            press: { action: "submit", params: { target: `${base}/?view=data` } },
           },
         },
         sep2: { type: "separator", props: {} },

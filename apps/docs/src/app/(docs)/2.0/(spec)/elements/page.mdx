@@ -70,9 +70,10 @@ Pair with an icon for scannability.
 
 ## button
 
-The only component that fires actions — bind them via `on.press`. Default variant is
+Fires actions via `on.press` — the standard way to commit user input. Default variant is
 `"secondary"` (bordered); use `"primary"` (filled) for the main CTA, typically one per
-page. See [Actions](/snap/actions) for the full list of action types.
+page. ([cell_grid](#cell_grid) also fires actions, via `on.press` per cell.) See
+[Actions](/snap/actions) for the full list of action types.
 
 <ElementPreview type="button" />
 
@@ -385,19 +386,36 @@ leaderboards, or any ranked values.
 
 Grid of colored cells for pixel art, game boards, color pickers, and small data
 matrices. Cells are defined sparsely — only specify cells that have color or content.
-Use `select` to enable tap-to-select; taps write to POST inputs under `name`.
+
+There are two interaction modes, and they are mutually exclusive:
+
+1. **Press to act** — leave `select` at `"off"` and bind `on.press`. Each press writes
+   `"row,col"` to `inputs[name]` and fires the bound action (e.g. `submit`). No selection
+   ring; cells behave like a grid of buttons.
+2. **Press to select** — set `select: "single"` or `"multiple"`. Each press accumulates
+   selection state with a visual ring; nothing is posted. Pair with a separate `button`
+   that submits the accumulated selection.
+
+Don't combine `on.press` with a non-`"off"` `select` mode — the auto-fire would defeat
+the accumulating selection. The component ignores `on.press` whenever `select` is on.
 
 <ElementPreview type="cell_grid" />
 
 | Prop        | Type     | Required | Default      | Description                                                         |
 | ----------- | -------- | -------- | ------------ | ------------------------------------------------------------------- |
-| `name`      | string   | No       | `"grid_tap"` | POST inputs key for selection data                                  |
+| `name`      | string   | No       | `"grid_tap"` | POST inputs key for the tapped or selected cells                    |
 | `cols`      | number   | Yes      |              | Column count (2–32)                                                 |
 | `rows`      | number   | Yes      |              | Row count (2–16)                                                    |
 | `cells`     | object[] | Yes      |              | Sparse cell definitions (see below)                                 |
 | `gap`       | string   | No       | `"sm"`       | Cell spacing: `"none"` (0px) `"sm"` (1px) `"md"` (2px) `"lg"` (4px) |
 | `rowHeight` | number   | No       | `28`         | Pixel height per row (8–64). Grid height = rows × rowHeight         |
-| `select`    | string   | No       | `"off"`      | Selection mode: `"off"` `"single"` `"multiple"`                     |
+| `select`    | string   | No       | `"off"`      | Selection mode: `"off"` (use with `on.press`) `"single"` `"multiple"` |
+
+### Events
+
+| Event | Fires when                                                                 |
+| ----- | -------------------------------------------------------------------------- |
+| `press` | A cell is pressed, **only when `select` is `"off"`**. `inputs[name]` is set to `"row,col"` before the action runs, so a bound `submit` POST includes the pressed cell. |
 
 ### Cell Object
 
@@ -407,6 +425,29 @@ Use `select` to enable tap-to-select; taps write to POST inputs under `name`.
 | `col`     | number       | Yes      | Column index (0-based) |
 | `color`   | PaletteColor | No       | Cell fill color        |
 | `content` | string       | No       | Cell text content      |
+
+**Press to act** — `select: "off"` (default) + `on.press`. Each press fires immediately:
+
+```json
+{
+  "type": "cell_grid",
+  "props": {
+    "name": "color_grid",
+    "cols": 4,
+    "rows": 4,
+    "cells": [
+      { "row": 0, "col": 0, "color": "red" },
+      { "row": 0, "col": 3, "color": "blue" }
+    ]
+  },
+  "on": {
+    "press": { "action": "submit", "params": { "target": "https://my-snap.com/" } }
+  }
+}
+```
+
+**Press to select** — `select: "single"` or `"multiple"`. Presses update the selection
+without posting; pair with a `button` that submits when the user is done:
 
 ```json
 {
