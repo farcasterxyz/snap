@@ -1,5 +1,17 @@
 # @farcaster/snap
 
+## 2.1.0
+
+### Minor Changes
+
+- [#159](https://github.com/farcasterxyz/snap/pull/159) [`bfbf8e7`](https://github.com/farcasterxyz/snap/commit/bfbf8e7a38379d5f036df4ebf4069820440cb767) Thanks [@bob-obringer](https://github.com/bob-obringer)! - feat(cell_grid): add `on.press` so a single press can fire an action (e.g. `submit`) without requiring a separate button. Two interaction modes, mutually exclusive: leave `select: "off"` (default) and bind `on.press` for press-to-act — `inputs[name]` is set to `"row,col"` before the action runs, so the POST body identifies the pressed cell; OR set `select: "single"` / `"multiple"` for press-to-select with a visual ring and pair with a separate submit `button`. `on.press` is ignored whenever `select` is on. Event name matches `button.on.press` for consistency.
+
+### Patch Changes
+
+- [#155](https://github.com/farcasterxyz/snap/pull/155) [`66f3b9c`](https://github.com/farcasterxyz/snap/commit/66f3b9c8370240eaf7324a21de2228ecfc50b4fd) Thanks [@bob-obringer](https://github.com/bob-obringer)! - fix(react-native): wire up `ConfettiOverlay` in `SnapViewCoreInner` so `snap.effects: ["confetti"]` actually renders on mobile. Keyed on a counter so repeat triggers restart the animation, matching web behavior.
+
+- [#157](https://github.com/farcasterxyz/snap/pull/157) [`1661cbe`](https://github.com/farcasterxyz/snap/commit/1661cbe7154230d3eeb9134be1c56ecd23a8c5ca) Thanks [@bob-obringer](https://github.com/bob-obringer)! - docs(llms.txt): add ESM import rule to `llms.txt` — local relative imports in the snap template must include `.js` (e.g. `./foo.js`), otherwise deploys fail with `500 FUNCTION_INVOCATION_FAILED` (NEYN-10450).
+
 ## 2.0.3
 
 ### Patch Changes
