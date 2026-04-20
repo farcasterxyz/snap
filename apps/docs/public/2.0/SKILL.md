@@ -12,7 +12,7 @@ description:
 
 ## Keeping this skill up to date
 
-This skill was last updated on **2026-04-11**. If that date is more than 1 day ago,
+This skill was last updated on **2026-04-17**. If that date is more than 1 day ago,
 fetch the latest version before proceeding and overwrite the existing file:
 
 ```bash
@@ -52,6 +52,15 @@ Github into a local directory. This will be the starting point for the snap.
 Explore the directory. Read README.md and AGENTS.md there first, then follow the links
 therein to more content. Also skim it's @farcaster/snap\* dependencies and update those
 to their latest version.
+
+**ESM import rule (CRITICAL)**: the template is an ESM project with
+`moduleResolution: "NodeNext"`. All local relative imports must include the `.js`
+extension (even though the source files are `.ts`): `import { foo } from "./foo.js"`.
+Omitting the extension fails `pnpm build` (`tsc --noEmit`) and, on deploy, causes every
+route to return **`500 FUNCTION_INVOCATION_FAILED`** — `tsx` dev accepts bare imports
+but the Vercel Edge / Node ESM runtime does not. Always run `pnpm build` before
+deploying. Bare package imports (`hono`, `@farcaster/snap`, etc.) do not need an
+extension.
 
 Express the UI as the object your snap handler returns.
 

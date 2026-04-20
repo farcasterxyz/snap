@@ -16,6 +16,24 @@ template/
 └── vercel.json
 ```
 
+## ESM import rule (IMPORTANT)
+
+**If every route on your deployed snap returns `500 FUNCTION_INVOCATION_FAILED`, check that every local relative import uses a `.js` extension.**
+
+This is an ESM project (`"type": "module"`) with `moduleResolution: "NodeNext"`. All relative imports must include `.js`, even though the source files are `.ts`:
+
+```ts
+// ✅ correct
+import { thing } from "./thing.js";
+
+// ❌ wrong — fails `pnpm build` (tsc --noEmit); fails on deploy with 500 FUNCTION_INVOCATION_FAILED
+import { thing } from "./thing";
+```
+
+The extension is required by the Node ESM / Vercel Edge runtime. `tsx` local dev accepts bare imports, so the bug only surfaces on deploy. NodeNext makes `tsc --noEmit` catch it at build time — so always run `pnpm build` before deploying.
+
+Bare package imports (`hono`, `@farcaster/snap`, etc.) do not need an extension.
+
 ## Handler callback
 
 `registerSnapHandler` calls your function with a `SnapContext` value (conventionally named `ctx`): `{ action, request }`.
