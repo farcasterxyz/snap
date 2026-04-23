@@ -9,6 +9,7 @@ import type { SnapPage, SnapActionHandlers } from "../index";
 
 const SNAP_MAX_HEIGHT = 500;
 const SNAP_WARNING_HEIGHT = 700;
+const SHOW_MORE_OVERHANG = 14;
 
 // ─── Default validation error fallback ────────────────
 
@@ -166,7 +167,12 @@ export function SnapCardV2({
   const containerMaxHeight = showOverflowWarning ? SNAP_WARNING_HEIGHT : undefined;
 
   return (
-    <>
+    <div
+      style={{
+        paddingBottom:
+          !showOverflowWarning && isExpandable ? SHOW_MORE_OVERHANG : 0,
+      }}
+    >
     <div
       style={{
         position: "relative",
@@ -307,6 +313,6 @@ export function SnapCardV2({
         {actionError}
       </div>
     )}
-    </>
+    </div>
   );
 }
