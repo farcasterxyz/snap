@@ -17,6 +17,7 @@ import type { SnapPage, SnapActionHandlers } from "../types";
 
 const SNAP_MAX_HEIGHT = 500;
 const SNAP_WARNING_HEIGHT = 700;
+const SHOW_MORE_OVERHANG = 14;
 
 // ─── Validation fallback ─────────────────────────────
 
@@ -229,7 +230,7 @@ function SnapCardV2Inner({
   const pillBgPressed = isDark ? "rgba(60,60,60,0.95)" : "rgba(240,240,240,0.95)";
 
   return (
-    <>
+    <View style={{ paddingBottom: isExpandable ? SHOW_MORE_OVERHANG : 0 }}>
       <View style={{ position: "relative" }}>
         <View
           style={{
@@ -307,7 +308,7 @@ function SnapCardV2Inner({
           {actionError}
         </Text>
       )}
-    </>
+    </View>
   );
 }
 
