@@ -1,6 +1,6 @@
 {
   "name": "@farcaster/snap-hono",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Hono integration for Farcaster Snap servers",
   "repository": {
     "type": "git",
