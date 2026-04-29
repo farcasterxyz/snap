@@ -23,6 +23,8 @@ export {
   PALETTE_COLOR_VALUES,
   PALETTE_LIGHT_HEX,
   PALETTE_DARK_HEX,
+  isSnapHexColorString,
+  resolveSnapColorHex,
   type PaletteColor,
 } from "./colors";
 export {

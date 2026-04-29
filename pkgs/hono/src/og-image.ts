@@ -1,5 +1,9 @@
 import type { SnapHandlerResult, SnapSpec } from "@farcaster/snap";
-import { DEFAULT_THEME_ACCENT, PALETTE_LIGHT_HEX } from "@farcaster/snap";
+import {
+  DEFAULT_THEME_ACCENT,
+  PALETTE_LIGHT_HEX,
+  resolveSnapColorHex,
+} from "@farcaster/snap";
 import satori from "satori";
 import { Resvg, initWasm } from "@resvg/resvg-wasm";
 
@@ -250,8 +254,7 @@ function accentHex(accent: string | undefined): string {
 }
 
 function colorHex(color: string | undefined, accent: string): string {
-  if (!color || color === "accent") return accent;
-  return PALETTE_LIGHT_HEX[color as keyof typeof PALETTE_LIGHT_HEX] ?? accent;
+  return resolveSnapColorHex(color, { accentHex: accent, appearance: "light" });
 }
 
 function mapText(el: El): VNode {

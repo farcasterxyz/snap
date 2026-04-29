@@ -38,6 +38,33 @@ export const PALETTE_COLOR_VALUES = [
 
 export type PaletteColor = (typeof PALETTE_COLOR_VALUES)[number];
 
+/** Strict `#rrggbb` literal used by cell_grid (and clients that accept hex). */
+const SNAP_HEX_6 = /^#[0-9a-fA-F]{6}$/;
+
+export function isSnapHexColorString(s: string): boolean {
+  return SNAP_HEX_6.test(s.trim());
+}
+
+/**
+ * Resolve a snap color token for inline styles: `accent`, palette names, or
+ * literal `#rrggbb`. Unknown values fall back to `accentHex` (same as legacy
+ * `colorHex` behavior for non-hex strings).
+ */
+export function resolveSnapColorHex(
+  color: string | undefined,
+  opts: { accentHex: string; appearance: "light" | "dark" },
+): string {
+  if (!color || color === PALETTE_COLOR_ACCENT) return opts.accentHex;
+  const trimmed = color.trim();
+  if (isSnapHexColorString(trimmed)) return trimmed;
+  const map =
+    opts.appearance === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
+  if (Object.hasOwn(map, trimmed)) {
+    return map[trimmed as PaletteColor];
+  }
+  return opts.accentHex;
+}
+
 /** Light-mode hex for each palette color (emulator / reference client). */
 export const PALETTE_LIGHT_HEX: Record<PaletteColor, string> = {
   gray: "#6E6A86",

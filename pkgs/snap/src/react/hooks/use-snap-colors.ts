@@ -4,8 +4,7 @@ import { useMemo } from "react";
 import { useStateStore } from "@json-render/react";
 import { resolveSnapPaletteHex } from "../lib/resolve-palette-hex";
 import { useSnapPreviewPageAccent, useSnapAppearance } from "../accent-context";
-import type { PaletteColor } from "@farcaster/snap";
-import { PALETTE_DARK_HEX, PALETTE_LIGHT_HEX } from "@farcaster/snap";
+import { resolveSnapColorHex } from "@farcaster/snap";
 
 /** Readable foreground color (black or white) for a given hex background. */
 export function pickForegroundForBg(hex: string): string {
@@ -76,7 +75,6 @@ function buildSnapColors(
   const accent = resolveSnapPaletteHex(accentName, mode);
   const accentFg = pickForegroundForBg(accent);
   const neutrals = mode === "dark" ? NEUTRAL_DARK : NEUTRAL_LIGHT;
-  const paletteMap = mode === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
 
   const accentHover =
     mode === "light"
@@ -87,11 +85,8 @@ function buildSnapColors(
 
   const paletteHex = (name: string) => resolveSnapPaletteHex(name, mode);
 
-  const colorHex = (name: string | undefined) => {
-    if (!name || name === "accent") return accent;
-    if (Object.hasOwn(paletteMap, name)) return paletteMap[name as PaletteColor];
-    return accent;
-  };
+  const colorHex = (name: string | undefined) =>
+    resolveSnapColorHex(name, { accentHex: accent, appearance: mode });
 
   return {
     accent,
