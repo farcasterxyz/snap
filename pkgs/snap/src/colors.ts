@@ -56,7 +56,7 @@ export function resolveSnapColorHex(
 ): string {
   if (!color || color === PALETTE_COLOR_ACCENT) return opts.accentHex;
   const trimmed = color.trim();
-  if (SNAP_HEX_6.test(trimmed)) return trimmed;
+  if (isSnapHexColorString(trimmed)) return trimmed;
   const map =
     opts.appearance === "dark" ? PALETTE_DARK_HEX : PALETTE_LIGHT_HEX;
   if (Object.hasOwn(map, trimmed)) {
