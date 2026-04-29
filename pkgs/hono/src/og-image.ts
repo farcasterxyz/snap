@@ -2,7 +2,6 @@ import type { SnapHandlerResult, SnapSpec } from "@farcaster/snap";
 import {
   DEFAULT_THEME_ACCENT,
   PALETTE_LIGHT_HEX,
-  PALETTE_COLOR_ACCENT,
   resolveSnapColorHex,
 } from "@farcaster/snap";
 import satori from "satori";
