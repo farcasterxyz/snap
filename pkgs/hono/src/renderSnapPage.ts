@@ -395,8 +395,8 @@ function renderElement(key: string, spec: SnapSpec, accent: string): string {
       const gapVal =
         gapMap[String(p.gap ?? "md")] ?? (isHorizontal ? "8px" : "16px");
       const dir = isHorizontal ? "row" : "column";
-      const wrap = isHorizontal ? "flex-wrap:wrap;" : "";
-      const align = isHorizontal ? "align-items:center;" : "";
+      const wrapStyle = isHorizontal ? "flex-wrap:nowrap;" : "";
+      const alignItems = isHorizontal ? "align-items:stretch;" : "";
       const justifyMap: Record<string, string> = {
         start: "flex-start",
         center: "center",
@@ -406,7 +406,7 @@ function renderElement(key: string, spec: SnapSpec, accent: string): string {
       };
       const jc = p.justify ? justifyMap[String(p.justify)] : undefined;
       const childIds = el.children ?? [];
-      let html = `<div style="display:flex;width:100%;flex-direction:${dir};gap:${gapVal};${wrap}${align}${
+      let html = `<div style="display:flex;width:100%;min-width:0;box-sizing:border-box;flex-direction:${dir};gap:${gapVal};${wrapStyle}${alignItems}${
         jc ? `justify-content:${jc};` : ""
       }">`;
       for (const childKey of childIds) {

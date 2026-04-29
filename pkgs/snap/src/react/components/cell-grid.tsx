@@ -64,12 +64,16 @@ export function SnapCellGrid({
     });
   }
 
+  /** Cells without a palette `color` — subtle fill so empty slots read as tiles. */
+  const emptyCellBg =
+    colors.mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)";
+
   const cellEls: ReactNode[] = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const cell = cellMap.get(`${r},${c}`);
       const selected = interactive && isSelected(r, c);
-      const bg = cell?.color ? colors.colorHex(cell.color) : "transparent";
+      const bg = cell?.color ? colors.colorHex(cell.color) : emptyCellBg;
 
       cellEls.push(
         <div
@@ -105,30 +109,19 @@ export function SnapCellGrid({
     }
   }
 
-  const selectionLabel = isSelectable && selectedSet.size > 0
-    ? `inputs.${name}: ${[...selectedSet].join(isMultiple ? " | " : "")}`
-    : null;
-
   return (
-    <div>
-      <div
-        style={{
-          display: "grid",
-          width: "100%",
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          gap: gapPx,
-          padding: 4,
-          borderRadius: 8,
-          backgroundColor: colors.muted,
-        }}
-      >
-        {cellEls}
-      </div>
-      {selectionLabel && (
-        <div className="mt-1.5 truncate text-xs font-mono" style={{ color: colors.textMuted }}>
-          {selectionLabel}
-        </div>
-      )}
+    <div
+      style={{
+        display: "grid",
+        width: "100%",
+        gridTemplateColumns: `repeat(${cols}, 1fr)`,
+        gap: gapPx,
+        padding: 4,
+        borderRadius: 8,
+        backgroundColor: colors.muted,
+      }}
+    >
+      {cellEls}
     </div>
   );
 }

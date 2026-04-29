@@ -1,7 +1,9 @@
 "use client";
 
 import { Text } from "@neynar/ui/typography";
+import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import { useSnapStackDirection } from "../stack-direction-context";
 
 const SIZE_MAP = {
   md: { textSize: "base" as const },
@@ -19,13 +21,18 @@ export function SnapText({
   const align = (props.align as "left" | "center" | "right") ?? undefined;
   const config = SIZE_MAP[size] ?? SIZE_MAP.md;
   const colors = useSnapColors();
+  const stackDir = useSnapStackDirection();
+  const inHorizontalStack = stackDir === "horizontal";
 
   return (
     <Text
       size={config.textSize}
       weight={weight}
       align={align}
-      className="flex-1"
+      className={cn(
+        /** Row peers hug content like RN `wrapRow`; avoid `flex-1` stretching peers across the row. */
+        inHorizontalStack ? "min-w-0 shrink" : "flex-1",
+      )}
       style={{ color: colors.text }}
     >
       {content}

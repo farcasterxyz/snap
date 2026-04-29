@@ -26,6 +26,6 @@
     },
     "typeRoots": ["../../apps/emulator-native/node_modules/@types"]
   },
-  "include": ["src/react-native/**/*"],
+  "include": ["src/react-native/**/*", "src/stack-horizontal-utils.ts"],
   "exclude": ["node_modules", "dist"]
 }

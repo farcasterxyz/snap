@@ -76,7 +76,7 @@ Express the UI as the object your snap handler returns.
 - Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
   @farcaster/snap-hono)
 - Structural limits: max 64 elements, max 7 root children, max 6 children per container,
-  max 4 nesting depth.
+  max 5 nesting depth.
 
 Design guidance:
 
