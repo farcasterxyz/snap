@@ -1,6 +1,7 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useSnapStackDirection } from "../stack-direction-context";
 import { useSnapTheme } from "../theme";
 
 export function SnapItem({
@@ -12,12 +13,19 @@ export function SnapItem({
   const description = props.description
     ? String(props.description)
     : undefined;
-  const variant = String(props.variant ?? "default");
+  /** Match web `Item className="flex-1"`: row peers must share width or title/description collapse. */
+  const rowPeer = useSnapStackDirection() === "horizontal";
 
   const containerVariant = { paddingVertical: 6, paddingHorizontal: 10 };
 
   return (
-    <View style={[styles.container, containerVariant]}>
+    <View
+      style={[
+        styles.container,
+        containerVariant,
+        rowPeer && styles.rowPeer,
+      ]}
+    >
       <View style={styles.content}>
         {title ? <Text style={[styles.title, { color: colors.text }]}>{title}</Text> : null}
         {description ? (
@@ -39,6 +47,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  rowPeer: {
+    flex: 1,
+    minWidth: 0,
   },
   content: {
     flex: 1,

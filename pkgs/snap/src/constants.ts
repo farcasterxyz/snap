@@ -20,7 +20,8 @@ export const GRID_GAP_VALUES = ["none", "sm", "md", "lg"] as const;
 export const MAX_ELEMENTS = 64;
 export const MAX_ROOT_CHILDREN = 7;
 export const MAX_CHILDREN = 6;
-export const MAX_DEPTH = 4;
+/** Enough depth for side-by-side columns that contain labeled horizontal icon rows (pair → column → row → icon). */
+export const MAX_DEPTH = 5;
 
 // ─── Bar chart ─────────────────────────────────────────
 export const BAR_CHART_MAX_BARS = 6;

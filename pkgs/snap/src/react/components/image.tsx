@@ -1,6 +1,8 @@
 "use client";
 
 import { AspectRatio } from "@neynar/ui/aspect-ratio";
+import { cn } from "@neynar/ui/utils";
+import { useSnapStackDirection } from "../stack-direction-context";
 
 function aspectToRatio(aspect: string): number {
   const [w, h] = aspect.split(":").map(Number);
@@ -16,11 +18,16 @@ export function SnapImage({
   const url = String(props.url ?? "");
   const alt = String(props.alt ?? "");
   const ratio = aspectToRatio(String(props.aspect ?? "1:1"));
+  const stackDir = useSnapStackDirection();
+  const inHorizontalStack = stackDir === "horizontal";
 
   return (
     <AspectRatio
       ratio={ratio}
-      className="relative w-full flex-1 overflow-hidden rounded-lg"
+      className={cn(
+        "relative overflow-hidden rounded-lg",
+        inHorizontalStack ? "min-w-0 flex-1 basis-0" : "w-full",
+      )}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

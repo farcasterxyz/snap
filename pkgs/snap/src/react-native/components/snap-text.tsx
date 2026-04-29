@@ -1,5 +1,6 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { StyleSheet, Text, View } from "react-native";
+import { useSnapStackDirection } from "../stack-direction-context";
 import { useSnapTheme } from "../theme";
 
 const SIZE_STYLES: Record<string, { fontSize: number; lineHeight?: number; fontWeight?: "400" | "500" | "600" | "700" }> = {
@@ -24,9 +25,10 @@ export function SnapText({
   const sizeStyle = SIZE_STYLES[size] ?? SIZE_STYLES.md;
   const resolvedWeight = weight ? WEIGHT_MAP[weight] : sizeStyle?.fontWeight;
   const textAlign = align === "center" ? "center" : align === "right" ? "right" : "left";
+  const inHorizontalStack = useSnapStackDirection() === "horizontal";
 
   return (
-    <View style={styles.wrap}>
+    <View style={inHorizontalStack ? styles.wrapRow : styles.wrapCol}>
       <Text
         style={[
           styles.base,
@@ -46,6 +48,9 @@ export function SnapText({
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: "100%" },
+  /** Full width for vertical stacks (alignment / wrapping). */
+  wrapCol: { width: "100%" },
+  /** Row peers: hug content; avoid width 100% fighting nowrap horizontal rows. */
+  wrapRow: { flexShrink: 1, minWidth: 0 },
   base: {},
 });

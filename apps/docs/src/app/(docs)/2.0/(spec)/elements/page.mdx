@@ -290,6 +290,7 @@ Overusing them creates visual clutter.
 
 Layout container for arranging children. Every page starts with a vertical stack as
 root. Use horizontal stacks for button rows, badge groups, or side-by-side cards.
+Nested **stack** children of a horizontal stack flex as peers (equal share of the row by default), so you usually do not need `columns` just to place two sections side by side.
 `justify: "between"` is useful for navigation bars.
 
 <ElementPreview type="stack" />
@@ -299,6 +300,7 @@ root. Use horizontal stacks for button rows, badge groups, or side-by-side cards
 | `direction` | string | No       | `"vertical"` | `"vertical"` or `"horizontal"`                                         |
 | `gap`       | string | No       | `"md"`       | Spacing between children: `"none"` `"sm"` `"md"` `"lg"`                |
 | `justify`   | string | No       |              | Content alignment: `"start"` `"center"` `"end"` `"between"` `"around"` |
+| `columns`   | number | No       |              | Horizontal stacks only: `2`–`6` for an explicit equal column grid. Omit when children are stacks — nested stacks flex as row peers automatically. |
 
 ```json
 "page": {

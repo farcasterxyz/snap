@@ -97,31 +97,35 @@ function normalizeSnapUrl(raw: string): string | null {
     return normalizeSnapUrl(`http://${t}`);
   }
 
-  // Full URL
-  try {
-    const url = new URL(t);
-    if (!/^https?:$/i.test(url.protocol)) return null;
-    // Ensure trailing slash on bare origin
-    if (url.pathname === "" || url.pathname === "/") {
-      return `${url.origin}/`;
-    }
-    return url.href;
+    // Full URL
+    try {
+      const url = new URL(t);
+      if (!/^https?:$/i.test(url.protocol)) return null;
+      // Normalize bare-origin URLs to `${origin}/`, but keep ?query / #hash (POST navigates with ?view=…).
+      if (url.pathname === "" || url.pathname === "/") {
+        if (url.search !== "" || url.hash !== "") {
+          return url.href;
+        }
+        return `${url.origin}/`;
+      }
+      return url.href;
   } catch {
     return null;
   }
 }
 
 /**
- * Stale preview: URL input differs from the currently loaded snap URL.
+ * Stale preview: normalized URL input differs from the normalized loaded snap URL.
  */
 function urlDiffersFromLoadedSnap(
   urlInput: string,
   currentSourceUrl: string | null,
 ): boolean {
   if (!currentSourceUrl) return false;
-  const normalized = normalizeSnapUrl(urlInput);
-  if (!normalized) return false;
-  return normalized !== currentSourceUrl;
+  const a = normalizeSnapUrl(urlInput);
+  const b = normalizeSnapUrl(currentSourceUrl);
+  if (!a || !b) return false;
+  return a !== b;
 }
 
 // ─── URL history (AsyncStorage) ─────────────────────
@@ -266,6 +270,7 @@ function AppContent() {
         const parsed = parseSnapPayload(json);
         setSnap(parsed);
         setCurrentSourceUrl(nextSourceUrl);
+        setUrlInput(nextSourceUrl);
       } catch (e) {
         const message = e instanceof Error ? e.message : "POST failed";
         setError(message);
@@ -310,6 +315,7 @@ function AppContent() {
       const parsedSnap = parseSnapPayload(json);
       setSnap(parsedSnap);
       setCurrentSourceUrl(target);
+      setUrlInput(target);
     } catch {
       try {
         await Linking.openURL(target);

@@ -66,13 +66,17 @@ export function SnapCellGrid({
   const ringOuter = appearance === "dark" ? "#fff" : "#000";
   const ringInner = appearance === "dark" ? "#000" : "#fff";
 
+  /** Cells without a palette `color` — subtle fill so empty slots read as tiles. */
+  const emptyCellBg =
+    appearance === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)";
+
   const rowEls = [];
   for (let r = 0; r < rows; r++) {
     const rowCells = [];
     for (let c = 0; c < cols; c++) {
       const cell = cellMap.get(`${r},${c}`);
       const selected = interactive && isSelected(r, c);
-      const bg = cell?.color ? hex(cell.color) : "transparent";
+      const bg = cell?.color ? hex(cell.color) : emptyCellBg;
 
       const cellContent = cell?.content ? (
         <Text style={[styles.cellText, { color: colors.textPrimary }]}>
@@ -121,18 +125,9 @@ export function SnapCellGrid({
     );
   }
 
-  const selectionLabel = isSelectable && selectedSet.size > 0
-    ? `inputs.${name}: ${[...selectedSet].join(isMultiple ? " | " : "")}`
-    : null;
-
   return (
     <View style={[styles.wrap, { gap: gapPx, backgroundColor: colors.muted, padding: 4, borderRadius: 8 }]}>
       {rowEls}
-      {selectionLabel ? (
-        <Text style={[styles.selectionText, { color: colors.textSecondary }]}>
-          {selectionLabel}
-        </Text>
-      ) : null}
     </View>
   );
 }
@@ -153,5 +148,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cellText: { fontSize: 12, lineHeight: 16, fontWeight: "600" },
-  selectionText: { fontSize: 11, fontFamily: "monospace", marginTop: 6 },
 });

@@ -92,7 +92,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     stack: {
       props: stackProps,
       description:
-        "Layout container — direction: vertical (default) | horizontal. Children are element ids in order.",
+        "Layout container — direction: vertical (default) | horizontal. Children are element ids in order. Horizontal stacks use a single flex row so peers stay side-by-side and shrink with min-width 0. Nested stacks participate as flexible row peers. All-button horizontal stacks use an equal N-column grid where N is the number of buttons (1–6). Optional `columns` (`2`–`6`) forces an explicit equal grid for mixed children.",
     },
     text: {
       props: textProps,

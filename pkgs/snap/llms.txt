@@ -37,7 +37,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 | Total elements | Max **64** in `ui.elements` |
 | Root children | Max **7** children on the root element |
 | Children per element | Max **6** per non-root container (`stack`, `item_group`) |
-| Nesting depth | Max **4** levels from root to deepest leaf |
+| Nesting depth | Max **5** levels from root to deepest leaf |
 
 ## Components (16 total)
 
@@ -107,6 +107,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `direction` (optional): `"vertical"` | `"horizontal"`. Default: `"vertical"`
 - `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Default: `"md"`
 - `justify` (optional): `"start"` | `"center"` | `"end"` | `"between"` | `"around"`
+- `columns` (optional, horizontal only): `2`–`6` — CSS grid with equal columns (mixed children or layout that needs fixed column counts).
 - Children are element IDs
 
 **item_group** — Groups item children.
