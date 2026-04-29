@@ -425,7 +425,7 @@ the accumulating selection. The component ignores `on.press` whenever `select` i
 | --------- | ------------ | -------- | ---------------------- |
 | `row`     | number       | Yes      | Row index (0-based)    |
 | `col`     | number       | Yes      | Column index (0-based) |
-| `color`   | PaletteColor | No       | Cell fill color        |
+| `color`   | PaletteColor or `#rrggbb` | No       | Cell fill color (hex is independent of page accent) |
 | `content` | string       | No       | Cell text content      |
 
 **Press to act** — `select: "off"` (default) + `on.press`. Each press fires immediately:

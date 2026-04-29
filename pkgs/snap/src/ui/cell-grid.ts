@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PALETTE_COLOR_VALUES } from "../colors.js";
+import { isSnapHexColorString, PALETTE_COLOR_VALUES } from "../colors.js";
 import {
   GRID_MIN_COLS,
   GRID_MAX_COLS,
@@ -11,7 +11,15 @@ import {
 const cellGridCellSchema = z.object({
   row: z.number().int().nonnegative(),
   col: z.number().int().nonnegative(),
-  color: z.enum(PALETTE_COLOR_VALUES).optional(),
+  color: z
+    .string()
+    .refine(
+      (s) =>
+        (PALETTE_COLOR_VALUES as readonly string[]).includes(s) ||
+        isSnapHexColorString(s),
+      { message: "cell_grid cell color must be a palette name or #rrggbb hex" },
+    )
+    .optional(),
   content: z.string().optional(),
 });
 

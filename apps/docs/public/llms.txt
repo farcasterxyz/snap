@@ -95,7 +95,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `name` (string, optional): POST inputs key. Default: `"grid_tap"`
 - `cols` (number, required, 2–32)
 - `rows` (number, required, 2–16)
-- `cells` (array, required): sparse list of `{ row, col, color?: PaletteColor, content?: string }`
+- `cells` (array, required): sparse list of `{ row, col, color?: PaletteColor | #rrggbb, content?: string }`
 - `gap` (optional): `"none"` (0px) | `"sm"` (1px) | `"md"` (2px) | `"lg"` (4px). Default: `"sm"`
 - `rowHeight` (number, optional, 8–64): pixel height per row. Default: 28. Grid height = rows × rowHeight
 - `select` (optional): `"off"` | `"single"` | `"multiple"`. Default: `"off"`. With `select: "off"`, bind `on.press` for press-to-act (each press writes `"row,col"` to `inputs[name]` and fires the action). With `"single"` / `"multiple"`, presses accumulate selection state and pair with a separate submit `button`; `on.press` is ignored.

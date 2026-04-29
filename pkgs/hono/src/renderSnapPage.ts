@@ -7,7 +7,7 @@ import type {
 import {
   DEFAULT_THEME_ACCENT,
   PALETTE_LIGHT_HEX,
-  PALETTE_COLOR_ACCENT,
+  resolveSnapColorHex,
 } from "@farcaster/snap";
 
 // ─── OG meta ────────────────────────────────────────────
@@ -130,8 +130,7 @@ function accentHex(accent: PaletteColor | undefined): string {
 }
 
 function colorHex(color: string | undefined, accent: string): string {
-  if (!color || color === PALETTE_COLOR_ACCENT) return accent;
-  return (PALETTE_LIGHT_HEX as Record<string, string>)[color] ?? accent;
+  return resolveSnapColorHex(color, { accentHex: accent, appearance: "light" });
 }
 
 /** Readable foreground for a hex background (YIQ contrast check). */

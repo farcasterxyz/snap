@@ -107,7 +107,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     cell_grid: {
       props: cellGridProps,
       description:
-        "Cell grid — sparse colored cells on a rows×cols grid. Two interaction modes: leave select 'off' and bind on.press to fire an action per cell press (inputs[name] is the pressed 'row,col' before the action runs); or set select 'single'/'multiple' for press-to-select with a visual ring (no auto-fire — pair with a separate submit button). on.press is ignored when select is on.",
+        "Cell grid — sparse colored cells on a rows×cols grid. Cell color is a palette name or literal #rrggbb hex (hex ignores page accent). Two interaction modes: leave select 'off' and bind on.press to fire an action per cell press (inputs[name] is the pressed 'row,col' before the action runs); or set select 'single'/'multiple' for press-to-select with a visual ring (no auto-fire — pair with a separate submit button). on.press is ignored when select is on.",
     },
   },
   actions: {

@@ -3,6 +3,7 @@ import {
   PALETTE_COLOR_VALUES,
   PALETTE_LIGHT_HEX,
   PALETTE_DARK_HEX,
+  resolveSnapColorHex,
   type PaletteColor,
 } from "@farcaster/snap";
 import { useStateStore } from "@json-render/react-native";
@@ -35,7 +36,7 @@ export function useSnapPalette() {
   const accentHex = resolveHex(accentName, mode);
 
   const hex = (semantic: string) =>
-    semantic === "accent" ? accentHex : resolveHex(semantic, mode);
+    resolveSnapColorHex(semantic, { accentHex, appearance: mode });
 
   return { appearance: mode, accentName, accentHex, hex };
 }
