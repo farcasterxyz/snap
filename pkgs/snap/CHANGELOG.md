@@ -1,5 +1,13 @@
 # @farcaster/snap
 
+## 2.1.2
+
+### Patch Changes
+
+- [#162](https://github.com/farcasterxyz/snap/pull/162) [`3b62b7e`](https://github.com/farcasterxyz/snap/commit/3b62b7e7342507bac224a849d93bb7551519375f) Thanks [@bob-obringer](https://github.com/bob-obringer)! - fix(snap): web SnapText rows hug content like native
+
+  Horizontal stack children no longer apply flex-1 to web text; paired labels stay grouped on the left with gap, matching React Native behavior.
+
 ## 2.1.1
 
 ### Patch Changes
