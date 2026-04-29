@@ -8,18 +8,23 @@ import {
   GRID_GAP_VALUES,
 } from "../constants.js";
 
+/** Palette name or `#rrggbb`; input is trimmed so palette and hex rules match runtime resolvers. */
+const cellGridCellColorSchema = z.preprocess(
+  (v) => (typeof v === "string" ? v.trim() : v),
+  z.union([
+    z.enum(PALETTE_COLOR_VALUES),
+    z
+      .string()
+      .refine(isSnapHexColorString, {
+        message: "cell_grid cell hex color must be #rrggbb",
+      }),
+  ]),
+);
+
 const cellGridCellSchema = z.object({
   row: z.number().int().nonnegative(),
   col: z.number().int().nonnegative(),
-  color: z
-    .string()
-    .refine(
-      (s) =>
-        (PALETTE_COLOR_VALUES as readonly string[]).includes(s) ||
-        isSnapHexColorString(s),
-      { message: "cell_grid cell color must be a palette name or #rrggbb hex" },
-    )
-    .optional(),
+  color: cellGridCellColorSchema.optional(),
   content: z.string().optional(),
 });
 

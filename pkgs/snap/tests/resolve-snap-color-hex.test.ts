@@ -23,6 +23,20 @@ describe("cellGridProps color field", () => {
       cellGridProps.safeParse({ ...base, cells: [{ row: 0, col: 0, color: "not-a-color" }] }).success,
     ).toBe(false);
   });
+
+  it("trims palette names and hex before validation", () => {
+    const red = cellGridProps.parse({
+      ...base,
+      cells: [{ row: 0, col: 0, color: "  red  " }],
+    });
+    expect(red.cells[0]?.color).toBe("red");
+
+    const hex = cellGridProps.parse({
+      ...base,
+      cells: [{ row: 0, col: 0, color: "  #ff00aa  " }],
+    });
+    expect(hex.cells[0]?.color).toBe("#ff00aa");
+  });
 });
 
 describe("isSnapHexColorString", () => {
