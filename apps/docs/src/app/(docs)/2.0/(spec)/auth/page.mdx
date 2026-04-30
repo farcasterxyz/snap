@@ -79,7 +79,7 @@ The decoded JSON payload matches the POST shape **without** `inputs` or deprecat
 
 - GET authentication is **optional**. Snaps that do not send `X-Snap-Payload` behave as today (anonymous `{ type: "get" }`).
 - Servers SHOULD treat a present but malformed, expired, or invalid signature as **anonymous GET** rather than failing the page load for honest users.
-- When a response depends on `action.user` (or other viewer-specific data), the server SHOULD send `Cache-Control: private` or a short `max-age` together with `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between viewers. See [HTTP Headers](/http-headers).
+- When a response depends on `action.user` (or other viewer-specific data), the server SHOULD send `Cache-Control: private` or a short `max-age` together with `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between viewers. See [HTTP Headers](/snap/http-headers).
 
 ## Requirements
 
