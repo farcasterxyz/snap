@@ -3,4 +3,4 @@
 "@farcaster/snap": minor
 ---
 
-allow GET params to include a signed snap payload
+allow GET requests to include a signed snap payload
