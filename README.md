@@ -23,7 +23,7 @@ See [docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap) for more info.
 
 ### @farcaster/snap
 
-Core library for Snap servers: schemas and types for snap JSON, validation of pages and POST bodies, and JFS verification for signed POST requests (`verifyJFSRequestBody`).
+Core library for Snap servers: schemas and types for snap JSON, validation of pages and POST bodies, and JFS verification for payloads (`verifyJFS`).
 
 The human-readable spec is authored as MDX under `apps/docs/src/app/(docs)/` and published at [docs.farcaster.xyz/snap](https://docs.farcaster.xyz/snap).
 
@@ -31,9 +31,9 @@ The human-readable spec is authored as MDX under `apps/docs/src/app/(docs)/` and
 
 A local snap emulator where you paste a snap URL and interact with it.
 
-This emulator does **not** sign its payload with real private keys, so emulated snaps must bypass signature verification in order to work.
+This emulator does **not** sign its payload with real private keys, so it only works with snaps that skip payload signature verification.
 
-An emulator with JFS signing is available inside the Farcaster web app.
+An [emulator with JFS signing](https://farcaster.xyz/~/developers/snaps) is available inside the Farcaster web app.
 
 ```bash
 pnpm --filter @farcaster/snap-emulator dev
@@ -44,7 +44,7 @@ The emulator lives under [`apps/emulator`](./apps/emulator). Hono examples are u
 
 ### @farcaster/snap-hono
 
-Convenience methods for running a Snap server using [Hono](https://hono.dev)
+Adapter and convenience methods for running a Snap server using [Hono](https://hono.dev)
 
 ### @farcaster/snap/ui
 
