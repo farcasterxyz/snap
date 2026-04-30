@@ -1,8 +1,13 @@
 export const SPEC_VERSION_1 = "1.0" as const;
 export const SPEC_VERSION_2 = "2.0" as const;
 export const SPEC_VERSION = SPEC_VERSION_2;
-export const SUPPORTED_SPEC_VERSIONS = [SPEC_VERSION_1, SPEC_VERSION_2] as const;
+export const SUPPORTED_SPEC_VERSIONS = [
+  SPEC_VERSION_1,
+  SPEC_VERSION_2,
+] as const;
 export type SpecVersion = (typeof SUPPORTED_SPEC_VERSIONS)[number];
+
+export const SNAP_PAYLOAD_HEADER = "X-Snap-Payload" as const;
 
 export const MEDIA_TYPE = "application/vnd.farcaster.snap+json" as const;
 

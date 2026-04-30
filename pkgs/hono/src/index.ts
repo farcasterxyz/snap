@@ -4,6 +4,7 @@ import {
   MEDIA_TYPE,
   type SnapFunction,
   ACTION_TYPE_GET,
+  SNAP_PAYLOAD_HEADER,
 } from "@farcaster/snap";
 import { parseRequest } from "@farcaster/snap/server";
 import { brandedFallbackHtml } from "./fallback";
@@ -30,7 +31,7 @@ export type SnapHandlerOptions = {
 
   /**
    * When true, skip JFS signature verification only. POST bodies must still be a JFS envelope:
-   * JSON `{ header, payload, signature }` or the same compact dot-separated string form.
+   * JSON `{ header, payload, signature }` or the same compact dot-separated string as GET’s `X-Snap-Payload`.
    * When omitted, default to {@link envSkipJFSVerification}.
    */
   skipJFSVerification?: boolean;
@@ -176,8 +177,26 @@ export function registerSnapHandler(
       });
     }
 
+    const skipJFSVerification =
+      options.skipJFSVerification !== undefined
+        ? options.skipJFSVerification
+        : envSkipJFSVerification();
+
+    const parsed = await parseRequest(c.req.raw, {
+      skipJFSVerification,
+      requestOrigin: snapOriginFromRequest(c.req.raw),
+    });
+
+    if (!parsed.success) {
+      const msg =
+        "message" in parsed.error
+          ? parsed.error.message
+          : "failed to parse request";
+      return c.json({ error: msg }, 400);
+    }
+
     const response = await snapFn({
-      action: { type: ACTION_TYPE_GET },
+      action: parsed.action,
       request: c.req.raw,
     });
 
@@ -262,6 +281,7 @@ function stripAuthHeaders(request: Request): Request {
   const headers = new Headers(request.headers);
   headers.delete("cookie");
   headers.delete("authorization");
+  headers.delete(SNAP_PAYLOAD_HEADER);
   return new Request(request.url, { method: request.method, headers });
 }
 

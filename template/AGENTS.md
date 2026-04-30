@@ -38,7 +38,7 @@ Bare package imports (`hono`, `@farcaster/snap`, etc.) do not need an extension.
 
 `registerSnapHandler` calls your function with a `SnapContext` value (conventionally named `ctx`): `{ action, request }`.
 
-- `ctx.action.type === "get"` — first page load (GET request). No other fields on the action object.
+- `ctx.action.type === "get"` — first page load (GET request). Anonymous by default. When the client sends an `X-Snap-Payload` header with a valid JFS compact string, `ctx.action` MAY also include `user` (`{ fid }`), `timestamp`, `audience`, and `surface`. **Treat `ctx.action.user` on GET as best-effort and never guaranteed** — older or custom clients, cache layers, web crawlers, and `curl` may all yield an anonymous GET, even for users who have POSTed to this snap before. Always render a working anonymous first load; treat viewer fields as a strict enhancement.
 - `ctx.action.type === "post"` — user interaction (POST request). Snap v2 requires `inputs`, `user` (`{ fid }`), `surface` (`standalone` or `cast` with nested `cast` payload), `timestamp`, and `audience`. There is no `nonce` field. Prefer `user.fid`; top-level `fid` is deprecated but may still appear for compatibility. Use different `submit` target URLs (for example query parameters) to distinguish multiple buttons.
 
 Check `ctx.action.type` before accessing `inputs` — it only exists on `"post"` actions.

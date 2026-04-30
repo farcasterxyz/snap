@@ -1,7 +1,8 @@
 # HTTP Headers
 
 Snaps use the media type `application/vnd.farcaster.snap+json`. Clients and servers
-coordinate snap responses with `Accept`, `Content-Type`, `Vary`, and `Link` headers.
+coordinate snap responses with `Accept`, `Content-Type`, `Vary`, `Link`, and optionally
+`X-Snap-Payload` on GET requests.
 
 The spec has one goal: **a snap URL must never be silently missed.** Any HTTP client
 performing a plain `GET` must be able to identify a snap — without knowing in advance
@@ -25,10 +26,18 @@ indicate snap support.
 A snap response MUST set `Content-Type: application/vnd.farcaster.snap+json`, and a
 client receiving that `Content-Type` MUST render the body as a snap.
 
+## `X-Snap-Payload` (requests)
+
+On GET, a client MAY send optional viewer-authentication data as a JFS compact string in the `X-Snap-Payload` header. See [Authentication — Authenticated GETs](/snap/auth#authenticated-gets).
+
 ## `Vary` (responses)
 
 When the representation depends on `Accept`, the server MUST include `Vary: Accept`
 so caches and intermediaries key correctly.
+
+Snap servers that return snap JSON SHOULD also include `Vary: X-Snap-Payload` when they support authenticated GETs, so caches distinguish anonymous and viewer-specific representations.
+
+When a snap response depends on viewer identity (`action.user` from GET or POST), the server SHOULD set `Cache-Control: private` or a short `max-age` together with `Vary: X-Snap-Payload` to avoid leaking personalized content between viewers.
 
 ## `Link` (responses)
 

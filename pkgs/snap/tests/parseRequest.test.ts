@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { parseRequest, encodePayload, decodePayload } from "../src/server";
+import {
+  compact,
+  encodeHeader,
+  encodePayload as jfsEncodePayload,
+  encodeSignature,
+} from "@farcaster/jfs";
 import { type SnapPayload } from "../src/schemas";
+import { SNAP_PAYLOAD_HEADER } from "../src/constants";
 
 describe("parseRequest", () => {
   const surfaceStandalone = { type: "standalone" as const };
@@ -30,14 +37,76 @@ describe("parseRequest", () => {
     expect(res).toEqual({ success: true, action: { type: "get" } });
   });
 
-  it("accepts JFS-shaped POST even when skipJFSVerification is true", async () => {
+  /** Valid JFS compact string (all segments base64url); header/sig are syntactic only when skipping verification. */
+  function getPayloadCompactString(payload: Record<string, unknown>) {
+    const user = payload.user as { fid: number };
+    const header = encodeHeader({
+      fid: user.fid,
+      type: "app_key",
+      key: `0x${"ab".repeat(32)}`,
+    });
+    const payloadSeg = jfsEncodePayload(payload);
+    const signature = encodeSignature(new Uint8Array(64));
+    return compact({ header, payload: payloadSeg, signature });
+  }
+
+  it("parses payload header on GET when skipJFSVerification is true", async () => {
+    const ts = Math.floor(Date.now() / 1000);
+    const payload = {
+      timestamp: ts,
+      audience: "https://example.com",
+      user: { fid: 7 },
+      surface: surfaceStandalone,
+    };
+    const headerVal = getPayloadCompactString(payload);
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "GET",
+        headers: { [SNAP_PAYLOAD_HEADER]: headerVal },
+      }),
+      { skipJFSVerification: true, requestOrigin: "https://example.com" },
+    );
+    expect(res).toEqual({
+      success: true,
+      action: {
+        type: "get",
+        user: { fid: 7 },
+        timestamp: ts,
+        audience: "https://example.com",
+        surface: surfaceStandalone,
+      },
+    });
+  });
+
+  it("GET with invalid payload header shape returns validation error", async () => {
+    const header = encodeHeader({
+      fid: 1,
+      type: "app_key",
+      key: `0x${"ab".repeat(32)}`,
+    });
+    const payloadSeg = jfsEncodePayload({ foo: "not-a-snap-payload" });
+    const signature = encodeSignature(new Uint8Array(64));
+    const headerVal = compact({ header, payload: payloadSeg, signature });
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "GET",
+        headers: { [SNAP_PAYLOAD_HEADER]: headerVal },
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error.type).toBe("validation");
+  });
+
+  it("accepts JFS compact string POST body when skipJFSVerification is true", async () => {
     const body = postBody();
+    const compact = `${body.header}.${body.payload}.${body.signature}`;
     const payload = decodePayload<SnapPayload>(body.payload);
     const res = await parseRequest(
       new Request("https://example.com/snap", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        headers: { "Content-Type": "text/plain" },
+        body: compact,
       }),
       { skipJFSVerification: true },
     );
@@ -55,15 +124,14 @@ describe("parseRequest", () => {
     });
   });
 
-  it("accepts JFS compact string POST body when skipJFSVerification is true", async () => {
+  it("accepts JFS-shaped POST even when skipJFSVerification is true", async () => {
     const body = postBody();
-    const compact = `${body.header}.${body.payload}.${body.signature}`;
     const payload = decodePayload<SnapPayload>(body.payload);
     const res = await parseRequest(
       new Request("https://example.com/snap", {
         method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: compact,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       }),
       { skipJFSVerification: true },
     );

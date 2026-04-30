@@ -14,7 +14,8 @@ Example interaction:
 
 1. A cast embed points to a URL that implements the snap protocol
 2. The client GETs that URL, signaling snap support. The server responds with a JSON
-   SnapResponse
+   SnapResponse (GET MAY include optional viewer identity via `X-Snap-Payload`; see
+   [Authentication](/snap/auth))
 3. The client renders the `ui` tree using the component catalog
 4. The user interacts with field components (`input`, `slider`, `switch`,
    `toggle_group`) — values are stored locally

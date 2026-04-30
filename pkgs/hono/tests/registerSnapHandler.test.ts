@@ -83,7 +83,7 @@ describe("registerSnapHandler content type", () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe(SNAP_CONTENT_TYPE);
-    expect(res.headers.get("Vary")).toBe("Accept");
+    expect(res.headers.get("Vary")).toBe("Accept, X-Snap-Payload");
     expect(res.headers.get("Link")).toBe(
       buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
     );
@@ -99,7 +99,7 @@ describe("registerSnapHandler content type", () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toMatch(/^text\/html/);
-    expect(res.headers.get("Vary")).toBe("Accept");
+    expect(res.headers.get("Vary")).toBe("Accept, X-Snap-Payload");
     expect(res.headers.get("Link")).toBe(
       buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
     );
@@ -124,7 +124,7 @@ describe("registerSnapHandler content type", () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe(SNAP_CONTENT_TYPE);
-    expect(res.headers.get("Vary")).toBe("Accept");
+    expect(res.headers.get("Vary")).toBe("Accept, X-Snap-Payload");
     expect(res.headers.get("Link")).toBe(
       buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
     );

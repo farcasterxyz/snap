@@ -171,6 +171,16 @@ Bound to buttons via `on.press`:
 | `send_token` | `token`, `amount?`, `recipientFid?`, `recipientAddress?` | Send token flow |
 | `swap_token` | `sellToken?`, `buyToken?` | Swap token flow |
 
+## Authenticated requests
+
+POST requests carry a JFS envelope (JSON object **or** compact dot-separated string). `parseRequest` validates the payload and (unless `skipJFSVerification`) cryptographically verifies the JFS against an active hub signer for `user.fid`. On the server, `ctx.action.user.fid` is **always present and verified** for `type === "post"`.
+
+GET requests MAY include optional viewer identity in the `X-Snap-Payload` request header (a JFS compact string with the same shape as POST minus `inputs` and `fid`). When present and valid, `ctx.action` on GET MAY include `user`, `timestamp`, `audience`, and `surface`.
+
+`ctx.action.user` on GET is **best-effort and never guaranteed** — older or custom clients, cache layers, crawlers, and `curl` may yield an anonymous GET even for users who have POSTed to this snap before. Always render a working anonymous first load; treat viewer fields on GET as a strict enhancement. `parseRequest` (and `@farcaster/snap-hono`'s GET handler) silently fall back to anonymous `{ type: "get" }` when `X-Snap-Payload` is missing or invalid.
+
+When responses depend on viewer identity, send `Vary: Accept, X-Snap-Payload` and consider `Cache-Control: private` so caches don't serve viewer-specific bodies to other viewers (`@farcaster/snap-hono` sets `Vary` automatically).
+
 ## Icon Names (34)
 
 `arrow-right`, `arrow-left`, `external-link`, `chevron-right`, `check`, `x`, `alert-triangle`, `info`, `clock`, `heart`, `message-circle`, `repeat`, `share`, `user`, `users`, `star`, `trophy`, `zap`, `flame`, `gift`, `image`, `play`, `pause`, `wallet`, `coins`, `plus`, `minus`, `refresh-cw`, `bookmark`, `thumbs-up`, `thumbs-down`, `trending-up`, `trending-down`

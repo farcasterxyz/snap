@@ -4,6 +4,11 @@ Every POST request from the client to a snap server MUST be authenticated with
 [JSON Farcaster Signatures](https://github.com/farcasterxyz/protocol/discussions/208)
 (JFS).
 
+GET requests MAY include viewer identity when the client sends an optional
+`X-Snap-Payload` header (see [Authenticated GETs](#authenticated-gets)). Authentication
+on GET is optional and best-effort: servers SHOULD fall back to an anonymous first load
+when the header is absent.
+
 ## How It Works
 
 When a user taps a `post` button, the Farcaster client:
@@ -63,6 +68,33 @@ minutes).
 
 If strict replay protection is needed beyond that, clients should add a `nonce` field
 (unique per request) to the signed payload.
+
+## Authenticated GETs
+
+Official clients MAY attach a JFS compact string to snap document GET requests using the
+`X-Snap-Payload` request header. The value uses the same dot-separated form as POST
+bodies:
+
+```
+BASE64URL(header).BASE64URL(payload).BASE64URL(signature)
+```
+
+- GET authentication is optional. Snaps that do not send `X-Snap-Payload` behave as
+  today (anonymous `{ type: "get" }`).
+- Servers MUST reject a present but malformed, expired, or invalid `X-Snap-Payload` with
+  a 4xx response.
+- When a response depends on `action.user` (or other viewer-specific data), the server
+  SHOULD send `Cache-Control: private` or a short `max-age` together with
+  `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between
+  viewers. See [HTTP Headers](/snap/http-headers).
+
+### `action.user` on GET is never guaranteed
+
+Servers MUST NOT depend on receiving a viewer FID on a GET. Each GET is an independent
+request, and `X-Snap-Payload` may be absent for any number of reasons. Design every snap
+so the anonymous first load is fully usable. Treat `action.user` on GET as a strict
+enhancement: when present, you may personalize; when absent, render a working signed-out
+experience.
 
 ## Requirements
 
@@ -134,8 +166,9 @@ import { registerSnapHandler } from "@farcaster/snap-hono";
 registerSnapHandler(
   app,
   async (ctx) => {
-    // ctx.action.fid is verified — the JFS signature was checked
+    // On POST: ctx.action.user.fid is verified — the JFS signature was checked
     // ctx.action.inputs contains the user's input values
+    // On GET: if (ctx.action.user) { … } for optional viewer-aware first loads (X-Snap-Payload)
     // Distinguish buttons via distinct submit target URLs on each button (ctx.request.url)
   },
   {

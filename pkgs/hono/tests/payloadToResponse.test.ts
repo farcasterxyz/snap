@@ -21,7 +21,7 @@ describe("payloadToResponse", () => {
     const r = payloadToResponse(minimalRoot);
     expect(r.status).toBe(200);
     expect(r.headers.get("Content-Type")).toBe(`${MEDIA_TYPE}; charset=utf-8`);
-    expect(r.headers.get("Vary")).toBe("Accept");
+    expect(r.headers.get("Vary")).toBe("Accept, X-Snap-Payload");
     expect(r.headers.get("Link")).toBe(
       buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
     );

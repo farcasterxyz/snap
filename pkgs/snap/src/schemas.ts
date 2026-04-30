@@ -104,26 +104,36 @@ const surfaceSchema = z.discriminatedUnion("type", [
   standaloneSurfaceSchema,
 ]);
 
+const fidSchema = z.number().int().nonnegative();
+const userSchema = z.object({ fid: fidSchema });
+
 export const payloadSchema = z
   .object({
-    fid: z.number().int().nonnegative().optional(), // deprecated in favor of user.fid
+    fid: fidSchema.optional(), // deprecated in favor of user.fid
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
     audience: z.string(),
-    user: z.object({
-      fid: z.number().int().nonnegative(),
-    }),
+    user: userSchema,
     surface: surfaceSchema,
   })
   .strip();
 
 export type SnapPayload = z.infer<typeof payloadSchema>;
 
+/** JFS payload shape for POST minus deprecated `fid`; used for GET auth via payload header. */
+export const getPayloadSchema = payloadSchema.omit({ inputs: true, fid: true });
+
+export type SnapGetPayload = z.infer<typeof getPayloadSchema>;
+
 export const ACTION_TYPE_GET = "get" as const;
 export const ACTION_TYPE_POST = "post" as const;
 
 const snapGetActionSchema = z.object({
   type: z.literal(ACTION_TYPE_GET),
+  user: userSchema.optional(),
+  timestamp: z.number().int().optional(),
+  audience: z.string().optional(),
+  surface: surfaceSchema.optional(),
 });
 
 export type SnapGetAction = z.infer<typeof snapGetActionSchema>;
