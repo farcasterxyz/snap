@@ -79,15 +79,10 @@ bodies:
 BASE64URL(header).BASE64URL(payload).BASE64URL(signature)
 ```
 
-The decoded JSON payload matches the POST shape **without** `inputs` or deprecated
-top-level `fid`: `timestamp`, `audience`, `user`, and `surface`. From official clients,
-`surface` on GET is typically `{ "type": "standalone" }`.
-
-- GET authentication is **optional**. Snaps that do not send `X-Snap-Payload` behave as
+- GET authentication is optional. Snaps that do not send `X-Snap-Payload` behave as
   today (anonymous `{ type: "get" }`).
 - Servers MUST reject a present but malformed, expired, or invalid `X-Snap-Payload` with
-  a 4xx response (anonymous fallback is only for the **absent** case). Failing fast
-  surfaces client bugs and forgery attempts instead of masking them as anonymous.
+  a 4xx response.
 - When a response depends on `action.user` (or other viewer-specific data), the server
   SHOULD send `Cache-Control: private` or a short `max-age` together with
   `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between
@@ -95,20 +90,11 @@ top-level `fid`: `timestamp`, `audience`, `user`, and `surface`. From official c
 
 ### `action.user` on GET is never guaranteed
 
-Servers MUST NOT depend on receiving a viewer FID on any GET — **including from users
-who have previously POSTed (authenticated) to this snap before.** Each GET is an
-independent request, and `X-Snap-Payload` may be absent for many honest reasons:
-
-- Older or custom clients that have not adopted the header
-- Cold-start clients that cannot sign yet, locked wallets, signer expiry
-- Cache layers, CDNs, or proxies that strip request headers
-- Plain `curl`, web crawlers, link previews, and emulator-style clients
-- Cross-client visits — the user opens the same URL in a different client
-
-Design every snap so the **anonymous first load is fully usable**. Treat `action.user`
-on GET as a strict enhancement: when present, you may personalize; when absent, render a
-working signed-out experience. POST is the only place a verified FID is guaranteed —
-gate identity-critical flows there.
+Servers MUST NOT depend on receiving a viewer FID on a GET. Each GET is an independent
+request, and `X-Snap-Payload` may be absent for any number of reasons. Design every snap
+so the anonymous first load is fully usable. Treat `action.user` on GET as a strict
+enhancement: when present, you may personalize; when absent, render a working signed-out
+experience.
 
 ## Requirements
 
