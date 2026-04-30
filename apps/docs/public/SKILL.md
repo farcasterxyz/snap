@@ -74,11 +74,11 @@ Express the UI as the object your snap handler returns.
 - Use distinct submit target URLs for each button to distinguish which was pressed.
 - On POST, `ctx.action.user.fid` is always present and JFS-verified. On GET,
   `ctx.action.user` is **best-effort and never guaranteed** — clients MAY send an
-  `X-Snap-Payload` JFS compact string for viewer-aware first loads, but older or
-  custom clients (and cache layers, web crawlers, `curl`, etc.) may not. Even users
-  who have POSTed to this snap before are not guaranteed to carry a FID on the next
-  GET. Always render a working **anonymous** first load; treat `action.user` on GET
-  as a strict enhancement.
+  `X-Snap-Payload` JFS compact string for viewer-aware first loads, but older or custom
+  clients (and cache layers, web crawlers, `curl`, etc.) may not. Even users who have
+  POSTed to this snap before are not guaranteed to carry a FID on the next GET. Always
+  render a working **anonymous** first load; treat `action.user` on GET as a strict
+  enhancement.
 - Target URLs must be HTTPS in production; `http://` only on loopback for local dev.
 - Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
   @farcaster/snap-hono)
