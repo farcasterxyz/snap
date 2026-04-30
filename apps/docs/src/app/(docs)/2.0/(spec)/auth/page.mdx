@@ -81,6 +81,18 @@ The decoded JSON payload matches the POST shape **without** `inputs` or deprecat
 - Servers SHOULD treat a present but malformed, expired, or invalid signature as **anonymous GET** rather than failing the page load for honest users.
 - When a response depends on `action.user` (or other viewer-specific data), the server SHOULD send `Cache-Control: private` or a short `max-age` together with `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between viewers. See [HTTP Headers](/snap/http-headers).
 
+### `action.user` on GET is never guaranteed
+
+Servers MUST NOT depend on receiving a viewer FID on any GET — **including from users who have previously POSTed (authenticated) to this snap before.** Each GET is an independent request, and `X-Snap-Payload` may be absent for many honest reasons:
+
+- Older or custom clients that have not adopted the header
+- Cold-start clients that cannot sign yet, locked wallets, signer expiry
+- Cache layers, CDNs, or proxies that strip request headers
+- Plain `curl`, web crawlers, link previews, and emulator-style clients
+- Cross-client visits — the user opens the same URL in a different client
+
+Design every snap so the **anonymous first load is fully usable**. Treat `action.user` on GET as a strict enhancement: when present, you may personalize; when absent, render a working signed-out experience. POST is the only place a verified FID is guaranteed — gate identity-critical flows there.
+
 ## Requirements
 
 - The client MUST send a valid JFS for every authenticated POST
@@ -154,7 +166,7 @@ registerSnapHandler(
     // On POST: ctx.action.user.fid is verified — the JFS signature was checked
     // ctx.action.inputs contains the user's input values
     // On GET: if (ctx.action.user) { … } for optional viewer-aware first loads (X-Snap-Payload)
-    // Distinguish submit buttons via input values (e.g. hidden field _action), not different paths — see Snap identity in [Spec overview](/snap/spec-overview)
+    // Distinguish buttons via distinct submit target URLs on each button (ctx.request.url)
   },
   {
     skipJFSVerification: false, // set to `true` for local dev

@@ -14,14 +14,6 @@ export type ValidationResult = {
   issues: z.core.$ZodIssue[];
 };
 
-export type ValidateSnapResponseOptions = {
-  /**
-   * When set, `submit` action `params.target` URLs MUST resolve to the same
-   * origin and pathname as this snap document URL (query and fragment ignored).
-   */
-  snapDocumentUrl?: string;
-};
-
 // ─── Helpers ──────────────────────────────────────────
 
 /** Actions whose `params.target` must be a valid URL. */
@@ -160,30 +152,9 @@ function validateStructure(ui: {
  * - image.url: must use HTTPS (or HTTP on loopback for dev)
  * - action target URLs (submit, open_url, open_snap, open_mini_app): must use HTTPS (or HTTP on loopback for dev)
  */
-function sameOriginAndPath(a: URL, b: URL): boolean {
-  return a.origin === b.origin && a.pathname === b.pathname;
-}
-
-function validateUrls(
-  elements: Record<string, unknown>,
-  snapDocumentUrl: string | undefined,
-): z.core.$ZodIssue[] {
+function validateUrls(elements: Record<string, unknown>): z.core.$ZodIssue[] {
   const issues: z.core.$ZodIssue[] = [];
   const els = elements as Record<string, ElementShape>;
-
-  let documentUrlParsed: URL | undefined;
-  if (snapDocumentUrl !== undefined) {
-    try {
-      documentUrlParsed = new URL(snapDocumentUrl);
-    } catch {
-      issues.push({
-        code: "custom",
-        message: `snapDocumentUrl must be a valid absolute URL (got "${snapDocumentUrl}")`,
-        path: ["snapDocumentUrl"],
-      });
-      documentUrlParsed = undefined;
-    }
-  }
 
   for (const [id, el] of Object.entries(els)) {
     // Validate image URLs
@@ -206,30 +177,13 @@ function validateUrls(
           URL_TARGET_ACTIONS.has(binding.action ?? "") &&
           typeof binding.params?.target === "string"
         ) {
-          const rawTarget = binding.params.target;
-          const error = validateUrl(rawTarget);
+          const error = validateUrl(binding.params.target);
           if (error) {
             issues.push({
               code: "custom",
               message: error,
               path: ["ui", "elements", id, "on", event, "params", "target"],
             });
-          } else if (
-            documentUrlParsed !== undefined &&
-            binding.action === "submit"
-          ) {
-            try {
-              const targetUrl = new URL(rawTarget);
-              if (!sameOriginAndPath(documentUrlParsed, targetUrl)) {
-                issues.push({
-                  code: "custom",
-                  message: `submit target must match snap document origin and pathname (got "${rawTarget}", expected pathname "${documentUrlParsed.pathname}" on origin "${documentUrlParsed.origin}")`,
-                  path: ["ui", "elements", id, "on", event, "params", "target"],
-                });
-              }
-            } catch {
-              // validateUrl passed — absolute URL expected
-            }
           }
         }
       }
@@ -247,10 +201,7 @@ function validateUrls(
  * This validates the snap envelope (version, theme, effects, spec shape)
  * and enforces structural limits (element count, children, depth) and URL validation.
  */
-export function validateSnapResponse(
-  json: unknown,
-  options: ValidateSnapResponseOptions = {},
-): ValidationResult {
+export function validateSnapResponse(json: unknown): ValidationResult {
   const parsed = snapResponseSchema.safeParse(json);
   if (!parsed.success) {
     return {
@@ -282,7 +233,7 @@ export function validateSnapResponse(
       return { valid: false, issues: structuralIssues };
     }
 
-    const urlIssues = validateUrls(ui.elements, options.snapDocumentUrl);
+    const urlIssues = validateUrls(ui.elements);
     if (urlIssues.length > 0) {
       return { valid: false, issues: urlIssues };
     }

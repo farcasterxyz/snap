@@ -77,8 +77,6 @@ See [Actions](/snap/actions) for parameters and examples for each type.
 For `submit`, `open_url`, and `open_mini_app`, `params.target` is an HTTPS URL in
 production.
 
-For `submit`, `params.target` MUST resolve to the **same origin and pathname** as the snap document URL (query string may differ). Omitting `params.target` is allowed and typically defaults to the snap document URL.
-
 For local development, `http://` is valid only when the host is loopback: `localhost`,
 `127.0.0.1`, or IPv6 loopback (`[::1]` / `::1`).
 
@@ -97,9 +95,9 @@ the current page and includes them in the POST body under `inputs`.
 
 Field components without a user interaction are included with their default values.
 
-Each `submit` button POSTs to the snap document URL (same origin + pathname). **Distinguish intents with `inputs`**, not with different paths: give fields distinct names or values (for example a hidden `input` with `name: "_action"` whose default differs per row, or separate named fields the user edits). On the server, read `action.inputs._action` (or your chosen field) to dispatch.
-
-Example: two buttons, same `params.target`, different intents via inputs on the page (conceptual — your layout may use a hidden field, toggles, or other components):
+Each `submit` button specifies a **target URL**; the client POSTs to that URL, so
+multiple buttons are distinguished by different targets (for example `?action=save` vs
+`?action=cancel`), not by a separate index field.
 
 ```json
 {

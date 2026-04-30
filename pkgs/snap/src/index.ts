@@ -45,8 +45,4 @@ export {
   type SnapPayload,
   type SnapGetPayload,
 } from "./schemas";
-export {
-  validateSnapResponse,
-  type ValidationResult,
-  type ValidateSnapResponseOptions,
-} from "./validator";
+export { validateSnapResponse, type ValidationResult } from "./validator";

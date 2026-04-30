@@ -366,62 +366,6 @@ describe("URL validation", () => {
     });
   });
 
-  it("with snapDocumentUrl, rejects submit target on different pathname", () => {
-    const snap = {
-      version: "2.0" as const,
-      ui: {
-        root: "page",
-        elements: {
-          page: { type: "stack", children: ["btn"] },
-          btn: {
-            type: "button",
-            props: { label: "Go" },
-            on: {
-              press: {
-                action: "submit",
-                params: { target: "https://example.com/other" },
-              },
-            },
-          },
-        },
-      },
-    };
-    const result = validateSnapResponse(snap, {
-      snapDocumentUrl: "https://example.com/api",
-    });
-    expect(result.valid).toBe(false);
-    expect(result.issues[0]?.message).toContain("pathname");
-  });
-
-  it("with snapDocumentUrl, accepts submit target with same origin and pathname (query ignored)", () => {
-    const snap = {
-      version: "2.0" as const,
-      ui: {
-        root: "page",
-        elements: {
-          page: { type: "stack", children: ["btn"] },
-          btn: {
-            type: "button",
-            props: { label: "Go" },
-            on: {
-              press: {
-                action: "submit",
-                params: {
-                  target: "https://example.com/api?foo=1",
-                },
-              },
-            },
-          },
-        },
-      },
-    };
-    const result = validateSnapResponse(snap, {
-      snapDocumentUrl: "https://example.com/api",
-    });
-    expect(result.valid).toBe(true);
-    expect(result.issues).toHaveLength(0);
-  });
-
   it("accepts localhost HTTP action target for dev", () => {
     expectValid({
       version: "2.0",
