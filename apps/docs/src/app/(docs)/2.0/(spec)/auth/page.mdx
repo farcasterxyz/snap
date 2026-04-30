@@ -7,7 +7,7 @@ Every POST request from the client to a snap server MUST be authenticated with
 GET requests MAY include viewer identity when the client sends an optional
 `X-Snap-Payload` header (see [Authenticated GETs](#authenticated-gets)). Authentication
 on GET is optional and best-effort: servers SHOULD fall back to an anonymous first load
-when the header is absent or invalid.
+when the header is absent.
 
 ## How It Works
 
