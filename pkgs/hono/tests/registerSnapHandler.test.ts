@@ -55,6 +55,20 @@ function jfsPostBody(audience = "http://localhost") {
   });
 }
 
+function jfsPostBodyCompact(audience = "http://localhost") {
+  const payload: SnapPayload = {
+    fid: 1,
+    inputs: {},
+    timestamp: Math.floor(Date.now() / 1000),
+    audience,
+    user: { fid: 1 },
+    surface: { type: "standalone" },
+  };
+  const header = "dev";
+  const sig = "dev";
+  return `${header}.${encodePayload(payload)}.${sig}`;
+}
+
 describe("registerSnapHandler content type", () => {
   it("GET with snap Accept header returns snap content type", async () => {
     const app = new Hono();
@@ -114,6 +128,22 @@ describe("registerSnapHandler content type", () => {
     expect(res.headers.get("Link")).toBe(
       buildSnapAlternateLinkHeader("/", [MEDIA_TYPE, "text/html"]),
     );
+  });
+
+  it("POST with JFS compact string body succeeds when skipJFSVerification is true", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      skipJFSVerification: true,
+    });
+
+    const res = await app.request("/", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: jfsPostBodyCompact(),
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe(SNAP_CONTENT_TYPE);
   });
 
   it("POST with bare JSON body returns 400 when skipping JFS verification", async () => {

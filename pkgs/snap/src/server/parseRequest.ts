@@ -4,7 +4,7 @@ import {
   payloadSchema,
   type SnapAction,
 } from "../schemas";
-import { decodePayload, verifyJFSRequestBody } from "./verify";
+import { decodePayload, parseJfs, verifyJFS } from "./verify";
 import { z } from "zod";
 
 const DEFAULT_SNAP_POST_MAX_SKEW_SECONDS = 300 as const;
@@ -62,16 +62,10 @@ export type ParseRequestResult =
   | { success: true; action: SnapAction }
   | { success: false; error: ParseRequestError };
 
-const requestBodySchema = z.object({
-  header: z.string(),
-  payload: z.string(),
-  signature: z.string(),
-});
-
 /**
  * Parse and validate Farcaster snap requests:
  * - `GET` is allowed for first-page loads and returns `{ type: "get" }`.
- * - `POST`: the body must be JSON in JFS form (`header` / `payload` / `signature`) even if JFS verification is skipped.
+ * - `POST`: the body must be a JFS envelope — either JSON `{ header, payload, signature }` or the same **compact** string form (`BASE64URL(header).BASE64URL(payload).BASE64URL(signature)`), even if JFS verification is skipped.
  */
 export async function parseRequest(
   request: Request,
@@ -97,32 +91,16 @@ export async function parseRequest(
   const maxSkew = options.maxSkewSeconds ?? DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
   const nowSec = Math.floor(Date.now() / 1000);
 
-  const text = await request.text();
-
-  let jsonBody: unknown;
-  try {
-    jsonBody = JSON.parse(text);
-  } catch {
+  const parseJfsResult = parseJfs(await request.text());
+  if (!parseJfsResult.ok) {
     return {
       success: false,
-      error: {
-        type: "invalid_json",
-        message: "request body is not valid JSON",
-      },
+      error: { type: "invalid_json", message: parseJfsResult.error },
     };
   }
+  const jfs = parseJfsResult.jfs;
 
-  const parsed = requestBodySchema.safeParse(jsonBody);
-  if (!parsed.success) {
-    return {
-      success: false,
-      error: { type: "invalid_json", message: parsed.error.message },
-    };
-  }
-
-  const payloadParsed = payloadSchema.safeParse(
-    decodePayload(parsed.data.payload),
-  );
+  const payloadParsed = payloadSchema.safeParse(decodePayload(jfs.payload));
   if (!payloadParsed.success) {
     return {
       success: false,
@@ -133,19 +111,19 @@ export async function parseRequest(
   const body = payloadParsed.data;
 
   if (!options.skipJFSVerification) {
-    const jfs = await verifyJFSRequestBody(parsed.data);
-    if (!jfs.valid) {
+    const verifiedJfs = await verifyJFS(jfs);
+    if (!verifiedJfs.valid) {
       return {
         success: false,
-        error: { type: "signature", message: jfs.error.message },
+        error: { type: "signature", message: verifiedJfs.error.message },
       };
     }
-    if (jfs.signingUserFid !== body.user.fid) {
+    if (verifiedJfs.signingUserFid !== body.user.fid) {
       return {
         success: false,
         error: {
           type: "fid_mismatch",
-          message: `JFS header fid "${jfs.signingUserFid}" does not match user.fid "${body.user.fid}"`,
+          message: `JFS header fid "${verifiedJfs.signingUserFid}" does not match user.fid "${body.user.fid}"`,
         },
       };
     }
