@@ -187,13 +187,16 @@ export function registerSnapHandler(
       requestOrigin: snapOriginFromRequest(c.req.raw),
     });
 
-    const action =
-      parsed.success && parsed.action.type === "get"
-        ? parsed.action
-        : { type: "get" as const };
+    if (!parsed.success) {
+      const msg =
+        "message" in parsed.error
+          ? parsed.error.message
+          : "invalid X-Snap-Payload";
+      return c.json({ error: msg }, 400);
+    }
 
     const response = await snapFn({
-      action,
+      action: parsed.action,
       request: c.req.raw,
     });
 

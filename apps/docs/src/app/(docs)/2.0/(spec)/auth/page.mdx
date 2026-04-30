@@ -85,8 +85,9 @@ top-level `fid`: `timestamp`, `audience`, `user`, and `surface`. From official c
 
 - GET authentication is **optional**. Snaps that do not send `X-Snap-Payload` behave as
   today (anonymous `{ type: "get" }`).
-- Servers SHOULD treat a present but malformed, expired, or invalid signature as
-  **anonymous GET** rather than failing the page load for honest users.
+- Servers MUST reject a present but malformed, expired, or invalid `X-Snap-Payload`
+  with a 4xx response (anonymous fallback is only for the **absent** case). Failing
+  fast surfaces client bugs and forgery attempts instead of masking them as anonymous.
 - When a response depends on `action.user` (or other viewer-specific data), the server
   SHOULD send `Cache-Control: private` or a short `max-age` together with
   `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between
