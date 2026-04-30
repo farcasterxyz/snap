@@ -4,6 +4,9 @@ Every POST request from the client to a snap server MUST be authenticated with
 [JSON Farcaster Signatures](https://github.com/farcasterxyz/protocol/discussions/208)
 (JFS).
 
+GET requests MAY include viewer identity when the client sends an optional
+`X-Snap-Payload` header (see [Authenticated GETs](#authenticated-gets)). Authentication on GET is optional and best-effort: servers SHOULD fall back to an anonymous first load when the header is absent or invalid.
+
 ## How It Works
 
 When a user taps a `post` button, the Farcaster client:
@@ -63,6 +66,20 @@ minutes).
 
 If strict replay protection is needed beyond that, clients should add a `nonce` field
 (unique per request) to the signed payload.
+
+## Authenticated GETs
+
+Official clients MAY attach a JFS compact string to snap document GET requests using the `X-Snap-Payload` request header. The value uses the same dot-separated form as POST bodies:
+
+```
+BASE64URL(header).BASE64URL(payload).BASE64URL(signature)
+```
+
+The decoded JSON payload matches the POST shape **without** `inputs` or deprecated top-level `fid`: `timestamp`, `audience`, `user`, and `surface`. From official clients, `surface` on GET is typically `{ "type": "standalone" }`.
+
+- GET authentication is **optional**. Snaps that do not send `X-Snap-Payload` behave as today (anonymous `{ type: "get" }`).
+- Servers SHOULD treat a present but malformed, expired, or invalid signature as **anonymous GET** rather than failing the page load for honest users.
+- When a response depends on `action.user` (or other viewer-specific data), the server SHOULD send `Cache-Control: private` or a short `max-age` together with `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between viewers. See [HTTP Headers](/http-headers).
 
 ## Requirements
 
@@ -134,9 +151,10 @@ import { registerSnapHandler } from "@farcaster/snap-hono";
 registerSnapHandler(
   app,
   async (ctx) => {
-    // ctx.action.fid is verified — the JFS signature was checked
+    // On POST: ctx.action.user.fid is verified — the JFS signature was checked
     // ctx.action.inputs contains the user's input values
-    // Distinguish buttons via distinct submit target URLs on each button (ctx.request.url)
+    // On GET: if (ctx.action.user) { … } for optional viewer-aware first loads (X-Snap-Payload)
+    // Distinguish submit buttons via input values (e.g. hidden field _action), not different paths — see Snap identity in [Spec overview](/snap/spec-overview)
   },
   {
     skipJFSVerification: false, // set to `true` for local dev

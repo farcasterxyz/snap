@@ -3,6 +3,7 @@ import {
   type SnapHandlerResult,
   validateSnapResponse,
   snapResponseSchema,
+  SNAP_PAYLOAD_HEADER,
 } from "@farcaster/snap";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 
@@ -43,13 +44,10 @@ export function payloadToResponse(
 }
 
 function errorResponse(error: string, issues: unknown[]): Response {
-  return new Response(
-    JSON.stringify({ error, issues }),
-    {
-      status: 400,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-    },
-  );
+  return new Response(JSON.stringify({ error, issues }), {
+    status: 400,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
 }
 
 export function snapHeaders(
@@ -59,7 +57,7 @@ export function snapHeaders(
 ) {
   return {
     "Content-Type": `${currentMediaType}; charset=utf-8`,
-    Vary: "Accept",
+    Vary: `Accept, ${SNAP_PAYLOAD_HEADER}`,
     Link: buildSnapAlternateLinkHeader(resourcePath, availableMediaTypes),
   };
 }

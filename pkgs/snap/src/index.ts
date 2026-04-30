@@ -8,6 +8,7 @@ export {
   SPEC_VERSION_2,
   SUPPORTED_SPEC_VERSIONS,
   type SpecVersion,
+  SNAP_PAYLOAD_HEADER,
   MEDIA_TYPE,
   EFFECT_VALUES,
   POST_GRID_TAP_KEY,
@@ -32,7 +33,9 @@ export {
   ACTION_TYPE_POST,
   snapResponseSchema,
   payloadSchema,
+  getPayloadSchema,
   type SnapAction,
+  type SnapGetAction,
   type SnapContext,
   type SnapResponse,
   type SnapHandlerResult,
@@ -40,5 +43,10 @@ export {
   type SnapSpecInput,
   type SnapFunction,
   type SnapPayload,
+  type SnapGetPayload,
 } from "./schemas";
-export { validateSnapResponse, type ValidationResult } from "./validator";
+export {
+  validateSnapResponse,
+  type ValidationResult,
+  type ValidateSnapResponseOptions,
+} from "./validator";

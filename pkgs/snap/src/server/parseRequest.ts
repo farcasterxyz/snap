@@ -1,11 +1,15 @@
+import { z } from "zod";
 import {
   ACTION_TYPE_GET,
   ACTION_TYPE_POST,
+  getPayloadSchema,
   payloadSchema,
   type SnapAction,
+  type SnapPayload,
+  type SnapGetPayload,
 } from "../schemas";
 import { decodePayload, parseJfs, verifyJFS } from "./verify";
-import { z } from "zod";
+import { SNAP_PAYLOAD_HEADER } from "../constants";
 
 const DEFAULT_SNAP_POST_MAX_SKEW_SECONDS = 300 as const;
 
@@ -64,74 +68,154 @@ export type ParseRequestResult =
 
 /**
  * Parse and validate Farcaster snap requests:
- * - `GET` is allowed for first-page loads and returns `{ type: "get" }`.
- * - `POST`: the body must be a JFS envelope — either JSON `{ header, payload, signature }` or the same **compact** string form (`BASE64URL(header).BASE64URL(payload).BASE64URL(signature)`), even if JFS verification is skipped.
+ * - `GET`: returns `{ type: "get" }`, or optional viewer fields when `X-Snap-Payload`
+ *   carries a JFS compact string whose decoded payload validates against {@link getPayloadSchema}.
+ * - `POST`: the body must be a JFS envelope — either JSON `{ header, payload, signature }` or the same **compact** string form as GET (`BASE64URL(header).BASE64URL(payload).BASE64URL(signature)`), even if JFS verification is skipped.
  */
 export async function parseRequest(
   request: Request,
   options: ParseRequestOptions = {},
 ): Promise<ParseRequestResult> {
-  if (!["GET", "POST"].includes(request.method)) {
+  if (request.method === "GET") {
+    return await parseGetRequest(request, options);
+  }
+  if (request.method === "POST") {
+    return await parsePostRequest(request, options);
+  }
+  return {
+    success: false,
+    error: {
+      type: "method_not_allowed",
+      message: `expected GET or POST, received ${request.method}`,
+    },
+  };
+}
+
+async function parseGetRequest(
+  request: Request,
+  options: ParseRequestOptions,
+): Promise<ParseRequestResult> {
+  const compactHeader = request.headers.get(SNAP_PAYLOAD_HEADER)?.trim();
+  if (!compactHeader) {
+    return { success: true, action: { type: ACTION_TYPE_GET } };
+  }
+
+  const result = await validateJfsPayload({
+    jfsText: compactHeader,
+    schema: getPayloadSchema,
+    request,
+    options,
+    invalidJsonMessage: `${SNAP_PAYLOAD_HEADER} must be a valid JFS compact string`,
+  });
+  if (!result.ok) {
+    return { success: false, error: result.error };
+  }
+
+  return {
+    success: true,
+    action: { type: ACTION_TYPE_GET, ...result.payload },
+  };
+}
+
+async function parsePostRequest(
+  request: Request,
+  options: ParseRequestOptions,
+): Promise<ParseRequestResult> {
+  const result = await validateJfsPayload({
+    jfsText: await request.text(),
+    schema: payloadSchema,
+    request,
+    options,
+  });
+  if (!result.ok) {
+    return { success: false, error: result.error };
+  }
+
+  const payload = result.payload;
+  if (payload.fid !== undefined && payload.fid !== payload.user.fid) {
     return {
       success: false,
       error: {
-        type: "method_not_allowed",
-        message: `expected POST, received ${request.method}`,
+        type: "fid_mismatch",
+        message: `fid "${payload.fid}" does not match user.fid "${payload.user.fid}"`,
       },
     };
   }
 
-  if (request.method === "GET") {
+  return {
+    success: true,
+    action: { type: ACTION_TYPE_POST, ...payload },
+  };
+}
+
+/**
+ * Shared pipeline for authenticated snap requests: parse the JFS envelope,
+ * decode and schema-validate the payload, optionally verify the JFS signature
+ * against an active hub signer (matching `user.fid`), then check timestamp
+ * skew and that `audience` matches the request origin.
+ *
+ * Both GET (payload header) and POST (request body) feed into this.
+ */
+async function validateJfsPayload<T extends SnapPayload | SnapGetPayload>({
+  jfsText,
+  schema,
+  request,
+  options,
+  invalidJsonMessage,
+}: {
+  jfsText: string;
+  schema: z.ZodType<T>;
+  request: Request;
+  options: ParseRequestOptions;
+  invalidJsonMessage?: string;
+}): Promise<
+  { ok: true; payload: T } | { ok: false; error: ParseRequestError }
+> {
+  const parsed = parseJfs(jfsText);
+  if (!parsed.ok) {
     return {
-      success: true,
-      action: { type: ACTION_TYPE_GET },
+      ok: false,
+      error: {
+        type: "invalid_json",
+        message: invalidJsonMessage ?? parsed.error,
+      },
     };
   }
+  const jfs = parsed.jfs;
 
-  const maxSkew = options.maxSkewSeconds ?? DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
-  const nowSec = Math.floor(Date.now() / 1000);
-
-  const parseJfsResult = parseJfs(await request.text());
-  if (!parseJfsResult.ok) {
-    return {
-      success: false,
-      error: { type: "invalid_json", message: parseJfsResult.error },
-    };
-  }
-  const jfs = parseJfsResult.jfs;
-
-  const payloadParsed = payloadSchema.safeParse(decodePayload(jfs.payload));
+  const payloadParsed = schema.safeParse(decodePayload(jfs.payload));
   if (!payloadParsed.success) {
     return {
-      success: false,
+      ok: false,
       error: { type: "validation", issues: payloadParsed.error.issues },
     };
   }
-
-  const body = payloadParsed.data;
+  const payload = payloadParsed.data;
 
   if (!options.skipJFSVerification) {
-    const verifiedJfs = await verifyJFS(jfs);
-    if (!verifiedJfs.valid) {
+    const verified = await verifyJFS(jfs);
+    if (!verified.valid) {
       return {
-        success: false,
-        error: { type: "signature", message: verifiedJfs.error.message },
+        ok: false,
+        error: { type: "signature", message: verified.error.message },
       };
     }
-    if (verifiedJfs.signingUserFid !== body.user.fid) {
+    if (verified.signingUserFid !== payload.user.fid) {
       return {
-        success: false,
+        ok: false,
         error: {
           type: "fid_mismatch",
-          message: `JFS header fid "${verifiedJfs.signingUserFid}" does not match user.fid "${body.user.fid}"`,
+          message: `JFS header fid "${verified.signingUserFid}" does not match user.fid "${payload.user.fid}"`,
         },
       };
     }
   }
 
-  if (Math.abs(nowSec - body.timestamp) > maxSkew) {
+  const maxSkew = options.maxSkewSeconds ?? DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
+  const nowSec = Math.floor(Date.now() / 1000);
+  if (Math.abs(nowSec - payload.timestamp) > maxSkew) {
     return {
-      success: false,
+      ok: false,
       error: {
         type: "replay",
         message: `timestamp outside allowed skew of ${maxSkew}s`,
@@ -154,31 +238,15 @@ export async function parseRequest(
     }
   }
 
-  if (expectedOrigin !== undefined && body.audience !== expectedOrigin) {
+  if (expectedOrigin !== undefined && payload.audience !== expectedOrigin) {
     return {
-      success: false,
+      ok: false,
       error: {
         type: "origin_mismatch",
-        message: `payload audience "${body.audience}" does not match expected origin "${expectedOrigin}"`,
+        message: `payload audience "${payload.audience}" does not match expected origin "${expectedOrigin}"`,
       },
     };
   }
 
-  if (body.fid !== undefined && body.fid !== body.user.fid) {
-    return {
-      success: false,
-      error: {
-        type: "fid_mismatch",
-        message: `fid "${body.fid}" does not match user.fid "${body.user.fid}"`,
-      },
-    };
-  }
-
-  return {
-    success: true,
-    action: {
-      type: ACTION_TYPE_POST,
-      ...body,
-    },
-  };
+  return { ok: true, payload };
 }
