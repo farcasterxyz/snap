@@ -191,7 +191,7 @@ export function registerSnapHandler(
       const msg =
         "message" in parsed.error
           ? parsed.error.message
-          : "invalid X-Snap-Payload";
+          : "failed to parse request";
       return c.json({ error: msg }, 400);
     }
 
