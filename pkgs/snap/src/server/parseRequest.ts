@@ -4,11 +4,7 @@ import {
   payloadSchema,
   type SnapAction,
 } from "../schemas";
-import {
-  decodePayload,
-  parsePostJfsEnvelope,
-  verifyJFSRequestBody,
-} from "./verify";
+import { decodePayload, parseJfs, verifyJFS } from "./verify";
 import { z } from "zod";
 
 const DEFAULT_SNAP_POST_MAX_SKEW_SECONDS = 300 as const;
@@ -95,18 +91,16 @@ export async function parseRequest(
   const maxSkew = options.maxSkewSeconds ?? DEFAULT_SNAP_POST_MAX_SKEW_SECONDS;
   const nowSec = Math.floor(Date.now() / 1000);
 
-  const text = await request.text();
-
-  const envelopeResult = parsePostJfsEnvelope(text);
-  if (!envelopeResult.ok) {
+  const parseJfsResult = parseJfs(await request.text());
+  if (!parseJfsResult.ok) {
     return {
       success: false,
-      error: { type: "invalid_json", message: envelopeResult.error.message },
+      error: { type: "invalid_json", message: parseJfsResult.error },
     };
   }
-  const parsed = envelopeResult.envelope;
+  const jfs = parseJfsResult.jfs;
 
-  const payloadParsed = payloadSchema.safeParse(decodePayload(parsed.payload));
+  const payloadParsed = payloadSchema.safeParse(decodePayload(jfs.payload));
   if (!payloadParsed.success) {
     return {
       success: false,
@@ -117,19 +111,19 @@ export async function parseRequest(
   const body = payloadParsed.data;
 
   if (!options.skipJFSVerification) {
-    const jfs = await verifyJFSRequestBody(parsed);
-    if (!jfs.valid) {
+    const verifiedJfs = await verifyJFS(jfs);
+    if (!verifiedJfs.valid) {
       return {
         success: false,
-        error: { type: "signature", message: jfs.error.message },
+        error: { type: "signature", message: verifiedJfs.error.message },
       };
     }
-    if (jfs.signingUserFid !== body.user.fid) {
+    if (verifiedJfs.signingUserFid !== body.user.fid) {
       return {
         success: false,
         error: {
           type: "fid_mismatch",
-          message: `JFS header fid "${jfs.signingUserFid}" does not match user.fid "${body.user.fid}"`,
+          message: `JFS header fid "${verifiedJfs.signingUserFid}" does not match user.fid "${body.user.fid}"`,
         },
       };
     }

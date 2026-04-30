@@ -70,6 +70,7 @@ Opt-in data persistence lives in `@farcaster/snap-turso`:
 
 Snap POST authentication uses `verifyJFSRequestBody` from `@farcaster/snap/server` as the single verification path; legacy header/signing verification flows were removed.
 
+- POST bodies must be a JFS envelope — either JSON `{ header, payload, signature }` or the same compact dot-separated string form (`BASE64URL(header).BASE64URL(payload).BASE64URL(signature)`); both are accepted by `parseRequest` and `registerSnapHandler`
 - Hub/Node-dependent code lives under `pkgs/snap/src/server/`
 - The main `@farcaster/snap` entry does not depend on `@farcaster/hub-nodejs` (safe for browser bundles that only need schemas/validation)
 - `@farcaster/snap-hono` uses an internal `payloadToResponse` helper when building `Response`s from `registerSnapHandler`; it is not part of the package's public exports

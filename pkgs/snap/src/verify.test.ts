@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { verifyJFSRequestBody } from "./server/verify";
+import { verifyJFS } from "./server/verify";
 
 const validRequestBody = `{
   "header":"eyJmaWQiOjI2MTMxOSwidHlwZSI6ImFwcF9rZXkiLCJrZXkiOiIweGY0ZGQyNjczYTUzMjEwYzQ3ZGYzZjFmNTk0NjZlZTdhMTM3ZmQxOGQ5NTVjMmU2OGExMmQwOTE2MGE2NmMyMTUifQ",
@@ -11,7 +11,7 @@ const validRequestBody = `{
 const HUB_SIGNER_KEY_HEX =
   "f4dd2673a53210c47df3f1f59466ee7a137fd18d955c2e68a12d09160a66c215";
 
-describe("verifyJFSRequestBody", () => {
+describe("verifyJFS", () => {
   beforeEach(() => {
     vi.stubGlobal(
       "fetch",
@@ -53,7 +53,7 @@ describe("verifyJFSRequestBody", () => {
   });
 
   it("accepts JSON JFS body and verifies crypto + hub signer list", async () => {
-    const result = await verifyJFSRequestBody(JSON.parse(validRequestBody));
+    const result = await verifyJFS(JSON.parse(validRequestBody));
     expect(result.valid).toBe(true);
     if (result.valid) {
       expect(result.data).toEqual({
