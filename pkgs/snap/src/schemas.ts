@@ -104,15 +104,16 @@ const surfaceSchema = z.discriminatedUnion("type", [
   standaloneSurfaceSchema,
 ]);
 
+const fidSchema = z.number().int().nonnegative();
+const userSchema = z.object({ fid: fidSchema });
+
 export const payloadSchema = z
   .object({
-    fid: z.number().int().nonnegative().optional(), // deprecated in favor of user.fid
+    fid: fidSchema.optional(), // deprecated in favor of user.fid
     inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
     audience: z.string(),
-    user: z.object({
-      fid: z.number().int().nonnegative(),
-    }),
+    user: userSchema,
     surface: surfaceSchema,
   })
   .strip();
@@ -129,7 +130,7 @@ export const ACTION_TYPE_POST = "post" as const;
 
 const snapGetActionSchema = z.object({
   type: z.literal(ACTION_TYPE_GET),
-  user: z.object({ fid: z.number().int().nonnegative() }).optional(),
+  user: userSchema.optional(),
   timestamp: z.number().int().optional(),
   audience: z.string().optional(),
   surface: surfaceSchema.optional(),
