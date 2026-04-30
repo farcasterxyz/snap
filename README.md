@@ -1,6 +1,6 @@
 # Farcaster Snaps 🫰
 
-Snaps are Snaps are simple, nimble apps embedded in [Farcaster](https://farcaster.xyz) casts.
+Snaps are simple, nimble apps embedded in [Farcaster](https://farcaster.xyz) casts.
 
 This is the monorepo for the core packages, docs site, emulator, template, and examples.
 
