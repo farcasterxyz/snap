@@ -1,9 +1,11 @@
 import {
-  compact,
   decode,
   decodePayload as jfsDecodePayload,
   encodePayload as jfsEncodePayload,
+  toJsonFarcasterSignature,
   verify,
+  type DecodedJsonFarcasterSignature,
+  type JsonFarcasterSignature,
 } from "@farcaster/jfs";
 import { hexToBytes, type Hex } from "viem";
 import {
@@ -11,15 +13,89 @@ import {
   getActiveEd25519SignerKeysFromHubHttp,
 } from "./hubs";
 
-export async function verifyJFSRequestBody<TPayload>(
-  requestBody: {
-    header: string;
-    payload: string;
-    signature: string;
-  },
-  options: {
-    hubHttpBaseUrl?: string;
-  } = {},
+/** Wire format for a JFS request (same as {@link JsonFarcasterSignature}). */
+export type JfsRequestEnvelope = JsonFarcasterSignature;
+
+/**
+ * Normalize a compact JFS string to `{ header, payload, signature }` using
+ * `@farcaster/jfs` {@link toJsonFarcasterSignature} (which delegates to `uncompact` for strings).
+ * Returns null if the string is malformed.
+ */
+export function tryUncompactJfsString(value: string): JfsRequestEnvelope | null {
+  try {
+    return toJsonFarcasterSignature(value.trim());
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fully decode a JFS envelope or compact string via `@farcaster/jfs` {@link decode}:
+ * parsed header object, parsed payload, signature bytes.
+ */
+export function tryDecodeJfs<TPayload>(
+  input: JsonFarcasterSignature | string,
+): DecodedJsonFarcasterSignature<TPayload> | null {
+  try {
+    return decode<TPayload>(input);
+  } catch {
+    return null;
+  }
+}
+
+function isJfsEnvelopeJson(v: unknown): v is JfsRequestEnvelope {
+  if (v === null || typeof v !== "object") return false;
+  const o = v as Record<string, unknown>;
+  return (
+    typeof o.header === "string" &&
+    typeof o.payload === "string" &&
+    typeof o.signature === "string"
+  );
+}
+
+export type ParsePostJfsEnvelopeError = {
+  message: string;
+};
+
+/**
+ * Parse a POST body as a JFS envelope: JSON `{ header, payload, signature }`, or the same
+ * compact string form (see {@link toJsonFarcasterSignature} / `uncompact`).
+ */
+export function parsePostJfsEnvelope(
+  text: string,
+):
+  | { ok: true; envelope: JfsRequestEnvelope }
+  | { ok: false; error: ParsePostJfsEnvelopeError } {
+  const trimmed = text.trim();
+
+  let jsonBody: unknown;
+  try {
+    jsonBody = JSON.parse(trimmed);
+  } catch {
+    jsonBody = undefined;
+  }
+
+  if (jsonBody !== undefined && isJfsEnvelopeJson(jsonBody)) {
+    return { ok: true, envelope: jsonBody };
+  }
+
+  const compactEnvelope = tryUncompactJfsString(trimmed);
+  if (compactEnvelope) {
+    return { ok: true, envelope: compactEnvelope };
+  }
+
+  return {
+    ok: false,
+    error: {
+      message:
+        "POST body must be JSON with header, payload, and signature fields, or a JFS compact string (three dot-separated segments)",
+    },
+  };
+}
+
+async function hubVerifyDecodedPayload<TPayload>(
+  decoded: DecodedJsonFarcasterSignature<TPayload>,
+  options: { hubHttpBaseUrl?: string },
 ): Promise<
   | {
       valid: false;
@@ -27,43 +103,10 @@ export async function verifyJFSRequestBody<TPayload>(
     }
   | {
       valid: true;
-      signingUserFid: number; // the FID of the user who signed the request
+      signingUserFid: number;
       data: TPayload;
     }
 > {
-  let compactJfs: string;
-  try {
-    compactJfs = compact({
-      header: requestBody.header,
-      payload: requestBody.payload,
-      signature: requestBody.signature,
-    });
-  } catch (error) {
-    return {
-      valid: false,
-      error: error instanceof Error ? error : new Error(String(error)),
-    };
-  }
-
-  let decoded: ReturnType<typeof decode<TPayload>>;
-  try {
-    decoded = decode<TPayload>(compactJfs);
-  } catch (error) {
-    return {
-      valid: false,
-      error: error instanceof Error ? error : new Error(String(error)),
-    };
-  }
-
-  try {
-    await verify({ data: compactJfs, strict: true, keyTypes: ["app_key"] });
-  } catch (error) {
-    return {
-      valid: false,
-      error: error instanceof Error ? error : new Error(String(error)),
-    };
-  }
-
   const { header, payload } = decoded;
 
   const keys = await getActiveEd25519SignerKeysFromHubHttp(
@@ -111,6 +154,42 @@ export async function verifyJFSRequestBody<TPayload>(
     data: payload,
     signingUserFid: header.fid,
   };
+}
+
+export async function verifyJFSRequestBody<TPayload>(
+  requestBody: JsonFarcasterSignature,
+  options: {
+    hubHttpBaseUrl?: string;
+  } = {},
+): Promise<
+  | {
+      valid: false;
+      error: Error;
+    }
+  | {
+      valid: true;
+      signingUserFid: number; // the FID of the user who signed the request
+      data: TPayload;
+    }
+> {
+  const decoded = tryDecodeJfs<TPayload>(requestBody);
+  if (!decoded) {
+    return {
+      valid: false,
+      error: new Error("invalid JFS envelope"),
+    };
+  }
+
+  try {
+    await verify({ data: requestBody, strict: true, keyTypes: ["app_key"] });
+  } catch (error) {
+    return {
+      valid: false,
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
+  }
+
+  return hubVerifyDecodedPayload(decoded, options);
 }
 
 export function decodePayload<TPayload>(payload: string): TPayload {

@@ -55,6 +55,32 @@ describe("parseRequest", () => {
     });
   });
 
+  it("accepts JFS compact string POST body when skipJFSVerification is true", async () => {
+    const body = postBody();
+    const compact = `${body.header}.${body.payload}.${body.signature}`;
+    const payload = decodePayload<SnapPayload>(body.payload);
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: compact,
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res).toEqual({
+      success: true,
+      action: {
+        type: "post",
+        fid: 42,
+        inputs: { guess: "HELLO" },
+        timestamp: payload.timestamp,
+        audience: "https://example.com",
+        user: { fid: 42 },
+        surface: surfaceStandalone,
+      },
+    });
+  });
+
   it("does not accept bare JSON POST payload even when skipJFSVerification is true", async () => {
     const payload: SnapPayload = {
       fid: 42,

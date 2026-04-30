@@ -29,7 +29,8 @@ export type SnapHandlerOptions = {
   path?: string;
 
   /**
-   * When true, skip JFS signature verification only. POST bodies must still be JFS-shaped JSON.
+   * When true, skip JFS signature verification only. POST bodies must still be a JFS envelope:
+   * JSON `{ header, payload, signature }` or the same compact dot-separated string form.
    * When omitted, default to {@link envSkipJFSVerification}.
    */
   skipJFSVerification?: boolean;
@@ -59,7 +60,7 @@ export type SnapHandlerOptions = {
  * Register GET and POST snap handlers on `app` at `options.path` (default `/`).
  *
  * - GET  → calls `snapFn(ctx)` with `ctx.action.type === "get"` and returns the response.
- * - POST → parses the JFS-shaped JSON body; verifies it via {@link verifyJFSRequestBody} unless
+ * - POST → parses the JFS envelope (JSON object or compact string); verifies via {@link verifyJFSRequestBody} unless
  *          `skipJFSVerification` is true, then calls `snapFn(ctx)` with the parsed post action and returns the response.
  *
  * All parsing, schema validation, signature verification, and error responses
