@@ -176,6 +176,11 @@ function validateUrls(
     try {
       documentUrlParsed = new URL(snapDocumentUrl);
     } catch {
+      issues.push({
+        code: "custom",
+        message: `snapDocumentUrl must be a valid absolute URL (got "${snapDocumentUrl}")`,
+        path: ["snapDocumentUrl"],
+      });
       documentUrlParsed = undefined;
     }
   }
