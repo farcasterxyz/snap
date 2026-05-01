@@ -26,6 +26,7 @@ const cellGridCellSchema = z.object({
   col: z.number().int().nonnegative(),
   color: cellGridCellColorSchema.optional(),
   content: z.string().optional(),
+  value: z.string().min(1).max(30).optional(),
 });
 
 export const cellGridProps = z

@@ -1140,17 +1140,19 @@ function dataCellGridPage(base: string, inputs: Record<string, unknown>): SnapHa
   const pressedLabel = colorGrid
     ? `Last press: row ${colorGrid.split(",")[0]}, col ${colorGrid.split(",")[1]}`
     : "Press a cell to submit";
+  const dayGrid = typeof inputs.day === "string" ? inputs.day : "";
+  const dayLabel = dayGrid ? `Last press: day ${dayGrid}` : "Press a day";
   return {
     version: "2.0",
     theme: { accent: "purple" },
     ui: {
       root: "page",
-      state: { inputs: { color_grid: colorGrid } },
+      state: { inputs: { color_grid: colorGrid, day: dayGrid } },
       elements: {
         page: {
           type: "stack",
           props: {},
-          children: ["hdr", "grid-section", "multi-section", "nav"],
+          children: ["hdr", "grid-section", "value-section", "multi-section", "nav"],
         },
         hdr: {
           type: "stack",
@@ -1192,6 +1194,47 @@ function dataCellGridPage(base: string, inputs: Record<string, unknown>): SnapHa
         "grid-pressed": {
           type: "text",
           props: { content: pressedLabel, size: "sm" },
+        },
+        "value-section": {
+          type: "stack",
+          props: {},
+          children: ["sep1", "value-label", "value-grid", "value-pressed"],
+        },
+        sep1: { type: "separator", props: {} },
+        "value-label": {
+          type: "text",
+          props: { content: "Value-bearing cells (each cell sets `value`)", size: "sm" },
+        },
+        "value-grid": {
+          type: "cell_grid",
+          props: {
+            name: "day",
+            cols: 7,
+            rows: 2,
+            cells: [
+              { row: 0, col: 0, value: "1", content: "1" },
+              { row: 0, col: 1, value: "2", content: "2" },
+              { row: 0, col: 2, value: "3", content: "3" },
+              { row: 0, col: 3, value: "4", content: "4" },
+              { row: 0, col: 4, value: "5", content: "5" },
+              { row: 0, col: 5, value: "6", content: "6" },
+              { row: 0, col: 6, value: "7", content: "7" },
+              { row: 1, col: 0, value: "8", content: "8" },
+              { row: 1, col: 1, value: "9", content: "9" },
+              { row: 1, col: 2, value: "10", content: "10" },
+              { row: 1, col: 3, value: "11", content: "11" },
+              { row: 1, col: 4, value: "12", content: "12" },
+              { row: 1, col: 5, value: "13", content: "13" },
+              { row: 1, col: 6, value: "14", content: "14" },
+            ],
+          },
+          on: {
+            press: { action: "submit", params: { target: `${base}/?view=data_cell_grid` } },
+          },
+        },
+        "value-pressed": {
+          type: "text",
+          props: { content: dayLabel, size: "sm" },
         },
         "multi-section": {
           type: "stack",

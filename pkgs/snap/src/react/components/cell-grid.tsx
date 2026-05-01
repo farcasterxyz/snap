@@ -32,37 +32,49 @@ export function SnapCellGrid({
   const tapPath = `/inputs/${name}`;
   const tapRaw = get(tapPath);
 
-  // Parse selection — single mode: "row,col" string; multi mode: "row,col|row,col|..." string
-  const selectedSet = new Set<string>();
-  if (typeof tapRaw === "string" && tapRaw.length > 0) {
-    for (const part of tapRaw.split("|")) {
-      if (part.includes(",")) selectedSet.add(part);
-    }
-  }
-
-  const isSelected = (r: number, c: number) =>
-    isSelectable && selectedSet.has(`${r},${c}`);
-
-  const handleTap = (r: number, c: number) => {
-    const key = `${r},${c}`;
-    if (isMultiple) {
-      const next = new Set(selectedSet);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      set(tapPath, [...next].join("|"));
-    } else {
-      set(tapPath, key);
-    }
-    if (hasPressAction) emit("press");
-  };
-
-  const cellMap = new Map<string, { color?: string; content?: string }>();
+  const cellMap = new Map<
+    string,
+    { color?: string; content?: string; value?: string }
+  >();
   for (const c of cells) {
     cellMap.set(`${Number(c.row)},${Number(c.col)}`, {
       color: c.color as string | undefined,
       content: c.content != null ? String(c.content) : undefined,
+      value: typeof c.value === "string" ? c.value : undefined,
     });
   }
+
+  // Each cell's wire value — its `value` if set, otherwise "row,col" fallback.
+  const cellWireValue = (r: number, c: number) =>
+    cellMap.get(`${r},${c}`)?.value ?? `${r},${c}`;
+
+  // Multi mode joins values with `|`; single mode is the value itself.
+  const selectedSet = new Set<string>();
+  if (typeof tapRaw === "string" && tapRaw.length > 0) {
+    if (isMultiple) {
+      for (const part of tapRaw.split("|")) {
+        if (part.length > 0) selectedSet.add(part);
+      }
+    } else {
+      selectedSet.add(tapRaw);
+    }
+  }
+
+  const isSelected = (r: number, c: number) =>
+    isSelectable && selectedSet.has(cellWireValue(r, c));
+
+  const handleTap = (r: number, c: number) => {
+    const wire = cellWireValue(r, c);
+    if (isMultiple) {
+      const next = new Set(selectedSet);
+      if (next.has(wire)) next.delete(wire);
+      else next.add(wire);
+      set(tapPath, [...next].join("|"));
+    } else {
+      set(tapPath, wire);
+    }
+    if (hasPressAction) emit("press");
+  };
 
   /** Cells without a palette `color` — subtle fill so empty slots read as tiles. */
   const emptyCellBg =
