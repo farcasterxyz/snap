@@ -25,3 +25,17 @@ export function horizontalChildrenAreAllButtons(children: ReactNode): boolean {
 export function countRenderableChildren(children: ReactNode): number {
   return Children.toArray(children).filter(isRenderableChild).length;
 }
+
+/**
+ * Default horizontal stack gap as a t-shirt size, chosen by column count:
+ * 2 cols → lg, 3 cols → md, 4+ cols → sm. Unknown count falls back to md.
+ * Tighter gaps for denser layouts; authors can always override via the `gap` prop.
+ */
+export function defaultHorizontalGapSize(
+  columnCount: number | undefined,
+): "sm" | "md" | "lg" {
+  if (columnCount === undefined) return "md";
+  if (columnCount <= 2) return "lg";
+  if (columnCount === 3) return "md";
+  return "sm";
+}

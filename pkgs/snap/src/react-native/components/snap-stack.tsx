@@ -3,6 +3,7 @@ import { Children, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   countRenderableChildren,
+  defaultHorizontalGapSize,
   horizontalChildrenAreAllButtons,
 } from "../../stack-horizontal-utils.js";
 import {
@@ -21,7 +22,7 @@ const HGAP: Record<string, number> = {
   none: 0,
   sm: 4,
   md: 8,
-  lg: 12,
+  lg: 16,
 };
 
 const JUSTIFY: Record<string, "flex-start" | "center" | "flex-end" | "space-between" | "space-around"> = {
@@ -53,12 +54,6 @@ export function SnapStack({
   const rawGap = props.gap;
   const isHorizontal = direction === "horizontal";
   const gapMap = isHorizontal ? HGAP : VGAP;
-  const gap =
-    typeof rawGap === "number"
-      ? rawGap
-      : typeof rawGap === "string" && rawGap in gapMap
-        ? gapMap[rawGap]!
-        : isHorizontal ? HGAP.md! : VGAP.md!;
   const buttonRowGrid =
     isHorizontal && horizontalChildrenAreAllButtons(children);
   const buttonRowCount = buttonRowGrid
@@ -73,6 +68,23 @@ export function SnapStack({
     Number.isInteger(columnsRaw)
       ? columnsRaw
       : undefined;
+
+  // Horizontal default depends on column count: 2→lg, 3→md, 4+→sm. Vertical stays md.
+  // Count comes from explicit `columns`, then button-row inference, else direct children
+  // count (any horizontal stack is N columns wide regardless of child types).
+  const horizontalColumnCount = isHorizontal
+    ? (columns ??
+       (buttonRowGrid ? buttonRowCount : undefined) ??
+       countRenderableChildren(children))
+    : undefined;
+  const gap =
+    typeof rawGap === "number"
+      ? rawGap
+      : typeof rawGap === "string" && rawGap in gapMap
+        ? gapMap[rawGap]!
+        : isHorizontal
+          ? gapMap[defaultHorizontalGapSize(horizontalColumnCount)]!
+          : VGAP.md!;
   const explicitColumnGrid =
     isHorizontal && columns !== undefined && !buttonRowGrid;
 

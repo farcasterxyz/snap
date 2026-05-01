@@ -105,8 +105,9 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 
 **stack** — Layout container.
 - `direction` (optional): `"vertical"` | `"horizontal"`. Default: `"vertical"`
-- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Default: `"md"`
+- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Vertical px: 0/8/16/24. Horizontal px: 0/4/8/16 (tighter, since children sit side-by-side). Default for vertical: `"md"`. Default for horizontal is column-aware: 2 cols → `"lg"` (16px), 3 cols → `"md"` (8px), 4+ cols → `"sm"` (4px), unknown → `"md"` (8px). An explicit value always wins — override the default when you have a deliberate visual reason (e.g. tighter toolbar, extra breathing room around a hero row).
 - `justify` (optional): `"start"` | `"center"` | `"end"` | `"between"` | `"around"`
+- `columns` (optional, horizontal only): `2`–`6` — CSS grid with equal columns (mixed children or layout that needs fixed column counts).
 - Children are element IDs
 
 **item_group** — Groups item children.

@@ -106,6 +106,19 @@ Design guidance:
   `"row,col"`); OR set `select: "single"` / `"multiple"` for press-to-select with a
   visual ring and pair with a separate submit `button`. Don't combine `on.press` with a
   non-`off` `select` — `on.press` is ignored when `select` is on.
+- **Stack `gap` defaults are column-aware** for horizontal stacks: 2 cols → `"lg"`
+  (16px), 3 cols → `"md"` (8px), 4+ cols → `"sm"` (4px). Vertical stacks default to
+  `"md"` (16px). Trust the default first — don't set `gap` on a horizontal stack just
+  to set it. **Override deliberately**, with a stated reason, when:
+  - A hero row needs extra breathing room → `"lg"` regardless of column count.
+  - A toolbar/segmented control reads as one unit → `"sm"` or `"none"` to tighten.
+  - Two buttons feel oddly disconnected at the default `"lg"` → step down to `"md"`.
+  - Children are visually heavy (cards with imagery, multi-line items) → step up one.
+  When reviewing a layout that doesn't feel right, the gap is often what's wrong:
+  rows that look cramped usually need `+1` step; rows that look airy or disconnected
+  usually need `-1` step. Suggest a specific change ("try `gap: \"sm\"` here — your
+  4 buttons are short labels and the row would read tighter as a toolbar"), not a
+  generic note.
 - Keep strings within component char limits (see
   [Constraints](https://docs.farcaster.xyz/snap/constraints)).
 
