@@ -391,12 +391,12 @@ matrices. Cells are defined sparsely — only specify cells that have color or c
 
 There are two interaction modes, and they are mutually exclusive:
 
-1. **Press to act** — leave `select` at `"off"` and bind `on.press`. Each press writes
-   `"row,col"` to `inputs[name]` and fires the bound action (e.g. `submit`). No selection
-   ring; cells behave like a grid of buttons.
+1. **Press to act** — leave `select` at `"off"` and bind `on.press`. Each press writes the
+   pressed cell's `value` (or `"row,col"` if no `value` is set) to `inputs[name]` and fires
+   the bound action (e.g. `submit`). No selection ring; cells behave like a grid of buttons.
 2. **Press to select** — set `select: "single"` or `"multiple"`. Each press accumulates
    selection state with a visual ring; nothing is posted. Pair with a separate `button`
-   that submits the accumulated selection.
+   that submits the accumulated selection. Multi-select joins values with `|`.
 
 Don't combine `on.press` with a non-`"off"` `select` mode — the auto-fire would defeat
 the accumulating selection. The component ignores `on.press` whenever `select` is on.
@@ -417,7 +417,7 @@ the accumulating selection. The component ignores `on.press` whenever `select` i
 
 | Event | Fires when                                                                 |
 | ----- | -------------------------------------------------------------------------- |
-| `press` | A cell is pressed, **only when `select` is `"off"`**. `inputs[name]` is set to `"row,col"` before the action runs, so a bound `submit` POST includes the pressed cell. |
+| `press` | A cell is pressed, **only when `select` is `"off"`**. `inputs[name]` is set to the pressed cell's `value` (or `"row,col"` if no `value` is set) before the action runs, so a bound `submit` POST includes the pressed cell. |
 
 ### Cell Object
 
@@ -427,6 +427,7 @@ the accumulating selection. The component ignores `on.press` whenever `select` i
 | `col`     | number       | Yes      | Column index (0-based) |
 | `color`   | PaletteColor or `#rrggbb` | No       | Cell fill color (hex is independent of page accent) |
 | `content` | string       | No       | Cell text content      |
+| `value`   | string       | No       | POST value when this cell is pressed/selected (1–30 chars). When omitted, `"row,col"` is used. Use this for grids whose cells carry meaningful labels (calendar days, alphabet pickers, region maps) so action handlers don't need to reverse-lookup row/col. |
 
 **Press to act** — `select: "off"` (default) + `on.press`. Each press fires immediately:
 
@@ -467,6 +468,32 @@ without posting; pair with a `button` that submits when the user is done:
   }
 }
 ```
+
+**Value-bearing cells** — when each cell represents a meaningful label (a calendar
+day, an alphabet letter, a region code), set `value` to keep the action handler
+clean. The handler receives the value directly instead of having to translate
+`"row,col"` back into a label:
+
+```json
+{
+  "type": "cell_grid",
+  "props": {
+    "name": "day",
+    "cols": 7,
+    "rows": 5,
+    "cells": [
+      { "row": 0, "col": 0, "value": "1", "content": "1" },
+      { "row": 0, "col": 1, "value": "2", "content": "2" },
+      { "row": 0, "col": 2, "value": "3", "content": "3" }
+    ]
+  },
+  "on": {
+    "press": { "action": "submit", "params": { "target": "https://my-snap.com/" } }
+  }
+}
+```
+
+The POST handler reads `inputs.day` as `"3"` directly — no row/col math.
 
 ---
 
