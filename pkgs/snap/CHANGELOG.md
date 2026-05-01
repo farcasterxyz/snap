@@ -1,5 +1,17 @@
 # @farcaster/snap
 
+## 2.3.0
+
+### Minor Changes
+
+- [#167](https://github.com/farcasterxyz/snap/pull/167) [`e2e45a1`](https://github.com/farcasterxyz/snap/commit/e2e45a152df97194072e25094fc44042e1082b0a) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add optional `value` field to `cell_grid` cells. When set, the cell's `value` (string, 1–30 chars) is what's written to `inputs[name]` on press or selection. When omitted, the existing `"row,col"` fallback applies. This removes a recurring foot-gun for grids with meaningful labels (calendar days, alphabet letters, region codes) where action handlers previously had to reverse-lookup row/col into the cell's label.
+
+- [#168](https://github.com/farcasterxyz/snap/pull/168) [`7bd3591`](https://github.com/farcasterxyz/snap/commit/7bd3591c7fb4ed17f5d2aca7b8fbb058cf1ec757) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Tighten horizontal stack gap scale and add column-aware defaults. Horizontal `gap` now resolves to `none/sm/md/lg = 0/4/8/16 px` (down from `0/4/8/12`; `lg` grows by 4px, `sm`/`md` grow lighter). When `gap` is omitted on a horizontal stack, the default is chosen by column count: 2 cols → `lg` (16px), 3 cols → `md` (8px), 4+ cols → `sm` (4px), unknown → `md`. Column count comes from `columns` when set, or is inferred from button-row children, or falls back to direct child count for any horizontal stack. Vertical stacks are unchanged. An explicit `gap` always wins.
+
+### Patch Changes
+
+- [#168](https://github.com/farcasterxyz/snap/pull/168) [`3f25a68`](https://github.com/farcasterxyz/snap/commit/3f25a68acf08132891a6d4e72bd66c0265b5fe35) Thanks [@bob-obringer](https://github.com/bob-obringer)! - fix(snap): web `text` no longer fills column height inside a vertical stack. The component used `flex-1` to fill horizontal width, which silently set `flex-grow: 1` along the parent's main axis — so when a vertical stack was a peer of a tall element (e.g. a `9:16` image), text children stretched to evenly fill the column instead of stacking at the top with their gap. Switched the vertical-stack class to `min-w-0` only (block elements already fill width via their parent's `w-full`). Native is unaffected since RN text uses explicit `width: "100%"` rather than flex-grow.
+
 ## 2.2.0
 
 ### Minor Changes
