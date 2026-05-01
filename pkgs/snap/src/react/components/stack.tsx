@@ -21,9 +21,9 @@ const VGAP: Record<string, string> = {
 
 const HGAP: Record<string, string> = {
   none: "gap-0",
-  sm: "gap-0.5",
-  md: "gap-1",
-  lg: "gap-2",
+  sm: "gap-1",
+  md: "gap-2",
+  lg: "gap-4",
 };
 
 const JUSTIFY_FLEX: Record<string, string> = {

@@ -309,20 +309,20 @@ Nested **stack** children of a horizontal stack flex as peers (equal share of th
 | Size   | Vertical | Horizontal |
 | ------ | -------- | ---------- |
 | `none` | 0px      | 0px        |
-| `sm`   | 8px      | 2px        |
-| `md`   | 16px     | 4px        |
-| `lg`   | 24px     | 8px        |
+| `sm`   | 8px      | 4px        |
+| `md`   | 16px     | 8px        |
+| `lg`   | 24px     | 16px       |
 
 When `gap` is omitted, vertical stacks default to `"md"`. Horizontal stacks pick a default based on column count — denser layouts get tighter gaps:
 
-| Columns | Default |
-| ------- | ------- |
-| 2       | `"lg"` (8px)  |
-| 3       | `"md"` (4px)  |
-| 4–6     | `"sm"` (2px)  |
-| unknown | `"md"` (4px)  |
+| Columns | Default        |
+| ------- | -------------- |
+| 2       | `"lg"` (16px)  |
+| 3       | `"md"` (8px)   |
+| 4–6     | `"sm"` (4px)   |
+| unknown | `"md"` (8px)   |
 
-Column count is taken from `columns` when set, or inferred from button-row children. An explicit `gap` always wins.
+Column count is taken from `columns` when set, or inferred from button-row children. **An explicit `gap` always wins** — override the default when you have a deliberate visual reason (extra breathing room around a hero row, a visually compact toolbar, a hero+supporting-button pair where the loose `lg` default would feel disconnected).
 
 ```json
 "page": {

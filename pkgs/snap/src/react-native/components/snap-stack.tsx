@@ -20,9 +20,9 @@ const VGAP: Record<string, number> = {
 
 const HGAP: Record<string, number> = {
   none: 0,
-  sm: 2,
-  md: 4,
-  lg: 8,
+  sm: 4,
+  md: 8,
+  lg: 16,
 };
 
 const JUSTIFY: Record<string, "flex-start" | "center" | "flex-end" | "space-between" | "space-around"> = {
