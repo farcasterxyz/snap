@@ -295,12 +295,34 @@ Nested **stack** children of a horizontal stack flex as peers (equal share of th
 
 <ElementPreview type="stack" />
 
-| Prop        | Type   | Required | Default      | Description                                                            |
-| ----------- | ------ | -------- | ------------ | ---------------------------------------------------------------------- |
-| `direction` | string | No       | `"vertical"` | `"vertical"` or `"horizontal"`                                         |
-| `gap`       | string | No       | `"md"`       | Spacing between children: `"none"` `"sm"` `"md"` `"lg"`                |
-| `justify`   | string | No       |              | Content alignment: `"start"` `"center"` `"end"` `"between"` `"around"` |
-| `columns`   | number | No       |              | Horizontal stacks only: `2`–`6` for an explicit equal column grid. Omit when children are stacks — nested stacks flex as row peers automatically. |
+| Prop        | Type   | Required | Default            | Description                                                            |
+| ----------- | ------ | -------- | ------------------ | ---------------------------------------------------------------------- |
+| `direction` | string | No       | `"vertical"`       | `"vertical"` or `"horizontal"`                                         |
+| `gap`       | string | No       | column-aware       | Spacing between children: `"none"` `"sm"` `"md"` `"lg"` (see below)    |
+| `justify`   | string | No       |                    | Content alignment: `"start"` `"center"` `"end"` `"between"` `"around"` |
+| `columns`   | number | No       |                    | Horizontal stacks only: `2`–`6` for an explicit equal column grid. Omit when children are stacks — nested stacks flex as row peers automatically. |
+
+### Gap
+
+`gap` resolves to a different pixel value depending on `direction`. Horizontal stacks use a tighter scale because their children sit side-by-side and tend to be wider:
+
+| Size   | Vertical | Horizontal |
+| ------ | -------- | ---------- |
+| `none` | 0px      | 0px        |
+| `sm`   | 8px      | 2px        |
+| `md`   | 16px     | 4px        |
+| `lg`   | 24px     | 8px        |
+
+When `gap` is omitted, vertical stacks default to `"md"`. Horizontal stacks pick a default based on column count — denser layouts get tighter gaps:
+
+| Columns | Default |
+| ------- | ------- |
+| 2       | `"lg"` (8px)  |
+| 3       | `"md"` (4px)  |
+| 4–6     | `"sm"` (2px)  |
+| unknown | `"md"` (4px)  |
+
+Column count is taken from `columns` when set, or inferred from button-row children. An explicit `gap` always wins.
 
 ```json
 "page": {

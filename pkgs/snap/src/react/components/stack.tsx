@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { cn } from "@neynar/ui/utils";
 import {
   countRenderableChildren,
+  defaultHorizontalGapSize,
   horizontalChildrenAreAllButtons,
 } from "../../stack-horizontal-utils.js";
 import {
@@ -20,9 +21,9 @@ const VGAP: Record<string, string> = {
 
 const HGAP: Record<string, string> = {
   none: "gap-0",
-  sm: "gap-1",
-  md: "gap-2",
-  lg: "gap-3",
+  sm: "gap-0.5",
+  md: "gap-1",
+  lg: "gap-2",
 };
 
 const JUSTIFY_FLEX: Record<string, string> = {
@@ -52,11 +53,7 @@ export function SnapStack({
 }) {
   const parentDirection = useSnapStackDirection();
   const direction = String(props.direction ?? "vertical");
-  const gapKey = String(props.gap ?? "md");
   const isHorizontal = direction === "horizontal";
-  const gap = isHorizontal
-    ? (HGAP[gapKey] ?? "gap-2")
-    : (VGAP[gapKey] ?? "gap-4");
   const justifyKey = props.justify ? String(props.justify) : undefined;
   const justifyFlex = justifyKey ? JUSTIFY_FLEX[justifyKey] : undefined;
   const buttonRowGrid =
@@ -73,6 +70,19 @@ export function SnapStack({
     Number.isInteger(columnsRaw)
       ? columnsRaw
       : undefined;
+
+  // Horizontal default depends on column count: 2→lg, 3→md, 4+→sm. Vertical stays md.
+  const horizontalColumnCount = columns ?? (buttonRowGrid ? buttonRowCount : undefined);
+  const explicitGap =
+    typeof props.gap === "string" && props.gap in (isHorizontal ? HGAP : VGAP);
+  const gapKey = explicitGap
+    ? String(props.gap)
+    : isHorizontal
+      ? defaultHorizontalGapSize(horizontalColumnCount)
+      : "md";
+  const gap = isHorizontal
+    ? (HGAP[gapKey] ?? HGAP.md!)
+    : (VGAP[gapKey] ?? VGAP.md!);
   const explicitColumnGrid =
     isHorizontal && columns !== undefined && !buttonRowGrid;
   const columnGridClass =
