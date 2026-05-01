@@ -30,8 +30,15 @@ export function SnapText({
       weight={weight}
       align={align}
       className={cn(
-        /** Row peers hug content like RN `wrapRow`; avoid `flex-1` stretching peers across the row. */
-        inHorizontalStack ? "min-w-0 shrink" : "flex-1",
+        /**
+         * Row peers hug content like RN `wrapRow` — `min-w-0 shrink` lets text wrap
+         * inside a horizontal stack without forcing peers wide. In a vertical stack
+         * the `<p>` already fills its parent's width via `display: block`; avoid
+         * `flex-1` here because `flex-grow: 1` on a vertical-flex child fills the
+         * column's height, distributing siblings when the row is taller than its
+         * content (e.g. text next to a tall image).
+         */
+        inHorizontalStack ? "min-w-0 shrink" : "min-w-0",
       )}
       style={{ color: colors.text }}
     >
