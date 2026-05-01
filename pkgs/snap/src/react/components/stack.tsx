@@ -72,7 +72,13 @@ export function SnapStack({
       : undefined;
 
   // Horizontal default depends on column count: 2→lg, 3→md, 4+→sm. Vertical stays md.
-  const horizontalColumnCount = columns ?? (buttonRowGrid ? buttonRowCount : undefined);
+  // Count comes from explicit `columns`, then button-row inference, else direct children
+  // count (any horizontal stack is N columns wide regardless of child types).
+  const horizontalColumnCount = isHorizontal
+    ? (columns ??
+       (buttonRowGrid ? buttonRowCount : undefined) ??
+       countRenderableChildren(children))
+    : undefined;
   const explicitGap =
     typeof props.gap === "string" && props.gap in (isHorizontal ? HGAP : VGAP);
   const gapKey = explicitGap
