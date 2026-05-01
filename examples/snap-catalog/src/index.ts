@@ -585,7 +585,7 @@ function imagesTallPage(base: string): SnapHandlerResult {
         },
         "row-tall": {
           type: "stack",
-          props: { direction: "horizontal", gap: "md" },
+          props: { direction: "horizontal" },
           children: ["img-916", "tall-column"],
         },
         "img-916": {
