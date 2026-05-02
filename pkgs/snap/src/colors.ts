@@ -65,6 +65,28 @@ export function resolveSnapColorHex(
   return opts.accentHex;
 }
 
+/**
+ * Pick a readable text color for a given hex background.
+ *
+ * Uses WCAG relative luminance with a 0.5 threshold. Returns `rgba(...)` so
+ * callers can soften the text against the background — defaults to 0.8 alpha
+ * to let a hint of the cell color bleed through.
+ */
+export function readableTextOnHex(hex: string, alpha = 0.8): string {
+  const m = /^#([0-9a-fA-F]{6})$/.exec(hex.trim());
+  if (!m) return `rgba(0,0,0,${alpha})`;
+  const n = Number.parseInt(m[1], 16);
+  const toLin = (c: number) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  const L =
+    0.2126 * toLin((n >> 16) & 0xff) +
+    0.7152 * toLin((n >> 8) & 0xff) +
+    0.0722 * toLin(n & 0xff);
+  return L >= 0.5 ? `rgba(0,0,0,${alpha})` : `rgba(255,255,255,${alpha})`;
+}
+
 /** Light-mode hex for each palette color (emulator / reference client). */
 export const PALETTE_LIGHT_HEX: Record<PaletteColor, string> = {
   gray: "#6E6A86",

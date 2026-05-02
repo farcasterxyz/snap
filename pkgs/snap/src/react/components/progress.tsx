@@ -1,6 +1,8 @@
 "use client";
 
+import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import { useSnapStackDirection } from "../stack-direction-context";
 
 export function SnapProgress({
   element: { props },
@@ -12,9 +14,16 @@ export function SnapProgress({
   const max = Math.max(1, Number(props.max ?? 100));
   const percent = Math.min(100, Math.max(0, (value / max) * 100));
   const label = props.label ? String(props.label) : null;
+  const inHorizontalStack = useSnapStackDirection() === "horizontal";
 
   return (
-    <div className="flex w-full flex-1 flex-col gap-1">
+    <div
+      className={cn(
+        "flex w-full flex-col gap-1",
+        /** Horizontal: share width with peers. Vertical: don't fill column height. */
+        inHorizontalStack && "flex-1",
+      )}
+    >
       {label && (
         <span className="text-xs" style={{ color: colors.textMuted }}>
           {label}

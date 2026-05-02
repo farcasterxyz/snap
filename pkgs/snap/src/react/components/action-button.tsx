@@ -5,6 +5,7 @@ import { ExternalLink } from "lucide-react";
 import { Button } from "@neynar/ui/button";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import { useSnapStackDirection } from "../stack-direction-context";
 import { ICON_MAP } from "./icon";
 
 function isExternalLinkAction(
@@ -38,6 +39,7 @@ export function SnapActionButton({
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
   const showExternalIcon = isExternalLinkAction(element.on);
+  const inHorizontalStack = useSnapStackDirection() === "horizontal";
 
   const style = {
     cursor: "pointer" as const,
@@ -57,7 +59,18 @@ export function SnapActionButton({
   };
 
   return (
-    <div className="w-full min-w-0 flex-1">
+    /**
+     * In a horizontal stack, `flex-1` lets the wrapper share row width with peers.
+     * In a vertical stack, `flex-1` would silently grow the button to fill column
+     * height (1/N distribution when siblings also flex-grow); stick to `w-full`.
+     */
+    <div
+      className={
+        inHorizontalStack
+          ? "w-full min-w-0 flex-1"
+          : "w-full min-w-0"
+      }
+    >
       <Button
         type="button"
         variant={isPrimary ? "default" : "secondary"}
