@@ -6,8 +6,8 @@ Every POST request from the client to a snap server MUST be authenticated with
 
 GET requests MAY include viewer identity when the client sends an optional
 `X-Snap-Payload` header (see [Authenticated GETs](#authenticated-gets)). Authentication
-on GET is optional and best-effort: servers SHOULD fall back to an anonymous first load
-when the header is absent.
+on GET is optional and best-effort: servers SHOULD support anonymous GET requests when
+the header is absent.
 
 ## How It Works
 
@@ -71,18 +71,17 @@ If strict replay protection is needed beyond that, clients should add a `nonce` 
 
 ## Authenticated GETs
 
-Official clients MAY attach a JFS compact string to snap document GET requests using the
-`X-Snap-Payload` request header. The value uses the same dot-separated form as POST
-bodies:
+Clients MAY attach a JFS payload to snap GET requests using the `X-Snap-Payload` request
+header. The value uses the compact JFS form:
 
 ```
-BASE64URL(header).BASE64URL(payload).BASE64URL(signature)
+X-Snap-Payload: BASE64URL(header).BASE64URL(payload).BASE64URL(signature)
 ```
 
-- GET authentication is optional. Snaps that do not send `X-Snap-Payload` behave as
-  today (anonymous `{ type: "get" }`).
-- Servers MUST reject a present but malformed, expired, or invalid `X-Snap-Payload` with
-  a 4xx response.
+- Sending this header on GET requests is optional. Snaps that do not send
+  `X-Snap-Payload`.
+- If the header is present, servers MUST reject a malformed, expired, or invalid values
+  with a 4xx response.
 - When a response depends on `action.user` (or other viewer-specific data), the server
   SHOULD send `Cache-Control: private` or a short `max-age` together with
   `Vary: X-Snap-Payload` so personalized responses are not shared incorrectly between
@@ -92,7 +91,7 @@ BASE64URL(header).BASE64URL(payload).BASE64URL(signature)
 
 Servers MUST NOT depend on receiving a viewer FID on a GET. Each GET is an independent
 request, and `X-Snap-Payload` may be absent for any number of reasons. Design every snap
-so the anonymous first load is fully usable. Treat `action.user` on GET as a strict
+so that anonymous GETs work and make sense. Treat `action.user` on GET as a strict
 enhancement: when present, you may personalize; when absent, render a working signed-out
 experience.
 
