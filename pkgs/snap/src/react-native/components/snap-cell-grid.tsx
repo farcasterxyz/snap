@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Pressable } from "react-native";
 import { useStateStore } from "@json-render/react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
-import { POST_GRID_TAP_KEY } from "@farcaster/snap";
+import { POST_GRID_TAP_KEY, readableTextOnHex } from "@farcaster/snap";
 
 export function SnapCellGrid({
   element,
@@ -89,10 +89,12 @@ export function SnapCellGrid({
     for (let c = 0; c < cols; c++) {
       const cell = cellMap.get(`${r},${c}`);
       const selected = interactive && isSelected(r, c);
-      const bg = cell?.color ? hex(cell.color) : emptyCellBg;
+      const bgHex = cell?.color ? hex(cell.color) : null;
+      const bg = bgHex ?? emptyCellBg;
+      const textColor = bgHex ? readableTextOnHex(bgHex) : colors.text;
 
       const cellContent = cell?.content ? (
-        <Text style={[styles.cellText, { color: colors.textPrimary }]}>
+        <Text style={[styles.cellText, { color: textColor }]}>
           {cell.content}
         </Text>
       ) : null;

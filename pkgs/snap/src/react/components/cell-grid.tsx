@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useStateStore } from "@json-render/react";
 import { cn } from "@neynar/ui/utils";
-import { POST_GRID_TAP_KEY } from "@farcaster/snap";
+import { POST_GRID_TAP_KEY, readableTextOnHex } from "@farcaster/snap";
 import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapCellGrid({
@@ -85,7 +85,9 @@ export function SnapCellGrid({
     for (let c = 0; c < cols; c++) {
       const cell = cellMap.get(`${r},${c}`);
       const selected = interactive && isSelected(r, c);
-      const bg = cell?.color ? colors.colorHex(cell.color) : emptyCellBg;
+      const bgHex = cell?.color ? colors.colorHex(cell.color) : null;
+      const bg = bgHex ?? emptyCellBg;
+      const textColor = bgHex ? readableTextOnHex(bgHex) : colors.text;
 
       cellEls.push(
         <div
@@ -110,6 +112,7 @@ export function SnapCellGrid({
           style={{
             height: rowHeight,
             background: bg,
+            color: textColor,
             boxShadow: selected
               ? `inset 0 0 0 1px ${colors.mode === "dark" ? "#000" : "#fff"}, inset 0 0 0 2px ${colors.mode === "dark" ? "#fff" : "#000"}`
               : undefined,

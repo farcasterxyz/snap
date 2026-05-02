@@ -7,7 +7,9 @@ import {
   ItemDescription,
   ItemActions,
 } from "@neynar/ui/item";
+import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import { useSnapStackDirection } from "../stack-direction-context";
 
 export function SnapItem({
   element: { props, children: childIds },
@@ -19,9 +21,16 @@ export function SnapItem({
   const title = String(props.title ?? "");
   const description = props.description ? String(props.description) : undefined;
   const colors = useSnapColors();
+  const inHorizontalStack = useSnapStackDirection() === "horizontal";
 
   return (
-    <Item className="flex-1 py-1.5 px-2.5">
+    <Item
+      className={cn(
+        "py-1.5 px-2.5",
+        /** Horizontal: share width with peers. Vertical: don't fill column height. */
+        inHorizontalStack && "flex-1",
+      )}
+    >
       <ItemContent className="gap-0.5">
         <ItemTitle style={{ color: colors.text }}>{title}</ItemTitle>
         {description && (
