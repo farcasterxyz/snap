@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, StyleSheet, View, useWindowDimensions } from "react-native";
 
 const FIREWORK_COLORS = [
@@ -14,13 +14,106 @@ const FIREWORK_COLORS = [
 
 const BURST_COUNT = 5;
 const PARTICLE_COUNT = 24;
-const BURST_DURATION = 1000;
-const FLASH_DURATION = 400;
+
+type BurstData = {
+  id: number;
+  x: number;
+  y: number;
+  particles: Array<{
+    id: number;
+    vx: number;
+    vy: number;
+    color: string;
+    size: number;
+  }>;
+};
+
+function FireworkBurst({ burst }: { burst: BurstData }) {
+  const flashAnim = useRef(new Animated.Value(0)).current;
+  const burstAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const composite = Animated.parallel([
+      Animated.timing(flashAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(burstAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+    ]);
+    composite.start();
+    return () => composite.stop();
+  }, [flashAnim, burstAnim]);
+
+  const flashOpacity = flashAnim.interpolate({
+    inputRange: [0, 0.25, 1],
+    outputRange: [0, 1, 0],
+  });
+  const flashScale = flashAnim.interpolate({
+    inputRange: [0, 0.25, 1],
+    outputRange: [0, 2.5, 5],
+  });
+
+  return (
+    <>
+      <Animated.View
+        style={[
+          styles.flash,
+          {
+            left: burst.x - 6,
+            top: burst.y - 6,
+            opacity: flashOpacity,
+            transform: [{ scale: flashScale }],
+          },
+        ]}
+      />
+      {burst.particles.map((p) => {
+        const opacity = burstAnim.interpolate({
+          inputRange: [0, 0.65, 1],
+          outputRange: [1, 1, 0],
+        });
+        const translateX = burstAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, p.vx],
+        });
+        const translateY = burstAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, p.vy],
+        });
+        const scale = burstAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 0],
+        });
+        return (
+          <Animated.View
+            key={p.id}
+            style={[
+              styles.particle,
+              {
+                left: burst.x - p.size / 2,
+                top: burst.y - p.size / 2,
+                width: p.size,
+                height: p.size,
+                backgroundColor: p.color,
+                opacity,
+                transform: [{ translateX }, { translateY }, { scale }],
+              },
+            ]}
+          />
+        );
+      })}
+    </>
+  );
+}
 
 export function FireworksOverlay() {
   const { width, height } = useWindowDimensions();
 
-  const bursts = useMemo(
+  const bursts = useMemo<(BurstData & { delay: number })[]>(
     () =>
       Array.from({ length: BURST_COUNT }, (_, b) => ({
         id: b,
@@ -48,103 +141,22 @@ export function FireworksOverlay() {
     [],
   );
 
-  const flashAnims = useRef(bursts.map(() => new Animated.Value(0))).current;
-  const burstAnims = useRef(
-    bursts.map(() => new Animated.Value(0)),
-  ).current;
+  const [mountedBursts, setMountedBursts] = useState<number[]>([]);
 
   useEffect(() => {
-    const animations = bursts.map((burst, b) => {
-      flashAnims[b]!.setValue(0);
-      burstAnims[b]!.setValue(0);
-      return Animated.sequence([
-        Animated.delay(burst.delay),
-        Animated.parallel([
-          Animated.timing(flashAnims[b]!, {
-            toValue: 1,
-            duration: FLASH_DURATION,
-            useNativeDriver: true,
-          }),
-          Animated.timing(burstAnims[b]!, {
-            toValue: 1,
-            duration: BURST_DURATION,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]);
-    });
-
-    const composite = Animated.parallel(animations);
-    composite.start();
-    return () => composite.stop();
-  }, [bursts, flashAnims, burstAnims]);
+    const timers = bursts.map((burst, b) =>
+      setTimeout(() => {
+        setMountedBursts((prev) => [...prev, b]);
+      }, burst.delay),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [bursts]);
 
   return (
-    <View
-      style={StyleSheet.absoluteFill}
-      pointerEvents="none"
-    >
-      {bursts.map((burst, b) => {
-        const flashOpacity = flashAnims[b]!.interpolate({
-          inputRange: [0, 0.25, 1],
-          outputRange: [0, 1, 0],
-        });
-        const flashScale = flashAnims[b]!.interpolate({
-          inputRange: [0, 0.25, 1],
-          outputRange: [0, 2.5, 5],
-        });
-
-        return (
-          <View key={burst.id}>
-            <Animated.View
-              style={[
-                styles.flash,
-                {
-                  left: burst.x - 6,
-                  top: burst.y - 6,
-                  opacity: flashOpacity,
-                  transform: [{ scale: flashScale }],
-                },
-              ]}
-            />
-            {burst.particles.map((p) => {
-              const particleOpacity = burstAnims[b]!.interpolate({
-                inputRange: [0, 0.05, 0.65, 1],
-                outputRange: [0, 1, 1, 0],
-              });
-              const translateX = burstAnims[b]!.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, p.vx],
-              });
-              const translateY = burstAnims[b]!.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, p.vy],
-              });
-              const scale = burstAnims[b]!.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              });
-              return (
-                <Animated.View
-                  key={p.id}
-                  style={[
-                    styles.particle,
-                    {
-                      left: burst.x - p.size / 2,
-                      top: burst.y - p.size / 2,
-                      width: p.size,
-                      height: p.size,
-                      backgroundColor: p.color,
-                      opacity: particleOpacity,
-                      transform: [{ translateX }, { translateY }, { scale }],
-                    },
-                  ]}
-                />
-              );
-            })}
-          </View>
-        );
-      })}
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      {mountedBursts.map((b) => (
+        <FireworkBurst key={b} burst={bursts[b]!} />
+      ))}
     </View>
   );
 }
