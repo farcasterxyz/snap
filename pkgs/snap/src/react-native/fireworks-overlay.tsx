@@ -109,8 +109,8 @@ export function FireworksOverlay() {
             />
             {burst.particles.map((p) => {
               const particleOpacity = burstAnims[b]!.interpolate({
-                inputRange: [0, 0.65, 1],
-                outputRange: [1, 1, 0],
+                inputRange: [0, 0.05, 0.65, 1],
+                outputRange: [0, 1, 1, 0],
               });
               const translateX = burstAnims[b]!.interpolate({
                 inputRange: [0, 1],
