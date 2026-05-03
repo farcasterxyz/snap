@@ -106,6 +106,15 @@ Design guidance:
   `"row,col"`); OR set `select: "single"` / `"multiple"` for press-to-select with a
   visual ring and pair with a separate submit `button`. Don't combine `on.press` with a
   non-`off` `select` — `on.press` is ignored when `select` is on.
+- **Default `justify` (omit it) on vertical stacks.** Omitting `justify` packs children
+  at the top with their `gap` — almost always what you want for content. Only set
+  `justify: "between"` / `"around"` / `"evenly"` when you specifically want children
+  pushed to edges (a horizontal nav row with Back on the left and Next on the right is
+  the canonical case; a content column is not). On a vertical column whose row peer is
+  taller (e.g. an image), a distributing `justify` spreads the children across the column
+  height — which reads as awkward empty space rather than as designed layout. If a list
+  of items looks weirdly spread top-to-bottom, the first thing to check is whether
+  `justify` was set on the column.
 - **Stack `gap` defaults are column-aware** for horizontal stacks: 2 cols → `"lg"`
   (16px), 3 cols → `"md"` (8px), 4+ cols → `"sm"` (4px). Vertical stacks default to
   `"md"` (16px). Trust the default first — don't set `gap` on a horizontal stack just

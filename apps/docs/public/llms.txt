@@ -106,7 +106,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 **stack** — Layout container.
 - `direction` (optional): `"vertical"` | `"horizontal"`. Default: `"vertical"`
 - `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Vertical px: 0/8/16/24. Horizontal px: 0/4/8/16 (tighter, since children sit side-by-side). Default for vertical: `"md"`. Default for horizontal is column-aware: 2 cols → `"lg"` (16px), 3 cols → `"md"` (8px), 4+ cols → `"sm"` (4px), unknown → `"md"` (8px). An explicit value always wins — override the default when you have a deliberate visual reason (e.g. tighter toolbar, extra breathing room around a hero row).
-- `justify` (optional): `"start"` | `"center"` | `"end"` | `"between"` | `"around"`
+- `justify` (optional): `"start"` | `"center"` | `"end"` | `"between"` | `"around"`. Default behavior (omit) packs children at the start of the main axis with their `gap` — this is almost always correct for vertical content columns. Only use a distributing value (`"between"` / `"around"` / `"evenly"`) when you explicitly want children pushed to edges (a horizontal nav row with Back/Next is the canonical case). Setting `justify: "between"` on a vertical column whose row peer is taller (e.g. an image) will spread children across the empty column height — reads as awkward, not designed.
 - `columns` (optional, horizontal only): `2`–`6` — CSS grid with equal columns (mixed children or layout that needs fixed column counts).
 - Children are element IDs
 
