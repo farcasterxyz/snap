@@ -206,7 +206,7 @@ function FireworksOverlay() {
                   borderRadius: "50%",
                   backgroundColor: color,
                   transform: "translate(-50%,-50%)",
-                  animation: `fwBurst 1s cubic-bezier(0.2,0,0.8,1) ${delay}s both`,
+                  animation: `fwBurst 1s cubic-bezier(0.2,0,0.8,1) ${delay}s forwards`,
                   opacity: 0,
                   "--vx": `${vx}px`,
                   "--vy": `${vy}px`,

@@ -2,6 +2,7 @@ import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./catalog-renderer";
 import { ConfettiOverlay } from "./confetti-overlay";
+import { FireworksOverlay } from "./fireworks-overlay";
 import { useSnapTheme } from "./theme";
 import {
   type ReactNode,
@@ -128,10 +129,13 @@ export function SnapViewCoreInner({
   }, [spec]);
 
   const showConfetti = snap.effects?.includes("confetti") ?? false;
+  const showFireworks = snap.effects?.includes("fireworks") ?? false;
   const [confettiKey, setConfettiKey] = useState(0);
+  const [fireworksKey, setFireworksKey] = useState(0);
   useEffect(() => {
     if (showConfetti) setConfettiKey((k) => k + 1);
-  }, [showConfetti, snap]);
+    if (showFireworks) setFireworksKey((k) => k + 1);
+  }, [showConfetti, showFireworks, snap]);
 
   const handlersRef = useRef(handlers);
   handlersRef.current = handlers;
@@ -213,6 +217,7 @@ export function SnapViewCoreInner({
         onAction={handleAction}
       />
       {showConfetti && <ConfettiOverlay key={confettiKey} />}
+      {showFireworks && <FireworksOverlay key={fireworksKey} />}
     </View>
   );
 }
