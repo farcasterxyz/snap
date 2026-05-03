@@ -5,7 +5,7 @@
       "name": "emulator",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@farcaster/snap-emulator", "dev"],
-      "port": 3000
+      "port": 3030
     },
     {
       "name": "emulator-native",

@@ -11,7 +11,7 @@ export const SNAP_PAYLOAD_HEADER = "X-Snap-Payload" as const;
 
 export const MEDIA_TYPE = "application/vnd.farcaster.snap+json" as const;
 
-export const EFFECT_VALUES = ["confetti"] as const;
+export const EFFECT_VALUES = ["confetti", "fireworks"] as const;
 
 // ─── Pixel grid ────────────────────────────────────────
 export const POST_GRID_TAP_KEY = "grid_tap" as const;

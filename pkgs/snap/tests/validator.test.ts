@@ -178,8 +178,12 @@ describe("Effects", () => {
     expectValid({ ...validMinimalSnap(), effects: ["confetti"] });
   });
 
+  it("accepts fireworks effect", () => {
+    expectValid({ ...validMinimalSnap(), effects: ["fireworks"] });
+  });
+
   it("rejects unknown effect", () => {
-    expectInvalid({ ...validMinimalSnap(), effects: ["fireworks"] });
+    expectInvalid({ ...validMinimalSnap(), effects: ["sparkles"] });
   });
 });
 
