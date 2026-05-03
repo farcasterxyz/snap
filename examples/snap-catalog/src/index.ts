@@ -1341,7 +1341,7 @@ function formTogglesPage(base: string): SnapHandlerResult {
         "form-toggles": {
           type: "stack",
           props: {},
-          children: ["interest", "skills"],
+          children: ["interest", "skills", "effect-picker"],
         },
         interest: {
           type: "toggle_group",
@@ -1355,6 +1355,15 @@ function formTogglesPage(base: string): SnapHandlerResult {
             multiple: true,
             orientation: "vertical",
             options: ["Solidity", "TypeScript", "Design", "Product"],
+          },
+        },
+        "effect-picker": {
+          type: "toggle_group",
+          props: {
+            name: "effect",
+            label: "Celebration Effect",
+            options: ["confetti", "fireworks"],
+            defaultValue: "confetti",
           },
         },
         submit: {
@@ -1378,10 +1387,13 @@ function resultsPage(base: string, inputs: Record<string, unknown>): SnapHandler
   const skills = Array.isArray(inputs.skills) ? inputs.skills.join(", ") : String(inputs.skills || "None");
   const interestSkillsLabel = `${interest} · ${skills}`;
 
+  const effect = String(inputs.effect || "confetti");
+  const validEffect = effect === "fireworks" ? "fireworks" : "confetti";
+
   return {
     version: "2.0",
     theme: { accent: "green" },
-    effects: ["confetti"],
+    effects: [validEffect],
     ui: {
       root: "page",
       elements: {

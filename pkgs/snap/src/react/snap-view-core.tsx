@@ -63,18 +63,106 @@ const CONFETTI_COLORS = [
   "#06B6D4",
 ];
 
+const FIREWORK_COLORS = [
+  "#FFD700",
+  "#FF6B6B",
+  "#4ECDC4",
+  "#C4A7E7",
+  "#F6C177",
+  "#EBBCBA",
+  "#9CCFD8",
+  "#fff",
+];
+
 function ConfettiOverlay() {
   const pieces = useMemo(
     () =>
-      Array.from({ length: 80 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 1.2,
-        duration: 2.5 + Math.random() * 2,
-        color:
-          CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-        size: 6 + Math.random() * 8,
-        rotation: Math.random() * 360,
+      Array.from({ length: 80 }, (_, i) => {
+        const driftX = (Math.random() - 0.5) * 120;
+        return {
+          id: i,
+          left: Math.random() * 100,
+          delay: Math.random() * 1.2,
+          duration: 2.8 + Math.random() * 1.8,
+          color:
+            CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+          size: 6 + Math.random() * 8,
+          rotation: Math.random() * 360,
+          isCircle: Math.random() > 0.6,
+          driftX,
+          driftMid: -driftX * 0.4,
+        };
+      }),
+    [],
+  );
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+        zIndex: 20,
+      }}
+    >
+      {pieces.map(
+        ({ id, left, delay, duration, color, size, rotation, isCircle, driftX, driftMid }) => (
+          <div
+            key={id}
+            style={
+              {
+                position: "absolute",
+                left: `${left}%`,
+                top: -20,
+                width: size,
+                height: isCircle ? size : size * 0.5,
+                backgroundColor: color,
+                borderRadius: isCircle ? "50%" : 2,
+                transform: `rotateZ(${rotation}deg)`,
+                animation: `confettiFall ${duration}s cubic-bezier(0.25,0,0.75,1) ${delay}s forwards`,
+                "--dx": `${driftX}px`,
+                "--dm": `${driftMid}px`,
+              } as CSSProperties
+            }
+          />
+        ),
+      )}
+      <style>{`@keyframes confettiFall{
+        0%  {top:-20px;opacity:1;transform:rotateZ(0deg) rotateY(0deg) translateX(0)}
+        20% {transform:rotateZ(144deg) rotateY(60deg) translateX(var(--dm))}
+        40% {transform:rotateZ(288deg) rotateY(120deg) translateX(0)}
+        60% {opacity:1;transform:rotateZ(432deg) rotateY(200deg) translateX(calc(-1 * var(--dm)))}
+        80% {transform:rotateZ(576deg) rotateY(280deg) translateX(var(--dx))}
+        100%{top:110%;opacity:0;transform:rotateZ(720deg) rotateY(360deg) translateX(var(--dx))}
+      }`}</style>
+    </div>
+  );
+}
+
+function FireworksOverlay() {
+  const bursts = useMemo(
+    () =>
+      Array.from({ length: 5 }, (_, b) => ({
+        id: b,
+        x: 15 + Math.random() * 70,
+        y: 10 + Math.random() * 50,
+        delay: b * 0.5 + Math.random() * 0.2,
+        particles: Array.from({ length: 24 }, (_, p) => {
+          const angle =
+            (p / 24) * Math.PI * 2 + (Math.random() - 0.5) * 0.2;
+          const dist = 55 + Math.random() * 60;
+          return {
+            id: p,
+            vx: Math.cos(angle) * dist,
+            vy: Math.sin(angle) * dist,
+            color:
+              FIREWORK_COLORS[
+                Math.floor(Math.random() * FIREWORK_COLORS.length)
+              ],
+            size: 3 + Math.random() * 3,
+          };
+        }),
       })),
     [],
   );
@@ -89,25 +177,57 @@ function ConfettiOverlay() {
         zIndex: 20,
       }}
     >
-      {pieces.map(({ id, left, delay, duration, color, size, rotation }) => (
-        <div
-          key={id}
-          style={{
-            position: "absolute",
-            left: `${left}%`,
-            top: -20,
-            width: size,
-            height: size * 0.6,
-            backgroundColor: color,
-            borderRadius: 2,
-            transform: `rotate(${rotation}deg)`,
-            animation: `confettiFall ${duration}s ease-in ${delay}s forwards`,
-          }}
-        />
+      {bursts.map(({ id: bid, x, y, delay, particles }) => (
+        <div key={bid}>
+          <div
+            style={{
+              position: "absolute",
+              left: `${x}%`,
+              top: `${y}%`,
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              backgroundColor: "#fff",
+              transform: "translate(-50%,-50%)",
+              animation: `fwFlash 0.4s ease-out ${delay}s both`,
+              opacity: 0,
+            }}
+          />
+          {particles.map(({ id: pid, vx, vy, color, size }) => (
+            <div
+              key={pid}
+              style={
+                {
+                  position: "absolute",
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  width: size,
+                  height: size,
+                  borderRadius: "50%",
+                  backgroundColor: color,
+                  transform: "translate(-50%,-50%)",
+                  animation: `fwBurst 1s cubic-bezier(0.2,0,0.8,1) ${delay}s both`,
+                  opacity: 0,
+                  "--vx": `${vx}px`,
+                  "--vy": `${vy}px`,
+                } as CSSProperties
+              }
+            />
+          ))}
+        </div>
       ))}
-      <style>{`@keyframes confettiFall{0%{top:-20px;opacity:1;transform:rotate(0deg) translateX(0)}50%{opacity:1}100%{top:110%;opacity:0;transform:rotate(720deg) translateX(${
-        Math.random() > 0.5 ? "" : "-"
-      }40px)}}`}</style>
+      <style>{`
+        @keyframes fwFlash{
+          0%  {opacity:0;transform:translate(-50%,-50%) scale(0)}
+          25% {opacity:1;transform:translate(-50%,-50%) scale(2.5)}
+          100%{opacity:0;transform:translate(-50%,-50%) scale(5)}
+        }
+        @keyframes fwBurst{
+          0%  {opacity:1;transform:translate(-50%,-50%) translate(0,0) scale(1)}
+          65% {opacity:1}
+          100%{opacity:0;transform:translate(-50%,-50%) translate(var(--vx),var(--vy)) scale(0)}
+        }
+      `}</style>
     </div>
   );
 }
@@ -240,10 +360,13 @@ export function SnapViewCore({
   }, [spec]);
 
   const showConfetti = snap.effects?.includes("confetti") ?? false;
+  const showFireworks = snap.effects?.includes("fireworks") ?? false;
   const [confettiKey, setConfettiKey] = useState(0);
+  const [fireworksKey, setFireworksKey] = useState(0);
   useEffect(() => {
     if (showConfetti) setConfettiKey((k) => k + 1);
-  }, [showConfetti, snap]);
+    if (showFireworks) setFireworksKey((k) => k + 1);
+  }, [showConfetti, showFireworks, snap]);
 
   const accentName = snap.theme?.accent ?? "purple";
 
@@ -326,6 +449,7 @@ export function SnapViewCore({
   return (
     <div style={{ position: "relative", width: "100%" }}>
       {showConfetti && <ConfettiOverlay key={confettiKey} />}
+      {showFireworks && <FireworksOverlay key={fireworksKey} />}
       {loadingOverlay === undefined ? (
         <SnapLoadingOverlay
           appearance={appearance}
