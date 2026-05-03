@@ -1,5 +1,12 @@
 # @farcaster/snap-hono
 
+## 2.1.3
+
+### Patch Changes
+
+- Updated dependencies [[`f74becd`](https://github.com/farcasterxyz/snap/commit/f74becd43abbd76774be41c87db628fffea5f1e3)]:
+  - @farcaster/snap@2.4.0
+
 ## 2.1.2
 
 ### Patch Changes
