@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.13",
-    "hono": "^4.0.0",
+    "hono": "^4.12.14",
     "@farcaster/snap": "workspace:*",
     "@farcaster/snap-hono": "workspace:*",
     "zod": "^4.0.0"
