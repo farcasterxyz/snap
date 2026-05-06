@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useStateStore } from "@json-render/react";
 import { Label } from "@neynar/ui/label";
 import { cn } from "@neynar/ui/utils";
+import { shouldUseHorizontalButtonContent } from "../../button-orientation-utils.js";
 import { useSnapColors } from "../hooks/use-snap-colors";
 
 export function SnapToggleGroup({
@@ -17,7 +18,6 @@ export function SnapToggleGroup({
   const path = `/inputs/${name}`;
   const label = props.label ? String(props.label) : undefined;
   const isMultiple = Boolean(props.multiple);
-  const orientation = String(props.orientation ?? "horizontal");
   const options = Array.isArray(props.options)
     ? (props.options as string[])
     : [];
@@ -50,7 +50,7 @@ export function SnapToggleGroup({
     }
   };
 
-  const isVertical = orientation === "vertical";
+  const isVertical = !shouldUseHorizontalButtonContent(options);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   return (
@@ -68,14 +68,16 @@ export function SnapToggleGroup({
           const isHovered = hoveredIdx === i && !isSelected;
           return (
             <button
-              key={opt}
+              key={`${opt}-${i}`}
               type="button"
               onClick={() => toggle(opt)}
               onPointerEnter={() => setHoveredIdx(i)}
               onPointerLeave={() => setHoveredIdx(null)}
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isVertical ? "w-full" : "flex-1",
+                isVertical
+                  ? "w-full"
+                  : "flex-auto whitespace-nowrap",
               )}
               style={{
                 transition: "background-color 0.15s, color 0.15s",

@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ExternalLink } from "lucide-react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
+import { useSnapStackDirection } from "../stack-direction-context";
 import { ICON_MAP } from "./snap-icon";
 
 function isExternalLinkAction(
@@ -32,12 +33,13 @@ export function SnapActionButton({
 
   const textColor = isPrimary ? "#fff" : colors.text;
   const iconColor = isPrimary ? "#fff" : colors.text;
+  const inHorizontalStack = useSnapStackDirection() === "horizontal";
 
   const on = (element as unknown as { on?: Record<string, unknown> }).on;
   const showExternalIcon = isExternalLinkAction(on);
 
   return (
-    <View style={styles.outer}>
+    <View style={inHorizontalStack ? styles.outerHorizontal : styles.outer}>
       <Pressable
         style={({ pressed }) => [
           styles.btn,
@@ -77,7 +79,18 @@ export function SnapActionButton({
 }
 
 const styles = StyleSheet.create({
-  outer: { minWidth: 0 },
+  outer: {
+    width: "100%",
+    minWidth: 0,
+    alignSelf: "stretch",
+  },
+  outerHorizontal: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "auto",
+    minWidth: 0,
+    alignSelf: "stretch",
+  },
   btn: {
     paddingHorizontal: 16,
     borderRadius: 10,

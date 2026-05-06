@@ -3,7 +3,12 @@ import { Children, Fragment, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSnapTheme } from "../theme";
 
-const GAP_MAP: Record<string, number> = { none: 0, sm: 4, md: 8, lg: 12 };
+const GAP_MAP: Record<string, number> = {
+  none: 0,
+  sm: 4,
+  md: 8,
+  lg: 12,
+};
 
 export function SnapItemGroup({
   element: { props },

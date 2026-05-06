@@ -38,8 +38,21 @@ A button fires an action when tapped. Actions are bound via the `on.press` field
 
 ## Button Layout
 
-Place buttons inside a `stack` component. Use `direction: "horizontal"` for a row of
-buttons, or the default `"vertical"` for a stacked column.
+Place buttons inside a `stack` component. In the React and React Native components
+exported by `@farcaster/snap`, when every child in a stack is a button, the component
+chooses the orientation from the button labels. This is component behavior, not a snap
+protocol requirement, so other snap clients may render differently.
+
+Horizontal rows use total visible characters across all button labels:
+
+| Controls | Max total chars |
+| -------- | --------------- |
+| 2        | 20              |
+| 3        | 15              |
+| 4        | 11              |
+| 5        | 8               |
+
+In these components, button sets over those totals render vertically.
 
 ```json
 "actions": {

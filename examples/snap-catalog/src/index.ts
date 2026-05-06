@@ -208,7 +208,7 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         "browse-r1": {
           type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
+          props: { direction: "horizontal", gap: "sm", equalWidth: true },
           children: ["browse-typography", "browse-badges"],
         },
         "browse-typography": {
@@ -223,7 +223,7 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         "browse-r2": {
           type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
+          props: { direction: "horizontal", gap: "sm", equalWidth: true },
           children: ["browse-icons", "browse-images"],
         },
         "browse-icons": {
@@ -238,7 +238,7 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         "browse-r3": {
           type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
+          props: { direction: "horizontal", gap: "sm", equalWidth: true },
           children: ["browse-layout", "browse-items-groups"],
         },
         "browse-layout": {
@@ -253,7 +253,7 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         "browse-r4": {
           type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
+          props: { direction: "horizontal", gap: "sm", equalWidth: true },
           children: ["browse-form", "browse-data"],
         },
         "browse-form": {
@@ -268,7 +268,7 @@ function welcomePage(base: string): SnapHandlerResult {
         },
         "browse-r5": {
           type: "stack",
-          props: { direction: "horizontal", gap: "sm" },
+          props: { direction: "horizontal", gap: "sm", equalWidth: true },
           children: ["browse-progress", "browse-cell-grid"],
         },
         "browse-progress": {
