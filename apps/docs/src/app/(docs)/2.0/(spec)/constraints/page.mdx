@@ -11,6 +11,8 @@ validation to fail and the snap to not render.
 | `button`       | `label`        | Min 1, max 30 chars                   |
 | `item`         | `title`        | Min 1, max 100 chars                  |
 | `item`         | `description`  | Max 160 chars                         |
+| `item`         | `media.url`    | HTTPS URL                             |
+| `item`         | `media.alt`    | Max 120 chars                         |
 | `progress`     | `value`        | Finite number, 0 to `max`             |
 | `progress`     | `max`          | Finite number > 0                     |
 | `progress`     | `label`        | Max 60 chars                          |
@@ -70,9 +72,10 @@ does not render — the cast falls back to showing the URL as plain text.
 
 ### URL Validation
 
-For `submit`, `open_url`, and `open_mini_app` actions, `params.target` must use
-**HTTPS** in production. As an exception for local development and emulators,
-**`http://` is allowed** when the host is loopback only: `localhost`, `127.0.0.1`, or
-IPv6 loopback (`[::1]` / `::1`). Non-loopback HTTP targets are invalid.
+For `image.url`, `item.media.url`, and `submit`, `open_url`, and `open_mini_app`
+action targets, URLs must use **HTTPS** in production. As an exception for local
+development and emulators, **`http://` is allowed** when the host is loopback only:
+`localhost`, `127.0.0.1`, or IPv6 loopback (`[::1]` / `::1`). Non-loopback HTTP
+targets are invalid.
 
 No `javascript:` URIs.

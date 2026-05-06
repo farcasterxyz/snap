@@ -7,6 +7,7 @@ import {
   MAX_ROOT_CHILDREN,
 } from "../src/constants";
 import { snapResponseSchema } from "../src/schemas";
+import { itemProps } from "../src/ui";
 import { validateSnapResponse } from "../src/validator";
 
 // ─── Helpers ────────────────────────────────────────────
@@ -248,6 +249,74 @@ describe("URL validation", () => {
         },
       }),
     });
+  });
+
+  it("accepts item media with icon or image variants", () => {
+    expectValid({
+      version: "2.0",
+      ui: makeSpec({
+        icon: {
+          type: "item",
+          props: {
+            title: "Security Alert",
+            media: { variant: "icon", name: "alert-triangle", color: "amber" },
+          },
+        },
+        image: {
+          type: "item",
+          props: {
+            title: "Midnight City Lights",
+            media: {
+              variant: "image",
+              url: "https://example.com/cover.jpg",
+              alt: "Album cover",
+            },
+          },
+        },
+      }),
+    });
+  });
+
+  it("keeps item media schema limited to icon name/color and image url/alt", () => {
+    expect(
+      itemProps.safeParse({
+        title: "Unsupported variant",
+        variant: "outline",
+      }).success,
+    ).toBe(false);
+    expect(
+      itemProps.safeParse({ title: "Unsupported size", size: "sm" }).success,
+    ).toBe(false);
+    expect(
+      itemProps.safeParse({
+        title: "Unsupported media size",
+        media: { variant: "icon", name: "star", size: "sm" },
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects HTTP item media image URL on non-loopback host", () => {
+    const result = expectInvalid({
+      version: "2.0",
+      ui: makeSpec({
+        img: {
+          type: "item",
+          props: {
+            title: "Bad cover",
+            media: { variant: "image", url: "http://evil.com/cover.jpg" },
+          },
+        },
+      }),
+    });
+    expect(result.issues[0].path).toEqual([
+      "ui",
+      "elements",
+      "img",
+      "props",
+      "media",
+      "url",
+    ]);
+    expect(result.issues[0].message).toContain("HTTPS");
   });
 
   it("accepts HTTPS image URL with png extension", () => {

@@ -16,8 +16,8 @@ export type { ToggleGroupProps } from "./toggle-group.js";
 export { inputProps } from "./input.js";
 export type { InputProps } from "./input.js";
 
-export { itemProps } from "./item.js";
-export type { ItemProps } from "./item.js";
+export { itemProps, itemMediaProps } from "./item.js";
+export type { ItemMediaProps, ItemProps } from "./item.js";
 
 export { itemGroupProps } from "./item-group.js";
 export type { ItemGroupProps } from "./item-group.js";

@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Check,
   Share,
+  TrendingUp,
   Image as ImageIcon,
   Play,
 } from "lucide-react";
@@ -161,7 +162,10 @@ function InputPreview({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {label && (
-        <label htmlFor={id} style={{ fontSize: 13, fontWeight: 500, color: "var(--text-secondary)" }}>
+        <label
+          htmlFor={id}
+          style={{ fontSize: 13, fontWeight: 500, color: "var(--text-secondary)" }}
+        >
           {label}
         </label>
       )}
@@ -199,7 +203,14 @@ function SliderPreview({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {label && (
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "var(--text-secondary)" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: 13,
+            color: "var(--text-secondary)",
+          }}
+        >
           <span style={{ fontWeight: 500 }}>{label}</span>
           <span>{val}</span>
         </div>
@@ -238,8 +249,12 @@ function SwitchPreview({
 }) {
   const [on, setOn] = useState(defaultChecked);
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-      {label && <span style={{ fontSize: 14, color: "var(--text-primary)" }}>{label}</span>}
+    <div
+      style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+    >
+      {label && (
+        <span style={{ fontSize: 14, color: "var(--text-primary)" }}>{label}</span>
+      )}
       <button
         type="button"
         role="switch"
@@ -431,21 +446,52 @@ function ImagePreview({ aspect = "16:9" }: { aspect?: string }) {
   );
 }
 
+function TrendingMedia() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 28,
+        height: 28,
+        color: resolveColor("green"),
+      }}
+    >
+      <TrendingUp size={20} />
+    </div>
+  );
+}
+
 function ItemPreview({
   title = "Item title",
   description,
+  media,
   children,
 }: {
   title?: string;
   description?: string;
+  media?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+      }}
+    >
+      {media && <div style={{ flexShrink: 0 }}>{media}</div>}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>{title}</div>
+        <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>
+          {title}
+        </div>
         {description && (
-          <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 2 }}>{description}</div>
+          <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 2 }}>
+            {description}
+          </div>
         )}
       </div>
       {children && <div style={{ flexShrink: 0 }}>{children}</div>}
@@ -572,7 +618,11 @@ export default function ElementPreview({
       case "item":
         return (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <ItemPreview title="Engagement Score" description="Based on 24h activity">
+            <ItemPreview
+              title="Engagement Score"
+              description="Based on 24h activity"
+              media={<TrendingMedia />}
+            >
               <BadgePreview label="92" color="green" />
             </ItemPreview>
             <ItemPreview title="Share this Snap" description="Pre-fill the composer">
@@ -587,9 +637,13 @@ export default function ElementPreview({
       case "separator":
         return (
           <div>
-            <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 6 }}>Section A</div>
+            <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 6 }}>
+              Section A
+            </div>
             <SeparatorPreview />
-            <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 6 }}>Section B</div>
+            <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 6 }}>
+              Section B
+            </div>
           </div>
         );
       case "stack":
@@ -604,7 +658,9 @@ export default function ElementPreview({
       case "input":
         return <InputPreview label="Email" placeholder="you@example.com" />;
       case "slider":
-        return <SliderPreview label="Rating (1-10)" min={1} max={10} defaultValue={7} />;
+        return (
+          <SliderPreview label="Rating (1-10)" min={1} max={10} defaultValue={7} />
+        );
       case "switch":
         return <SwitchPreview label="Enable notifications" />;
       case "toggle_group":

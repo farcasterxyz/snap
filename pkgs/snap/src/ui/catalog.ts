@@ -58,7 +58,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     item: {
       props: itemProps,
       description:
-        "Content row with title and optional description. Children render in the actions slot (right side) — badge, button, and icon elements are all valid. The item itself is not interactive, so avoid navigation-style icons (`chevron-right`, `arrow-right`, `external-link`) that imply the row navigates.",
+        "Content row matching shadcn Item: optional media renders on the left, title and optional description render in the content area, and children render in the actions slot (right side). The item itself is not interactive, so avoid navigation-style icons (`chevron-right`, `arrow-right`, `external-link`) that imply the row navigates.",
     },
     item_group: {
       props: itemGroupProps,
@@ -121,7 +121,8 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       params: z.object({ target: z.string() }),
     },
     open_snap: {
-      description: "Open a snap URL inline. The client renders the target as a snap rather than opening a browser.",
+      description:
+        "Open a snap URL inline. The client renders the target as a snap rather than opening a browser.",
       params: z.object({ target: z.string() }),
     },
     open_mini_app: {

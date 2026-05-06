@@ -9,5 +9,6 @@ Hono-based snap servers for local development and reference. Run from the repo r
 | `shared-games` | 3011 | Multi-page snap with collaborative game flows (Wordle, canvas, story, etc.) |
 | `snap-expression` | 3013 | Dialogue-style snaps (CEO spectrum vote, fund explorer) |
 | `two-snaps` | 3016 / 3017 | Two Hono servers for testing cross-snap links in the emulator |
+| `item-media` | 3021 | Focused snap showing `item.props.media` with icon and image rows |
 
 Set `SNAP_PUBLIC_BASE_URL` when deploying so `post` / `link` targets resolve correctly.
