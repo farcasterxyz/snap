@@ -2,9 +2,10 @@ import type { ComponentRenderProps } from "@json-render/react-native";
 import { Children, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import {
+  childrenShouldUseHorizontalButtonLayout,
+  childrenAreAllButtons,
   countRenderableChildren,
   defaultHorizontalGapSize,
-  horizontalChildrenAreAllButtons,
 } from "../../stack-horizontal-utils.js";
 import {
   SnapStackDirectionProvider,
@@ -13,7 +14,7 @@ import {
 
 const VGAP: Record<string, number> = {
   none: 0,
-  sm: 8,
+  sm: 4,
   md: 16,
   lg: 24,
 };
@@ -33,7 +34,7 @@ const JUSTIFY: Record<string, "flex-start" | "center" | "flex-end" | "space-betw
   around: "space-around",
 };
 
-/** Equal-width cells for explicit `columns` and all-button horizontal rows. */
+/** Equal-width cells for explicit `equalWidth` / `columns` props. */
 function wrapEqualColumnCells(children: ReactNode): ReactNode {
   const cells = Children.toArray(children).filter(
     (c) => c != null && c !== false,
@@ -50,17 +51,21 @@ export function SnapStack({
   children,
 }: ComponentRenderProps<Record<string, unknown>> & { children?: ReactNode }) {
   const parentDirection = useSnapStackDirection();
-  const direction = String(props.direction ?? "vertical");
+  const buttonContentUsesHorizontal =
+    childrenShouldUseHorizontalButtonLayout(children);
+  const direction =
+    buttonContentUsesHorizontal === undefined
+      ? String(props.direction ?? "vertical")
+      : buttonContentUsesHorizontal
+        ? "horizontal"
+        : "vertical";
   const rawGap = props.gap;
   const isHorizontal = direction === "horizontal";
   const gapMap = isHorizontal ? HGAP : VGAP;
-  const buttonRowGrid =
-    isHorizontal && horizontalChildrenAreAllButtons(children);
-  const buttonRowCount = buttonRowGrid
-    ? countRenderableChildren(children)
-    : 0;
+  const allChildrenAreButtons = childrenAreAllButtons(children);
 
   const columnsRaw = props.columns;
+  const equalWidth = props.equalWidth === true;
   const columns =
     typeof columnsRaw === "number" &&
     columnsRaw >= 2 &&
@@ -69,49 +74,44 @@ export function SnapStack({
       ? columnsRaw
       : undefined;
 
-  // Horizontal default depends on column count: 2→lg, 3→md, 4+→sm. Vertical stays md.
-  // Count comes from explicit `columns`, then button-row inference, else direct children
-  // count (any horizontal stack is N columns wide regardless of child types).
-  const horizontalColumnCount = isHorizontal
-    ? (columns ??
-       (buttonRowGrid ? buttonRowCount : undefined) ??
-       countRenderableChildren(children))
+  const equalWidthColumnCount =
+    columns ?? (equalWidth ? countRenderableChildren(children) : undefined);
+  const explicitEqualWidth =
+    isHorizontal &&
+    equalWidthColumnCount !== undefined &&
+    equalWidthColumnCount >= 1 &&
+    equalWidthColumnCount <= 6;
+
+  // Button-only stacks always default to sm; mixed horizontal stacks scale by child count.
+  // Vertical non-button stacks default to md.
+  const horizontalChildCount = isHorizontal
+    ? (explicitEqualWidth
+        ? equalWidthColumnCount
+        : countRenderableChildren(children))
     : undefined;
   const gap =
     typeof rawGap === "number"
       ? rawGap
       : typeof rawGap === "string" && rawGap in gapMap
         ? gapMap[rawGap]!
-        : isHorizontal
-          ? gapMap[defaultHorizontalGapSize(horizontalColumnCount)]!
+        : allChildrenAreButtons
+          ? gapMap.sm!
+          : isHorizontal
+          ? gapMap[defaultHorizontalGapSize(horizontalChildCount)]!
           : VGAP.md!;
-  const explicitColumnGrid =
-    isHorizontal && columns !== undefined && !buttonRowGrid;
-
   const justify =
     props.justify &&
-    (!isHorizontal || (!buttonRowGrid && !explicitColumnGrid))
+    (!isHorizontal || !explicitEqualWidth)
       ? JUSTIFY[String(props.justify)]
       : undefined;
 
   const isRowChild = parentDirection === "horizontal";
 
   const packedHorizontal =
-    isHorizontal &&
-    ((buttonRowGrid &&
-      buttonRowCount >= 1 &&
-      buttonRowCount <= 6) ||
-      explicitColumnGrid);
+    isHorizontal && explicitEqualWidth;
 
   let horizontalBody: ReactNode = children;
-  if (
-    isHorizontal &&
-    buttonRowGrid &&
-    buttonRowCount >= 1 &&
-    buttonRowCount <= 6
-  ) {
-    horizontalBody = wrapEqualColumnCells(children);
-  } else if (isHorizontal && explicitColumnGrid && columns !== undefined) {
+  if (isHorizontal && explicitEqualWidth) {
     horizontalBody = wrapEqualColumnCells(children);
   }
 
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     width: "100%",
     minWidth: 0,
   },
-  /** Single row for packed equal-width cells (button grids & explicit columns). */
+  /** Single row for packed equal-width cells from explicit equal-width layout. */
   horizontalPacked: {
     flexDirection: "row",
     flexWrap: "nowrap",
@@ -176,5 +176,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
     minWidth: 0,
+    alignSelf: "stretch",
   },
 });

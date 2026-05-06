@@ -48,7 +48,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     toggle_group: {
       props: toggleGroupProps,
       description:
-        "Single or multi-select choice group; `name` becomes POST inputs key. mode: single (default) | multiple. Optional label.",
+        "Single or multi-select choice group; `name` becomes POST inputs key. The @farcaster/snap React/React Native components choose row/column orientation from option label length, ignoring snap-sent orientation hints.",
     },
     input: {
       props: inputProps,
@@ -92,7 +92,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     stack: {
       props: stackProps,
       description:
-        "Layout container — direction: vertical (default) | horizontal. Children are element ids in order. Horizontal stacks use a single flex row so peers stay side-by-side and shrink with min-width 0. Nested stacks participate as flexible row peers. All-button horizontal stacks use an equal N-column grid where N is the number of buttons (1–6). Optional `columns` (`2`–`6`) forces an explicit equal grid for mixed children.",
+        "Layout container — direction: vertical (default) | horizontal. Children are element ids in order. Horizontal stacks use a single flex row so peers stay side-by-side and shrink with min-width 0. Nested stacks participate as flexible row peers. For all-button stacks, the @farcaster/snap React/React Native components choose row/column orientation from button label length, ignoring snap-sent direction hints; horizontal button rows use content-proportional widths while filling the container unless `equalWidth: true` is provided to force equal-width cells. Vertical button rows default to a tighter gap when `gap` is omitted.",
     },
     text: {
       props: textProps,

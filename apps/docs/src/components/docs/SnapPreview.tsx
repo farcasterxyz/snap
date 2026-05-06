@@ -303,7 +303,7 @@ function RenderElement({
       return <SnapBadge label={p.label as string} color={p.color as string} accent={accent} />;
     case "stack": {
       const dir = (p.direction as string) ?? "vertical";
-      const gap = { none: 0, sm: 6, md: 10, lg: 16 }[(p.gap as string) ?? "md"] ?? 10;
+      const gap = { none: 0, sm: 4, md: 10, lg: 16 }[(p.gap as string) ?? "md"] ?? 10;
       return (
         <div
           style={{

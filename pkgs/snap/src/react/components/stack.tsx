@@ -1,11 +1,12 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@neynar/ui/utils";
 import {
+  childrenShouldUseHorizontalButtonLayout,
+  childrenAreAllButtons,
   countRenderableChildren,
   defaultHorizontalGapSize,
-  horizontalChildrenAreAllButtons,
 } from "../../stack-horizontal-utils.js";
 import {
   SnapStackDirectionProvider,
@@ -14,7 +15,7 @@ import {
 
 const VGAP: Record<string, string> = {
   none: "gap-0",
-  sm: "gap-2",
+  sm: "gap-1",
   md: "gap-4",
   lg: "gap-6",
 };
@@ -34,14 +35,14 @@ const JUSTIFY_FLEX: Record<string, string> = {
   around: "justify-around",
 };
 
-/** Equal columns for explicit `columns` prop and for all-button horizontal rows. */
+/** Equal-width cell count for explicit `equalWidth` / `columns` props. */
 const COLUMN_GRID_CLASS: Record<number, string> = {
-  1: "grid grid-cols-1 auto-rows-auto items-stretch [&>*]:min-w-0",
-  2: "grid grid-cols-2 auto-rows-auto items-stretch [&>*]:min-w-0",
-  3: "grid grid-cols-3 auto-rows-auto items-stretch [&>*]:min-w-0",
-  4: "grid grid-cols-4 auto-rows-auto items-stretch [&>*]:min-w-0",
-  5: "grid grid-cols-5 auto-rows-auto items-stretch [&>*]:min-w-0",
-  6: "grid grid-cols-6 auto-rows-auto items-stretch [&>*]:min-w-0",
+  1: "auto-rows-auto items-stretch [&>*]:min-w-0 [&>*]:w-full",
+  2: "auto-rows-auto items-stretch [&>*]:min-w-0 [&>*]:w-full",
+  3: "auto-rows-auto items-stretch [&>*]:min-w-0 [&>*]:w-full",
+  4: "auto-rows-auto items-stretch [&>*]:min-w-0 [&>*]:w-full",
+  5: "auto-rows-auto items-stretch [&>*]:min-w-0 [&>*]:w-full",
+  6: "auto-rows-auto items-stretch [&>*]:min-w-0 [&>*]:w-full",
 };
 
 export function SnapStack({
@@ -52,17 +53,21 @@ export function SnapStack({
   children?: ReactNode;
 }) {
   const parentDirection = useSnapStackDirection();
-  const direction = String(props.direction ?? "vertical");
+  const buttonContentUsesHorizontal =
+    childrenShouldUseHorizontalButtonLayout(children);
+  const direction =
+    buttonContentUsesHorizontal === undefined
+      ? String(props.direction ?? "vertical")
+      : buttonContentUsesHorizontal
+        ? "horizontal"
+        : "vertical";
   const isHorizontal = direction === "horizontal";
   const justifyKey = props.justify ? String(props.justify) : undefined;
   const justifyFlex = justifyKey ? JUSTIFY_FLEX[justifyKey] : undefined;
-  const buttonRowGrid =
-    isHorizontal && horizontalChildrenAreAllButtons(children);
-  const buttonRowCount = buttonRowGrid
-    ? countRenderableChildren(children)
-    : 0;
+  const allChildrenAreButtons = childrenAreAllButtons(children);
 
   const columnsRaw = props.columns;
+  const equalWidth = props.equalWidth === true;
   const columns =
     typeof columnsRaw === "number" &&
     columnsRaw >= 2 &&
@@ -71,29 +76,36 @@ export function SnapStack({
       ? columnsRaw
       : undefined;
 
-  // Horizontal default depends on column count: 2→lg, 3→md, 4+→sm. Vertical stays md.
-  // Count comes from explicit `columns`, then button-row inference, else direct children
-  // count (any horizontal stack is N columns wide regardless of child types).
-  const horizontalColumnCount = isHorizontal
-    ? (columns ??
-       (buttonRowGrid ? buttonRowCount : undefined) ??
-       countRenderableChildren(children))
+  const equalWidthColumnCount =
+    columns ?? (equalWidth ? countRenderableChildren(children) : undefined);
+  const explicitEqualWidth =
+    isHorizontal &&
+    equalWidthColumnCount !== undefined &&
+    equalWidthColumnCount >= 1 &&
+    equalWidthColumnCount <= 6;
+
+  // Button-only stacks always default to sm; mixed horizontal stacks scale by child count.
+  // Vertical non-button stacks default to md.
+  const horizontalChildCount = isHorizontal
+    ? (explicitEqualWidth
+        ? equalWidthColumnCount
+        : countRenderableChildren(children))
     : undefined;
   const explicitGap =
     typeof props.gap === "string" && props.gap in (isHorizontal ? HGAP : VGAP);
   const gapKey = explicitGap
     ? String(props.gap)
-    : isHorizontal
-      ? defaultHorizontalGapSize(horizontalColumnCount)
+    : allChildrenAreButtons
+      ? "sm"
+      : isHorizontal
+      ? defaultHorizontalGapSize(horizontalChildCount)
       : "md";
   const gap = isHorizontal
     ? (HGAP[gapKey] ?? HGAP.md!)
     : (VGAP[gapKey] ?? VGAP.md!);
-  const explicitColumnGrid =
-    isHorizontal && columns !== undefined && !buttonRowGrid;
   const columnGridClass =
-    explicitColumnGrid && columns !== undefined
-      ? COLUMN_GRID_CLASS[columns]
+    explicitEqualWidth && equalWidthColumnCount !== undefined
+      ? COLUMN_GRID_CLASS[equalWidthColumnCount]
       : undefined;
 
   /**
@@ -108,11 +120,18 @@ export function SnapStack({
 
   const justifyBlockGrid =
     justifyFlex &&
-    (!isHorizontal || (!buttonRowGrid && !explicitColumnGrid));
+    (!isHorizontal || !explicitEqualWidth);
 
   /** Single flex row (nowrap): peers stay side-by-side and shrink via min-w-0 / flex-1 on nested stacks. */
   const horizontalFlexClasses =
     "flex min-w-0 flex-row flex-nowrap items-stretch [&>*]:min-w-0";
+  const equalWidthStyle: CSSProperties | undefined =
+    explicitEqualWidth && equalWidthColumnCount !== undefined
+      ? {
+          display: "grid",
+          gridTemplateColumns: `repeat(${equalWidthColumnCount}, minmax(0, 1fr))`,
+        }
+      : undefined;
 
   return (
     <SnapStackDirectionProvider
@@ -122,20 +141,12 @@ export function SnapStack({
         className={cn(
           rootWidthClass,
           isHorizontal
-            ? buttonRowGrid &&
-                buttonRowCount >= 1 &&
-                buttonRowCount <= 6 &&
-                COLUMN_GRID_CLASS[buttonRowCount]
-              ? cn(
-                  COLUMN_GRID_CLASS[buttonRowCount]!,
-                  gap,
-                  "[&>*]:w-full",
-                )
-              : explicitColumnGrid && columnGridClass
+            ? explicitEqualWidth && columnGridClass
                 ? cn(columnGridClass, gap)
                 : cn(horizontalFlexClasses, gap, justifyBlockGrid ? justifyFlex : undefined)
             : cn("flex min-w-0 w-full flex-col", gap, justifyFlex),
         )}
+        style={equalWidthStyle}
       >
         {children}
       </div>

@@ -1,6 +1,7 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { useStateStore } from "@json-render/react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { shouldUseHorizontalButtonContent } from "../../button-orientation-utils.js";
 import { useSnapTheme } from "../theme";
 
 export function SnapToggleGroup({
@@ -12,7 +13,6 @@ export function SnapToggleGroup({
   const path = `/inputs/${name}`;
   const label = props.label ? String(props.label) : undefined;
   const isMultiple = Boolean(props.multiple);
-  const orientation = String(props.orientation ?? "horizontal");
   const options = Array.isArray(props.options)
     ? (props.options as string[])
     : [];
@@ -38,7 +38,7 @@ export function SnapToggleGroup({
     return [];
   })();
 
-  const isVertical = orientation === "vertical";
+  const isVertical = !shouldUseHorizontalButtonContent(options);
 
   const handlePress = (opt: string) => {
     if (isMultiple) {
@@ -65,7 +65,7 @@ export function SnapToggleGroup({
           const isSelected = selected.includes(opt);
           return (
             <Pressable
-              key={index}
+              key={`${opt}-${index}`}
               style={({ pressed }) => [
                 styles.option,
                 {
@@ -117,7 +117,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   optionHorizontal: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   optionText: {
     fontSize: 13,

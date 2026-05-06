@@ -60,16 +60,17 @@ export function SnapActionButton({
 
   return (
     /**
-     * In a horizontal stack, `flex-1` lets the wrapper share row width with peers.
-     * In a vertical stack, `flex-1` would silently grow the button to fill column
-     * height (1/N distribution when siblings also flex-grow); stick to `w-full`.
+     * In a horizontal stack, `flex-auto` lets the row fill available width while
+     * preserving content-proportional button widths. In a vertical stack, flex
+     * growth would silently stretch button height; stick to `w-full`.
      */
     <div
       className={
         inHorizontalStack
-          ? "w-full min-w-0 flex-1"
+          ? "min-w-0 flex-auto"
           : "w-full min-w-0"
       }
+      style={inHorizontalStack ? { flex: "1 1 auto" } : undefined}
     >
       <Button
         type="button"
