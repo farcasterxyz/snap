@@ -3,6 +3,7 @@
 import { Children, type ReactNode, Fragment } from "react";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import { SnapItemGroupBorderProvider } from "./item-layout-context";
 
 const GAP_MAP: Record<string, string> = {
   none: "gap-0",
@@ -25,22 +26,23 @@ export function SnapItemGroup({
   const colors = useSnapColors();
 
   return (
-    <div
-      className={cn(
-        "flex flex-col",
-        border && "rounded-lg border",
-        gap,
-      )}
-      style={border ? { borderColor: colors.border } : undefined}
-    >
-      {items.map((child, i) => (
-        <Fragment key={i}>
-          {separator && i > 0 && (
-            <div className="h-px" style={{ backgroundColor: colors.border }} />
-          )}
-          {child}
-        </Fragment>
-      ))}
-    </div>
+    <SnapItemGroupBorderProvider value={border}>
+      <div
+        className={cn("flex flex-col", border && "rounded-lg border", gap)}
+        style={border ? { borderColor: colors.border } : undefined}
+      >
+        {items.map((child, i) => (
+          <Fragment key={i}>
+            {separator && i > 0 && (
+              <div
+                className="h-px"
+                style={{ backgroundColor: colors.border }}
+              />
+            )}
+            {child}
+          </Fragment>
+        ))}
+      </div>
+    </SnapItemGroupBorderProvider>
   );
 }

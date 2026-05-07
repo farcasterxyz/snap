@@ -68,7 +68,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `title` (string, required, max 100)
 - `description` (string, optional, max 160)
 - `variant` (optional): `"default"`. Default: `"default"`
-- `media` (optional): left-side media. Icon media: `{ "variant": "icon", "name": IconName, "color"?: PaletteColor }`. Image media: `{ "variant": "image", "url": string, "alt"?: string }`.
+- `media` (optional): left-side media. Icon media: `{ "variant": "icon", "name": IconName, "color"?: PaletteColor }`. Image media: `{ "variant": "image", "url": string, "alt"?: string, "round"?: boolean }`.
 - Children render in the actions slot (right side). Badges, buttons, and icons are all valid — but the item itself is not interactive, so avoid navigation-style icons (`chevron-right`, `arrow-right`, `external-link`) that imply the row navigates.
 
 **progress** — Horizontal progress bar.

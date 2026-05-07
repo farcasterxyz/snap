@@ -270,6 +270,7 @@ describe("URL validation", () => {
               variant: "image",
               url: "https://example.com/cover.jpg",
               alt: "Album cover",
+              round: true,
             },
           },
         },
@@ -277,7 +278,7 @@ describe("URL validation", () => {
     });
   });
 
-  it("keeps item media schema limited to icon name/color and image url/alt", () => {
+  it("keeps item media schema limited to icon name/color and image url/alt/round", () => {
     expect(
       itemProps.safeParse({
         title: "Unsupported variant",
@@ -291,6 +292,16 @@ describe("URL validation", () => {
       itemProps.safeParse({
         title: "Unsupported media size",
         media: { variant: "icon", name: "star", size: "sm" },
+      }).success,
+    ).toBe(false);
+    expect(
+      itemProps.safeParse({
+        title: "Unsupported image media size",
+        media: {
+          variant: "image",
+          url: "https://example.com/avatar.jpg",
+          size: "sm",
+        },
       }).success,
     ).toBe(false);
   });

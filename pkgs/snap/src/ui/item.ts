@@ -21,6 +21,7 @@ const itemImageMediaProps = z
     variant: z.literal("image"),
     url: z.string(),
     alt: z.string().max(ITEM_MAX_MEDIA_ALT_CHARS).optional(),
+    round: z.boolean().optional(),
   })
   .strict();
 

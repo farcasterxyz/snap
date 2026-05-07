@@ -66,8 +66,9 @@ function homePage(base: string): SnapHandlerResult {
             description: "Image media with a trailing profile action.",
             media: {
               variant: "image",
-              url: "https://placehold.co/120x120/png?text=AL",
+              url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80",
               alt: "Ari Lane avatar",
+              round: true,
             },
           },
           children: ["designer-action"],
@@ -99,8 +100,8 @@ function homePage(base: string): SnapHandlerResult {
             description: "Image media with a trailing icon.",
             media: {
               variant: "image",
-              url: "https://placehold.co/120x120/png?text=LP",
-              alt: "Album cover",
+              url: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=120&h=120&q=80",
+              alt: "Performer on stage",
             },
           },
           children: ["producer-icon"],
@@ -183,8 +184,9 @@ function selectedPage(base: string, selected: string): SnapHandlerResult {
             description: "Icon media uses name/color; image media uses url/alt.",
             media: {
               variant: "image",
-              url: "https://placehold.co/120x120/png?text=OK",
+              url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=120&h=120&q=80",
               alt: "Confirmation",
+              round: true,
             },
           },
         },

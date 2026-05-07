@@ -97,6 +97,7 @@ Design guidance:
   the middle, and `children` in the right actions slot. Badges, buttons, and icons
   are fine in the actions slot, but avoid navigation-style icons (`chevron-right`,
   `arrow-right`, `external-link`) — they imply the row itself navigates, and it doesn't.
+  Image media supports optional `round: true` for avatar-style circles.
 - 10 action types: `submit` (server round-trip), `open_url` (external browser),
   `open_snap` (open snap inline), `open_mini_app` (in-app), and client actions:
   `view_cast`, `view_profile`, `compose_cast`, `view_token`, `send_token`, `swap_token`.

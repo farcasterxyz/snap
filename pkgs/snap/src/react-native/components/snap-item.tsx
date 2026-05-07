@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSnapStackDirection } from "../stack-direction-context";
 import { useSnapTheme } from "../theme";
 import { useSnapPalette } from "../use-snap-palette";
+import { useSnapItemGroupHasBorder } from "./item-layout-context";
 import { ICON_MAP } from "./snap-icon";
 
 type ItemMediaConfig =
@@ -17,6 +18,7 @@ type ItemMediaConfig =
       variant: "image";
       url: string;
       alt?: string;
+      round?: boolean;
     };
 
 function parseItemMedia(value: unknown): ItemMediaConfig | undefined {
@@ -36,6 +38,7 @@ function parseItemMedia(value: unknown): ItemMediaConfig | undefined {
       variant: "image",
       url: media.url,
       alt: typeof media.alt === "string" ? media.alt : undefined,
+      round: typeof media.round === "boolean" ? media.round : undefined,
     };
   }
 
@@ -51,6 +54,7 @@ export function SnapItem({
   const title = String(props.title ?? "");
   const description = props.description ? String(props.description) : undefined;
   const media = parseItemMedia(props.media);
+  const inBorderedGroup = useSnapItemGroupHasBorder();
   /** Match web `Item className="flex-1"`: row peers must share width or title/description collapse. */
   const rowPeer = useSnapStackDirection() === "horizontal";
   const MediaIcon =
@@ -60,7 +64,11 @@ export function SnapItem({
       ? hex(media.color)
       : accentHex;
 
-  const containerVariant = { paddingVertical: 6, paddingHorizontal: 10 };
+  const containerVariant = {
+    paddingVertical: 6,
+    paddingHorizontal: inBorderedGroup ? 8 : 0,
+    columnGap: 8,
+  };
 
   return (
     <View
@@ -72,7 +80,7 @@ export function SnapItem({
         </View>
       ) : null}
       {media?.variant === "image" ? (
-        <View style={styles.imageMedia}>
+        <View style={[styles.imageMedia, media.round && styles.roundImage]}>
           <Image
             source={{ uri: media.url }}
             style={StyleSheet.absoluteFill}
@@ -115,7 +123,6 @@ const styles = StyleSheet.create({
   iconMedia: {
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 10,
   },
   imageMedia: {
     width: 40,
@@ -123,7 +130,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     overflow: "hidden",
     backgroundColor: "#f3f4f6",
-    marginRight: 10,
+  },
+  roundImage: {
+    borderRadius: 9999,
   },
   title: {
     fontSize: 15,
@@ -131,13 +140,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   description: {
-    fontSize: 13,
-    lineHeight: 18,
-    marginTop: 1,
+    fontSize: 12,
+    lineHeight: 16,
   },
   actions: {
     marginLeft: "auto",
-    paddingLeft: 12,
+    paddingLeft: 8,
     flexDirection: "row",
     alignItems: "center",
     flexShrink: 0,
