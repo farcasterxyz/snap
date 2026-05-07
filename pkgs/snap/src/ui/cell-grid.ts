@@ -6,6 +6,7 @@ import {
   GRID_MIN_ROWS,
   GRID_MAX_ROWS,
   GRID_GAP_VALUES,
+  GRID_CELL_ASPECT_RATIO_VALUES,
 } from "../constants.js";
 
 /** Palette name or `#rrggbb`; input is trimmed so palette and hex rules match runtime resolvers. */
@@ -13,11 +14,9 @@ const cellGridCellColorSchema = z.preprocess(
   (v) => (typeof v === "string" ? v.trim() : v),
   z.union([
     z.enum(PALETTE_COLOR_VALUES),
-    z
-      .string()
-      .refine(isSnapHexColorString, {
-        message: "cell_grid cell hex color must be #rrggbb",
-      }),
+    z.string().refine(isSnapHexColorString, {
+      message: "cell_grid cell hex color must be #rrggbb",
+    }),
   ]),
 );
 
@@ -36,6 +35,7 @@ export const cellGridProps = z
     rows: z.number().int().min(GRID_MIN_ROWS).max(GRID_MAX_ROWS),
     cells: z.array(cellGridCellSchema),
     gap: z.enum(GRID_GAP_VALUES).optional(),
+    cellAspectRatio: z.enum(GRID_CELL_ASPECT_RATIO_VALUES).optional(),
     rowHeight: z.number().int().min(8).max(64).optional(),
     select: z.enum(["off", "single", "multiple"]).optional(),
   })

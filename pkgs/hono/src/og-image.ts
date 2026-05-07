@@ -552,6 +552,8 @@ function mapCellGrid(el: El, accent: string): VNode {
   const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
   const gapPx = gapMap[gap] ?? 1;
   const cellW = Math.floor((OG_CARD_INNER_WIDTH_PX - (cols - 1) * gapPx) / cols);
+  const squareCells = el.cellAspectRatio === "square";
+  const rowHeight = typeof el.rowHeight === "number" ? el.rowHeight : 28;
 
   const cellMap = new Map<string, { color?: string; content?: string }>();
   for (const c of cells) {
@@ -567,7 +569,7 @@ function mapCellGrid(el: El, accent: string): VNode {
       cellNodes.push(
         h("div", {
           display: "flex", alignItems: "center", justifyContent: "center",
-          width: cellW, height: cellW > 28 ? 28 : cellW, borderRadius: 4,
+          width: cellW, height: squareCells ? cellW : Math.min(rowHeight, cellW), borderRadius: 4,
           backgroundColor: bg, border: "1px solid #E5E7EB",
           fontSize: 10, fontWeight: 600, color: "#374151",
         }, cell?.content ?? ""),
@@ -812,11 +814,19 @@ function estimateElementHeight(el: El, imageMap: Map<string, string>): number {
       return Math.max(1, bars.length) * 26;
     }
     case "cell_grid": {
+      const cols = Number(el.cols ?? 2);
       const rows = Number(el.rows ?? 2);
       const gap = String(el.gap ?? "sm");
       const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
-  const gapPx = gapMap[gap] ?? 1;
-      return rows * 28 + (rows - 1) * gapPx;
+      const gapPx = gapMap[gap] ?? 1;
+      const cellW = Math.floor((OG_CARD_INNER_WIDTH_PX - (cols - 1) * gapPx) / cols);
+      const rowHeight =
+        el.cellAspectRatio === "square"
+          ? cellW
+          : typeof el.rowHeight === "number"
+            ? Math.min(el.rowHeight, cellW)
+            : Math.min(28, cellW);
+      return rows * rowHeight + (rows - 1) * gapPx;
     }
     case "group": {
       const children = (el.children as El[]) ?? [];

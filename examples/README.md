@@ -10,5 +10,6 @@ Hono-based snap servers for local development and reference. Run from the repo r
 | `snap-expression` | 3013 | Dialogue-style snaps (CEO spectrum vote, fund explorer) |
 | `two-snaps` | 3016 / 3017 | Two Hono servers for testing cross-snap links in the emulator |
 | `item-media` | 3021 | Focused snap showing `item.props.media` with icon and image rows |
+| `cell-grid-square` | 3022 | Focused snap showing square `cell_grid` cells for board games |
 
 Set `SNAP_PUBLIC_BASE_URL` when deploying so `post` / `link` targets resolve correctly.

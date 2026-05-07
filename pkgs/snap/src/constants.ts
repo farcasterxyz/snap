@@ -20,6 +20,7 @@ export const GRID_MAX_COLS = 32;
 export const GRID_MIN_ROWS = 2;
 export const GRID_MAX_ROWS = 16;
 export const GRID_GAP_VALUES = ["none", "sm", "md", "lg"] as const;
+export const GRID_CELL_ASPECT_RATIO_VALUES = ["auto", "square"] as const;
 
 // ─── Snap structural limits ───────────────────────────
 export const MAX_ELEMENTS = 64;
