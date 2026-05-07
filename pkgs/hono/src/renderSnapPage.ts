@@ -458,6 +458,8 @@ function renderElement(key: string, spec: SnapSpec, accent: string): string {
       const gap = String(p.gap ?? "sm");
       const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
       const gapPx = gapMap[gap] ?? 1;
+      const squareCells = p.cellAspectRatio === "square";
+      const rowHeight = typeof p.rowHeight === "number" ? p.rowHeight : 28;
       const cellMap = new Map<string, { color?: string; content?: string }>();
       for (const c of cells) {
         cellMap.set(`${Number(c.row ?? 0)},${Number(c.col ?? 0)}`, {
@@ -471,7 +473,8 @@ function renderElement(key: string, spec: SnapSpec, accent: string): string {
           const cell = cellMap.get(`${r},${c}`);
           const bg = cell?.color ? colorHex(cell.color, accent) : "transparent";
           const content = cell?.content ? esc(cell.content) : "";
-          html += `<div style="min-height:28px;border:1px solid #E5E7EB;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#374151;background:${bg}">${content}</div>`;
+          const sizeStyle = squareCells ? "aspect-ratio:1/1;" : `min-height:${rowHeight}px;`;
+          html += `<div style="${sizeStyle}border:1px solid #E5E7EB;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#374151;background:${bg}">${content}</div>`;
         }
       }
       html += `</div>`;

@@ -446,6 +446,7 @@ the accumulating selection. The component ignores `on.press` whenever `select` i
 | `rows`      | number   | Yes      |              | Row count (2–16)                                                    |
 | `cells`     | object[] | Yes      |              | Sparse cell definitions (see below)                                 |
 | `gap`       | string   | No       | `"sm"`       | Cell spacing: `"none"` (0px) `"sm"` (1px) `"md"` (2px) `"lg"` (4px) |
+| `cellAspectRatio` | string | No    | `"auto"`    | Cell shape: `"auto"` uses `rowHeight`; `"square"` keeps each cell square based on column width |
 | `rowHeight` | number   | No       | `28`         | Pixel height per row (8–64). Grid height = rows × rowHeight         |
 | `select`    | string   | No       | `"off"`      | Selection mode: `"off"` (use with `on.press`) `"single"` `"multiple"` |
 
@@ -500,6 +501,7 @@ without posting; pair with a `button` that submits when the user is done:
       { "row": 1, "col": 1, "color": "green", "content": "X" },
       { "row": 3, "col": 3, "color": "purple" }
     ],
+    "cellAspectRatio": "square",
     "select": "multiple"
   }
 }

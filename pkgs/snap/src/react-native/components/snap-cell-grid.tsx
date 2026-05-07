@@ -18,6 +18,7 @@ export function SnapCellGrid({
   const rows = Number(props.rows ?? 2);
   const cells = Array.isArray(props.cells) ? props.cells : [];
   const rowHeight = typeof props.rowHeight === "number" ? props.rowHeight : 28;
+  const squareCells = props.cellAspectRatio === "square";
   const gap = String(props.gap ?? "sm");
   const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
   const gapPx = gapMap[gap] ?? 1;
@@ -101,18 +102,35 @@ export function SnapCellGrid({
 
       // Two-tone ring: outer View with contrasting border, inner View with inverse border
       const cellView = selected ? (
-        <View style={[styles.cell, { height: rowHeight, borderWidth: 1, borderColor: ringOuter, borderRadius: 4 }]}>
+        <View
+          style={[
+            styles.cell,
+            squareCells ? styles.squareCell : { height: rowHeight },
+            { borderWidth: 1, borderColor: ringOuter, borderRadius: 4 },
+          ]}
+        >
           <View
             style={[
               styles.innerCell,
-              { backgroundColor: bg, borderWidth: 1, borderColor: ringInner, borderRadius: 3 },
+              {
+                backgroundColor: bg,
+                borderWidth: 1,
+                borderColor: ringInner,
+                borderRadius: 3,
+              },
             ]}
           >
             {cellContent}
           </View>
         </View>
       ) : (
-        <View style={[styles.cell, { height: rowHeight, backgroundColor: bg }]}>
+        <View
+          style={[
+            styles.cell,
+            squareCells ? styles.squareCell : { height: rowHeight },
+            { backgroundColor: bg },
+          ]}
+        >
           {cellContent}
         </View>
       );
@@ -141,7 +159,17 @@ export function SnapCellGrid({
   }
 
   return (
-    <View style={[styles.wrap, { gap: gapPx, backgroundColor: colors.muted, padding: 4, borderRadius: 8 }]}>
+    <View
+      style={[
+        styles.wrap,
+        {
+          gap: gapPx,
+          backgroundColor: colors.muted,
+          padding: 4,
+          borderRadius: 8,
+        },
+      ]}
+    >
       {rowEls}
     </View>
   );
@@ -155,6 +183,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignItems: "center",
     justifyContent: "center",
+  },
+  squareCell: {
+    aspectRatio: 1,
+    width: "100%",
   },
   innerCell: {
     width: "100%",

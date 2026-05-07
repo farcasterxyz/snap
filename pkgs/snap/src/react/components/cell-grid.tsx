@@ -27,6 +27,7 @@ export function SnapCellGrid({
   const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
   const gapPx = gapMap[gap] ?? 1;
   const rowHeight = typeof props.rowHeight === "number" ? props.rowHeight : 28;
+  const squareCells = props.cellAspectRatio === "square";
 
   const name = props.name ? String(props.name) : POST_GRID_TAP_KEY;
   const tapPath = `/inputs/${name}`;
@@ -78,7 +79,9 @@ export function SnapCellGrid({
 
   /** Cells without a palette `color` — subtle fill so empty slots read as tiles. */
   const emptyCellBg =
-    colors.mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)";
+    colors.mode === "dark"
+      ? "rgba(255, 255, 255, 0.05)"
+      : "rgba(0, 0, 0, 0.05)";
 
   const cellEls: ReactNode[] = [];
   for (let r = 0; r < rows; r++) {
@@ -110,7 +113,8 @@ export function SnapCellGrid({
             interactive ? "cursor-pointer select-none" : "cursor-default",
           )}
           style={{
-            height: rowHeight,
+            height: squareCells ? undefined : rowHeight,
+            aspectRatio: squareCells ? "1 / 1" : undefined,
             background: bg,
             color: textColor,
             boxShadow: selected

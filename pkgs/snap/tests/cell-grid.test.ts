@@ -30,6 +30,24 @@ describe("cell_grid cell schema", () => {
     expect(cellGridProps.safeParse(grid).success).toBe(true);
   });
 
+  it("accepts square cell aspect ratio", () => {
+    expect(
+      cellGridProps.safeParse({
+        ...baseGrid,
+        cellAspectRatio: "square",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects unknown cell aspect ratio", () => {
+    expect(
+      cellGridProps.safeParse({
+        ...baseGrid,
+        cellAspectRatio: "wide",
+      }).success,
+    ).toBe(false);
+  });
+
   it("rejects empty value", () => {
     const grid = {
       ...baseGrid,
