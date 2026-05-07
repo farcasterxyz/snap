@@ -2,6 +2,7 @@ import type { ComponentRenderProps } from "@json-render/react-native";
 import { Children, Fragment, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSnapTheme } from "../theme";
+import { SnapItemGroupBorderProvider } from "./item-layout-context";
 
 const GAP_MAP: Record<string, number> = {
   none: 0,
@@ -21,22 +22,30 @@ export function SnapItemGroup({
   const items = Children.toArray(children);
 
   return (
-    <View
-      style={[
-        styles.group,
-        border && { borderWidth: 1, borderColor: colors.border, borderRadius: 12 },
-        { gap },
-      ]}
-    >
-      {items.map((child, i) => (
-        <Fragment key={i}>
-          {separator && i > 0 && (
-            <View style={{ height: 1, backgroundColor: colors.border + "80" }} />
-          )}
-          {child}
-        </Fragment>
-      ))}
-    </View>
+    <SnapItemGroupBorderProvider value={border}>
+      <View
+        style={[
+          styles.group,
+          border && {
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 12,
+          },
+          { gap },
+        ]}
+      >
+        {items.map((child, i) => (
+          <Fragment key={i}>
+            {separator && i > 0 && (
+              <View
+                style={{ height: 1, backgroundColor: colors.border + "80" }}
+              />
+            )}
+            {child}
+          </Fragment>
+        ))}
+      </View>
+    </SnapItemGroupBorderProvider>
   );
 }
 

@@ -171,10 +171,10 @@ content.
 ## item
 
 The go-to component for structured content rows: leaderboards, settings, key-value info.
-Has a title, optional description, and an actions slot on the right side. Put badges,
-buttons, or icons in `children` for the action slot. Items are not interactive — don't
-use navigation-style affordances like `chevron-right`, `arrow-right`, or `external-link`
-that imply the row itself is clickable.
+Mirrors shadcn `Item`: optional `media` renders on the left, title and description render
+in the content area, and `children` render in the actions slot on the right. Items are
+not interactive — don't use navigation-style affordances like `chevron-right`,
+`arrow-right`, or `external-link` that imply the row itself is clickable.
 
 <ElementPreview type="item" />
 
@@ -183,12 +183,22 @@ that imply the row itself is clickable.
 | `title`       | string | Yes      |             | Primary text. Max 100 chars               |
 | `description` | string | No       |             | Secondary text below title. Max 160 chars |
 | `variant`     | string | No       | `"default"` | Visual style                              |
+| `media`       | object | No       |             | Left-side media, like shadcn `ItemMedia`  |
 
 ### Variants
 
 | Variant   | Description              |
 | --------- | ------------------------ |
 | `default` | No background, no border |
+
+### Media
+
+Rendered on the left, before the item content, matching shadcn `ItemMedia`.
+
+| Media variant | Required fields | Optional fields |
+| ------------- | --------------- | --------------- |
+| `icon`        | `name`          | `color`         |
+| `image`       | `url`           | `alt`, `round`  |
 
 ### Children
 
@@ -200,7 +210,11 @@ game — the item itself is not clickable, so pick trailing content that reads a
 ```json
 "score": {
   "type": "item",
-  "props": { "title": "Engagement Score", "description": "Based on 24h activity" },
+  "props": {
+    "title": "Engagement Score",
+    "description": "Based on 24h activity",
+    "media": { "variant": "icon", "name": "trending-up", "color": "green" }
+  },
   "children": ["score-badge"]
 },
 "score-badge": { "type": "badge", "props": { "label": "92", "color": "green" } }

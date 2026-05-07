@@ -29,7 +29,12 @@ const URL_TARGET_ACTIONS = new Set([
  */
 function isLoopback(url: URL): boolean {
   const host = url.hostname;
-  return host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
+  return (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "::1" ||
+    host === "[::1]"
+  );
 }
 
 /**
@@ -82,6 +87,11 @@ type ElementShape = {
   children?: string[];
   props?: Record<string, unknown>;
   on?: Record<string, { action?: string; params?: Record<string, unknown> }>;
+};
+
+type ItemMediaShape = {
+  variant?: string;
+  url?: unknown;
 };
 
 // ─── Structural validation ────────────────────────────
@@ -166,6 +176,24 @@ function validateUrls(elements: Record<string, unknown>): z.core.$ZodIssue[] {
           message: error,
           path: ["ui", "elements", id, "props", "url"],
         });
+      }
+    }
+
+    if (
+      el.type === "item" &&
+      el.props?.media &&
+      typeof el.props.media === "object"
+    ) {
+      const media = el.props.media as ItemMediaShape;
+      if (media.variant === "image" && typeof media.url === "string") {
+        const error = validateUrl(media.url);
+        if (error) {
+          issues.push({
+            code: "custom",
+            message: error,
+            path: ["ui", "elements", id, "props", "media", "url"],
+          });
+        }
       }
     }
 
