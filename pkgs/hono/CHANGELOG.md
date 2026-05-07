@@ -1,5 +1,18 @@
 # @farcaster/snap-hono
 
+## 2.1.4
+
+### Patch Changes
+
+- [#183](https://github.com/farcasterxyz/snap/pull/183) [`511528e`](https://github.com/farcasterxyz/snap/commit/511528eb952da9ed6f830ca77076328222532844) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add `cellAspectRatio` support to `cell_grid`.
+
+  `cell_grid` now accepts `cellAspectRatio: "square"` to keep each cell square as snap width changes, while preserving the existing `rowHeight` behavior by default. This makes board-style snaps such as Minesweeper render with stable cell geometry across client widths.
+
+  The React, React Native, static HTML, and OG image renderers now honor square grid cells. The 2.0 docs, agent-facing skill text, and `llms.txt` reference material document the new option, and a focused `cell-grid-square` example app exercises the behavior in the emulator.
+
+- Updated dependencies [[`efaf84c`](https://github.com/farcasterxyz/snap/commit/efaf84c1d7365d7e3547930e5753fe606a1ed6e8), [`511528e`](https://github.com/farcasterxyz/snap/commit/511528eb952da9ed6f830ca77076328222532844), [`96ad223`](https://github.com/farcasterxyz/snap/commit/96ad223f704b5a23e4b9b745483805de35bb102f)]:
+  - @farcaster/snap@2.5.0
+
 ## 2.1.3
 
 ### Patch Changes

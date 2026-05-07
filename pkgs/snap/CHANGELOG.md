@@ -1,5 +1,29 @@
 # @farcaster/snap
 
+## 2.5.0
+
+### Minor Changes
+
+- [#181](https://github.com/farcasterxyz/snap/pull/181) [`efaf84c`](https://github.com/farcasterxyz/snap/commit/efaf84c1d7365d7e3547930e5753fe606a1ed6e8) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add shadcn-style media support to Snap `item` rows.
+
+  Items now accept an optional `props.media` object that renders in a dedicated left-side media slot while existing `children` continue to render in the right-side actions slot. Icon media uses `{ variant: "icon", name, color? }`; image media uses `{ variant: "image", url, alt?, round? }`, where `round: true` renders avatar-style circular image media.
+
+  The snap UI catalog now exposes the expanded `item` schema through `itemProps` and `itemMediaProps`, including the new discriminated `media` contract. The catalog keeps `variant` limited to `"default"` and does not add item sizes or media sizes, so clients continue to own the exact rendered dimensions. Catalog validation accepts icon media by `name` plus optional palette `color`, accepts image media by `url` plus optional `alt` and `round`, and rejects unsupported media fields.
+
+  The React and React Native renderers now support this item media slot, keep media and trailing actions vertically centered in compact rows, use smaller subtitle text for item descriptions, and remove horizontal row padding for plain lists while preserving modest inset for bordered item groups. Image media URLs are validated with the same HTTPS and loopback development rules as regular image elements.
+
+  This also adds a runnable `examples/item-media` app with real image media examples and updates the 2.0 item documentation and machine-readable guidance.
+
+- [#183](https://github.com/farcasterxyz/snap/pull/183) [`511528e`](https://github.com/farcasterxyz/snap/commit/511528eb952da9ed6f830ca77076328222532844) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add `cellAspectRatio` support to `cell_grid`.
+
+  `cell_grid` now accepts `cellAspectRatio: "square"` to keep each cell square as snap width changes, while preserving the existing `rowHeight` behavior by default. This makes board-style snaps such as Minesweeper render with stable cell geometry across client widths.
+
+  The React, React Native, static HTML, and OG image renderers now honor square grid cells. The 2.0 docs, agent-facing skill text, and `llms.txt` reference material document the new option, and a focused `cell-grid-square` example app exercises the behavior in the emulator.
+
+- [#178](https://github.com/farcasterxyz/snap/pull/178) [`96ad223`](https://github.com/farcasterxyz/snap/commit/96ad223f704b5a23e4b9b745483805de35bb102f) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Infer button-only stack and toggle group orientation from visible label content in the React and React Native components. The components render horizontally only when total visible label text fits these limits: 2 controls <= 20 chars, 3 controls <= 15 chars, 4 controls <= 11 chars, and 5 controls <= 8 chars. Six controls, or any button/toggle set over its limit, renders vertically.
+
+  Button-only stacks now default to the `sm` gap when `gap` is omitted, regardless of whether the content resolves horizontal or vertical. Horizontal button-only stacks use content-proportional widths by default, and `equalWidth: true` can be set on a horizontal stack to force equal-width children.
+
 ## 2.4.0
 
 ### Minor Changes
