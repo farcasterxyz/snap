@@ -35,11 +35,12 @@ export function SnapCellGrid({
 
   const cellMap = new Map<
     string,
-    { color?: string; content?: string; value?: string }
+    { color?: string; textColor?: string; content?: string; value?: string }
   >();
   for (const c of cells) {
     cellMap.set(`${Number(c.row)},${Number(c.col)}`, {
       color: c.color as string | undefined,
+      textColor: c.textColor as string | undefined,
       content: c.content != null ? String(c.content) : undefined,
       value: typeof c.value === "string" ? c.value : undefined,
     });
@@ -92,7 +93,11 @@ export function SnapCellGrid({
       const selected = interactive && isSelected(r, c);
       const bgHex = cell?.color ? hex(cell.color) : null;
       const bg = bgHex ?? emptyCellBg;
-      const textColor = bgHex ? readableTextOnHex(bgHex) : colors.text;
+      const textColor = cell?.textColor
+        ? hex(cell.textColor)
+        : bgHex
+          ? readableTextOnHex(bgHex)
+          : colors.text;
 
       const cellContent = cell?.content ? (
         <Text style={[styles.cellText, { color: textColor }]}>

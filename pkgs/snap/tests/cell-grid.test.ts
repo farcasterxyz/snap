@@ -30,6 +30,31 @@ describe("cell_grid cell schema", () => {
     expect(cellGridProps.safeParse(grid).success).toBe(true);
   });
 
+  it("accepts optional textColor as palette name or #rrggbb", () => {
+    expect(
+      cellGridProps.safeParse({
+        ...baseGrid,
+        cells: [{ row: 0, col: 0, color: "blue", textColor: "amber" }],
+      }).success,
+    ).toBe(true);
+
+    expect(
+      cellGridProps.safeParse({
+        ...baseGrid,
+        cells: [{ row: 0, col: 0, color: "blue", textColor: "#ffffff" }],
+      }).success,
+    ).toBe(true);
+  });
+
+  it("trims textColor before validation", () => {
+    const grid = cellGridProps.parse({
+      ...baseGrid,
+      cells: [{ row: 0, col: 0, textColor: "  #ffffff  " }],
+    });
+
+    expect(grid.cells[0]?.textColor).toBe("#ffffff");
+  });
+
   it("accepts square cell aspect ratio", () => {
     expect(
       cellGridProps.safeParse({
@@ -70,5 +95,14 @@ describe("cell_grid cell schema", () => {
       cells: [{ row: 0, col: 0, value: 5 }],
     };
     expect(cellGridProps.safeParse(grid).success).toBe(false);
+  });
+
+  it("rejects invalid textColor strings", () => {
+    expect(
+      cellGridProps.safeParse({
+        ...baseGrid,
+        cells: [{ row: 0, col: 0, textColor: "not-a-color" }],
+      }).success,
+    ).toBe(false);
   });
 });

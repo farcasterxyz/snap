@@ -463,6 +463,7 @@ the accumulating selection. The component ignores `on.press` whenever `select` i
 | `row`     | number       | Yes      | Row index (0-based)    |
 | `col`     | number       | Yes      | Column index (0-based) |
 | `color`   | PaletteColor or `#rrggbb` | No       | Cell fill color (hex is independent of page accent) |
+| `textColor` | PaletteColor or `#rrggbb` | No       | Cell text color. When omitted, clients choose an auto-contrast color from the cell fill. |
 | `content` | string       | No       | Cell text content      |
 | `value`   | string       | No       | POST value when this cell is pressed/selected (1–30 chars). When omitted, `"row,col"` is used. Use this for grids whose cells carry meaningful labels (calendar days, alphabet pickers, region maps) so action handlers don't need to reverse-lookup row/col. |
 

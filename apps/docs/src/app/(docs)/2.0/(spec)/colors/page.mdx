@@ -41,8 +41,9 @@ the current mode.
 
 **`bar_chart.bars[].color`** — any palette name (per-bar override).
 
-**Exception:** `grid.cells[].color` accepts free hex (`#RRGGBB`). Games and pixel
-canvases need arbitrary colors for content like Wordle tiles and pixel art.
+**Exception:** `grid.cells[].color` and `grid.cells[].textColor` accept free hex
+(`#RRGGBB`). Games and pixel canvases need arbitrary colors for content like
+Wordle tiles and pixel art.
 
 ```json
 {
@@ -59,9 +60,10 @@ Where the accent color appears on UI surfaces is documented on
 
 ## Grid Cell Colors (Exception)
 
-Each cell can specify an arbitrary hex color via `cells[].color` (see exception above).
-This is necessary for game boards, pixel art, and other visual applications where the
-color IS the content.
+Each cell can specify arbitrary hex colors via `cells[].color` and
+`cells[].textColor` (see exception above). When `textColor` is omitted, clients
+choose an auto-contrast text color from the cell fill. This is necessary for game
+boards, pixel art, and other visual applications where the color IS the content.
 
 ```json
 {
@@ -69,7 +71,7 @@ color IS the content.
   "cols": 5,
   "rows": 6,
   "cells": [
-    { "row": 0, "col": 0, "color": "#22C55E", "content": "C" },
+    { "row": 0, "col": 0, "color": "#22C55E", "textColor": "#052E16", "content": "C" },
     { "row": 0, "col": 1, "color": "#6B7280", "content": "R" },
     { "row": 0, "col": 2, "color": "#CA8A04", "content": "A" }
   ]
