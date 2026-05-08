@@ -41,7 +41,7 @@ Some elements accept a `color` prop:
 
 - `progress` — color name or `"accent"`
 - `bar_chart` — color name or `"accent"` at chart level; color name only per-bar
-- `grid` cells — `#rrggbb` hex
+- `grid` cell fill/text colors — `#rrggbb` hex
 
 When `color` is `"accent"` (or omitted), the element uses the accent color. When it is a specific color name or hex value, that color is **explicit** and independent of `page.theme.accent`.
 

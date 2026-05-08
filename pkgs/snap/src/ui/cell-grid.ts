@@ -10,12 +10,12 @@ import {
 } from "../constants.js";
 
 /** Palette name or `#rrggbb`; input is trimmed so palette and hex rules match runtime resolvers. */
-const cellGridCellColorSchema = z.preprocess(
+const cellGridCellColorSchema = (field: "color" | "textColor") => z.preprocess(
   (v) => (typeof v === "string" ? v.trim() : v),
   z.union([
     z.enum(PALETTE_COLOR_VALUES),
     z.string().refine(isSnapHexColorString, {
-      message: "cell_grid cell hex color must be #rrggbb",
+      message: `cell_grid cell ${field} hex must be #rrggbb`,
     }),
   ]),
 );
@@ -23,7 +23,8 @@ const cellGridCellColorSchema = z.preprocess(
 const cellGridCellSchema = z.object({
   row: z.number().int().nonnegative(),
   col: z.number().int().nonnegative(),
-  color: cellGridCellColorSchema.optional(),
+  color: cellGridCellColorSchema("color").optional(),
+  textColor: cellGridCellColorSchema("textColor").optional(),
   content: z.string().optional(),
   value: z.string().min(1).max(30).optional(),
 });
