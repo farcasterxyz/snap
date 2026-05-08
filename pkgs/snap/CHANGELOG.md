@@ -1,5 +1,17 @@
 # @farcaster/snap
 
+## 2.5.1
+
+### Patch Changes
+
+- [#184](https://github.com/farcasterxyz/snap/pull/184) [`5db6204`](https://github.com/farcasterxyz/snap/commit/5db62044ccee60bd9a2cdde4478a1fc8ce96dd5b) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add cell_grid textColor override
+
+  cell_grid cells now accept an optional textColor field alongside color. textColor accepts the same palette color names and #rrggbb hex values as cell fill colors, and it is intentionally an override only: when textColor is omitted, web and native renderers keep using the existing auto-contrast text color derived from each cell background.
+
+  The React web and React Native cell_grid renderers both resolve textColor through their existing palette/hex color resolvers before falling back to readableTextOnHex for colored cells and the normal theme text color for uncolored cells. This preserves existing snaps while giving games, pixel art, and board UIs a precise per-cell label color control.
+
+  Docs, llms.txt, catalog text, schema validation tests, and a cell-grid-text-color example were added to cover the new catalog surface.
+
 ## 2.5.0
 
 ### Minor Changes
