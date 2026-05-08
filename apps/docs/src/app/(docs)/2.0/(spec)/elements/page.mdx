@@ -18,17 +18,17 @@ its configuration; `children` names child element IDs; `on` binds event handlers
 | 3   | [icon](#icon)                 | Display   | Standalone icon from curated set          |
 | 4   | [image](#image)               | Display   | HTTPS image with aspect ratio             |
 | 5   | [item](#item)                 | Display   | Content row with actions slot             |
-| 6   | [item_group](#item_group)     | Container | Groups items into a styled list           |
+| 6   | [item_group](#item-group)     | Container | Groups items into a styled list           |
 | 7   | [progress](#progress)         | Display   | Horizontal progress bar                   |
 | 8   | [separator](#separator)       | Display   | Visual divider                            |
 | 9   | [stack](#stack)               | Container | Vertical or horizontal layout             |
 | 10  | [text](#text)                 | Display   | Text block with size and weight           |
-| 11  | [bar_chart](#bar_chart)       | Data      | Horizontal bar chart with labeled bars    |
-| 12  | [cell_grid](#cell_grid)       | Data      | Colored cell grid, optionally interactive |
+| 11  | [bar_chart](#bar-chart)       | Data      | Horizontal bar chart with labeled bars    |
+| 12  | [cell_grid](#cell-grid)       | Data      | Colored cell grid, optionally interactive |
 | 13  | [input](#input)               | Field     | Text or number input                      |
 | 14  | [slider](#slider)             | Field     | Numeric range slider                      |
 | 15  | [switch](#switch)             | Field     | Boolean toggle                            |
-| 16  | [toggle_group](#toggle_group) | Field     | Single or multi-select choice group       |
+| 16  | [toggle_group](#toggle-group) | Field     | Single or multi-select choice group       |
 
 **Field components** (`input`, `slider`, `switch`, `toggle_group`) collect user input.
 Their values are sent in the POST payload under `inputs[name]` when a `submit` action
@@ -72,7 +72,7 @@ Pair with an icon for scannability.
 
 Fires actions via `on.press` — the standard way to commit user input. Default variant is
 `"secondary"` (bordered); use `"primary"` (filled) for the main CTA, typically one per
-page. ([cell_grid](#cell_grid) also fires actions, via `on.press` per cell.) See
+page. ([cell_grid](#cell-grid) also fires actions, via `on.press` per cell.) See
 [Actions](/snap/actions) for the full list of action types.
 
 <ElementPreview type="button" />
