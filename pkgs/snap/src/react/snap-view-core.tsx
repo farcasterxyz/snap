@@ -4,7 +4,6 @@ import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "../ui/index.js";
 import { SnapCatalogView } from "./catalog-renderer";
 import { SnapPreviewAccentProvider } from "./accent-context";
-import { SnapPaginatorActionProvider } from "./paginator-action-context";
 import { SnapVersionProvider } from "./snap-version-context";
 import { resolveSnapPaletteHex } from "./lib/resolve-palette-hex";
 import { snapPreviewPrimaryCssProperties } from "./lib/preview-primary-css";
@@ -497,18 +496,16 @@ export function SnapViewCore({
           appearance={appearance}
         >
           <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
-            <SnapPaginatorActionProvider>
-              <SnapCatalogView
-                key={pageKey}
-                spec={spec}
-                state={initialState}
-                loading={false}
-                onStateChange={(changes) => {
-                  applyStatePaths(stateRef.current, changes);
-                }}
-                onAction={handleAction}
-              />
-            </SnapPaginatorActionProvider>
+            <SnapCatalogView
+              key={pageKey}
+              spec={spec}
+              state={initialState}
+              loading={false}
+              onStateChange={(changes) => {
+                applyStatePaths(stateRef.current, changes);
+              }}
+              onAction={handleAction}
+            />
           </SnapVersionProvider>
         </SnapPreviewAccentProvider>
       </div>

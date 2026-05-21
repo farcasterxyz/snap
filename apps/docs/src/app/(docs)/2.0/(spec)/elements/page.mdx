@@ -369,7 +369,7 @@ Column count is taken from `columns` when set, or inferred from button-row child
 
 Client-side page navigation without a server round trip. Children are page element IDs;
 the renderer shows one child at a time and can provide built-in previous/next controls
-and page indicators. The current page index is local renderer state and is never included
+and page indicators. The current page index is json-render local UI state and is never included
 in POST `inputs`.
 
 Use `paginator` when one snap page would otherwise become too tall, especially for

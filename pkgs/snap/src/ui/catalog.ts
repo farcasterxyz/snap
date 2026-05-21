@@ -79,7 +79,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     paginator: {
       props: paginatorProps,
       description:
-        "Client-side paginator. Children are page element ids; the @farcaster/snap React/React Native components render one page at a time with optional built-in previous/next controls and indicators, optional top/bottom controlsPosition, and author-controlled local transition (slide | fade | scale | none). Buttons or cell_grid cells in the same snap can bind paginator_next, paginator_prev, or paginator_go_to for custom local navigation. Only one paginator is supported per rendered snap in this release. Page index is local renderer state and is not posted as input.",
+        "Client-side paginator. Children are page element ids; the @farcaster/snap React/React Native components render one page at a time with optional built-in previous/next controls and indicators, optional top/bottom controlsPosition, and author-controlled local transition (slide | fade | scale | none). Buttons or cell_grid cells in the same snap can bind paginator_next, paginator_prev, or paginator_go_to for custom local navigation. Only one paginator is supported per rendered snap in this release. Page index is json-render local UI state and is not posted as input.",
     },
     progress: {
       props: progressProps,

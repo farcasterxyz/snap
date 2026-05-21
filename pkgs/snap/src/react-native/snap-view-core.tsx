@@ -3,7 +3,6 @@ import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./catalog-renderer";
 import { ConfettiOverlay } from "./confetti-overlay";
 import { FireworksOverlay } from "./fireworks-overlay";
-import { SnapPaginatorActionProvider } from "./paginator-action-context";
 import { useSnapTheme } from "./theme";
 import { SnapVersionProvider } from "./snap-version-context";
 import {
@@ -241,18 +240,16 @@ export function SnapViewCoreInner({
           : loadingOverlay
         : null}
       <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
-        <SnapPaginatorActionProvider>
-          <SnapCatalogView
-            key={pageKey}
-            spec={spec}
-            state={initialState}
-            loading={false}
-            onStateChange={(changes) => {
-              applyStatePaths(stateRef.current, changes);
-            }}
-            onAction={handleAction}
-          />
-        </SnapPaginatorActionProvider>
+        <SnapCatalogView
+          key={pageKey}
+          spec={spec}
+          state={initialState}
+          loading={false}
+          onStateChange={(changes) => {
+            applyStatePaths(stateRef.current, changes);
+          }}
+          onAction={handleAction}
+        />
       </SnapVersionProvider>
       {showConfetti && <ConfettiOverlay key={confettiKey} />}
       {showFireworks && <FireworksOverlay key={fireworksKey} />}

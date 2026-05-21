@@ -8,8 +8,7 @@ import { useSnapColors } from "../hooks/use-snap-colors";
 import {
   getPaginatorAction,
   runPaginatorAction,
-  useSnapPaginatorActions,
-} from "../paginator-action-context";
+} from "../../ui/paginator-state";
 
 export function SnapCellGrid({
   element: { props, on },
@@ -18,9 +17,9 @@ export function SnapCellGrid({
   element: { props: Record<string, unknown>; on?: Record<string, unknown> };
   emit: (name: string) => void;
 }) {
-  const { get, set } = useStateStore();
+  const stateStore = useStateStore();
+  const { get, set } = stateStore;
   const colors = useSnapColors();
-  const paginatorActions = useSnapPaginatorActions();
   const paginatorAction = getPaginatorAction(on);
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
@@ -91,7 +90,7 @@ export function SnapCellGrid({
     }
     if (
       hasPressAction &&
-      !runPaginatorAction(paginatorActions, paginatorAction)
+      !runPaginatorAction(stateStore, paginatorAction)
     ) {
       emit("press");
     }

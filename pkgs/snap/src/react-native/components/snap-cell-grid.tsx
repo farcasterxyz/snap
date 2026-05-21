@@ -7,8 +7,7 @@ import { POST_GRID_TAP_KEY, readableTextOnHex } from "@farcaster/snap";
 import {
   getPaginatorAction,
   runPaginatorAction,
-  useSnapPaginatorActions,
-} from "../paginator-action-context";
+} from "../../ui/paginator-state";
 
 export function SnapCellGrid({
   element,
@@ -18,8 +17,8 @@ export function SnapCellGrid({
   const on = (element as unknown as { on?: Record<string, unknown> }).on;
   const { hex, appearance } = useSnapPalette();
   const { colors } = useSnapTheme();
-  const { get, set } = useStateStore();
-  const paginatorActions = useSnapPaginatorActions();
+  const stateStore = useStateStore();
+  const { get, set } = stateStore;
   const paginatorAction = getPaginatorAction(on);
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
@@ -91,7 +90,7 @@ export function SnapCellGrid({
     }
     if (
       hasPressAction &&
-      !runPaginatorAction(paginatorActions, paginatorAction)
+      !runPaginatorAction(stateStore, paginatorAction)
     ) {
       emit("press");
     }

@@ -8,10 +8,16 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useStateStore } from "@json-render/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
-import { useSnapPaginatorActions } from "../paginator-action-context";
+import {
+  clampPaginatorPage,
+  pageFromValue,
+  SNAP_PAGINATOR_PAGE_COUNT_PATH,
+  SNAP_PAGINATOR_PAGE_PATH,
+} from "../../ui/paginator-state";
 
 function clampInitialPage(value: unknown, pageCount: number): number {
   if (typeof value !== "number" || !Number.isInteger(value)) return 0;
@@ -30,8 +36,12 @@ export function SnapPaginator({
     [children],
   );
   const colors = useSnapColors();
-  const paginatorActions = useSnapPaginatorActions();
-  const [page, setPage] = useState(() => clampInitialPage(props.initialPage, pages.length));
+  const { get, set } = useStateStore();
+  const initialPage = clampInitialPage(props.initialPage, pages.length);
+  const page = clampPaginatorPage(
+    pageFromValue(get(SNAP_PAGINATOR_PAGE_PATH), initialPage),
+    pages.length,
+  );
   const activePage = Math.min(page, Math.max(pages.length - 1, 0));
   const showControls = props.showControls !== false && pages.length > 1;
   const showIndicators = props.showIndicators !== false && pages.length > 1;
@@ -49,24 +59,28 @@ export function SnapPaginator({
   const canGoPrev = activePage > 0;
   const canGoNext = activePage < pages.length - 1;
   const goToPage = (targetPage: number) => {
-    const nextPage = Math.min(Math.max(targetPage, 0), pages.length - 1);
+    const nextPage = clampPaginatorPage(targetPage, pages.length);
     if (nextPage !== activePage) {
       setTransitionDirection(nextPage > activePage ? "next" : "previous");
     }
-    setPage(nextPage);
+    set(SNAP_PAGINATOR_PAGE_PATH, nextPage);
   };
   const goPrev = () => goToPage(activePage - 1);
   const goNext = () => goToPage(activePage + 1);
-  const actions = useMemo(() => ({
-    previous: goPrev,
-    next: goNext,
-    goTo: goToPage,
-  }), [activePage, pages.length]);
 
   useEffect(() => {
     if (pages.length === 0) return;
-    return paginatorActions?.register(actions);
-  }, [actions, pages.length, paginatorActions]);
+    const nextPage = clampPaginatorPage(
+      pageFromValue(get(SNAP_PAGINATOR_PAGE_PATH), initialPage),
+      pages.length,
+    );
+    if (get(SNAP_PAGINATOR_PAGE_PATH) !== nextPage) {
+      set(SNAP_PAGINATOR_PAGE_PATH, nextPage);
+    }
+    if (get(SNAP_PAGINATOR_PAGE_COUNT_PATH) !== pages.length) {
+      set(SNAP_PAGINATOR_PAGE_COUNT_PATH, pages.length);
+    }
+  }, [get, initialPage, pages.length, set]);
 
   if (pages.length === 0) return null;
 
