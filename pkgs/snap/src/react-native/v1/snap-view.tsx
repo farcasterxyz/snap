@@ -7,8 +7,7 @@ import {
   resolveAccentHex,
 } from "../snap-view-core";
 import type { SnapPage, SnapActionHandlers } from "../types";
-
-const SNAP_MAX_HEIGHT = 500;
+import { getSnapExpansionState } from "../expand-state";
 
 // ─── SnapViewV1 (no validation) ──────────────────────
 
@@ -72,6 +71,9 @@ function SnapCardV1Inner({
   appearance,
   plain,
   loadingOverlay,
+  forceExpanded,
+  expandButtonLabel,
+  onExpandPress,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -81,6 +83,9 @@ function SnapCardV1Inner({
   appearance: "light" | "dark";
   plain: boolean;
   loadingOverlay?: ReactNode;
+  forceExpanded?: boolean;
+  expandButtonLabel?: string;
+  onExpandPress?: () => void;
 }) {
   const { colors, mode } = useSnapTheme();
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
@@ -92,8 +97,14 @@ function SnapCardV1Inner({
     setContentHeight(0);
   }, [snap]);
 
-  const isExpandable = contentHeight > SNAP_MAX_HEIGHT + 1;
-  const isClipped = isExpandable && !isExpanded;
+  const expansion = getSnapExpansionState({
+    contentHeight,
+    internalExpanded: isExpanded,
+    forceExpanded,
+    onExpandPress,
+    expandButtonLabel,
+  });
+  const expandButtonInsideCard = typeof onExpandPress === "function";
 
   const isDark = mode === "dark";
   const pillBg = isDark ? "rgba(40,40,40,0.92)" : "rgba(255,255,255,0.92)";
@@ -112,14 +123,18 @@ function SnapCardV1Inner({
           ]}
         >
           <View
-            style={isClipped ? { maxHeight: SNAP_MAX_HEIGHT, overflow: "hidden" } : undefined}
+            style={
+              expansion.clipped
+                ? { maxHeight: expansion.maxHeight, overflow: "hidden" }
+                : undefined
+            }
           >
             <View
               collapsable={false}
               onLayout={(event) => {
                 const nextHeight = Math.round(event.nativeEvent.layout.height);
                 setContentHeight((currentHeight) =>
-                  isClipped
+                  expansion.clipped
                     ? Math.max(currentHeight, nextHeight)
                     : currentHeight === nextHeight
                       ? currentHeight
@@ -142,8 +157,15 @@ function SnapCardV1Inner({
               : loadingOverlay
             : null}
         </View>
-        {isExpandable ? (
-          <View pointerEvents="box-none" style={cardStyles.expandFloat}>
+        {expansion.showButton ? (
+          <View
+            pointerEvents="box-none"
+            style={
+              expandButtonInsideCard
+                ? cardStyles.expandFloatInset
+                : cardStyles.expandFloat
+            }
+          >
             <Pressable
               style={({ pressed }) => [
                 cardStyles.expandButton,
@@ -153,13 +175,17 @@ function SnapCardV1Inner({
                 },
               ]}
               onPress={() => {
-                setIsExpanded((value) => !value);
+                if (expansion.useInternalToggle) {
+                  setIsExpanded((value) => !value);
+                } else {
+                  onExpandPress?.();
+                }
               }}
             >
               <Text
                 style={[cardStyles.expandButtonText, { color: colors.text }]}
               >
-                {isExpanded ? "Show less" : "Show more"}
+                {expansion.buttonLabel}
               </Text>
             </Pressable>
           </View>
@@ -194,6 +220,9 @@ export function SnapCardV1({
   actionError,
   plain = false,
   loadingOverlay,
+  forceExpanded,
+  expandButtonLabel,
+  onExpandPress,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -205,6 +234,12 @@ export function SnapCardV1({
   plain?: boolean;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  /** When true, render full content height without 500px clipping or expand controls. */
+  forceExpanded?: boolean;
+  /** Custom label for the collapsed expand button. */
+  expandButtonLabel?: string;
+  /** Called from the collapsed expand button instead of toggling internal state. */
+  onExpandPress?: () => void;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -217,6 +252,9 @@ export function SnapCardV1({
         appearance={appearance}
         plain={plain}
         loadingOverlay={loadingOverlay}
+        forceExpanded={forceExpanded}
+        expandButtonLabel={expandButtonLabel}
+        onExpandPress={onExpandPress}
       />
     </SnapThemeProvider>
   );
@@ -231,6 +269,15 @@ const cardStyles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: -14,
+    height: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expandFloatInset: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 10,
     height: 28,
     alignItems: "center",
     justifyContent: "center",

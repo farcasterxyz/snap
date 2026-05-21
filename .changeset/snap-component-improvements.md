@@ -12,4 +12,6 @@ The v2 renderers now support more compact vertical layouts: buttons are shorter,
 
 `cell_grid` now supports `cellAspectRatio: "square"` plus tokenized `maxWidth: "sm" | "md" | "lg"` sizing. `sm` and `md` render centered constrained square grids for small board-like layouts, while `lg` and omitted `maxWidth` preserve the default full-width behavior.
 
+React Native `SnapCard` now supports host-controlled expansion with `forceExpanded`, `expandButtonLabel`, and `onExpandPress`. Hosts can keep inline feed embeds clipped at 500px, intercept the collapsed expand button, portal the same snap into an expanded surface, and render it without clipping or Show more / Show less controls. Existing internal Show more / Show less behavior remains the default.
+
 The docs, llms guidance, catalog descriptions, validation tests, and example snaps were updated to cover paginator behavior, image overlays, compact text/layout rules, and centered square grid sizing.

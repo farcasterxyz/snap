@@ -39,10 +39,10 @@ import { SnapCard } from "@farcaster/snap/react-native";
 import type { SnapPage, SnapActionHandlers } from "@farcaster/snap/react-native";
 ```
 
-The React Native `SnapCard` accepts the same props plus optional `colors` and
-`borderRadius` for native styling.
+The React Native `SnapCard` accepts the shared props plus native styling and
+host-controlled expansion props for feed surfaces.
 
-### Props
+### Shared Props
 
 | Prop                      | Type                 | Default  | Description                             |
 | ------------------------- | -------------------- | -------- | --------------------------------------- |
@@ -50,11 +50,34 @@ The React Native `SnapCard` accepts the same props plus optional `colors` and
 | `handlers`                | `SnapActionHandlers` | required | Action callbacks                        |
 | `loading`                 | `boolean`            | `false`  | Show loading state                      |
 | `appearance`              | `"light" \| "dark"`  | `"dark"` | Color scheme                            |
-| `maxWidth`                | `number`             | `480`    | Maximum width in pixels                 |
 | `showOverflowWarning`     | `boolean`            | `false`  | Show overflow indicator at 500px        |
 | `actionError`             | `string \| null`     | -        | Error message to display below the snap |
 | `onValidationError`       | `(result) => void`   | -        | Called when validation fails            |
 | `validationErrorFallback` | `ReactNode`          | -        | Custom fallback for validation errors   |
+| `plain`                   | `boolean`            | `false`  | Render without card frame               |
+| `loadingOverlay`          | `ReactNode`          | default overlay | Custom loading overlay. Pass `null` to render nothing |
+
+### Web-Only Props
+
+| Prop       | Type     | Default | Description             |
+| ---------- | -------- | ------- | ----------------------- |
+| `maxWidth` | `number` | `480`   | Maximum width in pixels |
+
+### React Native-Only Props
+
+| Prop                | Type               | Default       | Description                             |
+| ------------------- | ------------------ | ------------- | --------------------------------------- |
+| `colors`            | `Partial<SnapNativeColors>` | - | Override native renderer colors         |
+| `borderRadius`      | `number`           | `16`          | Card border radius                      |
+| `forceExpanded`     | `boolean`          | `false`       | Render full content height without 500px clipping or expand controls |
+| `expandButtonLabel` | `string`           | `"Show more"` | Custom label for the collapsed expand button |
+| `onExpandPress`     | `() => void`       | -             | Called from the collapsed expand button instead of toggling internal state |
+
+React Native hosts that render snaps inside clipped feeds can use `onExpandPress` to
+lift or portal the same `SnapCard` outside the feed layout, then re-render it with
+`forceExpanded`. When `onExpandPress` is provided, the collapsed overflow button stays
+inside the card instead of hanging below it. Default internal Show more / Show less
+behavior is unchanged when `onExpandPress` is omitted.
 
 ## Action Handlers
 
@@ -215,6 +238,7 @@ Common server errors include:
 
 - Width: Snaps are designed for a fixed width of ~480px
 - Height: Snaps should be no taller than 500px. Content below that should be clipped or
-  hidden.
+  hidden. React Native hosts may set `forceExpanded` after user intent when rendering
+  outside the feed layout.
 - No client-side code execution: Snaps are pure JSON — never execute scripts or inject
   user-provided HTML

@@ -12,10 +12,10 @@ import {
   type ValidationResult,
 } from "@farcaster/snap";
 import type { SnapPage, SnapActionHandlers } from "../types";
+import { getSnapExpansionState, SNAP_MAX_HEIGHT } from "../expand-state";
 
 // ─── Constants ───────────────────────────────────────
 
-const SNAP_MAX_HEIGHT = 500;
 const SNAP_WARNING_HEIGHT = 700;
 const SHOW_MORE_OVERHANG = 14;
 
@@ -141,6 +141,9 @@ function SnapCardV2Inner({
   appearance,
   plain,
   loadingOverlay,
+  forceExpanded,
+  expandButtonLabel,
+  onExpandPress,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -153,6 +156,9 @@ function SnapCardV2Inner({
   appearance: "light" | "dark";
   plain: boolean;
   loadingOverlay?: ReactNode;
+  forceExpanded?: boolean;
+  expandButtonLabel?: string;
+  onExpandPress?: () => void;
 }) {
   const { colors, mode } = useSnapTheme();
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
@@ -164,8 +170,15 @@ function SnapCardV2Inner({
     setContentHeight(0);
   }, [snap]);
 
-  const isExpandable = !showOverflowWarning && contentHeight > SNAP_MAX_HEIGHT + 1;
-  const isClipped = isExpandable && !isExpanded;
+  const expansion = getSnapExpansionState({
+    contentHeight,
+    internalExpanded: isExpanded,
+    forceExpanded,
+    onExpandPress,
+    expandButtonLabel,
+    showOverflowWarning,
+  });
+  const expandButtonInsideCard = typeof onExpandPress === "function";
 
   const content = (
     <SnapViewV2Inner
@@ -181,13 +194,19 @@ function SnapCardV2Inner({
   if (plain) {
     return (
       <>
-        <View style={isClipped ? { maxHeight: SNAP_MAX_HEIGHT, overflow: "hidden" } : undefined}>
+        <View
+          style={
+            expansion.clipped
+              ? { maxHeight: expansion.maxHeight, overflow: "hidden" }
+              : undefined
+          }
+        >
           <View
             collapsable={false}
             onLayout={(e) => {
               const nextHeight = Math.round(e.nativeEvent.layout.height);
               setContentHeight((current) =>
-                isClipped
+                expansion.clipped
                   ? Math.max(current, nextHeight)
                   : current === nextHeight
                     ? current
@@ -203,7 +222,7 @@ function SnapCardV2Inner({
             ? <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
             : loadingOverlay
           : null}
-        {isExpandable ? (
+        {expansion.showButton ? (
           <View style={[cardStyles.expandRow, cardStyles.expandRowPlain]}>
             <Pressable
               style={({ pressed }) => [
@@ -212,10 +231,16 @@ function SnapCardV2Inner({
                   backgroundColor: pressed ? colors.mutedHover : colors.muted,
                 },
               ]}
-              onPress={() => setIsExpanded((value) => !value)}
+              onPress={() => {
+                if (expansion.useInternalToggle) {
+                  setIsExpanded((value) => !value);
+                } else {
+                  onExpandPress?.();
+                }
+              }}
             >
               <Text style={[cardStyles.expandButtonText, { color: colors.text }]}>
-                {isExpanded ? "Show less" : "Show more"}
+                {expansion.buttonLabel}
               </Text>
             </Pressable>
           </View>
@@ -224,13 +249,20 @@ function SnapCardV2Inner({
     );
   }
 
-  const overflowAmount = showOverflowWarning ? contentHeight - SNAP_MAX_HEIGHT : 0;
+  const overflowAmount = expansion.showOverflowWarning
+    ? contentHeight - SNAP_MAX_HEIGHT
+    : 0;
   const isDark = mode === "dark";
   const pillBg = isDark ? "rgba(40,40,40,0.92)" : "rgba(255,255,255,0.92)";
   const pillBgPressed = isDark ? "rgba(60,60,60,0.95)" : "rgba(240,240,240,0.95)";
 
   return (
-    <View style={{ paddingBottom: isExpandable ? SHOW_MORE_OVERHANG : 0 }}>
+    <View
+      style={{
+        paddingBottom:
+          expansion.showButton && !expandButtonInsideCard ? SHOW_MORE_OVERHANG : 0,
+      }}
+    >
       <View style={{ position: "relative" }}>
         <View
           style={{
@@ -238,7 +270,9 @@ function SnapCardV2Inner({
             borderWidth: 1,
             borderColor: colors.border,
             backgroundColor: colors.surface,
-            maxHeight: showOverflowWarning ? undefined : isClipped ? SNAP_MAX_HEIGHT : undefined,
+            maxHeight: expansion.showOverflowWarning
+              ? undefined
+              : expansion.maxHeight,
             overflow: "hidden",
             minHeight: 120,
           }}
@@ -248,7 +282,7 @@ function SnapCardV2Inner({
             onLayout={(e) => {
               const nextHeight = Math.round(e.nativeEvent.layout.height);
               setContentHeight((current) =>
-                isClipped
+                expansion.clipped
                   ? Math.max(current, nextHeight)
                   : current === nextHeight
                     ? current
@@ -259,7 +293,7 @@ function SnapCardV2Inner({
           >
             {content}
           </View>
-          {showOverflowWarning && contentHeight > SNAP_MAX_HEIGHT && (
+          {expansion.showOverflowWarning && contentHeight > SNAP_MAX_HEIGHT && (
             <View style={{ position: "absolute", top: SNAP_MAX_HEIGHT, left: 0, right: 0, height: overflowAmount, zIndex: 10, pointerEvents: "none" }}>
               <View style={{ height: 1, borderTopWidth: 1, borderStyle: "dashed", borderColor: "rgba(255,100,100,0.6)" }} />
               <View style={{ position: "absolute", top: -10, right: 4, backgroundColor: "rgba(0,0,0,0.7)", paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 }}>
@@ -274,8 +308,15 @@ function SnapCardV2Inner({
               : loadingOverlay
             : null}
         </View>
-        {isExpandable ? (
-          <View pointerEvents="box-none" style={cardStyles.expandFloat}>
+        {expansion.showButton ? (
+          <View
+            pointerEvents="box-none"
+            style={
+              expandButtonInsideCard
+                ? cardStyles.expandFloatInset
+                : cardStyles.expandFloat
+            }
+          >
             <Pressable
               style={({ pressed }) => [
                 cardStyles.expandButton,
@@ -284,10 +325,16 @@ function SnapCardV2Inner({
                   borderColor: colors.border,
                 },
               ]}
-              onPress={() => setIsExpanded((value) => !value)}
+              onPress={() => {
+                if (expansion.useInternalToggle) {
+                  setIsExpanded((value) => !value);
+                } else {
+                  onExpandPress?.();
+                }
+              }}
             >
               <Text style={[cardStyles.expandButtonText, { color: colors.text }]}>
-                {isExpanded ? "Show less" : "Show more"}
+                {expansion.buttonLabel}
               </Text>
             </Pressable>
           </View>
@@ -325,6 +372,9 @@ export function SnapCardV2({
   actionError,
   plain = false,
   loadingOverlay,
+  forceExpanded,
+  expandButtonLabel,
+  onExpandPress,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -339,6 +389,12 @@ export function SnapCardV2({
   plain?: boolean;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  /** When true, render full content height without 500px clipping or expand controls. */
+  forceExpanded?: boolean;
+  /** Custom label for the collapsed expand button. */
+  expandButtonLabel?: string;
+  /** Called from the collapsed expand button instead of toggling internal state. */
+  onExpandPress?: () => void;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -354,6 +410,9 @@ export function SnapCardV2({
         appearance={appearance}
         plain={plain}
         loadingOverlay={loadingOverlay}
+        forceExpanded={forceExpanded}
+        expandButtonLabel={expandButtonLabel}
+        onExpandPress={onExpandPress}
       />
     </SnapThemeProvider>
   );
@@ -372,6 +431,18 @@ const cardStyles = StyleSheet.create({
     height: 28,
     alignItems: "center",
     justifyContent: "center",
+  },
+  expandFloatInset: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 10,
+    height: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expandRow: {
+    alignItems: "center",
   },
   expandRowPlain: {
     paddingTop: 8,
