@@ -891,6 +891,21 @@ describe("Structural constraints", () => {
     expect(result.issues[0].message).toContain("elements");
   });
 
+  it("rejects more than one paginator", () => {
+    const result = expectInvalid({
+      version: "2.0",
+      ui: makeSpec({
+        page: { type: "stack", children: ["pager_a", "pager_b"] },
+        pager_a: { type: "paginator", children: ["a"] },
+        pager_b: { type: "paginator", children: ["b"] },
+        a: { type: "text", props: { content: "A" } },
+        b: { type: "text", props: { content: "B" } },
+      }),
+    });
+
+    expect(result.issues[0].message).toContain("at most one paginator");
+  });
+
   it("accepts a non-root element at the children limit", () => {
     const elements: Record<
       string,

@@ -145,6 +145,17 @@ function validateStructure(ui: {
     }
   }
 
+  const paginatorIds = Object.entries(elements)
+    .filter(([, el]) => el.type === "paginator")
+    .map(([id]) => id);
+  if (paginatorIds.length > 1) {
+    issues.push({
+      code: "custom",
+      message: `Snap supports at most one paginator (found ${paginatorIds.length}: ${paginatorIds.join(", ")})`,
+      path: ["ui", "elements"],
+    });
+  }
+
   const depth = measureDepth(
     elements as Record<string, { children?: string[] }>,
     ui.root,
