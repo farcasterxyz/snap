@@ -98,12 +98,12 @@ function componentImprovementsPage(
           2,
         ),
         "overview-short": caption(
-          "Default text is one line, so this deliberately long sentence should clamp instead of growing the snap.",
+          "Text now wraps by default; add maxLines only when a section needs a bounded height.",
         ),
         copy: pageStack("copy-title", "copy-one-line", "copy-two-lines"),
-        "copy-title": heading("Text clamping"),
+        "copy-title": heading("Optional text clamping"),
         "copy-one-line": caption(
-          "No maxLines prop here: this long piece of supporting copy should stay to a single visible line by default.",
+          "No maxLines prop here: this long piece of supporting copy can wrap naturally instead of being clamped by default.",
         ),
         "copy-two-lines": caption(
           "This text opts into maxLines: 2, giving longer explanatory copy a little more room without letting the snap become tall.",

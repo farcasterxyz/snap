@@ -92,8 +92,8 @@ Design guidance:
 - Pick a coherent `theme.accent` from the palette: gray, blue, red, amber, green, teal,
   purple, pink.
 - Use `text` with `weight: "bold"` for headings, default size `"md"` for body,
-  `size: "sm"` for captions/metadata. In v2 renderers, text defaults to one visible
-  line; set `maxLines` only when wrapping is intentional.
+  `size: "sm"` for captions/metadata. Text does not clamp by default; set
+  `maxLines` only when a bounded number of visible lines is intentional.
 - Use `image` with `aspect: "4:1"` for compact banners, `16:9` for larger hero imagery,
   and optional `title`/`subtitle` overlay props when the image needs hero-like copy. Do
   not invent a separate hero component.
