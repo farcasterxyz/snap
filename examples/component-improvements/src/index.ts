@@ -182,7 +182,7 @@ function componentImprovementsPage(
           props: { direction: "horizontal", equalWidth: true, gap: "sm" },
           children: ["custom-prev", "custom-next"],
         },
-        "custom-prev": paginatorButton("Back", "paginator_previous"),
+        "custom-prev": paginatorButton("Back", "paginator_prev"),
         "custom-next": paginatorButton("Forward", "paginator_next"),
         "image-card": pageStack("image-card-title", "image-card-image"),
         "image-card-title": heading("Overlay image card"),
@@ -285,7 +285,7 @@ function caption(content: string, maxLines?: number): SnapElementInput {
 
 function paginatorButton(
   label: string,
-  action: "paginator_next" | "paginator_previous" | "paginator_go_to",
+  action: "paginator_next" | "paginator_prev" | "paginator_go_to",
   params: Record<string, unknown> = {},
 ): SnapElementInput {
   return {

@@ -104,8 +104,8 @@ Design guidance:
   `controlsPosition: "top"` when varying page heights would make bottom controls shift.
   Use `transition: "slide" | "fade" | "scale" | "none"` to control page-change animation.
   Buttons or tappable `cell_grid` cells anywhere in the same snap can bind `paginator_next` with
-  `params: {}`, `paginator_previous` with `params: {}`, or `paginator_go_to` with
-  `params: { "page": 0 }` for custom local navigation that never POSTs. Only one
+  `params: {}`, `paginator_prev` with `params: {}`, or
+  `paginator_go_to` with `params: { "page": 0 }` for custom local navigation that never POSTs. Only one
   paginator is supported per snap in this release.
 - Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
   default to `"secondary"`.

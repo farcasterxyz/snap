@@ -76,7 +76,7 @@ function compactPaginatorSnap(base: string, submitted: boolean): SnapHandlerResu
           2,
         ),
         "next-page": paginatorButton("Next", "paginator_next"),
-        "previous-page": paginatorButton("Back", "paginator_previous"),
+        "previous-page": paginatorButton("Back", "paginator_prev"),
         actions: {
           type: "stack",
           props: { direction: "horizontal", equalWidth: true },
@@ -134,7 +134,7 @@ function navStack(children: string[]): SnapElementInput {
 
 function paginatorButton(
   label: string,
-  action: "paginator_next" | "paginator_previous" | "paginator_go_to",
+  action: "paginator_next" | "paginator_prev" | "paginator_go_to",
   params?: Record<string, unknown>,
 ): SnapElementInput {
   return {
@@ -151,7 +151,7 @@ function paginatorButton(
 
 function paginatorGrid(
   label: string,
-  action: "paginator_next" | "paginator_previous",
+  action: "paginator_next" | "paginator_prev",
 ): SnapElementInput {
   return {
     type: "cell_grid",

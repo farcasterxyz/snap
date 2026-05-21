@@ -37,7 +37,6 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
         "paginator_go_to",
         "paginator_next",
         "paginator_prev",
-        "paginator_previous",
         "submit",
         "swap_token",
         "view_cast",

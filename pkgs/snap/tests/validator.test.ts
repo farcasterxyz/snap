@@ -853,7 +853,7 @@ describe("Structural constraints", () => {
         previous: {
           type: "button",
           props: { label: "Previous" },
-          on: { press: { action: "paginator_previous", params: {} } },
+          on: { press: { action: "paginator_prev", params: {} } },
         },
         start: {
           type: "button",
