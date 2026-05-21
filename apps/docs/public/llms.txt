@@ -85,7 +85,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `size` (optional): `"md"` (body) | `"sm"` (caption). Default: `"md"`
 - `weight` (optional): `"bold"` | `"normal"`. Default: `"normal"`
 - `align` (optional): `"left"` | `"center"` | `"right"`. Default: `"left"`
-- `maxLines` (optional): integer 1–6. Default in v2 renderers: `1`. Set this when body text should wrap.
+- `maxLines` (optional): integer 1–6. Default: no clamp. Set this when body text should use a bounded number of visible lines.
 
 ### Data Components
 

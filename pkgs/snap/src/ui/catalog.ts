@@ -104,7 +104,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     text: {
       props: textProps,
       description:
-        "Text block — size: md (body, default), sm (caption). Optional weight, align, and maxLines. In v2 renderers, text defaults to one visible line unless maxLines is set.",
+        "Text block — size: md (body, default), sm (caption). Optional weight, align, and maxLines. Text does not clamp by default; set maxLines to bound rendered lines.",
     },
     bar_chart: {
       props: barChartProps,

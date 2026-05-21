@@ -415,8 +415,8 @@ Only one paginator is supported per snap in this release.
 ## text
 
 The primary content element. Use `weight: "bold"` for headings and emphasis. Use
-`size: "sm"` for captions, timestamps, and secondary info. Text defaults to one visible
-line in v2 renderers; set `maxLines` when the content should wrap.
+`size: "sm"` for captions, timestamps, and secondary info. Text does not clamp by
+default; set `maxLines` when the content should use a bounded number of visible lines.
 
 <ElementPreview type="text" />
 
@@ -426,7 +426,7 @@ line in v2 renderers; set `maxLines` when the content should wrap.
 | `size`    | string | No       | `"md"`     | `"md"` (body), `"sm"` (caption) |
 | `weight`  | string | No       | `"normal"` | `"bold"` `"normal"`             |
 | `align`   | string | No       | `"left"`   | `"left"` `"center"` `"right"`   |
-| `maxLines` | number | No      | `1`        | Visible lines before clamping (1–6) |
+| `maxLines` | number | No      | No clamp   | Visible lines before clamping (1–6) |
 
 ```json
 { "type": "text", "props": { "content": "Welcome to Snaps", "weight": "bold" } }
