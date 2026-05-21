@@ -45,6 +45,7 @@ function compactPaginatorSnap(base: string, submitted: boolean): SnapHandlerResu
             initialPage: 0,
             showControls: false,
             showIndicators: false,
+            transition: "fade",
           },
           children: ["overview", "choices"],
         },

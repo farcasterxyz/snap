@@ -49,7 +49,7 @@ function componentImprovementsPage(
             showControls: true,
             showIndicators: true,
             controlsPosition: "top",
-            transition: "scale",
+            transition: "slide",
           },
           children: [
             "overview",
