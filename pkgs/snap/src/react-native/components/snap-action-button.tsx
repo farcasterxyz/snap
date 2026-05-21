@@ -100,10 +100,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   btnDefault: {
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   btnOther: {
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   pressed: { opacity: 0.88 },
 });

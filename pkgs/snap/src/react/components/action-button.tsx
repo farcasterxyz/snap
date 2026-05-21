@@ -75,7 +75,7 @@ export function SnapActionButton({
       <Button
         type="button"
         variant={isPrimary ? "default" : "secondary"}
-        className={cn("w-full gap-2")}
+        className={cn("h-8 w-full gap-2 px-3 text-sm")}
         style={style}
         onClick={() => emit("press")}
         onPointerEnter={() => setHovered(true)}

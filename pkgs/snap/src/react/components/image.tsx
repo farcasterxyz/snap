@@ -17,6 +17,9 @@ export function SnapImage({
 }) {
   const url = String(props.url ?? "");
   const alt = String(props.alt ?? "");
+  const title = props.title ? String(props.title) : "";
+  const subtitle = props.subtitle ? String(props.subtitle) : "";
+  const hasOverlay = title.length > 0 || subtitle.length > 0;
   const ratio = aspectToRatio(String(props.aspect ?? "1:1"));
   const stackDir = useSnapStackDirection();
   const inHorizontalStack = stackDir === "horizontal";
@@ -35,6 +38,20 @@ export function SnapImage({
         alt={alt}
         className="absolute inset-0 size-full object-cover"
       />
+      {hasOverlay && (
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-3 pt-8 text-white">
+          {title && (
+            <div className="truncate text-sm font-semibold leading-5">
+              {title}
+            </div>
+          )}
+          {subtitle && (
+            <div className="truncate text-xs font-medium leading-4 text-white/85">
+              {subtitle}
+            </div>
+          )}
+        </div>
+      )}
     </AspectRatio>
   );
 }

@@ -83,14 +83,23 @@ Express the UI as the object your snap handler returns.
 - Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
   @farcaster/snap-hono)
 - Structural limits: max 64 elements, max 7 root children, max 6 children per container,
-  max 5 nesting depth.
+  max 5 nesting depth. `paginator` is the exception to the per-container child count:
+  it can contain more than 6 page children, but the snap still must stay under 64 total
+  elements and max depth.
 
 Design guidance:
 
 - Pick a coherent `theme.accent` from the palette: gray, blue, red, amber, green, teal,
   purple, pink.
 - Use `text` with `weight: "bold"` for headings, default size `"md"` for body,
-  `size: "sm"` for captions/metadata.
+  `size: "sm"` for captions/metadata. In v2 renderers, text defaults to one visible
+  line; set `maxLines` only when wrapping is intentional.
+- Use `image` with `aspect: "4:1"` for compact banners, `16:9` for larger hero imagery,
+  and optional `title`/`subtitle` overlay props when the image needs hero-like copy. Do
+  not invent a separate hero component.
+- Use `paginator` when a single snap page would otherwise become too tall. It shows one
+  child page at a time with built-in previous/next controls and indicators; page state
+  is local to the renderer and is not included in POST inputs.
 - Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
   default to `"secondary"`.
 - `item` follows shadcn Item shape: optional `media` on the left, text content in
@@ -110,8 +119,8 @@ Design guidance:
   visual ring and pair with a separate submit `button`. Don't combine `on.press` with a
   non-`off` `select` — `on.press` is ignored when `select` is on.
 - **Stack `gap` defaults are layout-aware**: horizontal stacks use direct child count (2
-  children → `"lg"`/16px, 3 → `"md"`/8px, 4+ → `"sm"`/4px). Vertical stacks default to
-  `"md"`/16px, except button-only stacks always default to `"sm"`/4px. Button-only
+  children → `"lg"`/14px, 3 → `"md"`/6px, 4+ → `"sm"`/2px). Vertical stacks default to
+  `"md"`/14px, except button-only stacks always default to `"sm"`/2px. Button-only
   stacks do not become grids automatically; horizontal button rows use
   content-proportional widths while filling the container unless `equalWidth: true` is
   provided to force equal-width cells. Trust the default first — don't set `gap` just to

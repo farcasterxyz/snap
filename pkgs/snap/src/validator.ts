@@ -119,9 +119,14 @@ function validateStructure(ui: {
     });
   }
 
-  // Root element has a stricter children limit
+  // Root element has a stricter children limit. Paginator pages are intentionally
+  // allowed to exceed per-container child caps while preserving global limits.
   const rootEl = elements[ui.root];
-  if (rootEl?.children && rootEl.children.length > MAX_ROOT_CHILDREN) {
+  if (
+    rootEl?.type !== "paginator" &&
+    rootEl?.children &&
+    rootEl.children.length > MAX_ROOT_CHILDREN
+  ) {
     issues.push({
       code: "custom",
       message: `Root element "${ui.root}" exceeds maximum of ${MAX_ROOT_CHILDREN} children (found ${rootEl.children.length})`,
@@ -131,7 +136,7 @@ function validateStructure(ui: {
 
   for (const [id, el] of Object.entries(elements)) {
     if (id === ui.root) continue; // already checked above
-    if (el.children && el.children.length > MAX_CHILDREN) {
+    if (el.type !== "paginator" && el.children && el.children.length > MAX_CHILDREN) {
       issues.push({
         code: "custom",
         message: `Element "${id}" exceeds maximum of ${MAX_CHILDREN} children (found ${el.children.length})`,

@@ -14,6 +14,7 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
         "item",
         "item_group",
         "cell_grid",
+        "paginator",
         "progress",
         "separator",
         "slider",

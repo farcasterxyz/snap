@@ -1,6 +1,6 @@
 # Elements
 
-Snaps are built from 16 components organized into four categories. Every component lives
+Snaps are built from 17 components organized into four categories. Every component lives
 in `ui.elements` as a named entry. The `type` field names the component; `props` carries
 its configuration; `children` names child element IDs; `on` binds event handlers.
 
@@ -19,16 +19,17 @@ its configuration; `children` names child element IDs; `on` binds event handlers
 | 4   | [image](#image)               | Display   | HTTPS image with aspect ratio             |
 | 5   | [item](#item)                 | Display   | Content row with actions slot             |
 | 6   | [item_group](#item-group)     | Container | Groups items into a styled list           |
-| 7   | [progress](#progress)         | Display   | Horizontal progress bar                   |
-| 8   | [separator](#separator)       | Display   | Visual divider                            |
-| 9   | [stack](#stack)               | Container | Vertical or horizontal layout             |
-| 10  | [text](#text)                 | Display   | Text block with size and weight           |
-| 11  | [bar_chart](#bar-chart)       | Data      | Horizontal bar chart with labeled bars    |
-| 12  | [cell_grid](#cell-grid)       | Data      | Colored cell grid, optionally interactive |
-| 13  | [input](#input)               | Field     | Text or number input                      |
-| 14  | [slider](#slider)             | Field     | Numeric range slider                      |
-| 15  | [switch](#switch)             | Field     | Boolean toggle                            |
-| 16  | [toggle_group](#toggle-group) | Field     | Single or multi-select choice group       |
+| 7   | [paginator](#paginator)       | Container | Client-side page navigation               |
+| 8   | [progress](#progress)         | Display   | Horizontal progress bar                   |
+| 9   | [separator](#separator)       | Display   | Visual divider                            |
+| 10  | [stack](#stack)               | Container | Vertical or horizontal layout             |
+| 11  | [text](#text)                 | Display   | Text block with size and weight           |
+| 12  | [bar_chart](#bar-chart)       | Data      | Horizontal bar chart with labeled bars    |
+| 13  | [cell_grid](#cell-grid)       | Data      | Colored cell grid, optionally interactive |
+| 14  | [input](#input)               | Field     | Text or number input                      |
+| 15  | [slider](#slider)             | Field     | Numeric range slider                      |
+| 16  | [switch](#switch)             | Field     | Boolean toggle                            |
+| 17  | [toggle_group](#toggle-group) | Field     | Single or multi-select choice group       |
 
 **Field components** (`input`, `slider`, `switch`, `toggle_group`) collect user input.
 Their values are sent in the POST payload under `inputs[name]` when a `submit` action
@@ -147,22 +148,30 @@ inside a badge.
 
 ## image
 
-HTTPS image with fixed aspect ratio. Use `"16:9"` for hero and banner images, `"1:1"`
-for avatars or thumbnails, `"4:3"` for general photos, and `"9:16"` for tall portrait
-content.
+HTTPS image with fixed aspect ratio. Use `"4:1"` for compact banners, `"16:9"` for
+larger hero imagery, `"1:1"` for avatars or thumbnails, `"4:3"` for general photos, and
+`"9:16"` for tall portrait content. Optional `title` and `subtitle` render as readable
+overlay text on the image.
 
 <ElementPreview type="image" />
 
-| Prop     | Type   | Required | Description                        |
-| -------- | ------ | -------- | ---------------------------------- |
-| `url`    | string | Yes      | HTTPS URL. GIFs autoplay and loop. |
-| `aspect` | string | Yes      | `"1:1"` `"16:9"` `"4:3"` `"9:16"`  |
-| `alt`    | string | No       | Alt text for accessibility         |
+| Prop       | Type   | Required | Description                              |
+| ---------- | ------ | -------- | ---------------------------------------- |
+| `url`      | string | Yes      | HTTPS URL. GIFs autoplay and loop.       |
+| `aspect`   | string | Yes      | `"1:1"` `"16:9"` `"4:3"` `"9:16"` `"4:1"` |
+| `alt`      | string | No       | Alt text for accessibility               |
+| `title`    | string | No       | Overlay title. Max 80 chars              |
+| `subtitle` | string | No       | Overlay subtitle. Max 120 chars          |
 
 ```json
 {
   "type": "image",
-  "props": { "url": "https://example.com/photo.jpg", "aspect": "16:9" }
+  "props": {
+    "url": "https://example.com/photo.jpg",
+    "aspect": "4:1",
+    "title": "Trending now",
+    "subtitle": "Updated 2 minutes ago"
+  }
 }
 ```
 
@@ -323,18 +332,18 @@ Nested **stack** children of a horizontal stack flex as peers (equal share of th
 | Size   | Vertical | Horizontal |
 | ------ | -------- | ---------- |
 | `none` | 0px      | 0px        |
-| `sm`   | 8px      | 4px        |
-| `md`   | 16px     | 8px        |
-| `lg`   | 24px     | 16px       |
+| `sm`   | 2px      | 2px        |
+| `md`   | 14px     | 6px        |
+| `lg`   | 22px     | 14px       |
 
 When `gap` is omitted, vertical stacks default to `"md"`. Horizontal stacks pick a default based on column count — denser layouts get tighter gaps:
 
 | Columns | Default        |
 | ------- | -------------- |
-| 2       | `"lg"` (16px)  |
-| 3       | `"md"` (8px)   |
-| 4–6     | `"sm"` (4px)   |
-| unknown | `"md"` (8px)   |
+| 2       | `"lg"` (14px)  |
+| 3       | `"md"` (6px)   |
+| 4–6     | `"sm"` (2px)   |
+| unknown | `"md"` (6px)   |
 
 Column count is taken from `columns` when set, or inferred from button-row children. **An explicit `gap` always wins** — override the default when you have a deliberate visual reason (extra breathing room around a hero row, a visually compact toolbar, a hero+supporting-button pair where the loose `lg` default would feel disconnected).
 
@@ -356,10 +365,41 @@ Column count is taken from `columns` when set, or inferred from button-row child
 
 ---
 
+## paginator
+
+Client-side page navigation without a server round trip. Children are page element IDs;
+the renderer shows one child at a time and provides built-in previous/next controls and
+page indicators. The current page index is local renderer state and is never included in
+POST `inputs`.
+
+Use `paginator` when one snap page would otherwise become too tall, especially for
+multi-step input groups. A paginator can be the root element or a child inside a larger
+layout. Its children may exceed the normal per-container child limit, but the snap still
+must stay within the global 64-element limit and max nesting depth.
+
+<ElementPreview type="paginator" />
+
+| Prop             | Type    | Required | Default | Description                              |
+| ---------------- | ------- | -------- | ------- | ---------------------------------------- |
+| `initialPage`    | number  | No       | `0`     | Zero-based page to show first            |
+| `showIndicators` | boolean | No       | `true`  | Show page dots below the active page     |
+| `showControls`   | boolean | No       | `true`  | Show previous/next buttons               |
+
+```json
+"pager": {
+  "type": "paginator",
+  "props": { "initialPage": 0 },
+  "children": ["step-1", "step-2", "step-3"]
+}
+```
+
+---
+
 ## text
 
 The primary content element. Use `weight: "bold"` for headings and emphasis. Use
-`size: "sm"` for captions, timestamps, and secondary info.
+`size: "sm"` for captions, timestamps, and secondary info. Text defaults to one visible
+line in v2 renderers; set `maxLines` when the content should wrap.
 
 <ElementPreview type="text" />
 
@@ -369,6 +409,7 @@ The primary content element. Use `weight: "bold"` for headings and emphasis. Use
 | `size`    | string | No       | `"md"`     | `"md"` (body), `"sm"` (caption) |
 | `weight`  | string | No       | `"normal"` | `"bold"` `"normal"`             |
 | `align`   | string | No       | `"left"`   | `"left"` `"center"` `"right"`   |
+| `maxLines` | number | No      | `1`        | Visible lines before clamping (1–6) |
 
 ```json
 { "type": "text", "props": { "content": "Welcome to Snaps", "weight": "bold" } }
@@ -377,7 +418,12 @@ The primary content element. Use `weight: "bold"` for headings and emphasis. Use
 ```json
 {
   "type": "text",
-  "props": { "content": "Last updated 2 hours ago", "size": "sm", "align": "center" }
+  "props": {
+    "content": "Last updated 2 hours ago",
+    "size": "sm",
+    "align": "center",
+    "maxLines": 2
+  }
 }
 ```
 

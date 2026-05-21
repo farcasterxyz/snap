@@ -1,0 +1,22 @@
+{
+  "name": "component-improvements",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "PORT=3024 SKIP_JFS_VERIFICATION=true tsx watch src/index.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@farcaster/snap": "workspace:*",
+    "@farcaster/snap-hono": "workspace:*",
+    "@hono/node-server": "^1.19.13",
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

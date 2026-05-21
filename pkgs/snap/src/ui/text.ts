@@ -10,6 +10,7 @@ export const textProps = z.object({
   size: z.enum(TEXT_SIZES).optional(),
   weight: z.enum(TEXT_WEIGHTS).optional(),
   align: z.enum(TEXT_ALIGNS).optional(),
+  maxLines: z.number().int().min(1).max(6).optional(),
 });
 
 export type TextProps = z.infer<typeof textProps>;

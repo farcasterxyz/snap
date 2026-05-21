@@ -28,6 +28,9 @@ export type { IconProps } from "./icon.js";
 export { imageProps } from "./image.js";
 export type { ImageProps } from "./image.js";
 
+export { paginatorProps } from "./paginator.js";
+export type { PaginatorProps } from "./paginator.js";
+
 export { progressProps } from "./progress.js";
 export type { ProgressProps } from "./progress.js";
 

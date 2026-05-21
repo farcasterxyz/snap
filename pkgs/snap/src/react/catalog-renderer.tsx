@@ -9,6 +9,7 @@ import { SnapImage } from "./components/image";
 import { SnapInput } from "./components/input";
 import { SnapItem } from "./components/item";
 import { SnapItemGroup } from "./components/item-group";
+import { SnapPaginator } from "./components/paginator";
 import { SnapProgress } from "./components/progress";
 import { SnapSeparator } from "./components/separator";
 import { SnapSlider } from "./components/slider";
@@ -31,6 +32,7 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
   input: SnapInput,
   item: SnapItem,
   item_group: SnapItemGroup,
+  paginator: SnapPaginator,
   progress: SnapProgress,
   separator: SnapSeparator,
   slider: SnapSlider,

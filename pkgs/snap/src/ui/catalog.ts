@@ -10,6 +10,7 @@ import { inputProps } from "./input.js";
 import { itemProps } from "./item.js";
 import { itemGroupProps } from "./item-group.js";
 import { imageProps } from "./image.js";
+import { paginatorProps } from "./paginator.js";
 import { progressProps } from "./progress.js";
 import { separatorProps } from "./separator.js";
 import { sliderProps } from "./slider.js";
@@ -72,7 +73,13 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     },
     image: {
       props: imageProps,
-      description: "HTTPS image with fixed aspect ratio.",
+      description:
+        "HTTPS image with fixed aspect ratio. Supports compact 4:1 banners and optional title/subtitle overlay text.",
+    },
+    paginator: {
+      props: paginatorProps,
+      description:
+        "Client-side paginator. Children are page element ids; the @farcaster/snap React/React Native components render one page at a time with built-in previous/next controls and indicators. Page index is local renderer state and is not posted as input.",
     },
     progress: {
       props: progressProps,
@@ -97,7 +104,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     text: {
       props: textProps,
       description:
-        "Text block — size: md (body, default), sm (caption). Optional weight and align.",
+        "Text block — size: md (body, default), sm (caption). Optional weight, align, and maxLines. In v2 renderers, text defaults to one visible line unless maxLines is set.",
     },
     bar_chart: {
       props: barChartProps,

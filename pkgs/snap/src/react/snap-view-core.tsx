@@ -4,6 +4,7 @@ import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "../ui/index.js";
 import { SnapCatalogView } from "./catalog-renderer";
 import { SnapPreviewAccentProvider } from "./accent-context";
+import { SnapVersionProvider } from "./snap-version-context";
 import { resolveSnapPaletteHex } from "./lib/resolve-palette-hex";
 import { snapPreviewPrimaryCssProperties } from "./lib/preview-primary-css";
 import {
@@ -465,16 +466,18 @@ export function SnapViewCore({
           pageAccent={snap.theme?.accent}
           appearance={appearance}
         >
-          <SnapCatalogView
-            key={pageKey}
-            spec={spec}
-            state={initialState}
-            loading={false}
-            onStateChange={(changes) => {
-              applyStatePaths(stateRef.current, changes);
-            }}
-            onAction={handleAction}
-          />
+          <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
+            <SnapCatalogView
+              key={pageKey}
+              spec={spec}
+              state={initialState}
+              loading={false}
+              onStateChange={(changes) => {
+                applyStatePaths(stateRef.current, changes);
+              }}
+              onAction={handleAction}
+            />
+          </SnapVersionProvider>
         </SnapPreviewAccentProvider>
       </div>
     </div>

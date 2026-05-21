@@ -4,6 +4,7 @@ import { Text } from "@neynar/ui/typography";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
 import { useSnapStackDirection } from "../stack-direction-context";
+import { useSnapVersion } from "../snap-version-context";
 
 const SIZE_MAP = {
   md: { textSize: "base" as const },
@@ -22,7 +23,14 @@ export function SnapText({
   const config = SIZE_MAP[size] ?? SIZE_MAP.md;
   const colors = useSnapColors();
   const stackDir = useSnapStackDirection();
+  const snapVersion = useSnapVersion();
   const inHorizontalStack = stackDir === "horizontal";
+  const maxLines =
+    typeof props.maxLines === "number"
+      ? props.maxLines
+      : snapVersion === "2.0"
+        ? 1
+        : undefined;
 
   return (
     <Text
@@ -40,7 +48,18 @@ export function SnapText({
          */
         inHorizontalStack ? "min-w-0 shrink" : "min-w-0",
       )}
-      style={{ color: colors.text }}
+      style={{
+        color: colors.text,
+        lineHeight: size === "sm" ? 1.35 : 1.4,
+        ...(maxLines
+          ? {
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: maxLines,
+              overflow: "hidden",
+            }
+          : {}),
+      }}
     >
       {content}
     </Text>

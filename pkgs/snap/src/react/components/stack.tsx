@@ -13,18 +13,18 @@ import {
   useSnapStackDirection,
 } from "../stack-direction-context";
 
-const VGAP: Record<string, string> = {
-  none: "gap-0",
-  sm: "gap-1",
-  md: "gap-4",
-  lg: "gap-6",
+const VGAP: Record<string, number> = {
+  none: 0,
+  sm: 2,
+  md: 14,
+  lg: 22,
 };
 
-const HGAP: Record<string, string> = {
-  none: "gap-0",
-  sm: "gap-1",
-  md: "gap-2",
-  lg: "gap-4",
+const HGAP: Record<string, number> = {
+  none: 0,
+  sm: 2,
+  md: 6,
+  lg: 14,
 };
 
 const JUSTIFY_FLEX: Record<string, string> = {
@@ -100,7 +100,7 @@ export function SnapStack({
       : isHorizontal
       ? defaultHorizontalGapSize(horizontalChildCount)
       : "md";
-  const gap = isHorizontal
+  const gapPx = isHorizontal
     ? (HGAP[gapKey] ?? HGAP.md!)
     : (VGAP[gapKey] ?? VGAP.md!);
   const columnGridClass =
@@ -125,13 +125,15 @@ export function SnapStack({
   /** Single flex row (nowrap): peers stay side-by-side and shrink via min-w-0 / flex-1 on nested stacks. */
   const horizontalFlexClasses =
     "flex min-w-0 flex-row flex-nowrap items-stretch [&>*]:min-w-0";
-  const equalWidthStyle: CSSProperties | undefined =
-    explicitEqualWidth && equalWidthColumnCount !== undefined
+  const layoutStyle: CSSProperties = {
+    gap: gapPx,
+    ...(explicitEqualWidth && equalWidthColumnCount !== undefined
       ? {
           display: "grid",
           gridTemplateColumns: `repeat(${equalWidthColumnCount}, minmax(0, 1fr))`,
         }
-      : undefined;
+      : {}),
+  };
 
   return (
     <SnapStackDirectionProvider
@@ -142,11 +144,11 @@ export function SnapStack({
           rootWidthClass,
           isHorizontal
             ? explicitEqualWidth && columnGridClass
-                ? cn(columnGridClass, gap)
-                : cn(horizontalFlexClasses, gap, justifyBlockGrid ? justifyFlex : undefined)
-            : cn("flex min-w-0 w-full flex-col", gap, justifyFlex),
+                ? columnGridClass
+                : cn(horizontalFlexClasses, justifyBlockGrid ? justifyFlex : undefined)
+            : cn("flex min-w-0 w-full flex-col", justifyFlex),
         )}
-        style={equalWidthStyle}
+        style={layoutStyle}
       >
         {children}
       </div>

@@ -36,10 +36,10 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 |------------|-------|
 | Total elements | Max **64** in `ui.elements` |
 | Root children | Max **7** children on the root element |
-| Children per element | Max **6** per non-root container (`stack`, `item_group`) |
+| Children per element | Max **6** per non-root container (`stack`, `item_group`); `paginator` pages are exempt |
 | Nesting depth | Max **5** levels from root to deepest leaf |
 
-## Components (16 total)
+## Components (17 total)
 
 ### Display Components
 
@@ -61,8 +61,9 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 
 **image** — HTTPS image with fixed aspect ratio.
 - `url` (string, required)
-- `aspect` (required): `"1:1"` | `"16:9"` | `"4:3"` | `"9:16"`
+- `aspect` (required): `"1:1"` | `"16:9"` | `"4:3"` | `"9:16"` | `"4:1"`
 - `alt` (string, optional)
+- `title` (string, optional, max 80) and `subtitle` (string, optional, max 120) render readable overlay text. Use this for hero-like image titles; do not create a separate hero component.
 
 **item** — Content row matching shadcn Item: optional left media, content, and right-side actions slot.
 - `title` (string, required, max 100)
@@ -84,6 +85,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `size` (optional): `"md"` (body) | `"sm"` (caption). Default: `"md"`
 - `weight` (optional): `"bold"` | `"normal"`. Default: `"normal"`
 - `align` (optional): `"left"` | `"center"` | `"right"`. Default: `"left"`
+- `maxLines` (optional): integer 1–6. Default in v2 renderers: `1`. Set this when body text should wrap.
 
 ### Data Components
 
@@ -105,9 +107,17 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 
 ### Container Components
 
+**paginator** — Client-side page navigation without a server round trip.
+- Children are page element IDs; one child renders at a time.
+- `initialPage` (optional): zero-based page index. Default: `0`
+- `showIndicators` (optional): boolean. Default: `true`
+- `showControls` (optional): boolean. Default: `true`
+- The current page is local renderer state only and is never included in POST `inputs`.
+- Paginator children may exceed the normal per-container child limit, but the snap still must stay within 64 total elements and max nesting depth.
+
 **stack** — Layout container.
 - `direction` (optional): `"vertical"` | `"horizontal"`. Default: `"vertical"`
-- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Vertical px: 0/8/16/24. Horizontal px: 0/4/8/16 (tighter, since children sit side-by-side). Default for vertical: `"md"`. Default for horizontal is column-aware: 2 cols → `"lg"` (16px), 3 cols → `"md"` (8px), 4+ cols → `"sm"` (4px), unknown → `"md"` (8px). An explicit value always wins — override the default when you have a deliberate visual reason (e.g. tighter toolbar, extra breathing room around a hero row).
+- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Vertical px: 0/2/14/22. Horizontal px: 0/2/6/14 (tighter, since children sit side-by-side). Default for vertical: `"md"`. Default for horizontal is column-aware: 2 cols → `"lg"` (14px), 3 cols → `"md"` (6px), 4+ cols → `"sm"` (2px), unknown → `"md"` (6px). An explicit value always wins — override the default when you have a deliberate visual reason (e.g. tighter toolbar, extra breathing room around a hero row).
 - `justify` (optional): `"start"` | `"center"` | `"end"` | `"between"` | `"around"`
 - `columns` (optional, horizontal only): `2`–`6` — CSS grid with equal columns (mixed children or layout that needs fixed column counts).
 - Children are element IDs

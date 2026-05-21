@@ -14,16 +14,16 @@ import {
 
 const VGAP: Record<string, number> = {
   none: 0,
-  sm: 4,
-  md: 16,
-  lg: 24,
+  sm: 2,
+  md: 14,
+  lg: 22,
 };
 
 const HGAP: Record<string, number> = {
   none: 0,
-  sm: 4,
-  md: 8,
-  lg: 16,
+  sm: 2,
+  md: 6,
+  lg: 14,
 };
 
 const JUSTIFY: Record<string, "flex-start" | "center" | "flex-end" | "space-between" | "space-around"> = {
