@@ -4,7 +4,7 @@
 
 Add v2 Snap component improvements for height-conscious layouts and richer media.
 
-This release adds a v2-only `paginator` component for client-local page navigation. Paginators render one child page at a time, support optional built-in previous/next controls and indicators, and keep the active page entirely in renderer-local state so paginator movement is never included in POST inputs. Custom controls can bind normal `on.press` frontend actions with `paginator_next`, `paginator_previous`/`paginator_prev`, or `paginator_go_to`. For this release, a rendered snap supports one paginator, and paginator controls may live anywhere in the same snap.
+This release adds a v2-only `paginator` component for client-local page navigation. Paginators render one child page at a time, support optional built-in previous/next controls and indicators, support `controlsPosition: "top" | "bottom"` for placing the built-in pagination bar, and keep the active page entirely in renderer-local state so paginator movement is never included in POST inputs. Page changes use a small local slide/fade transition. Custom controls can bind normal `on.press` frontend actions with `paginator_next`, `paginator_previous`/`paginator_prev`, or `paginator_go_to`. For this release, a rendered snap supports one paginator, and paginator controls may live anywhere in the same snap.
 
 Images now support `aspect: "4:1"` for compact banners, plus optional `title` and `subtitle` overlay props. These image overlay props are the intended abstraction for hero-like visuals in this pass; no separate `hero` component was added.
 

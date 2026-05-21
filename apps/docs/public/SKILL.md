@@ -100,8 +100,10 @@ Design guidance:
 - Use `paginator` when a single snap page would otherwise become too tall. It shows one
   child page at a time with optional built-in previous/next controls and indicators;
   page state is local to the renderer and is not included in POST inputs. Set both
-  `showControls: false` and `showIndicators: false` to hide the built-in bar. Buttons
-  or tappable `cell_grid` cells anywhere in the same snap can bind `paginator_next` with
+  `showControls: false` and `showIndicators: false` to hide the built-in bar. Use
+  `controlsPosition: "top"` when varying page heights would make bottom controls shift.
+  Page changes use a small local slide/fade transition. Buttons or tappable `cell_grid`
+  cells anywhere in the same snap can bind `paginator_next` with
   `params: {}`, `paginator_previous` with `params: {}`, or `paginator_go_to` with
   `params: { "page": 0 }` for custom local navigation that never POSTs. Only one
   paginator is supported per snap in this release.

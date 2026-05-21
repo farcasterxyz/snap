@@ -832,6 +832,7 @@ describe("Structural constraints", () => {
           props: {
             showControls: false,
             showIndicators: false,
+            controlsPosition: "top",
           },
           children: ["page_0", "page_1"],
         },

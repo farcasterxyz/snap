@@ -1,6 +1,13 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
-import { Children, type ReactNode, useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import {
+  Children,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
@@ -26,105 +33,148 @@ export function SnapPaginator({
   const activePage = Math.min(page, Math.max(pages.length - 1, 0));
   const showControls = props.showControls !== false && pages.length > 1;
   const showIndicators = props.showIndicators !== false && pages.length > 1;
+  const controlsPosition = props.controlsPosition === "top" ? "top" : "bottom";
+  const showControlBar = showControls || showIndicators;
+  const [transitionDirection, setTransitionDirection] =
+    useState<"next" | "previous">("next");
+  const pageAnim = useRef(new Animated.Value(1)).current;
 
   const canGoPrev = activePage > 0;
   const canGoNext = activePage < pages.length - 1;
-  const goPrev = () => setPage((value) => Math.max(value - 1, 0));
-  const goNext = () => setPage((value) => Math.min(value + 1, pages.length - 1));
+  const goToPage = (targetPage: number) => {
+    const nextPage = Math.min(Math.max(targetPage, 0), pages.length - 1);
+    if (nextPage !== activePage) {
+      setTransitionDirection(nextPage > activePage ? "next" : "previous");
+    }
+    setPage(nextPage);
+  };
+  const goPrev = () => goToPage(activePage - 1);
+  const goNext = () => goToPage(activePage + 1);
   const actions = useMemo(() => ({
     previous: goPrev,
     next: goNext,
-    goTo: (targetPage: number) =>
-      setPage(Math.min(Math.max(targetPage, 0), pages.length - 1)),
-  }), [pages.length]);
+    goTo: goToPage,
+  }), [activePage, pages.length]);
 
   useEffect(() => {
     if (pages.length === 0) return;
     return paginatorActions?.register(actions);
   }, [actions, pages.length, paginatorActions]);
 
+  useEffect(() => {
+    pageAnim.setValue(0);
+    Animated.timing(pageAnim, {
+      toValue: 1,
+      duration: 180,
+      useNativeDriver: true,
+    }).start();
+  }, [activePage, pageAnim]);
+
   if (pages.length === 0) return null;
+
+  const controlBar = showControlBar ? (
+    <View style={styles.footer}>
+      {showControls ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Previous page"
+          disabled={!canGoPrev}
+          onPress={goPrev}
+          style={[
+            styles.control,
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.muted,
+              opacity: canGoPrev ? 1 : 0.35,
+            },
+          ]}
+        >
+          <ChevronLeft size={15} color={colors.text} />
+        </Pressable>
+      ) : (
+        <View style={styles.controlPlaceholder} />
+      )}
+
+      {showIndicators ? (
+        <View style={styles.indicators}>
+          {pages.map((_, index) => {
+            const current = index === activePage;
+            return (
+              <View
+                key={index}
+                accessibilityLabel={`Page ${index + 1}${current ? ", current" : ""}`}
+                style={[
+                  styles.dot,
+                  current ? styles.dotCurrent : styles.dotInactive,
+                  {
+                    backgroundColor: current
+                      ? accentHex
+                      : mode === "dark"
+                        ? "rgba(255,255,255,0.5)"
+                        : "rgba(0,0,0,0.28)",
+                    borderColor: current
+                      ? mode === "dark"
+                        ? "rgba(255,255,255,0.18)"
+                        : "rgba(0,0,0,0.12)"
+                      : "transparent",
+                  },
+                ]}
+              />
+            );
+          })}
+        </View>
+      ) : (
+        <View style={styles.indicators} />
+      )}
+
+      {showControls ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Next page"
+          disabled={!canGoNext}
+          onPress={goNext}
+          style={[
+            styles.control,
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.muted,
+              opacity: canGoNext ? 1 : 0.35,
+            },
+          ]}
+        >
+          <ChevronRight size={15} color={colors.text} />
+        </Pressable>
+      ) : (
+        <View style={styles.controlPlaceholder} />
+      )}
+    </View>
+  ) : null;
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.page}>{pages[activePage]}</View>
-      {(showControls || showIndicators) ? (
-        <View style={styles.footer}>
-          {showControls ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Previous page"
-              disabled={!canGoPrev}
-              onPress={goPrev}
-              style={[
-                styles.control,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.muted,
-                  opacity: canGoPrev ? 1 : 0.35,
-                },
-              ]}
-            >
-              <ChevronLeft size={15} color={colors.text} />
-            </Pressable>
-          ) : (
-            <View style={styles.controlPlaceholder} />
-          )}
-
-          {showIndicators ? (
-            <View style={styles.indicators}>
-              {pages.map((_, index) => {
-                const current = index === activePage;
-                return (
-                  <View
-                    key={index}
-                    accessibilityLabel={`Page ${index + 1}${current ? ", current" : ""}`}
-                    style={[
-                      styles.dot,
-                      current ? styles.dotCurrent : styles.dotInactive,
-                      {
-                        backgroundColor: current
-                          ? accentHex
-                          : mode === "dark"
-                            ? "rgba(255,255,255,0.5)"
-                            : "rgba(0,0,0,0.28)",
-                        borderColor: current
-                          ? mode === "dark"
-                            ? "rgba(255,255,255,0.18)"
-                            : "rgba(0,0,0,0.12)"
-                          : "transparent",
-                      },
-                    ]}
-                  />
-                );
-              })}
-            </View>
-          ) : (
-            <View style={styles.indicators} />
-          )}
-
-          {showControls ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Next page"
-              disabled={!canGoNext}
-              onPress={goNext}
-              style={[
-                styles.control,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.muted,
-                  opacity: canGoNext ? 1 : 0.35,
-                },
-              ]}
-            >
-              <ChevronRight size={15} color={colors.text} />
-            </Pressable>
-          ) : (
-            <View style={styles.controlPlaceholder} />
-          )}
-        </View>
-      ) : null}
+      {controlsPosition === "top" ? controlBar : null}
+      <Animated.View
+        style={[
+          styles.page,
+          {
+            opacity: pageAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.68, 1],
+            }),
+            transform: [
+              {
+                translateX: pageAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [transitionDirection === "previous" ? -8 : 8, 0],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        {pages[activePage]}
+      </Animated.View>
+      {controlsPosition === "bottom" ? controlBar : null}
     </View>
   );
 }

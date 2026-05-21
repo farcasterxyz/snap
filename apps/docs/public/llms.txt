@@ -113,8 +113,10 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `initialPage` (optional): zero-based page index. Default: `0`
 - `showIndicators` (optional): boolean. Default: `true`
 - `showControls` (optional): boolean. Default: `true`
+- `controlsPosition` (optional): `"top"` | `"bottom"`. Default: `"bottom"`. Moves the built-in pagination bar above or below page content; use `"top"` to keep controls stable when page heights vary.
 - The current page is local renderer state only and is never included in POST `inputs`.
 - Set both `showControls: false` and `showIndicators: false` to hide the built-in pagination bar.
+- Page changes use a small local slide/fade transition.
 - Buttons or tappable `cell_grid` cells anywhere in the same snap can bind local actions: `paginator_next` with `params: {}`, `paginator_previous` (or alias `paginator_prev`) with `params: {}`, and `paginator_go_to` with `params: { "page": 0 }`. These affect the snap's rendered paginator, never POST, and support one paginator per snap in this release.
 - Paginator children may exceed the normal per-container child limit, but the snap still must stay within 64 total elements and max nesting depth.
 

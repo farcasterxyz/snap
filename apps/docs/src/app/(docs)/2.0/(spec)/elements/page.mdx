@@ -384,10 +384,13 @@ must stay within the global 64-element limit and max nesting depth.
 | `initialPage`    | number  | No       | `0`     | Zero-based page to show first            |
 | `showIndicators` | boolean | No       | `true`  | Show page dots below the active page     |
 | `showControls`   | boolean | No       | `true`  | Show previous/next buttons               |
+| `controlsPosition` | string | No     | `"bottom"` | Position for the built-in pagination bar: `"top"` or `"bottom"` |
 
 Set both `showControls: false` and `showIndicators: false` to hide the built-in
-pagination bar. Buttons or tappable `cell_grid` cells anywhere in the same snap can
-bind local actions:
+pagination bar. Set `controlsPosition: "top"` to render the bar above page content
+when you want the controls and dots to stay fixed while page content changes height.
+Page changes use a small local slide/fade transition. Buttons or tappable `cell_grid`
+cells anywhere in the same snap can bind local actions:
 
 | Action               | Params                   | Behavior                                  |
 | -------------------- | ------------------------ | ----------------------------------------- |
