@@ -12,7 +12,7 @@
 - Code and schemas are canonical for protocol behavior. Prose documentation should explain, organize, and point back to the implementation truth in `pkgs/snap`, not compete with it.
 - Documentation work should not change the meaning of the system. Reorganize, split, move, and clarify docs freely, but do not silently change protocol semantics, validation behavior, or implementation behavior.
 - If docs are inconsistent, preserve the canonical behavior and call out the discrepancy explicitly rather than “fixing” it by changing meaning in prose.
-- Keep workflow docs and reference docs distinct. Skills and README files should mainly help people and agents find the right path and execute tasks; they should not become shadow specs.
+- Keep workflow docs and reference docs distinct. Skills and README files should guide contributors through workflows, while reference docs should describe stable concepts, APIs, schemas, and protocol behavior.
 - Use `AGENTS.md` to capture intent, philosophy, and high-level design direction so agents can understand where the project is going, not just how it works today.
 
 ## Operational handbook
