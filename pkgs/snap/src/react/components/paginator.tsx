@@ -36,6 +36,12 @@ export function SnapPaginator({
   const showControls = props.showControls !== false && pages.length > 1;
   const showIndicators = props.showIndicators !== false && pages.length > 1;
   const controlsPosition = props.controlsPosition === "top" ? "top" : "bottom";
+  const transition =
+    props.transition === "fade" ||
+    props.transition === "scale" ||
+    props.transition === "none"
+      ? props.transition
+      : "slide";
   const showControlBar = showControls || showIndicators;
   const [transitionDirection, setTransitionDirection] =
     useState<"next" | "previous">("next");
@@ -63,6 +69,15 @@ export function SnapPaginator({
   }, [actions, pages.length, paginatorActions]);
 
   if (pages.length === 0) return null;
+
+  const pageAnimation =
+    transition === "none"
+      ? undefined
+      : transition === "fade"
+        ? "snapPaginatorFade 180ms ease-out"
+        : transition === "scale"
+          ? "snapPaginatorScale 240ms cubic-bezier(0.16, 1, 0.3, 1)"
+          : "snapPaginatorSlide 260ms cubic-bezier(0.16, 1, 0.3, 1)";
 
   const controlBar = showControlBar ? (
     <div className="flex min-h-7 w-full items-center justify-between gap-2">
@@ -150,17 +165,25 @@ export function SnapPaginator({
         data-snap-paginator-page
         className="w-full min-w-0"
         style={{
-          "--snap-paginator-x": transitionDirection === "previous" ? "-8px" : "8px",
-          animation: "snapPaginatorPageIn 180ms ease-out",
+          "--snap-paginator-x": transitionDirection === "previous" ? "-22px" : "22px",
+          animation: pageAnimation,
         } as CSSProperties}
       >
         {pages[activePage]}
       </div>
       {controlsPosition === "bottom" ? controlBar : null}
       <style>{`
-        @keyframes snapPaginatorPageIn {
-          from { opacity: 0.68; transform: translateX(var(--snap-paginator-x, 8px)); }
-          to { opacity: 1; transform: translateX(0); }
+        @keyframes snapPaginatorSlide {
+          from { opacity: 0.35; transform: translateX(var(--snap-paginator-x, 22px)) scale(0.985); }
+          to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes snapPaginatorFade {
+          from { opacity: 0.2; }
+          to { opacity: 1; }
+        }
+        @keyframes snapPaginatorScale {
+          from { opacity: 0.25; transform: scale(0.94); }
+          to { opacity: 1; transform: scale(1); }
         }
         @media (prefers-reduced-motion: reduce) {
           [data-snap-paginator-page] { animation: none !important; }

@@ -833,6 +833,7 @@ describe("Structural constraints", () => {
             showControls: false,
             showIndicators: false,
             controlsPosition: "top",
+            transition: "fade",
           },
           children: ["page_0", "page_1"],
         },

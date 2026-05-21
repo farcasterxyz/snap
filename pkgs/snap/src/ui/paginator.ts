@@ -5,6 +5,7 @@ export const paginatorProps = z.object({
   showIndicators: z.boolean().optional(),
   showControls: z.boolean().optional(),
   controlsPosition: z.enum(["top", "bottom"]).optional(),
+  transition: z.enum(["slide", "fade", "scale", "none"]).optional(),
 });
 
 export type PaginatorProps = z.infer<typeof paginatorProps>;

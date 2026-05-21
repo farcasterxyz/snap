@@ -49,6 +49,7 @@ function componentImprovementsPage(
             showControls: true,
             showIndicators: true,
             controlsPosition: "top",
+            transition: "scale",
           },
           children: [
             "overview",

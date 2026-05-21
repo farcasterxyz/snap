@@ -34,6 +34,12 @@ export function SnapPaginator({
   const showControls = props.showControls !== false && pages.length > 1;
   const showIndicators = props.showIndicators !== false && pages.length > 1;
   const controlsPosition = props.controlsPosition === "top" ? "top" : "bottom";
+  const transition =
+    props.transition === "fade" ||
+    props.transition === "scale" ||
+    props.transition === "none"
+      ? props.transition
+      : "slide";
   const showControlBar = showControls || showIndicators;
   const [transitionDirection, setTransitionDirection] =
     useState<"next" | "previous">("next");
@@ -62,13 +68,17 @@ export function SnapPaginator({
   }, [actions, pages.length, paginatorActions]);
 
   useEffect(() => {
+    if (transition === "none") {
+      pageAnim.setValue(1);
+      return;
+    }
     pageAnim.setValue(0);
     Animated.timing(pageAnim, {
       toValue: 1,
-      duration: 180,
+      duration: transition === "scale" ? 240 : transition === "slide" ? 260 : 180,
       useNativeDriver: true,
     }).start();
-  }, [activePage, pageAnim]);
+  }, [activePage, pageAnim, transition]);
 
   if (pages.length === 0) return null;
 
@@ -150,26 +160,52 @@ export function SnapPaginator({
     </View>
   ) : null;
 
+  const animatedPageStyle =
+    transition === "none"
+      ? undefined
+      : {
+          opacity: pageAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [transition === "fade" ? 0.2 : 0.35, 1],
+          }),
+          transform:
+            transition === "scale"
+              ? [
+                  {
+                    scale: pageAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.94, 1],
+                    }),
+                  },
+                ]
+              : transition === "slide"
+                ? [
+                    {
+                      translateX: pageAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [
+                          transitionDirection === "previous" ? -22 : 22,
+                          0,
+                        ],
+                      }),
+                    },
+                    {
+                      scale: pageAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.985, 1],
+                      }),
+                    },
+                  ]
+                : [],
+        };
+
   return (
     <View style={styles.wrap}>
       {controlsPosition === "top" ? controlBar : null}
       <Animated.View
         style={[
           styles.page,
-          {
-            opacity: pageAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.68, 1],
-            }),
-            transform: [
-              {
-                translateX: pageAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [transitionDirection === "previous" ? -8 : 8, 0],
-                }),
-              },
-            ],
-          },
+          animatedPageStyle,
         ]}
       >
         {pages[activePage]}
