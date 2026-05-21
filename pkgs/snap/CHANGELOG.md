@@ -1,5 +1,13 @@
 # @farcaster/snap
 
+## 2.6.1
+
+### Patch Changes
+
+- [#192](https://github.com/farcasterxyz/snap/pull/192) [`b06b0ab`](https://github.com/farcasterxyz/snap/commit/b06b0ab49712f52448d151a912f80bf68f3ae278) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Stop clamping v2 text to one line by default.
+
+  Text now renders unclamped when `maxLines` is omitted in both React and React Native renderers. `text.props.maxLines` remains the explicit opt-in API for bounding visible lines.
+
 ## 2.6.0
 
 ### Minor Changes
