@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
+import { SnapPaginatorActionContext } from "../paginator-action-context";
 
 function clampInitialPage(value: unknown, pageCount: number): number {
   if (typeof value !== "number" || !Number.isInteger(value)) return 0;
@@ -31,10 +32,18 @@ export function SnapPaginator({
   const canGoNext = activePage < pages.length - 1;
   const goPrev = () => setPage((value) => Math.max(value - 1, 0));
   const goNext = () => setPage((value) => Math.min(value + 1, pages.length - 1));
+  const actions = {
+    previous: goPrev,
+    next: goNext,
+    goTo: (targetPage: number) =>
+      setPage(Math.min(Math.max(targetPage, 0), pages.length - 1)),
+  };
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.page}>{pages[activePage]}</View>
+      <SnapPaginatorActionContext.Provider value={actions}>
+        <View style={styles.page}>{pages[activePage]}</View>
+      </SnapPaginatorActionContext.Provider>
       {(showControls || showIndicators) ? (
         <View style={styles.footer}>
           {showControls ? (

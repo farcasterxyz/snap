@@ -98,8 +98,12 @@ Design guidance:
   and optional `title`/`subtitle` overlay props when the image needs hero-like copy. Do
   not invent a separate hero component.
 - Use `paginator` when a single snap page would otherwise become too tall. It shows one
-  child page at a time with built-in previous/next controls and indicators; page state
-  is local to the renderer and is not included in POST inputs.
+  child page at a time with optional built-in previous/next controls and indicators;
+  page state is local to the renderer and is not included in POST inputs. Set both
+  `showControls: false` and `showIndicators: false` to hide the built-in bar. Buttons
+  or tappable `cell_grid` cells inside the paginator can bind `paginator_next` with
+  `params: {}`, `paginator_previous` with `params: {}`, or `paginator_go_to` with
+  `params: { "page": 0 }` for custom local navigation that never POSTs.
 - Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
   default to `"secondary"`.
 - `item` follows shadcn Item shape: optional `media` on the left, text content in
@@ -119,8 +123,8 @@ Design guidance:
   visual ring and pair with a separate submit `button`. Don't combine `on.press` with a
   non-`off` `select` — `on.press` is ignored when `select` is on.
 - **Stack `gap` defaults are layout-aware**: horizontal stacks use direct child count (2
-  children → `"lg"`/14px, 3 → `"md"`/6px, 4+ → `"sm"`/2px). Vertical stacks default to
-  `"md"`/14px, except button-only stacks always default to `"sm"`/2px. Button-only
+  children → `"lg"`/16px, 3 → `"md"`/8px, 4+ → `"sm"`/4px). Vertical stacks default to
+  `"md"`/16px, except button-only stacks always default to `"sm"`/4px. Button-only
   stacks do not become grids automatically; horizontal button rows use
   content-proportional widths while filling the container unless `equalWidth: true` is
   provided to force equal-width cells. Trust the default first — don't set `gap` just to

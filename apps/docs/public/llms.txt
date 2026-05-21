@@ -113,11 +113,13 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `showIndicators` (optional): boolean. Default: `true`
 - `showControls` (optional): boolean. Default: `true`
 - The current page is local renderer state only and is never included in POST `inputs`.
+- Set both `showControls: false` and `showIndicators: false` to hide the built-in pagination bar.
+- Buttons or tappable `cell_grid` cells inside a paginator can bind local actions: `paginator_next` with `params: {}`, `paginator_previous` (or alias `paginator_prev`) with `params: {}`, and `paginator_go_to` with `params: { "page": 0 }`. These affect only the nearest containing paginator and never POST.
 - Paginator children may exceed the normal per-container child limit, but the snap still must stay within 64 total elements and max nesting depth.
 
 **stack** — Layout container.
 - `direction` (optional): `"vertical"` | `"horizontal"`. Default: `"vertical"`
-- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Vertical px: 0/2/14/22. Horizontal px: 0/2/6/14 (tighter, since children sit side-by-side). Default for vertical: `"md"`. Default for horizontal is column-aware: 2 cols → `"lg"` (14px), 3 cols → `"md"` (6px), 4+ cols → `"sm"` (2px), unknown → `"md"` (6px). An explicit value always wins — override the default when you have a deliberate visual reason (e.g. tighter toolbar, extra breathing room around a hero row).
+- `gap` (optional): `"none"` | `"sm"` | `"md"` | `"lg"`. Vertical px: 0/4/16/24. Horizontal px: 0/4/8/16 (tighter, since children sit side-by-side). Default for vertical: `"md"`. Default for horizontal is column-aware: 2 cols → `"lg"` (16px), 3 cols → `"md"` (8px), 4+ cols → `"sm"` (4px), unknown → `"md"` (8px). An explicit value always wins — override the default when you have a deliberate visual reason (e.g. tighter toolbar, extra breathing room around a hero row).
 - `justify` (optional): `"start"` | `"center"` | `"end"` | `"between"` | `"around"`
 - `columns` (optional, horizontal only): `2`–`6` — CSS grid with equal columns (mixed children or layout that needs fixed column counts).
 - Children are element IDs

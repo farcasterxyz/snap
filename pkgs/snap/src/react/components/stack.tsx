@@ -15,16 +15,16 @@ import {
 
 const VGAP: Record<string, number> = {
   none: 0,
-  sm: 2,
-  md: 14,
-  lg: 22,
+  sm: 4,
+  md: 16,
+  lg: 24,
 };
 
 const HGAP: Record<string, number> = {
   none: 0,
-  sm: 2,
-  md: 6,
-  lg: 14,
+  sm: 4,
+  md: 8,
+  lg: 16,
 };
 
 const JUSTIFY_FLEX: Record<string, string> = {

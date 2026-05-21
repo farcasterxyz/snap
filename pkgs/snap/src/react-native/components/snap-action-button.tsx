@@ -5,6 +5,11 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ExternalLink } from "lucide-react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
+import {
+  getPaginatorAction,
+  runPaginatorAction,
+  useSnapPaginatorActions,
+} from "../paginator-action-context";
 import { useSnapStackDirection } from "../stack-direction-context";
 import { ICON_MAP } from "./snap-icon";
 
@@ -37,6 +42,8 @@ export function SnapActionButton({
 
   const on = (element as unknown as { on?: Record<string, unknown> }).on;
   const showExternalIcon = isExternalLinkAction(on);
+  const paginatorActions = useSnapPaginatorActions();
+  const paginatorAction = getPaginatorAction(on, props);
 
   return (
     <View style={inHorizontalStack ? styles.outerHorizontal : styles.outer}>
@@ -50,6 +57,7 @@ export function SnapActionButton({
           pressed && styles.pressed,
         ]}
         onPress={() => {
+          if (runPaginatorAction(paginatorActions, paginatorAction)) return;
           void (async () => {
             try {
               await emit("press");

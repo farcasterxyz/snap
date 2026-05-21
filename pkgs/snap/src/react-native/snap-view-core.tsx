@@ -26,8 +26,13 @@ import type { SnapPage, SnapActionHandlers, JsonValue } from "./types";
 
 export function applyStatePaths(
   model: Record<string, unknown>,
-  changes: { path: string; value: unknown }[] | Record<string, unknown>,
+  changes:
+    | { path: string; value: unknown }[]
+    | Record<string, unknown>
+    | null
+    | undefined,
 ): void {
+  if (!changes) return;
   const entries = Array.isArray(changes)
     ? changes.map((c) => [c.path, c.value] as const)
     : Object.entries(changes);
@@ -56,6 +61,56 @@ export function applyStatePaths(
       }
     }
   }
+}
+
+function isPaginatorLocalAction(action: unknown): boolean {
+  return (
+    action === "paginator_next" ||
+    action === "paginator_previous" ||
+    action === "paginator_prev" ||
+    action === "paginator_go_to"
+  );
+}
+
+function withPaginatorLocalActions(spec: SnapPage["ui"]): SnapPage["ui"] {
+  if (!spec || typeof spec !== "object" || !("elements" in spec)) return spec;
+  const elements = spec.elements as unknown as Record<
+    string,
+    Record<string, unknown>
+  >;
+  if (!elements || typeof elements !== "object") return spec;
+  let changed = false;
+  const nextElements: Record<string, Record<string, unknown>> = {};
+
+  for (const [id, element] of Object.entries(elements)) {
+    const props = (element.props as Record<string, unknown> | undefined) ?? {};
+    const on = element.on as
+      | Record<string, { action?: string; params?: Record<string, unknown> }>
+      | undefined;
+    const press = on?.press;
+    if (!press || !isPaginatorLocalAction(press.action)) {
+      if (element.props === undefined) changed = true;
+      nextElements[id] =
+        element.props === undefined ? { ...element, props } : element;
+      continue;
+    }
+
+    const nextOn = { ...on };
+    delete nextOn.press;
+    changed = true;
+    nextElements[id] = {
+      ...element,
+      props: {
+        ...props,
+        __snapPaginatorAction: press,
+      },
+      ...(Object.keys(nextOn).length > 0 ? { on: nextOn } : {}),
+    };
+  }
+
+  return changed
+    ? ({ ...spec, elements: nextElements } as unknown as SnapPage["ui"])
+    : spec;
 }
 
 export function resolveAccentHex(
@@ -88,7 +143,10 @@ export function SnapViewCoreInner({
   loadingOverlay?: ReactNode;
 }) {
   const { mode } = useSnapTheme();
-  const spec = snap.ui;
+  const spec = useMemo(
+    () => withPaginatorLocalActions(snap.ui),
+    [snap.ui],
+  );
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
 
   const initialState = useMemo(

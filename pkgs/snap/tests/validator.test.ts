@@ -15,7 +15,12 @@ import { validateSnapResponse } from "../src/validator";
 function makeSpec(
   elements: Record<
     string,
-    { type: string; props?: Record<string, unknown>; children?: string[] }
+    {
+      type: string;
+      props?: Record<string, unknown>;
+      children?: string[];
+      on?: Record<string, unknown>;
+    }
   >,
   root = "page",
 ) {
@@ -815,6 +820,50 @@ describe("Structural constraints", () => {
           ...elements,
         },
       },
+    });
+  });
+
+  it("accepts hidden paginator chrome with local paginator actions", () => {
+    expectValid({
+      version: "2.0",
+      ui: makeSpec({
+        pager: {
+          type: "paginator",
+          props: {
+            showControls: false,
+            showIndicators: false,
+          },
+          children: ["page_0", "page_1"],
+        },
+        page_0: {
+          type: "stack",
+          children: ["next"],
+        },
+        page_1: {
+          type: "stack",
+          children: ["previous", "start"],
+        },
+        next: {
+          type: "button",
+          props: { label: "Next" },
+          on: { press: { action: "paginator_next", params: {} } },
+        },
+        previous: {
+          type: "button",
+          props: { label: "Previous" },
+          on: { press: { action: "paginator_previous", params: {} } },
+        },
+        start: {
+          type: "button",
+          props: { label: "Start" },
+          on: {
+            press: {
+              action: "paginator_go_to",
+              params: { page: 0 },
+            },
+          },
+        },
+      }),
     });
   });
 

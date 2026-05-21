@@ -4,6 +4,11 @@ import { useStateStore } from "@json-render/react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
 import { POST_GRID_TAP_KEY, readableTextOnHex } from "@farcaster/snap";
+import {
+  getPaginatorAction,
+  runPaginatorAction,
+  useSnapPaginatorActions,
+} from "../paginator-action-context";
 
 export function SnapCellGrid({
   element,
@@ -14,6 +19,8 @@ export function SnapCellGrid({
   const { hex, appearance } = useSnapPalette();
   const { colors } = useSnapTheme();
   const { get, set } = useStateStore();
+  const paginatorActions = useSnapPaginatorActions();
+  const paginatorAction = getPaginatorAction(on, props);
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const cells = Array.isArray(props.cells) ? props.cells : [];
@@ -75,7 +82,12 @@ export function SnapCellGrid({
     } else {
       set(tapPath, wire);
     }
-    if (hasPressAction) emit("press");
+    if (
+      hasPressAction &&
+      !runPaginatorAction(paginatorActions, paginatorAction)
+    ) {
+      emit("press");
+    }
   };
 
   const ringOuter = appearance === "dark" ? "#fff" : "#000";

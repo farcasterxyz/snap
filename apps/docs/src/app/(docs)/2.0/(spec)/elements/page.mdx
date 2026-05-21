@@ -332,18 +332,18 @@ Nested **stack** children of a horizontal stack flex as peers (equal share of th
 | Size   | Vertical | Horizontal |
 | ------ | -------- | ---------- |
 | `none` | 0px      | 0px        |
-| `sm`   | 2px      | 2px        |
-| `md`   | 14px     | 6px        |
-| `lg`   | 22px     | 14px       |
+| `sm`   | 4px      | 4px        |
+| `md`   | 16px     | 8px        |
+| `lg`   | 24px     | 16px       |
 
 When `gap` is omitted, vertical stacks default to `"md"`. Horizontal stacks pick a default based on column count — denser layouts get tighter gaps:
 
 | Columns | Default        |
 | ------- | -------------- |
-| 2       | `"lg"` (14px)  |
-| 3       | `"md"` (6px)   |
-| 4–6     | `"sm"` (2px)   |
-| unknown | `"md"` (6px)   |
+| 2       | `"lg"` (16px)  |
+| 3       | `"md"` (8px)   |
+| 4–6     | `"sm"` (4px)   |
+| unknown | `"md"` (8px)   |
 
 Column count is taken from `columns` when set, or inferred from button-row children. **An explicit `gap` always wins** — override the default when you have a deliberate visual reason (extra breathing room around a hero row, a visually compact toolbar, a hero+supporting-button pair where the loose `lg` default would feel disconnected).
 
@@ -368,9 +368,9 @@ Column count is taken from `columns` when set, or inferred from button-row child
 ## paginator
 
 Client-side page navigation without a server round trip. Children are page element IDs;
-the renderer shows one child at a time and provides built-in previous/next controls and
-page indicators. The current page index is local renderer state and is never included in
-POST `inputs`.
+the renderer shows one child at a time and can provide built-in previous/next controls
+and page indicators. The current page index is local renderer state and is never included
+in POST `inputs`.
 
 Use `paginator` when one snap page would otherwise become too tall, especially for
 multi-step input groups. A paginator can be the root element or a child inside a larger
@@ -384,6 +384,18 @@ must stay within the global 64-element limit and max nesting depth.
 | `initialPage`    | number  | No       | `0`     | Zero-based page to show first            |
 | `showIndicators` | boolean | No       | `true`  | Show page dots below the active page     |
 | `showControls`   | boolean | No       | `true`  | Show previous/next buttons               |
+
+Set both `showControls: false` and `showIndicators: false` to hide the built-in
+pagination bar. Buttons or tappable `cell_grid` cells inside the paginator can bind
+local actions:
+
+| Action               | Params                   | Behavior                                  |
+| -------------------- | ------------------------ | ----------------------------------------- |
+| `paginator_next`     | `{}`                     | Move to the next page locally             |
+| `paginator_previous` | `{}`                     | Move to the previous page locally         |
+| `paginator_go_to`    | `{ "page": 0 }`          | Move to a zero-based page index locally   |
+
+These actions affect only the nearest containing paginator and never submit POST input.
 
 ```json
 "pager": {

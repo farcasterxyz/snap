@@ -4,6 +4,7 @@ import { Children, type ReactNode, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import { SnapPaginatorActionContext } from "../paginator-action-context";
 
 function clampInitialPage(value: unknown, pageCount: number): number {
   if (typeof value !== "number" || !Number.isInteger(value)) return 0;
@@ -33,10 +34,18 @@ export function SnapPaginator({
   const canGoNext = activePage < pages.length - 1;
   const goPrev = () => setPage((value) => Math.max(value - 1, 0));
   const goNext = () => setPage((value) => Math.min(value + 1, pages.length - 1));
+  const actions = {
+    previous: goPrev,
+    next: goNext,
+    goTo: (targetPage: number) =>
+      setPage(Math.min(Math.max(targetPage, 0), pages.length - 1)),
+  };
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2">
-      <div className="w-full min-w-0">{pages[activePage]}</div>
+      <SnapPaginatorActionContext.Provider value={actions}>
+        <div className="w-full min-w-0">{pages[activePage]}</div>
+      </SnapPaginatorActionContext.Provider>
       {(showControls || showIndicators) && (
         <div className="flex min-h-7 w-full items-center justify-between gap-2">
           {showControls ? (

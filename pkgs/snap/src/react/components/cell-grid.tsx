@@ -5,6 +5,11 @@ import { useStateStore } from "@json-render/react";
 import { cn } from "@neynar/ui/utils";
 import { POST_GRID_TAP_KEY, readableTextOnHex } from "@farcaster/snap";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import {
+  getPaginatorAction,
+  runPaginatorAction,
+  useSnapPaginatorActions,
+} from "../paginator-action-context";
 
 export function SnapCellGrid({
   element: { props, on },
@@ -15,6 +20,8 @@ export function SnapCellGrid({
 }) {
   const { get, set } = useStateStore();
   const colors = useSnapColors();
+  const paginatorActions = useSnapPaginatorActions();
+  const paginatorAction = getPaginatorAction(on, props);
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const select = String(props.select ?? "off");
@@ -75,7 +82,12 @@ export function SnapCellGrid({
     } else {
       set(tapPath, wire);
     }
-    if (hasPressAction) emit("press");
+    if (
+      hasPressAction &&
+      !runPaginatorAction(paginatorActions, paginatorAction)
+    ) {
+      emit("press");
+    }
   };
 
   /** Cells without a palette `color` — subtle fill so empty slots read as tiles. */
