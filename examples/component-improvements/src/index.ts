@@ -55,6 +55,7 @@ function componentImprovementsPage(
             "copy",
             "grid",
             "small-grid",
+            "medium-grid",
             "custom-nav",
             "image-card",
             "many-pages",
@@ -64,8 +65,18 @@ function componentImprovementsPage(
         },
         "showcase-controls": {
           type: "stack",
+          props: { gap: "sm" },
+          children: ["jump-row-a", "jump-row-b"],
+        },
+        "jump-row-a": {
+          type: "stack",
           props: { direction: "horizontal", equalWidth: true, gap: "sm" },
-          children: ["jump-copy", "jump-grid", "jump-small-grid"],
+          children: ["jump-copy", "jump-grid"],
+        },
+        "jump-row-b": {
+          type: "stack",
+          props: { direction: "horizontal", equalWidth: true, gap: "sm" },
+          children: ["jump-small-grid", "jump-medium-grid"],
         },
         "jump-copy": paginatorButton("Jump to copy", "paginator_go_to", {
           page: 1,
@@ -75,6 +86,9 @@ function componentImprovementsPage(
         }),
         "jump-small-grid": paginatorButton("Small grid", "paginator_go_to", {
           page: 3,
+        }),
+        "jump-medium-grid": paginatorButton("Medium grid", "paginator_go_to", {
+          page: 4,
         }),
         overview: pageStack("overview-title", "overview-copy", "overview-short"),
         "overview-title": heading("Visible paginator"),
@@ -113,17 +127,13 @@ function componentImprovementsPage(
         "small-grid": pageStack(
           "small-grid-title",
           "small-grid-copy",
-          "small-grid-label",
           "small-square-grid",
-          "medium-grid-label",
-          "medium-square-grid",
         ),
-        "small-grid-title": heading("Centered grid widths"),
+        "small-grid-title": heading("Small centered grid"),
         "small-grid-copy": caption(
-          "Small and medium boards cap their width and center themselves; the large/default grid stays full-width.",
+          "maxWidth: sm caps this board, centers it, and keeps every cell square.",
           2,
         ),
-        "small-grid-label": caption("maxWidth: sm", 1),
         "small-square-grid": {
           type: "cell_grid",
           props: {
@@ -135,7 +145,16 @@ function componentImprovementsPage(
             cells: smallGridCells("S"),
           },
         },
-        "medium-grid-label": caption("maxWidth: md", 1),
+        "medium-grid": pageStack(
+          "medium-grid-title",
+          "medium-grid-copy",
+          "medium-square-grid",
+        ),
+        "medium-grid-title": heading("Medium centered grid"),
+        "medium-grid-copy": caption(
+          "maxWidth: md is wider than sm but still centers itself; lg/default remains full-width.",
+          2,
+        ),
         "medium-square-grid": {
           type: "cell_grid",
           props: {
