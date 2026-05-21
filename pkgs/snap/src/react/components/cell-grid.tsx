@@ -5,6 +5,10 @@ import { useStateStore } from "@json-render/react";
 import { cn } from "@neynar/ui/utils";
 import { POST_GRID_TAP_KEY, readableTextOnHex } from "@farcaster/snap";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import {
+  getPaginatorAction,
+  runPaginatorAction,
+} from "../../ui/paginator-state";
 
 export function SnapCellGrid({
   element: { props, on },
@@ -13,8 +17,10 @@ export function SnapCellGrid({
   element: { props: Record<string, unknown>; on?: Record<string, unknown> };
   emit: (name: string) => void;
 }) {
-  const { get, set } = useStateStore();
+  const stateStore = useStateStore();
+  const { get, set } = stateStore;
   const colors = useSnapColors();
+  const paginatorAction = getPaginatorAction(on);
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const select = String(props.select ?? "off");
@@ -28,6 +34,13 @@ export function SnapCellGrid({
   const gapPx = gapMap[gap] ?? 1;
   const rowHeight = typeof props.rowHeight === "number" ? props.rowHeight : 28;
   const squareCells = props.cellAspectRatio === "square";
+  const maxWidthKey = typeof props.maxWidth === "string" ? props.maxWidth : undefined;
+  const maxWidthMap: Record<string, number | undefined> = {
+    sm: 160,
+    md: 220,
+    lg: undefined,
+  };
+  const maxWidth = maxWidthKey ? maxWidthMap[maxWidthKey] : undefined;
 
   const name = props.name ? String(props.name) : POST_GRID_TAP_KEY;
   const tapPath = `/inputs/${name}`;
@@ -75,7 +88,12 @@ export function SnapCellGrid({
     } else {
       set(tapPath, wire);
     }
-    if (hasPressAction) emit("press");
+    if (
+      hasPressAction &&
+      !runPaginatorAction(stateStore, paginatorAction)
+    ) {
+      emit("press");
+    }
   };
 
   /** Cells without a palette `color` — subtle fill so empty slots read as tiles. */
@@ -138,6 +156,8 @@ export function SnapCellGrid({
       style={{
         display: "grid",
         width: "100%",
+        maxWidth,
+        marginInline: maxWidth ? "auto" : undefined,
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         gap: gapPx,
         padding: 4,

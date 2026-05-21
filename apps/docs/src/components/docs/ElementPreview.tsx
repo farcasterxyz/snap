@@ -417,6 +417,7 @@ function ImagePreview({ aspect = "16:9" }: { aspect?: string }) {
     "16:9": 9 / 16,
     "4:3": 3 / 4,
     "9:16": 16 / 9,
+    "4:1": 1 / 4,
   };
   const ratio = ratioMap[aspect] ?? 9 / 16;
   return (
@@ -441,6 +442,24 @@ function ImagePreview({ aspect = "16:9" }: { aspect?: string }) {
         }}
       >
         <ImageIcon size={32} strokeWidth={1.5} />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          padding: "28px 12px 10px",
+          color: "#fff",
+          background: "linear-gradient(to top, rgba(0,0,0,0.72), rgba(0,0,0,0))",
+        }}
+      >
+        <div style={{ fontSize: 13, lineHeight: "18px", fontWeight: 700 }}>
+          Trending now
+        </div>
+        <div style={{ fontSize: 12, lineHeight: "16px", opacity: 0.85 }}>
+          Compact image overlay
+        </div>
       </div>
     </div>
   );
@@ -571,6 +590,79 @@ function StackPreview() {
   );
 }
 
+function PaginatorPreview() {
+  const [page, setPage] = useState(0);
+  const pages = ["Step 1", "Step 2", "Step 3"];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div
+        style={{
+          minHeight: 64,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 8,
+          background: "var(--bg-hover)",
+          color: "var(--text-primary)",
+          fontSize: 14,
+          fontWeight: 600,
+        }}
+      >
+        {pages[page]}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <button
+          type="button"
+          aria-label="Previous page"
+          disabled={page === 0}
+          onClick={() => setPage((value) => Math.max(value - 1, 0))}
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 6,
+            border: "1px solid var(--border)",
+            background: "var(--bg-surface)",
+            color: "var(--text-primary)",
+            opacity: page === 0 ? 0.35 : 1,
+          }}
+        >
+          ‹
+        </button>
+        <div style={{ display: "flex", gap: 6 }}>
+          {pages.map((_, index) => (
+            <span
+              key={index}
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 3,
+                background: index === page ? ACCENT : "var(--border)",
+              }}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          aria-label="Next page"
+          disabled={page === pages.length - 1}
+          onClick={() => setPage((value) => Math.min(value + 1, pages.length - 1))}
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 6,
+            border: "1px solid var(--border)",
+            background: "var(--bg-surface)",
+            color: "var(--text-primary)",
+            opacity: page === pages.length - 1 ? 0.35 : 1,
+          }}
+        >
+          ›
+        </button>
+      </div>
+    </div>
+  );
+}
+
 type ElementType =
   | "badge"
   | "button"
@@ -578,6 +670,7 @@ type ElementType =
   | "image"
   | "item"
   | "item_group"
+  | "paginator"
   | "progress"
   | "separator"
   | "stack"
@@ -632,6 +725,8 @@ export default function ElementPreview({
         );
       case "item_group":
         return <ItemGroupPreview />;
+      case "paginator":
+        return <PaginatorPreview />;
       case "progress":
         return <ProgressPreview value={65} max={100} label="Upload progress" />;
       case "separator":

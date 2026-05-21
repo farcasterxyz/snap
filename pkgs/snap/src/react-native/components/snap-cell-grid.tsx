@@ -4,6 +4,10 @@ import { useStateStore } from "@json-render/react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
 import { POST_GRID_TAP_KEY, readableTextOnHex } from "@farcaster/snap";
+import {
+  getPaginatorAction,
+  runPaginatorAction,
+} from "../../ui/paginator-state";
 
 export function SnapCellGrid({
   element,
@@ -13,12 +17,21 @@ export function SnapCellGrid({
   const on = (element as unknown as { on?: Record<string, unknown> }).on;
   const { hex, appearance } = useSnapPalette();
   const { colors } = useSnapTheme();
-  const { get, set } = useStateStore();
+  const stateStore = useStateStore();
+  const { get, set } = stateStore;
+  const paginatorAction = getPaginatorAction(on);
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const cells = Array.isArray(props.cells) ? props.cells : [];
   const rowHeight = typeof props.rowHeight === "number" ? props.rowHeight : 28;
   const squareCells = props.cellAspectRatio === "square";
+  const maxWidthKey = typeof props.maxWidth === "string" ? props.maxWidth : undefined;
+  const maxWidthMap: Record<string, number | undefined> = {
+    sm: 160,
+    md: 220,
+    lg: undefined,
+  };
+  const maxWidth = maxWidthKey ? maxWidthMap[maxWidthKey] : undefined;
   const gap = String(props.gap ?? "sm");
   const gapMap: Record<string, number> = { none: 0, sm: 1, md: 2, lg: 4 };
   const gapPx = gapMap[gap] ?? 1;
@@ -75,7 +88,12 @@ export function SnapCellGrid({
     } else {
       set(tapPath, wire);
     }
-    if (hasPressAction) emit("press");
+    if (
+      hasPressAction &&
+      !runPaginatorAction(stateStore, paginatorAction)
+    ) {
+      emit("press");
+    }
   };
 
   const ringOuter = appearance === "dark" ? "#fff" : "#000";
@@ -168,6 +186,8 @@ export function SnapCellGrid({
       style={[
         styles.wrap,
         {
+          maxWidth,
+          alignSelf: maxWidth ? "center" : undefined,
           gap: gapPx,
           backgroundColor: colors.muted,
           padding: 4,

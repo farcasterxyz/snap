@@ -4,6 +4,7 @@ import { SnapCatalogView } from "./catalog-renderer";
 import { ConfettiOverlay } from "./confetti-overlay";
 import { FireworksOverlay } from "./fireworks-overlay";
 import { useSnapTheme } from "./theme";
+import { SnapVersionProvider } from "./snap-version-context";
 import {
   type ReactNode,
   useCallback,
@@ -25,8 +26,13 @@ import type { SnapPage, SnapActionHandlers, JsonValue } from "./types";
 
 export function applyStatePaths(
   model: Record<string, unknown>,
-  changes: { path: string; value: unknown }[] | Record<string, unknown>,
+  changes:
+    | { path: string; value: unknown }[]
+    | Record<string, unknown>
+    | null
+    | undefined,
 ): void {
+  if (!changes) return;
   const entries = Array.isArray(changes)
     ? changes.map((c) => [c.path, c.value] as const)
     : Object.entries(changes);
@@ -55,6 +61,30 @@ export function applyStatePaths(
       }
     }
   }
+}
+
+function withDefaultElementProps(spec: Spec): Spec {
+  if (!spec || typeof spec !== "object" || !("elements" in spec)) return spec;
+  const elements = spec.elements as unknown as Record<
+    string,
+    Record<string, unknown>
+  >;
+  if (!elements || typeof elements !== "object") return spec;
+
+  let changed = false;
+  const nextElements: Record<string, Record<string, unknown>> = {};
+  for (const [id, element] of Object.entries(elements)) {
+    if (element.props !== undefined) {
+      nextElements[id] = element;
+      continue;
+    }
+    changed = true;
+    nextElements[id] = { ...element, props: {} };
+  }
+
+  return changed
+    ? ({ ...spec, elements: nextElements } as unknown as Spec)
+    : spec;
 }
 
 export function resolveAccentHex(
@@ -87,7 +117,10 @@ export function SnapViewCoreInner({
   loadingOverlay?: ReactNode;
 }) {
   const { mode } = useSnapTheme();
-  const spec = snap.ui;
+  const spec = useMemo(
+    () => withDefaultElementProps(snap.ui as unknown as Spec) as SnapPage["ui"],
+    [snap.ui],
+  );
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
 
   const initialState = useMemo(
@@ -206,16 +239,18 @@ export function SnapViewCoreInner({
           )
           : loadingOverlay
         : null}
-      <SnapCatalogView
-        key={pageKey}
-        spec={spec}
-        state={initialState}
-        loading={false}
-        onStateChange={(changes) => {
-          applyStatePaths(stateRef.current, changes);
-        }}
-        onAction={handleAction}
-      />
+      <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
+        <SnapCatalogView
+          key={pageKey}
+          spec={spec}
+          state={initialState}
+          loading={false}
+          onStateChange={(changes) => {
+            applyStatePaths(stateRef.current, changes);
+          }}
+          onAction={handleAction}
+        />
+      </SnapVersionProvider>
       {showConfetti && <ConfettiOverlay key={confettiKey} />}
       {showFireworks && <FireworksOverlay key={fireworksKey} />}
     </View>

@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useStateStore } from "@json-render/react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@neynar/ui/button";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
+import {
+  getPaginatorAction,
+  runPaginatorAction,
+} from "../../ui/paginator-state";
 import { useSnapStackDirection } from "../stack-direction-context";
 import { ICON_MAP } from "./icon";
 
@@ -36,6 +41,8 @@ export function SnapActionButton({
   const iconName = props.icon ? String(props.icon) : undefined;
   const colors = useSnapColors();
   const [hovered, setHovered] = useState(false);
+  const stateStore = useStateStore();
+  const paginatorAction = getPaginatorAction(element.on);
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
   const showExternalIcon = isExternalLinkAction(element.on);
@@ -75,9 +82,13 @@ export function SnapActionButton({
       <Button
         type="button"
         variant={isPrimary ? "default" : "secondary"}
-        className={cn("w-full gap-2")}
+        className={cn("h-8 w-full gap-2 px-3 text-sm")}
         style={style}
-        onClick={() => emit("press")}
+        onClick={() => {
+          if (!runPaginatorAction(stateStore, paginatorAction)) {
+            emit("press");
+          }
+        }}
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
       >

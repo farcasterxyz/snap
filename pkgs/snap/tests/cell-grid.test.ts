@@ -64,11 +64,39 @@ describe("cell_grid cell schema", () => {
     ).toBe(true);
   });
 
+  it("accepts maxWidth tokens for centered compact grids", () => {
+    for (const maxWidth of ["sm", "md", "lg"]) {
+      expect(
+        cellGridProps.safeParse({
+          ...baseGrid,
+          cellAspectRatio: "square",
+          maxWidth,
+        }).success,
+      ).toBe(true);
+    }
+  });
+
   it("rejects unknown cell aspect ratio", () => {
     expect(
       cellGridProps.safeParse({
         ...baseGrid,
         cellAspectRatio: "wide",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects unsupported maxWidth tokens", () => {
+    expect(
+      cellGridProps.safeParse({
+        ...baseGrid,
+        maxWidth: "xl",
+      }).success,
+    ).toBe(false);
+
+    expect(
+      cellGridProps.safeParse({
+        ...baseGrid,
+        maxWidth: 220,
       }).success,
     ).toBe(false);
   });

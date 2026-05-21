@@ -10,6 +10,7 @@ import { inputProps } from "./input.js";
 import { itemProps } from "./item.js";
 import { itemGroupProps } from "./item-group.js";
 import { imageProps } from "./image.js";
+import { paginatorProps } from "./paginator.js";
 import { progressProps } from "./progress.js";
 import { separatorProps } from "./separator.js";
 import { sliderProps } from "./slider.js";
@@ -72,7 +73,13 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     },
     image: {
       props: imageProps,
-      description: "HTTPS image with fixed aspect ratio.",
+      description:
+        "HTTPS image with fixed aspect ratio. Supports compact 4:1 banners and optional title/subtitle overlay text.",
+    },
+    paginator: {
+      props: paginatorProps,
+      description:
+        "Client-side paginator. Children are page element ids; the @farcaster/snap React/React Native components render one page at a time with optional built-in previous/next controls and indicators, optional top/bottom controlsPosition, and author-controlled local transition (slide | fade | scale | none). Buttons or cell_grid cells in the same snap can bind paginator_next, paginator_prev, or paginator_go_to for custom local navigation. Only one paginator is supported per rendered snap in this release. Page index is json-render local UI state and is not posted as input.",
     },
     progress: {
       props: progressProps,
@@ -97,7 +104,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     text: {
       props: textProps,
       description:
-        "Text block — size: md (body, default), sm (caption). Optional weight and align.",
+        "Text block — size: md (body, default), sm (caption). Optional weight, align, and maxLines. In v2 renderers, text defaults to one visible line unless maxLines is set.",
     },
     bar_chart: {
       props: barChartProps,
@@ -107,7 +114,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     cell_grid: {
       props: cellGridProps,
       description:
-        "Cell grid — sparse colored cells on a rows×cols grid. Cell color and textColor are palette names or literal #rrggbb hex values (hex ignores page accent); textColor overrides the default auto-contrast text color. Two interaction modes: leave select 'off' and bind on.press to fire an action per cell press (inputs[name] is the pressed 'row,col' before the action runs); or set select 'single'/'multiple' for press-to-select with a visual ring (no auto-fire — pair with a separate submit button). on.press is ignored when select is on.",
+        "Cell grid — sparse colored cells on a rows×cols grid. Set maxWidth to sm or md to render compact square boards centered instead of stretching full-width; lg is the default full-width behavior. Cell color and textColor are palette names or literal #rrggbb hex values (hex ignores page accent); textColor overrides the default auto-contrast text color. Two interaction modes: leave select 'off' and bind on.press to fire an action per cell press (inputs[name] is the pressed 'row,col' before the action runs); or set select 'single'/'multiple' for press-to-select with a visual ring (no auto-fire — pair with a separate submit button). on.press is ignored when select is on.",
     },
   },
   actions: {
@@ -164,6 +171,21 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
         sellToken: z.string().optional(),
         buyToken: z.string().optional(),
       }),
+    },
+    paginator_next: {
+      description:
+        "Move the snap's paginator to the next page locally. Does not POST and is ignored when no paginator is rendered.",
+      params: z.object({ page: z.number().int().min(0).optional() }),
+    },
+    paginator_prev: {
+      description:
+        "Move the snap's paginator to the previous page locally. Does not POST and is ignored when no paginator is rendered.",
+      params: z.object({ page: z.number().int().min(0).optional() }),
+    },
+    paginator_go_to: {
+      description:
+        "Move the snap's paginator to a specific zero-based page index locally. Does not POST and is ignored when no paginator is rendered.",
+      params: z.object({ page: z.number().int().min(0) }),
     },
   },
 });

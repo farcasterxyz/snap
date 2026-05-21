@@ -4,6 +4,7 @@ import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "../ui/index.js";
 import { SnapCatalogView } from "./catalog-renderer";
 import { SnapPreviewAccentProvider } from "./accent-context";
+import { SnapVersionProvider } from "./snap-version-context";
 import { resolveSnapPaletteHex } from "./lib/resolve-palette-hex";
 import { snapPreviewPrimaryCssProperties } from "./lib/preview-primary-css";
 import {
@@ -21,8 +22,13 @@ import type { JsonValue, SnapActionHandlers, SnapPage } from "./index";
 
 export function applyStatePaths(
   model: Record<string, unknown>,
-  changes: { path: string; value: unknown }[] | Record<string, unknown>,
+  changes:
+    | { path: string; value: unknown }[]
+    | Record<string, unknown>
+    | null
+    | undefined,
 ): void {
+  if (!changes) return;
   const entries = Array.isArray(changes)
     ? changes.map((c) => [c.path, c.value] as const)
     : Object.entries(changes);
@@ -51,6 +57,30 @@ export function applyStatePaths(
       }
     }
   }
+}
+
+function withDefaultElementProps(spec: Spec): Spec {
+  if (!spec || typeof spec !== "object" || !("elements" in spec)) return spec;
+  const elements = spec.elements as unknown as Record<
+    string,
+    Record<string, unknown>
+  >;
+  if (!elements || typeof elements !== "object") return spec;
+
+  let changed = false;
+  const nextElements: Record<string, Record<string, unknown>> = {};
+  for (const [id, element] of Object.entries(elements)) {
+    if (element.props !== undefined) {
+      nextElements[id] = element;
+      continue;
+    }
+    changed = true;
+    nextElements[id] = { ...element, props: {} };
+  }
+
+  return changed
+    ? ({ ...spec, elements: nextElements } as unknown as Spec)
+    : spec;
 }
 
 const CONFETTI_COLORS = [
@@ -330,7 +360,7 @@ export function SnapViewCore({
    */
   loadingOverlay?: ReactNode;
 }) {
-  const spec = snap.ui;
+  const spec = useMemo(() => withDefaultElementProps(snap.ui), [snap.ui]);
   const initialState = useMemo(() => spec.state ?? { inputs: {} }, [spec]);
 
   const stateRef = useRef<Record<string, unknown>>(initialState);
@@ -465,16 +495,18 @@ export function SnapViewCore({
           pageAccent={snap.theme?.accent}
           appearance={appearance}
         >
-          <SnapCatalogView
-            key={pageKey}
-            spec={spec}
-            state={initialState}
-            loading={false}
-            onStateChange={(changes) => {
-              applyStatePaths(stateRef.current, changes);
-            }}
-            onAction={handleAction}
-          />
+          <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
+            <SnapCatalogView
+              key={pageKey}
+              spec={spec}
+              state={initialState}
+              loading={false}
+              onStateChange={(changes) => {
+                applyStatePaths(stateRef.current, changes);
+              }}
+              onAction={handleAction}
+            />
+          </SnapVersionProvider>
         </SnapPreviewAccentProvider>
       </div>
     </div>

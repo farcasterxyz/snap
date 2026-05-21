@@ -83,14 +83,30 @@ Express the UI as the object your snap handler returns.
 - Enable CORS header: `Access-Control-Allow-Origin: *` (already on by default in
   @farcaster/snap-hono)
 - Structural limits: max 64 elements, max 7 root children, max 6 children per container,
-  max 5 nesting depth.
+  max 5 nesting depth. `paginator` is the exception to the per-container child count:
+  it can contain more than 6 page children, but the snap still must stay under 64 total
+  elements and max depth.
 
 Design guidance:
 
 - Pick a coherent `theme.accent` from the palette: gray, blue, red, amber, green, teal,
   purple, pink.
 - Use `text` with `weight: "bold"` for headings, default size `"md"` for body,
-  `size: "sm"` for captions/metadata.
+  `size: "sm"` for captions/metadata. In v2 renderers, text defaults to one visible
+  line; set `maxLines` only when wrapping is intentional.
+- Use `image` with `aspect: "4:1"` for compact banners, `16:9` for larger hero imagery,
+  and optional `title`/`subtitle` overlay props when the image needs hero-like copy. Do
+  not invent a separate hero component.
+- Use `paginator` when a single snap page would otherwise become too tall. It shows one
+  child page at a time with optional built-in previous/next controls and indicators;
+  page state is local to the renderer and is not included in POST inputs. Set both
+  `showControls: false` and `showIndicators: false` to hide the built-in bar. Use
+  `controlsPosition: "top"` when varying page heights would make bottom controls shift.
+  Use `transition: "slide" | "fade" | "scale" | "none"` to control page-change animation.
+  Buttons or tappable `cell_grid` cells anywhere in the same snap can bind `paginator_next` with
+  `params: {}`, `paginator_prev` with `params: {}`, or
+  `paginator_go_to` with `params: { "page": 0 }` for custom local navigation that never POSTs. Only one
+  paginator is supported per snap in this release.
 - Use `button` with `variant: "primary"` for the main CTA (one per page). Other buttons
   default to `"secondary"`.
 - `item` follows shadcn Item shape: optional `media` on the left, text content in
@@ -104,7 +120,8 @@ Design guidance:
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `cellAspectRatio: "square"` when board cells must stay square across variable snap
-  widths. Two mutually exclusive interaction modes: leave `select: "off"` (default) and
+  widths. Add `maxWidth: "sm"` or `"md"` when a board should center itself instead of
+  stretching full-width; `"lg"` is the default full-width behavior. Two mutually exclusive interaction modes: leave `select: "off"` (default) and
   bind `on.press` to a `submit` action so each press POSTs immediately (`inputs[name]` is
   `"row,col"`); OR set `select: "single"` / `"multiple"` for press-to-select with a
   visual ring and pair with a separate submit `button`. Don't combine `on.press` with a

@@ -32,6 +32,9 @@ export function SnapCard({
   actionError,
   plain = false,
   loadingOverlay,
+  forceExpanded,
+  expandButtonLabel,
+  onExpandPress,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -52,6 +55,12 @@ export function SnapCard({
   plain?: boolean;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  /** When true, render full content height without 500px clipping or expand controls. */
+  forceExpanded?: boolean;
+  /** Custom label for the collapsed expand button. */
+  expandButtonLabel?: string;
+  /** Called from the collapsed expand button instead of toggling internal state. */
+  onExpandPress?: () => void;
 }) {
   if (snap.version === SPEC_VERSION_2) {
     return (
@@ -68,6 +77,9 @@ export function SnapCard({
         actionError={actionError}
         plain={plain}
         loadingOverlay={loadingOverlay}
+        forceExpanded={forceExpanded}
+        expandButtonLabel={expandButtonLabel}
+        onExpandPress={onExpandPress}
       />
     );
   }
@@ -83,6 +95,9 @@ export function SnapCard({
       actionError={actionError}
       plain={plain}
       loadingOverlay={loadingOverlay}
+      forceExpanded={forceExpanded}
+      expandButtonLabel={expandButtonLabel}
+      onExpandPress={onExpandPress}
     />
   );
 }

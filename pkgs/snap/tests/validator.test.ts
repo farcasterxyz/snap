@@ -15,7 +15,12 @@ import { validateSnapResponse } from "../src/validator";
 function makeSpec(
   elements: Record<
     string,
-    { type: string; props?: Record<string, unknown>; children?: string[] }
+    {
+      type: string;
+      props?: Record<string, unknown>;
+      children?: string[];
+      on?: Record<string, unknown>;
+    }
   >,
   root = "page",
 ) {
@@ -84,16 +89,22 @@ describe("Schema basics", () => {
 
   it("accepts all element types in ui", () => {
     expectValid({
-      version: "1.0",
+      version: "2.0",
       ui: makeSpec({
         a: { type: "item", props: { title: "Test" } },
         b: { type: "badge", props: { label: "New" } },
         c: {
           type: "image",
-          props: { url: "https://example.com/img.jpg", aspect: "16:9" },
+          props: {
+            url: "https://example.com/img.jpg",
+            aspect: "4:1",
+            title: "Banner",
+            subtitle: "Overlay copy",
+          },
         },
         d: { type: "separator" },
         e: { type: "progress", props: { value: 50, max: 100 } },
+        f: { type: "text", props: { content: "Trim this", maxLines: 2 } },
       }),
     });
   });
@@ -785,6 +796,114 @@ describe("Structural constraints", () => {
     });
     expect(result.issues[0].message).toContain("children");
     expect(result.issues[0].message).toContain("group");
+  });
+
+  it("allows paginator pages to exceed the per-container child limit", () => {
+    const childIds: string[] = [];
+    const elements: Record<
+      string,
+      { type: string; children?: string[]; props?: Record<string, unknown> }
+    > = {};
+    for (let i = 0; i < MAX_CHILDREN + 2; i++) {
+      const id = `page_${i}`;
+      childIds.push(id);
+      elements[id] = { type: "text", props: { content: `page ${i}` } };
+    }
+
+    expectValid({
+      version: "2.0",
+      ui: {
+        root: "root",
+        elements: {
+          root: { type: "stack", children: ["pager"] },
+          pager: { type: "paginator", children: childIds },
+          ...elements,
+        },
+      },
+    });
+  });
+
+  it("accepts hidden paginator chrome with local paginator actions", () => {
+    expectValid({
+      version: "2.0",
+      ui: makeSpec({
+        pager: {
+          type: "paginator",
+          props: {
+            showControls: false,
+            showIndicators: false,
+            controlsPosition: "top",
+            transition: "fade",
+          },
+          children: ["page_0", "page_1"],
+        },
+        page_0: {
+          type: "stack",
+          children: ["next"],
+        },
+        page_1: {
+          type: "stack",
+          children: ["previous", "start"],
+        },
+        next: {
+          type: "button",
+          props: { label: "Next" },
+          on: { press: { action: "paginator_next", params: {} } },
+        },
+        previous: {
+          type: "button",
+          props: { label: "Previous" },
+          on: { press: { action: "paginator_prev", params: {} } },
+        },
+        start: {
+          type: "button",
+          props: { label: "Start" },
+          on: {
+            press: {
+              action: "paginator_go_to",
+              params: { page: 0 },
+            },
+          },
+        },
+      }),
+    });
+  });
+
+  it("keeps the global element limit for paginator pages", () => {
+    const childIds: string[] = [];
+    const elements: Record<
+      string,
+      { type: string; children?: string[]; props?: Record<string, unknown> }
+    > = {
+      root: { type: "paginator", children: childIds },
+    };
+    for (let i = 0; i < MAX_ELEMENTS; i++) {
+      const id = `page_${i}`;
+      childIds.push(id);
+      elements[id] = { type: "text", props: { content: `page ${i}` } };
+    }
+
+    const result = expectInvalid({
+      version: "2.0",
+      ui: { root: "root", elements },
+    });
+    expect(result.issues[0].message).toContain("maximum");
+    expect(result.issues[0].message).toContain("elements");
+  });
+
+  it("rejects more than one paginator", () => {
+    const result = expectInvalid({
+      version: "2.0",
+      ui: makeSpec({
+        page: { type: "stack", children: ["pager_a", "pager_b"] },
+        pager_a: { type: "paginator", children: ["a"] },
+        pager_b: { type: "paginator", children: ["b"] },
+        a: { type: "text", props: { content: "A" } },
+        b: { type: "text", props: { content: "B" } },
+      }),
+    });
+
+    expect(result.issues[0].message).toContain("at most one paginator");
   });
 
   it("accepts a non-root element at the children limit", () => {

@@ -1,10 +1,15 @@
 declare const __DEV__: boolean;
 
 import type { ComponentRenderProps } from "@json-render/react-native";
+import { useStateStore } from "@json-render/react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ExternalLink } from "lucide-react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
+import {
+  getPaginatorAction,
+  runPaginatorAction,
+} from "../../ui/paginator-state";
 import { useSnapStackDirection } from "../stack-direction-context";
 import { ICON_MAP } from "./snap-icon";
 
@@ -37,6 +42,8 @@ export function SnapActionButton({
 
   const on = (element as unknown as { on?: Record<string, unknown> }).on;
   const showExternalIcon = isExternalLinkAction(on);
+  const stateStore = useStateStore();
+  const paginatorAction = getPaginatorAction(on);
 
   return (
     <View style={inHorizontalStack ? styles.outerHorizontal : styles.outer}>
@@ -50,6 +57,7 @@ export function SnapActionButton({
           pressed && styles.pressed,
         ]}
         onPress={() => {
+          if (runPaginatorAction(stateStore, paginatorAction)) return;
           void (async () => {
             try {
               await emit("press");
@@ -100,10 +108,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   btnDefault: {
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   btnOther: {
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   pressed: { opacity: 0.88 },
 });
