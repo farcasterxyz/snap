@@ -102,6 +102,7 @@ Top-level fields: `version` (required, `"1.0"` or `"2.0"`), `theme` (optional, `
 - `gap` (optional): `"none"` (0px) | `"sm"` (1px) | `"md"` (2px) | `"lg"` (4px). Default: `"sm"`
 - `cellAspectRatio` (optional): `"auto"` | `"square"`. Default: `"auto"`. Use `"square"` for game boards whose cells must stay square as snap width changes.
 - `rowHeight` (number, optional, 8–64): pixel height per row. Default: 28. Grid height = rows × rowHeight
+- `maxWidth` (optional): `"sm"` | `"md"` | `"lg"`. Default: `"lg"` (full-width). Use `sm`/`md` with `cellAspectRatio: "square"` for small centered boards that should not stretch full-width.
 - `select` (optional): `"off"` | `"single"` | `"multiple"`. Default: `"off"`. With `select: "off"`, bind `on.press` for press-to-act (each press writes the cell's `value` or `"row,col"` to `inputs[name]` and fires the action). With `"single"` / `"multiple"`, presses accumulate selection state and pair with a separate submit `button` (multi-select joins values with `|`); `on.press` is ignored.
 - Events: `press` — fires on cell press, only when `select: "off"`; `inputs[name]` is set to the pressed cell's `value` (or `"row,col"` fallback) before the bound action runs
 

@@ -114,7 +114,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     cell_grid: {
       props: cellGridProps,
       description:
-        "Cell grid — sparse colored cells on a rows×cols grid. Cell color and textColor are palette names or literal #rrggbb hex values (hex ignores page accent); textColor overrides the default auto-contrast text color. Two interaction modes: leave select 'off' and bind on.press to fire an action per cell press (inputs[name] is the pressed 'row,col' before the action runs); or set select 'single'/'multiple' for press-to-select with a visual ring (no auto-fire — pair with a separate submit button). on.press is ignored when select is on.",
+        "Cell grid — sparse colored cells on a rows×cols grid. Set maxWidth to sm or md to render compact square boards centered instead of stretching full-width; lg is the default full-width behavior. Cell color and textColor are palette names or literal #rrggbb hex values (hex ignores page accent); textColor overrides the default auto-contrast text color. Two interaction modes: leave select 'off' and bind on.press to fire an action per cell press (inputs[name] is the pressed 'row,col' before the action runs); or set select 'single'/'multiple' for press-to-select with a visual ring (no auto-fire — pair with a separate submit button). on.press is ignored when select is on.",
     },
   },
   actions: {

@@ -7,6 +7,7 @@ import {
   GRID_MAX_ROWS,
   GRID_GAP_VALUES,
   GRID_CELL_ASPECT_RATIO_VALUES,
+  GRID_MAX_WIDTH_VALUES,
 } from "../constants.js";
 
 /** Palette name or `#rrggbb`; input is trimmed so palette and hex rules match runtime resolvers. */
@@ -38,6 +39,7 @@ export const cellGridProps = z
     gap: z.enum(GRID_GAP_VALUES).optional(),
     cellAspectRatio: z.enum(GRID_CELL_ASPECT_RATIO_VALUES).optional(),
     rowHeight: z.number().int().min(8).max(64).optional(),
+    maxWidth: z.enum(GRID_MAX_WIDTH_VALUES).optional(),
     select: z.enum(["off", "single", "multiple"]).optional(),
   })
   .superRefine((val, ctx) => {

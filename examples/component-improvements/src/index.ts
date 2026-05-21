@@ -53,6 +53,7 @@ function componentImprovementsPage(
             "overview",
             "copy",
             "grid",
+            "small-grid",
             "custom-nav",
             "image-card",
             "many-pages",
@@ -63,13 +64,16 @@ function componentImprovementsPage(
         "showcase-controls": {
           type: "stack",
           props: { direction: "horizontal", equalWidth: true, gap: "sm" },
-          children: ["jump-copy", "jump-grid"],
+          children: ["jump-copy", "jump-grid", "jump-small-grid"],
         },
         "jump-copy": paginatorButton("Jump to copy", "paginator_go_to", {
           page: 1,
         }),
         "jump-grid": paginatorButton("Go to grid", "paginator_go_to", {
           page: 2,
+        }),
+        "jump-small-grid": paginatorButton("Small grid", "paginator_go_to", {
+          page: 3,
         }),
         overview: pageStack("overview-title", "overview-copy", "overview-short"),
         "overview-title": heading("Visible paginator"),
@@ -105,6 +109,43 @@ function componentImprovementsPage(
           },
         },
         "grid-next": paginatorButton("Custom next", "paginator_next"),
+        "small-grid": pageStack(
+          "small-grid-title",
+          "small-grid-copy",
+          "small-grid-label",
+          "small-square-grid",
+          "medium-grid-label",
+          "medium-square-grid",
+        ),
+        "small-grid-title": heading("Centered grid widths"),
+        "small-grid-copy": caption(
+          "Small and medium boards cap their width and center themselves; the large/default grid stays full-width.",
+          2,
+        ),
+        "small-grid-label": caption("maxWidth: sm", 1),
+        "small-square-grid": {
+          type: "cell_grid",
+          props: {
+            cols: 3,
+            rows: 3,
+            maxWidth: "sm",
+            cellAspectRatio: "square",
+            gap: "md",
+            cells: smallGridCells("S"),
+          },
+        },
+        "medium-grid-label": caption("maxWidth: md", 1),
+        "medium-square-grid": {
+          type: "cell_grid",
+          props: {
+            cols: 3,
+            rows: 3,
+            maxWidth: "md",
+            cellAspectRatio: "square",
+            gap: "md",
+            cells: smallGridCells("M"),
+          },
+        },
         "custom-nav": pageStack(
           "custom-nav-title",
           "custom-nav-copy",
@@ -249,6 +290,20 @@ function denseGridCells(): Array<{
     col: index % 6,
     color: index % 2 === 0 ? "teal" : "#99f6e4",
     content: String(index + 1),
+  }));
+}
+
+function smallGridCells(center: string): Array<{
+  row: number;
+  col: number;
+  color: string;
+  content: string;
+}> {
+  return Array.from({ length: 9 }, (_, index) => ({
+    row: Math.floor(index / 3),
+    col: index % 3,
+    color: index === 4 ? "teal" : index % 2 === 0 ? "#134e4a" : "#99f6e4",
+    content: index === 4 ? center : String(index + 1),
   }));
 }
 

@@ -118,7 +118,8 @@ Design guidance:
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `cellAspectRatio: "square"` when board cells must stay square across variable snap
-  widths. Two mutually exclusive interaction modes: leave `select: "off"` (default) and
+  widths. Add `maxWidth: "sm"` or `"md"` when a board should center itself instead of
+  stretching full-width; `"lg"` is the default full-width behavior. Two mutually exclusive interaction modes: leave `select: "off"` (default) and
   bind `on.press` to a `submit` action so each press POSTs immediately (`inputs[name]` is
   `"row,col"`); OR set `select: "single"` / `"multiple"` for press-to-select with a
   visual ring and pair with a separate submit `button`. Don't combine `on.press` with a

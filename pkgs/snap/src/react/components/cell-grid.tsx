@@ -35,6 +35,13 @@ export function SnapCellGrid({
   const gapPx = gapMap[gap] ?? 1;
   const rowHeight = typeof props.rowHeight === "number" ? props.rowHeight : 28;
   const squareCells = props.cellAspectRatio === "square";
+  const maxWidthKey = typeof props.maxWidth === "string" ? props.maxWidth : undefined;
+  const maxWidthMap: Record<string, number | undefined> = {
+    sm: 160,
+    md: 220,
+    lg: undefined,
+  };
+  const maxWidth = maxWidthKey ? maxWidthMap[maxWidthKey] : undefined;
 
   const name = props.name ? String(props.name) : POST_GRID_TAP_KEY;
   const tapPath = `/inputs/${name}`;
@@ -150,6 +157,8 @@ export function SnapCellGrid({
       style={{
         display: "grid",
         width: "100%",
+        maxWidth,
+        marginInline: maxWidth ? "auto" : undefined,
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         gap: gapPx,
         padding: 4,
