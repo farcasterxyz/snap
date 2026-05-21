@@ -21,7 +21,7 @@ export function SnapCellGrid({
   const { get, set } = useStateStore();
   const colors = useSnapColors();
   const paginatorActions = useSnapPaginatorActions();
-  const paginatorAction = getPaginatorAction(on, props);
+  const paginatorAction = getPaginatorAction(on);
   const cols = Number(props.cols ?? 2);
   const rows = Number(props.rows ?? 2);
   const select = String(props.select ?? "off");

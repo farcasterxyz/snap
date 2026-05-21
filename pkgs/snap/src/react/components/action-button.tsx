@@ -42,7 +42,7 @@ export function SnapActionButton({
   const colors = useSnapColors();
   const [hovered, setHovered] = useState(false);
   const paginatorActions = useSnapPaginatorActions();
-  const paginatorAction = getPaginatorAction(element.on, props);
+  const paginatorAction = getPaginatorAction(element.on);
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
   const showExternalIcon = isExternalLinkAction(element.on);

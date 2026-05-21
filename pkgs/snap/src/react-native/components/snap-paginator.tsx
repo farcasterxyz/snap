@@ -1,10 +1,10 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
-import { Children, type ReactNode, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Children, type ReactNode, useEffect, useMemo, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useSnapPalette } from "../use-snap-palette";
 import { useSnapTheme } from "../theme";
-import { SnapPaginatorActionContext } from "../paginator-action-context";
+import { useSnapPaginatorActions } from "../paginator-action-context";
 
 function clampInitialPage(value: unknown, pageCount: number): number {
   if (typeof value !== "number" || !Number.isInteger(value)) return 0;
@@ -19,31 +19,35 @@ export function SnapPaginator({
     () => Children.toArray(children),
     [children],
   );
-  const { colors } = useSnapTheme();
+  const { colors, mode } = useSnapTheme();
   const { accentHex } = useSnapPalette();
+  const paginatorActions = useSnapPaginatorActions();
   const [page, setPage] = useState(() => clampInitialPage(props.initialPage, pages.length));
   const activePage = Math.min(page, Math.max(pages.length - 1, 0));
   const showControls = props.showControls !== false && pages.length > 1;
   const showIndicators = props.showIndicators !== false && pages.length > 1;
 
-  if (pages.length === 0) return null;
-
   const canGoPrev = activePage > 0;
   const canGoNext = activePage < pages.length - 1;
   const goPrev = () => setPage((value) => Math.max(value - 1, 0));
   const goNext = () => setPage((value) => Math.min(value + 1, pages.length - 1));
-  const actions = {
+  const actions = useMemo(() => ({
     previous: goPrev,
     next: goNext,
     goTo: (targetPage: number) =>
       setPage(Math.min(Math.max(targetPage, 0), pages.length - 1)),
-  };
+  }), [pages.length]);
+
+  useEffect(() => {
+    if (pages.length === 0) return;
+    return paginatorActions?.register(actions);
+  }, [actions, pages.length, paginatorActions]);
+
+  if (pages.length === 0) return null;
 
   return (
     <View style={styles.wrap}>
-      <SnapPaginatorActionContext.Provider value={actions}>
-        <View style={styles.page}>{pages[activePage]}</View>
-      </SnapPaginatorActionContext.Provider>
+      <View style={styles.page}>{pages[activePage]}</View>
       {(showControls || showIndicators) ? (
         <View style={styles.footer}>
           {showControls ? (
@@ -69,19 +73,31 @@ export function SnapPaginator({
 
           {showIndicators ? (
             <View style={styles.indicators}>
-              {pages.map((_, index) => (
-                <Text
-                  key={index}
-                  accessibilityLabel={`Page ${index + 1}${index === activePage ? ", current" : ""}`}
-                  style={[
-                    styles.dot,
-                    {
-                      backgroundColor:
-                        index === activePage ? accentHex : colors.border,
-                    },
-                  ]}
-                />
-              ))}
+              {pages.map((_, index) => {
+                const current = index === activePage;
+                return (
+                  <View
+                    key={index}
+                    accessibilityLabel={`Page ${index + 1}${current ? ", current" : ""}`}
+                    style={[
+                      styles.dot,
+                      current ? styles.dotCurrent : styles.dotInactive,
+                      {
+                        backgroundColor: current
+                          ? accentHex
+                          : mode === "dark"
+                            ? "rgba(255,255,255,0.5)"
+                            : "rgba(0,0,0,0.28)",
+                        borderColor: current
+                          ? mode === "dark"
+                            ? "rgba(255,255,255,0.18)"
+                            : "rgba(0,0,0,0.12)"
+                          : "transparent",
+                      },
+                    ]}
+                  />
+                );
+              })}
             </View>
           ) : (
             <View style={styles.indicators} />
@@ -150,9 +166,18 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    borderWidth: 0,
     overflow: "hidden",
+  },
+  dotInactive: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  dotCurrent: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    borderWidth: 2,
   },
 });

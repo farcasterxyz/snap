@@ -4,6 +4,7 @@ import type { Spec } from "@json-render/core";
 import { snapJsonRenderCatalog } from "../ui/index.js";
 import { SnapCatalogView } from "./catalog-renderer";
 import { SnapPreviewAccentProvider } from "./accent-context";
+import { SnapPaginatorActionProvider } from "./paginator-action-context";
 import { SnapVersionProvider } from "./snap-version-context";
 import { resolveSnapPaletteHex } from "./lib/resolve-palette-hex";
 import { snapPreviewPrimaryCssProperties } from "./lib/preview-primary-css";
@@ -59,49 +60,23 @@ export function applyStatePaths(
   }
 }
 
-function isPaginatorLocalAction(action: unknown): boolean {
-  return (
-    action === "paginator_next" ||
-    action === "paginator_previous" ||
-    action === "paginator_prev" ||
-    action === "paginator_go_to"
-  );
-}
-
-function withPaginatorLocalActions(spec: Spec): Spec {
+function withDefaultElementProps(spec: Spec): Spec {
   if (!spec || typeof spec !== "object" || !("elements" in spec)) return spec;
   const elements = spec.elements as unknown as Record<
     string,
     Record<string, unknown>
   >;
   if (!elements || typeof elements !== "object") return spec;
+
   let changed = false;
   const nextElements: Record<string, Record<string, unknown>> = {};
-
   for (const [id, element] of Object.entries(elements)) {
-    const props = (element.props as Record<string, unknown> | undefined) ?? {};
-    const on = element.on as
-      | Record<string, { action?: string; params?: Record<string, unknown> }>
-      | undefined;
-    const press = on?.press;
-    if (!press || !isPaginatorLocalAction(press.action)) {
-      if (element.props === undefined) changed = true;
-      nextElements[id] =
-        element.props === undefined ? { ...element, props } : element;
+    if (element.props !== undefined) {
+      nextElements[id] = element;
       continue;
     }
-
-    const nextOn = { ...on };
-    delete nextOn.press;
     changed = true;
-    nextElements[id] = {
-      ...element,
-      props: {
-        ...props,
-        __snapPaginatorAction: press,
-      },
-      ...(Object.keys(nextOn).length > 0 ? { on: nextOn } : {}),
-    };
+    nextElements[id] = { ...element, props: {} };
   }
 
   return changed
@@ -386,10 +361,7 @@ export function SnapViewCore({
    */
   loadingOverlay?: ReactNode;
 }) {
-  const spec = useMemo(
-    () => withPaginatorLocalActions(snap.ui),
-    [snap.ui],
-  );
+  const spec = useMemo(() => withDefaultElementProps(snap.ui), [snap.ui]);
   const initialState = useMemo(() => spec.state ?? { inputs: {} }, [spec]);
 
   const stateRef = useRef<Record<string, unknown>>(initialState);
@@ -525,16 +497,18 @@ export function SnapViewCore({
           appearance={appearance}
         >
           <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
-            <SnapCatalogView
-              key={pageKey}
-              spec={spec}
-              state={initialState}
-              loading={false}
-              onStateChange={(changes) => {
-                applyStatePaths(stateRef.current, changes);
-              }}
-              onAction={handleAction}
-            />
+            <SnapPaginatorActionProvider>
+              <SnapCatalogView
+                key={pageKey}
+                spec={spec}
+                state={initialState}
+                loading={false}
+                onStateChange={(changes) => {
+                  applyStatePaths(stateRef.current, changes);
+                }}
+                onAction={handleAction}
+              />
+            </SnapPaginatorActionProvider>
           </SnapVersionProvider>
         </SnapPreviewAccentProvider>
       </div>

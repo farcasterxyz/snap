@@ -27,7 +27,7 @@ function compactPaginatorSnap(base: string, submitted: boolean): SnapHandlerResu
       elements: {
         page: {
           type: "stack",
-          children: ["hero", "pager", "actions", "status"],
+          children: ["hero", "local-controls", "pager", "actions", "status"],
         },
         hero: {
           type: "image",
@@ -48,25 +48,20 @@ function compactPaginatorSnap(base: string, submitted: boolean): SnapHandlerResu
           },
           children: ["overview", "choices"],
         },
-        overview: pageStack(
-          "overview-title",
-          "overview-copy",
-          "overview-jump",
-          "overview-nav",
-        ),
+        "local-controls": {
+          type: "stack",
+          props: { gap: "sm" },
+          children: ["control-grid", "control-row"],
+        },
+        "control-grid": paginatorGrid("Tap this tile to move pages", "paginator_next"),
+        "control-row": navStack(["previous-page", "next-page"]),
+        overview: pageStack("overview-title", "overview-copy"),
         "overview-title": heading("Custom paginator controls"),
         "overview-copy": caption(
-          "The built-in pagination bar is hidden. A normal button and a tappable grid tile both drive local page state.",
+          "The built-in pagination bar is hidden. The controls above sit outside the paginator and drive local page state.",
           2,
         ),
-        "overview-jump": paginatorGrid("Open page 2", "paginator_next"),
-        choices: pageStack(
-          "choices-title",
-          "choice-row",
-          "choices-copy",
-          "choices-jump",
-          "choices-nav",
-        ),
+        choices: pageStack("choices-title", "choice-row", "choices-copy"),
         "choices-title": heading("Second page"),
         "choice-row": {
           type: "toggle_group",
@@ -79,11 +74,8 @@ function compactPaginatorSnap(base: string, submitted: boolean): SnapHandlerResu
           "Back uses the same local paginator action path and still does not POST.",
           2,
         ),
-        "choices-jump": paginatorGrid("Back to page 1", "paginator_previous"),
-        "overview-nav": navStack(["next-page"]),
-        "choices-nav": navStack(["previous-page"]),
-        "next-page": paginatorButton("Next", "paginator_next", { page: 0 }),
-        "previous-page": paginatorButton("Back", "paginator_previous", { page: 0 }),
+        "next-page": paginatorButton("Next", "paginator_next"),
+        "previous-page": paginatorButton("Back", "paginator_previous"),
         actions: {
           type: "stack",
           props: { direction: "horizontal", equalWidth: true },

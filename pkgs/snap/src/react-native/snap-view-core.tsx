@@ -3,6 +3,7 @@ import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./catalog-renderer";
 import { ConfettiOverlay } from "./confetti-overlay";
 import { FireworksOverlay } from "./fireworks-overlay";
+import { SnapPaginatorActionProvider } from "./paginator-action-context";
 import { useSnapTheme } from "./theme";
 import { SnapVersionProvider } from "./snap-version-context";
 import {
@@ -63,53 +64,27 @@ export function applyStatePaths(
   }
 }
 
-function isPaginatorLocalAction(action: unknown): boolean {
-  return (
-    action === "paginator_next" ||
-    action === "paginator_previous" ||
-    action === "paginator_prev" ||
-    action === "paginator_go_to"
-  );
-}
-
-function withPaginatorLocalActions(spec: SnapPage["ui"]): SnapPage["ui"] {
+function withDefaultElementProps(spec: Spec): Spec {
   if (!spec || typeof spec !== "object" || !("elements" in spec)) return spec;
   const elements = spec.elements as unknown as Record<
     string,
     Record<string, unknown>
   >;
   if (!elements || typeof elements !== "object") return spec;
+
   let changed = false;
   const nextElements: Record<string, Record<string, unknown>> = {};
-
   for (const [id, element] of Object.entries(elements)) {
-    const props = (element.props as Record<string, unknown> | undefined) ?? {};
-    const on = element.on as
-      | Record<string, { action?: string; params?: Record<string, unknown> }>
-      | undefined;
-    const press = on?.press;
-    if (!press || !isPaginatorLocalAction(press.action)) {
-      if (element.props === undefined) changed = true;
-      nextElements[id] =
-        element.props === undefined ? { ...element, props } : element;
+    if (element.props !== undefined) {
+      nextElements[id] = element;
       continue;
     }
-
-    const nextOn = { ...on };
-    delete nextOn.press;
     changed = true;
-    nextElements[id] = {
-      ...element,
-      props: {
-        ...props,
-        __snapPaginatorAction: press,
-      },
-      ...(Object.keys(nextOn).length > 0 ? { on: nextOn } : {}),
-    };
+    nextElements[id] = { ...element, props: {} };
   }
 
   return changed
-    ? ({ ...spec, elements: nextElements } as unknown as SnapPage["ui"])
+    ? ({ ...spec, elements: nextElements } as unknown as Spec)
     : spec;
 }
 
@@ -144,7 +119,7 @@ export function SnapViewCoreInner({
 }) {
   const { mode } = useSnapTheme();
   const spec = useMemo(
-    () => withPaginatorLocalActions(snap.ui),
+    () => withDefaultElementProps(snap.ui as unknown as Spec) as SnapPage["ui"],
     [snap.ui],
   );
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
@@ -266,16 +241,18 @@ export function SnapViewCoreInner({
           : loadingOverlay
         : null}
       <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
-        <SnapCatalogView
-          key={pageKey}
-          spec={spec}
-          state={initialState}
-          loading={false}
-          onStateChange={(changes) => {
-            applyStatePaths(stateRef.current, changes);
-          }}
-          onAction={handleAction}
-        />
+        <SnapPaginatorActionProvider>
+          <SnapCatalogView
+            key={pageKey}
+            spec={spec}
+            state={initialState}
+            loading={false}
+            onStateChange={(changes) => {
+              applyStatePaths(stateRef.current, changes);
+            }}
+            onAction={handleAction}
+          />
+        </SnapPaginatorActionProvider>
       </SnapVersionProvider>
       {showConfetti && <ConfettiOverlay key={confettiKey} />}
       {showFireworks && <FireworksOverlay key={fireworksKey} />}

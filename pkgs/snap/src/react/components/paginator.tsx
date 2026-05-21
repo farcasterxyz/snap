@@ -1,10 +1,10 @@
 "use client";
 
-import { Children, type ReactNode, useMemo, useState } from "react";
+import { Children, type ReactNode, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@neynar/ui/utils";
 import { useSnapColors } from "../hooks/use-snap-colors";
-import { SnapPaginatorActionContext } from "../paginator-action-context";
+import { useSnapPaginatorActions } from "../paginator-action-context";
 
 function clampInitialPage(value: unknown, pageCount: number): number {
   if (typeof value !== "number" || !Number.isInteger(value)) return 0;
@@ -23,29 +23,33 @@ export function SnapPaginator({
     [children],
   );
   const colors = useSnapColors();
+  const paginatorActions = useSnapPaginatorActions();
   const [page, setPage] = useState(() => clampInitialPage(props.initialPage, pages.length));
   const activePage = Math.min(page, Math.max(pages.length - 1, 0));
   const showControls = props.showControls !== false && pages.length > 1;
   const showIndicators = props.showIndicators !== false && pages.length > 1;
 
-  if (pages.length === 0) return null;
-
   const canGoPrev = activePage > 0;
   const canGoNext = activePage < pages.length - 1;
   const goPrev = () => setPage((value) => Math.max(value - 1, 0));
   const goNext = () => setPage((value) => Math.min(value + 1, pages.length - 1));
-  const actions = {
+  const actions = useMemo(() => ({
     previous: goPrev,
     next: goNext,
     goTo: (targetPage: number) =>
       setPage(Math.min(Math.max(targetPage, 0), pages.length - 1)),
-  };
+  }), [pages.length]);
+
+  useEffect(() => {
+    if (pages.length === 0) return;
+    return paginatorActions?.register(actions);
+  }, [actions, pages.length, paginatorActions]);
+
+  if (pages.length === 0) return null;
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2">
-      <SnapPaginatorActionContext.Provider value={actions}>
-        <div className="w-full min-w-0">{pages[activePage]}</div>
-      </SnapPaginatorActionContext.Provider>
+      <div className="w-full min-w-0">{pages[activePage]}</div>
       {(showControls || showIndicators) && (
         <div className="flex min-h-7 w-full items-center justify-between gap-2">
           {showControls ? (
@@ -72,17 +76,29 @@ export function SnapPaginator({
 
           {showIndicators ? (
             <div className="flex flex-1 items-center justify-center gap-1.5">
-              {pages.map((_, index) => (
-                <span
-                  key={index}
-                  aria-label={`Page ${index + 1}${index === activePage ? ", current" : ""}`}
-                  className="block size-1.5 rounded-full"
-                  style={{
-                    backgroundColor:
-                      index === activePage ? colors.accent : colors.border,
-                  }}
-                />
-              ))}
+              {pages.map((_, index) => {
+                const current = index === activePage;
+                return (
+                  <span
+                    key={index}
+                    aria-label={`Page ${index + 1}${current ? ", current" : ""}`}
+                    className={cn(
+                      "block rounded-full",
+                      current ? "size-2.5" : "size-2",
+                    )}
+                    style={{
+                      backgroundColor: current
+                        ? colors.accent
+                        : colors.mode === "dark"
+                        ? "rgba(255,255,255,0.5)"
+                        : "rgba(0,0,0,0.28)",
+                      boxShadow: current
+                        ? `0 0 0 2px ${colors.mode === "dark" ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)"}`
+                        : undefined,
+                    }}
+                  />
+                );
+              })}
             </div>
           ) : (
             <span className="flex-1" />

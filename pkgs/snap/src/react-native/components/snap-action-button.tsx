@@ -43,7 +43,7 @@ export function SnapActionButton({
   const on = (element as unknown as { on?: Record<string, unknown> }).on;
   const showExternalIcon = isExternalLinkAction(on);
   const paginatorActions = useSnapPaginatorActions();
-  const paginatorAction = getPaginatorAction(on, props);
+  const paginatorAction = getPaginatorAction(on);
 
   return (
     <View style={inHorizontalStack ? styles.outerHorizontal : styles.outer}>

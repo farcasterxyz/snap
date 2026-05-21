@@ -30,7 +30,7 @@ function componentImprovementsPage(
       elements: {
         page: {
           type: "stack",
-          children: ["banner", "pager", "actions", "status"],
+          children: ["banner", "showcase-controls", "pager", "actions", "status"],
         },
         banner: {
           type: "image",
@@ -60,23 +60,26 @@ function componentImprovementsPage(
             "finish",
           ],
         },
-        overview: pageStack(
-          "overview-title",
-          "overview-copy",
-          "overview-short",
-          "overview-next",
-        ),
+        "showcase-controls": {
+          type: "stack",
+          props: { direction: "horizontal", equalWidth: true, gap: "sm" },
+          children: ["jump-copy", "jump-grid"],
+        },
+        "jump-copy": paginatorButton("Jump to copy", "paginator_go_to", {
+          page: 1,
+        }),
+        "jump-grid": paginatorButton("Go to grid", "paginator_go_to", {
+          page: 2,
+        }),
+        overview: pageStack("overview-title", "overview-copy", "overview-short"),
         "overview-title": heading("Visible paginator"),
         "overview-copy": caption(
-          "This example keeps the built-in controls and indicators visible while also using custom local actions inside pages.",
+          "This example keeps the built-in controls and indicators visible while also using custom local actions outside the paginator.",
           2,
         ),
         "overview-short": caption(
           "Default text is one line, so this deliberately long sentence should clamp instead of growing the snap.",
         ),
-        "overview-next": paginatorButton("Jump to copy", "paginator_go_to", {
-          page: 1,
-        }),
         copy: pageStack("copy-title", "copy-one-line", "copy-two-lines"),
         "copy-title": heading("Text clamping"),
         "copy-one-line": caption(
@@ -109,7 +112,7 @@ function componentImprovementsPage(
         ),
         "custom-nav-title": heading("Custom local controls"),
         "custom-nav-copy": caption(
-          "Buttons inside the active page can move the paginator locally without POSTing.",
+          "Buttons can move the snap's one paginator locally without POSTing.",
           2,
         ),
         "custom-nav-row": {

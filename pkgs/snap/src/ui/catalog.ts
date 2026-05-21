@@ -79,7 +79,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     paginator: {
       props: paginatorProps,
       description:
-        "Client-side paginator. Children are page element ids; the @farcaster/snap React/React Native components render one page at a time with optional built-in previous/next controls and indicators. Buttons or cell_grid cells inside a paginator can bind paginator_next, paginator_previous, or paginator_go_to for custom local navigation. Page index is local renderer state and is not posted as input.",
+        "Client-side paginator. Children are page element ids; the @farcaster/snap React/React Native components render one page at a time with optional built-in previous/next controls and indicators. Buttons or cell_grid cells in the same snap can bind paginator_next, paginator_previous, or paginator_go_to for custom local navigation. Only one paginator is supported per rendered snap in this release. Page index is local renderer state and is not posted as input.",
     },
     progress: {
       props: progressProps,
@@ -174,22 +174,22 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     },
     paginator_next: {
       description:
-        "Move the nearest containing paginator to the next page locally. Does not POST and is ignored outside a paginator.",
+        "Move the snap's paginator to the next page locally. Does not POST and is ignored when no paginator is rendered.",
       params: z.object({ page: z.number().int().min(0).optional() }),
     },
     paginator_previous: {
       description:
-        "Move the nearest containing paginator to the previous page locally. Does not POST and is ignored outside a paginator.",
+        "Move the snap's paginator to the previous page locally. Does not POST and is ignored when no paginator is rendered.",
       params: z.object({ page: z.number().int().min(0).optional() }),
     },
     paginator_prev: {
       description:
-        "Alias for paginator_previous. Move the nearest containing paginator to the previous page locally.",
+        "Alias for paginator_previous. Move the snap's paginator to the previous page locally.",
       params: z.object({ page: z.number().int().min(0).optional() }),
     },
     paginator_go_to: {
       description:
-        "Move the nearest containing paginator to a specific zero-based page index locally. Does not POST and is ignored outside a paginator.",
+        "Move the snap's paginator to a specific zero-based page index locally. Does not POST and is ignored when no paginator is rendered.",
       params: z.object({ page: z.number().int().min(0) }),
     },
   },

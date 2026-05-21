@@ -386,8 +386,8 @@ must stay within the global 64-element limit and max nesting depth.
 | `showControls`   | boolean | No       | `true`  | Show previous/next buttons               |
 
 Set both `showControls: false` and `showIndicators: false` to hide the built-in
-pagination bar. Buttons or tappable `cell_grid` cells inside the paginator can bind
-local actions:
+pagination bar. Buttons or tappable `cell_grid` cells anywhere in the same snap can
+bind local actions:
 
 | Action               | Params                   | Behavior                                  |
 | -------------------- | ------------------------ | ----------------------------------------- |
@@ -395,7 +395,8 @@ local actions:
 | `paginator_previous` | `{}`                     | Move to the previous page locally         |
 | `paginator_go_to`    | `{ "page": 0 }`          | Move to a zero-based page index locally   |
 
-These actions affect only the nearest containing paginator and never submit POST input.
+These actions affect the snap's rendered paginator and never submit POST input.
+Only one paginator is supported per snap in this release.
 
 ```json
 "pager": {
