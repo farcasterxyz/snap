@@ -1,184 +1,252 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import type { SnapHandlerResult } from "@farcaster/snap";
+import type { SnapElementInput, SnapHandlerResult } from "@farcaster/snap";
 
 const app = new Hono();
 
 registerSnapHandler(app, async (ctx): Promise<SnapHandlerResult> => {
-  return componentImprovementsPage(snapBaseUrlFromRequest(ctx.request));
+  const base = snapBaseUrlFromRequest(ctx.request);
+  const requestUrl = new URL(ctx.request.url);
+  const submitted =
+    ctx.action.type === "post" &&
+    requestUrl.searchParams.get("submitted") === "1";
+
+  return componentImprovementsPage(base, submitted);
 });
 
 export default app;
 
-function componentImprovementsPage(base: string): SnapHandlerResult {
+function componentImprovementsPage(
+  base: string,
+  submitted: boolean,
+): SnapHandlerResult {
   return {
     version: "2.0",
     theme: { accent: "teal" },
     ui: {
       root: "page",
+      state: { inputs: {} },
       elements: {
         page: {
           type: "stack",
-          props: { gap: "sm" },
-          children: ["banner", "pager", "actions"],
+          children: ["banner", "pager", "actions", "status"],
         },
         banner: {
           type: "image",
           props: {
-            url: "https://placehold.co/1200x300/0f766e/ffffff.png?text=Snap+Banner",
+            url: "https://placehold.co/1200x300/0f766e/ffffff.png?text=NEYN-11381",
             aspect: "4:1",
-            alt: "Teal banner",
-            title: "Component improvements",
-            subtitle: "4:1 image overlay, local paginator, compact layout",
+            alt: "Compact teal NEYN-11381 banner",
+            title: "NEYN-11381 showcase",
+            subtitle: "Paginator, image overlays, compact copy, dense grids",
           },
         },
         pager: {
           type: "paginator",
-          props: { initialPage: 0 },
+          props: {
+            initialPage: 0,
+            showControls: true,
+            showIndicators: true,
+          },
           children: [
-            "page-one",
-            "page-two",
-            "page-three",
-            "page-four",
-            "page-five",
-            "page-six",
-            "page-seven",
-            "page-eight",
+            "overview",
+            "copy",
+            "grid",
+            "custom-nav",
+            "image-card",
+            "many-pages",
+            "limits",
+            "finish",
           ],
         },
-        "page-one": step("Step 1"),
-        "page-two": step("Step 2"),
-        "page-three": gridStep(),
-        "page-four": step("Step 4"),
-        "page-five": step("Step 5"),
-        "page-six": step("Step 6"),
-        "page-seven": step("Step 7"),
-        "page-eight": step("Step 8"),
+        overview: pageStack(
+          "overview-title",
+          "overview-copy",
+          "overview-short",
+          "overview-next",
+        ),
+        "overview-title": heading("Visible paginator"),
+        "overview-copy": caption(
+          "This example keeps the built-in controls and indicators visible while also using custom local actions inside pages.",
+          2,
+        ),
+        "overview-short": caption(
+          "Default text is one line, so this deliberately long sentence should clamp instead of growing the snap.",
+        ),
+        "overview-next": paginatorButton("Jump to copy", "paginator_go_to", {
+          page: 1,
+        }),
+        copy: pageStack("copy-title", "copy-one-line", "copy-two-lines"),
+        "copy-title": heading("Text clamping"),
+        "copy-one-line": caption(
+          "No maxLines prop here: this long piece of supporting copy should stay to a single visible line by default.",
+        ),
+        "copy-two-lines": caption(
+          "This text opts into maxLines: 2, giving longer explanatory copy a little more room without letting the snap become tall.",
+          2,
+        ),
+        grid: pageStack("grid-title", "grid-copy", "dense-grid", "grid-next"),
+        "grid-title": heading("Dense 1:1 grid"),
+        "grid-copy": caption(
+          "Square cells keep board-like layouts compact and predictable.",
+        ),
+        "dense-grid": {
+          type: "cell_grid",
+          props: {
+            cols: 6,
+            rows: 3,
+            cellAspectRatio: "square",
+            gap: "sm",
+            cells: denseGridCells(),
+          },
+        },
+        "grid-next": paginatorButton("Custom next", "paginator_next"),
+        "custom-nav": pageStack(
+          "custom-nav-title",
+          "custom-nav-copy",
+          "custom-nav-row",
+        ),
+        "custom-nav-title": heading("Custom local controls"),
+        "custom-nav-copy": caption(
+          "Buttons inside the active page can move the paginator locally without POSTing.",
+          2,
+        ),
+        "custom-nav-row": {
+          type: "stack",
+          props: { direction: "horizontal", equalWidth: true, gap: "sm" },
+          children: ["custom-prev", "custom-next"],
+        },
+        "custom-prev": paginatorButton("Back", "paginator_previous"),
+        "custom-next": paginatorButton("Forward", "paginator_next"),
+        "image-card": pageStack("image-card-title", "image-card-image"),
+        "image-card-title": heading("Overlay image card"),
+        "image-card-image": {
+          type: "image",
+          props: {
+            url: "https://placehold.co/1200x300/115e59/ffffff.png?text=4%3A1+Overlay",
+            aspect: "4:1",
+            alt: "4:1 card with overlay text",
+            title: "Image props, not hero",
+            subtitle: "Title and subtitle live on image",
+          },
+        },
+        "many-pages": pageStack("many-pages-title", "many-pages-copy"),
+        "many-pages-title": heading("More than six pages"),
+        "many-pages-copy": caption(
+          "Paginator pages can exceed the normal per-container child count while the global element cap still applies.",
+          2,
+        ),
+        limits: pageStack("limits-title", "limits-copy", "limits-back"),
+        "limits-title": heading("Validation stays strict"),
+        "limits-copy": caption(
+          "The local page index never becomes a POST input, and snap-level limits still protect the whole tree.",
+          2,
+        ),
+        "limits-back": paginatorButton("Go to first", "paginator_go_to", {
+          page: 0,
+        }),
+        finish: pageStack("finish-title", "finish-copy"),
+        "finish-title": heading("Compact actions"),
+        "finish-copy": caption(
+          "The shorter button height and restored gaps should feel compact without crowding the layout.",
+          2,
+        ),
         actions: {
           type: "stack",
           props: { direction: "horizontal", equalWidth: true },
-          children: ["primary", "secondary"],
+          children: ["confirm", "reload"],
         },
-        primary: {
+        confirm: {
           type: "button",
-          props: { label: "Looks good", variant: "primary" },
-          on: { press: { action: "submit", params: { target: `${base}/` } } },
+          props: { label: "Confirm", variant: "primary" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/?submitted=1` },
+            },
+          },
         },
-        secondary: {
+        reload: {
           type: "button",
-          props: { label: "Refresh" },
-          on: { press: { action: "submit", params: { target: `${base}/` } } },
+          props: { label: "Reload" },
+          on: {
+            press: {
+              action: "submit",
+              params: { target: `${base}/` },
+            },
+          },
         },
-        ...extraElements,
+        status: {
+          type: "text",
+          props: {
+            content: submitted
+              ? "POST received from the explicit action row."
+              : "Paginator movement should stay local; only Confirm/Reload POST.",
+            size: "sm",
+            align: "center",
+            maxLines: 2,
+          },
+        },
       },
     },
   };
 }
 
-function step(title: string) {
+function pageStack(...children: string[]): SnapElementInput {
   return {
     type: "stack",
-    props: { gap: "sm" },
-    children: [`${title}-title`, `${title}-copy`],
+    children,
   };
 }
 
-function gridStep() {
+function heading(content: string): SnapElementInput {
   return {
-    type: "stack",
-    props: { gap: "sm" },
-    children: ["grid-title", "grid"],
+    type: "text",
+    props: { content, weight: "bold" },
   };
 }
 
-const extraElements = {
-  "Step 1-title": {
-    type: "text",
-    props: { content: "Paginator page", weight: "bold" },
-  },
-  "Step 1-copy": {
+function caption(content: string, maxLines?: number): SnapElementInput {
+  return {
     type: "text",
     props: {
-      content: "One visible line by default keeps the card short.",
+      content,
       size: "sm",
+      ...(maxLines !== undefined ? { maxLines } : {}),
     },
-  },
-  "Step 2-title": {
-    type: "text",
-    props: { content: "Intentional wrapping", weight: "bold" },
-  },
-  "Step 2-copy": {
-    type: "text",
-    props: {
-      content:
-        "This page opts into two lines with maxLines so explanatory text can breathe without making every snap tall.",
-      size: "sm",
-      maxLines: 2,
-    },
-  },
-  "grid-title": {
-    type: "text",
-    props: { content: "Dense square grid", weight: "bold" },
-  },
-  grid: {
-    type: "cell_grid",
-    props: {
-      cols: 6,
-      rows: 3,
-      cellAspectRatio: "square",
-      cells: Array.from({ length: 18 }, (_, index) => ({
-        row: Math.floor(index / 6),
-        col: index % 6,
-        color: index % 2 === 0 ? "teal" : "#99f6e4",
-      })),
-    },
-  },
-  "Step 4-title": {
-    type: "text",
-    props: { content: "Local state", weight: "bold" },
-  },
-  "Step 4-copy": {
-    type: "text",
-    props: { content: "Paginator controls do not POST or mutate inputs.", size: "sm" },
-  },
-  "Step 5-title": {
-    type: "text",
-    props: { content: "Image overlay", weight: "bold" },
-  },
-  "Step 5-copy": {
-    type: "text",
-    props: { content: "Use image title/subtitle instead of a hero component.", size: "sm" },
-  },
-  "Step 6-title": {
-    type: "text",
-    props: { content: "More than six pages", weight: "bold" },
-  },
-  "Step 6-copy": {
-    type: "text",
-    props: { content: "The child count can exceed normal stack limits.", size: "sm" },
-  },
-  "Step 7-title": {
-    type: "text",
-    props: { content: "Global caps remain", weight: "bold" },
-  },
-  "Step 7-copy": {
-    type: "text",
-    props: { content: "The global 64-element cap still applies.", size: "sm" },
-  },
-  "Step 8-title": {
-    type: "text",
-    props: { content: "Compact first", weight: "bold" },
-  },
-  "Step 8-copy": {
-    type: "text",
-    props: { content: "Use compact gaps before reaching for more UI.", size: "sm" },
-  },
-} as const;
+  };
+}
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  serve({ fetch: app.fetch, port: Number(process.env.PORT ?? 3024) });
-  console.log(`component-improvements running on http://localhost:${process.env.PORT ?? "3024"}`);
+function paginatorButton(
+  label: string,
+  action: "paginator_next" | "paginator_previous" | "paginator_go_to",
+  params: Record<string, unknown> = {},
+): SnapElementInput {
+  return {
+    type: "button",
+    props: { label },
+    on: {
+      press: {
+        action,
+        params,
+      },
+    },
+  };
+}
+
+function denseGridCells(): Array<{
+  row: number;
+  col: number;
+  color: string;
+  content: string;
+}> {
+  return Array.from({ length: 18 }, (_, index) => ({
+    row: Math.floor(index / 6),
+    col: index % 6,
+    color: index % 2 === 0 ? "teal" : "#99f6e4",
+    content: String(index + 1),
+  }));
 }
 
 function snapBaseUrlFromRequest(request: Request): string {
@@ -192,4 +260,10 @@ function snapBaseUrlFromRequest(request: Request): string {
   if (host) return `${proto}://${host}`.replace(/\/$/, "");
 
   return `http://localhost:${process.env.PORT ?? "3024"}`;
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const port = Number(process.env.PORT ?? 3024);
+  serve({ fetch: app.fetch, port });
+  console.log(`component-improvements running on http://localhost:${port}`);
 }
