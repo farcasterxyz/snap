@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 2.6.3
+
+### Patch Changes
+
+- [#198](https://github.com/farcasterxyz/snap/pull/198) [`369da37`](https://github.com/farcasterxyz/snap/commit/369da37ffcedd75bf47b6405cd27c669bede1e0a) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Fix React Native image sizing so compact aspects such as `4:1` preserve their declared ratio inside host and feed layouts.
+
 ## 2.6.2
 
 ### Patch Changes
