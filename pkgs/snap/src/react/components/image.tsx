@@ -29,7 +29,7 @@ export function SnapImage({
       ratio={ratio}
       className={cn(
         "relative overflow-hidden rounded-lg",
-        inHorizontalStack ? "min-w-0 flex-1 basis-0" : "w-full",
+        inHorizontalStack ? "min-w-0 flex-1 basis-0" : "w-full"
       )}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -39,14 +39,27 @@ export function SnapImage({
         className="absolute inset-0 size-full object-cover"
       />
       {hasOverlay && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-3 pt-8 text-white">
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/35 to-transparent p-3 pt-10 text-white">
           {title && (
-            <div className="truncate text-sm font-semibold leading-5">
+            <div
+              className="truncate text-sm font-semibold leading-5"
+              style={{
+                textShadow:
+                  "0 1px 2px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,0.9)",
+                WebkitTextStroke: "0.25px rgba(0,0,0,0.75)",
+              }}
+            >
               {title}
             </div>
           )}
           {subtitle && (
-            <div className="truncate text-xs font-medium leading-4 text-white/85">
+            <div
+              className="truncate text-xs font-medium leading-4 text-white/90"
+              style={{
+                textShadow:
+                  "0 1px 2px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,0.9)",
+              }}
+            >
               {subtitle}
             </div>
           )}

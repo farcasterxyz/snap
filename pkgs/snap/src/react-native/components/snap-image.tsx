@@ -36,17 +36,19 @@ export function SnapImage({
         accessibilityLabel={alt || undefined}
       />
       {hasOverlay ? (
-        <View style={styles.overlay}>
-          {title ? (
-            <Text numberOfLines={1} style={styles.title}>
-              {title}
-            </Text>
-          ) : null}
-          {subtitle ? (
-            <Text numberOfLines={1} style={styles.subtitle}>
-              {subtitle}
-            </Text>
-          ) : null}
+        <View style={styles.overlay} pointerEvents="none">
+          <View style={styles.overlayContent}>
+            {title ? (
+              <Text numberOfLines={1} style={styles.title}>
+                {title}
+              </Text>
+            ) : null}
+            {subtitle ? (
+              <Text numberOfLines={1} style={styles.subtitle}>
+                {subtitle}
+              </Text>
+            ) : null}
+          </View>
         </View>
       ) : null}
     </View>
@@ -71,21 +73,33 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    paddingHorizontal: 12,
-    paddingTop: 24,
-    paddingBottom: 10,
-    backgroundColor: "rgba(0, 0, 0, 0.48)",
+    paddingHorizontal: 3,
+    paddingBottom: 3,
+  },
+  overlayContent: {
+    alignSelf: "flex-start",
+    maxWidth: "100%",
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    backgroundColor: "rgba(0, 0, 0, 0.22)",
   },
   title: {
     color: "#fff",
     fontSize: 14,
     lineHeight: 18,
     fontWeight: "700",
+    textShadowColor: "#000",
+    textShadowOffset: { width: 1.25, height: 1.25 },
+    textShadowRadius: 1,
   },
   subtitle: {
-    color: "rgba(255, 255, 255, 0.85)",
+    color: "#fff",
     fontSize: 12,
     lineHeight: 16,
     fontWeight: "500",
+    textShadowColor: "#000",
+    textShadowOffset: { width: 1.25, height: 1.25 },
+    textShadowRadius: 1,
   },
 });

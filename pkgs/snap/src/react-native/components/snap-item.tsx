@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   title: {
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 19,
     fontWeight: "500",
   },
   description: {

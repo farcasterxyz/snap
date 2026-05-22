@@ -17,13 +17,16 @@ export function SnapText({
 }) {
   const content = String(props.content ?? "");
   const size = String(props.size ?? "md") as "md" | "sm";
-  const weight = props.weight ? String(props.weight) as "bold" | "normal" : undefined;
+  const weight = props.weight
+    ? (String(props.weight) as "bold" | "normal")
+    : undefined;
   const align = (props.align as "left" | "center" | "right") ?? undefined;
   const config = SIZE_MAP[size] ?? SIZE_MAP.md;
   const colors = useSnapColors();
   const stackDir = useSnapStackDirection();
   const inHorizontalStack = stackDir === "horizontal";
-  const maxLines = typeof props.maxLines === "number" ? props.maxLines : undefined;
+  const maxLines =
+    typeof props.maxLines === "number" ? props.maxLines : undefined;
 
   return (
     <Text
@@ -39,10 +42,11 @@ export function SnapText({
          * column's height, distributing siblings when the row is taller than its
          * content (e.g. text next to a tall image).
          */
-        inHorizontalStack ? "min-w-0 shrink" : "min-w-0",
+        inHorizontalStack ? "min-w-0 shrink" : "min-w-0"
       )}
       style={{
         color: colors.text,
+        fontSize: size === "md" ? 15 : undefined,
         lineHeight: size === "sm" ? 1.35 : 1.4,
         ...(maxLines
           ? {
