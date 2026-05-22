@@ -1,5 +1,7 @@
 import type { ComponentRenderProps } from "@json-render/react-native";
 import { Image } from "expo-image";
+import { useCallback, useState } from "react";
+import type { ViewProps } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 import { useSnapStackDirection } from "../stack-direction-context";
 
@@ -20,13 +22,22 @@ export function SnapImage({
   const ratio = aspectToRatio(String(props.aspect ?? "1:1"));
   const stackDir = useSnapStackDirection();
   const inHorizontalStack = stackDir === "horizontal";
+  const [frameWidth, setFrameWidth] = useState(0);
+  const measuredHeight = frameWidth > 0 ? frameWidth / ratio : undefined;
+  const handleLayout = useCallback<NonNullable<ViewProps["onLayout"]>>((event) => {
+    const nextWidth = Math.round(event.nativeEvent.layout.width);
+    setFrameWidth((currentWidth) =>
+      currentWidth !== nextWidth ? nextWidth : currentWidth,
+    );
+  }, []);
 
   return (
     <View
+      onLayout={handleLayout}
       style={[
         styles.frame,
         inHorizontalStack ? styles.frameInHorizontalRow : styles.frameFullWidth,
-        { aspectRatio: ratio },
+        measuredHeight ? { height: measuredHeight } : { aspectRatio: ratio },
       ]}
     >
       <Image
