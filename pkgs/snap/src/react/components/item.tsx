@@ -73,7 +73,7 @@ export function SnapItem({
         "gap-2 py-1.5",
         inBorderedGroup ? "px-2" : "px-0",
         /** Horizontal: share width with peers. Vertical: don't fill column height. */
-        inHorizontalStack && "flex-1",
+        inHorizontalStack && "flex-1"
       )}
       style={{
         columnGap: 8,
@@ -111,7 +111,11 @@ export function SnapItem({
         </ItemMedia>
       )}
       <ItemContent className="gap-0">
-        <ItemTitle style={{ color: colors.text }}>{title}</ItemTitle>
+        <ItemTitle
+          style={{ color: colors.text, fontSize: 14, lineHeight: "19px" }}
+        >
+          {title}
+        </ItemTitle>
         {description && (
           <ItemDescription
             className="mt-0 text-xs leading-snug"

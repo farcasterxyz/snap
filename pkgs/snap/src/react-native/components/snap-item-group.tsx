@@ -18,7 +18,10 @@ export function SnapItemGroup({
   const { colors } = useSnapTheme();
   const border = Boolean(props.border);
   const separator = Boolean(props.separator);
-  const gap = GAP_MAP[String(props.gap ?? "sm")] ?? 4;
+  const explicitGap =
+    typeof props.gap === "string" ? String(props.gap) : undefined;
+  const defaultGap = border || separator ? "sm" : "none";
+  const gap = GAP_MAP[explicitGap ?? defaultGap] ?? GAP_MAP[defaultGap]!;
   const items = Children.toArray(children);
 
   return (

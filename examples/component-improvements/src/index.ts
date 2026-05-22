@@ -4,6 +4,8 @@ import { registerSnapHandler } from "@farcaster/snap-hono";
 import type { SnapElementInput, SnapHandlerResult } from "@farcaster/snap";
 
 const app = new Hono();
+const SNAP_IMAGE_URL =
+  "https://boey4mnqvpqdktto.public.blob.vercel-storage.com/chain/9d1648dc4d5a42fe.png";
 
 registerSnapHandler(app, async (ctx): Promise<SnapHandlerResult> => {
   const base = snapBaseUrlFromRequest(ctx.request);
@@ -19,7 +21,7 @@ export default app;
 
 function componentImprovementsPage(
   base: string,
-  submitted: boolean,
+  submitted: boolean
 ): SnapHandlerResult {
   return {
     version: "2.0",
@@ -30,14 +32,20 @@ function componentImprovementsPage(
       elements: {
         page: {
           type: "stack",
-          children: ["banner", "showcase-controls", "pager", "actions", "status"],
+          children: [
+            "banner",
+            "showcase-controls",
+            "pager",
+            "actions",
+            "status",
+          ],
         },
         banner: {
           type: "image",
           props: {
-            url: "https://placehold.co/1200x300/0f766e/ffffff.png?text=NEYN-11381",
+            url: SNAP_IMAGE_URL,
             aspect: "4:1",
-            alt: "Compact teal NEYN-11381 banner",
+            alt: "Compact chain banner",
             title: "NEYN-11381 showcase",
             subtitle: "Paginator, image overlays, compact copy, dense grids",
           },
@@ -91,28 +99,32 @@ function componentImprovementsPage(
         "jump-medium-grid": paginatorButton("Medium grid", "paginator_go_to", {
           page: 4,
         }),
-        overview: pageStack("overview-title", "overview-copy", "overview-short"),
+        overview: pageStack(
+          "overview-title",
+          "overview-copy",
+          "overview-short"
+        ),
         "overview-title": heading("Visible paginator"),
         "overview-copy": caption(
           "This example keeps the built-in controls and indicators visible while also using custom local actions outside the paginator.",
-          2,
+          2
         ),
         "overview-short": caption(
-          "Text now wraps by default; add maxLines only when a section needs a bounded height.",
+          "Text now wraps by default; add maxLines only when a section needs a bounded height."
         ),
         copy: pageStack("copy-title", "copy-one-line", "copy-two-lines"),
         "copy-title": heading("Optional text clamping"),
         "copy-one-line": caption(
-          "No maxLines prop here: this long piece of supporting copy can wrap naturally instead of being clamped by default.",
+          "No maxLines prop here: this long piece of supporting copy can wrap naturally instead of being clamped by default."
         ),
         "copy-two-lines": caption(
           "This text opts into maxLines: 2, giving longer explanatory copy a little more room without letting the snap become tall.",
-          2,
+          2
         ),
         grid: pageStack("grid-title", "grid-copy", "dense-grid", "grid-next"),
         "grid-title": heading("Dense 1:1 grid"),
         "grid-copy": caption(
-          "Square cells keep board-like layouts compact and predictable.",
+          "Square cells keep board-like layouts compact and predictable."
         ),
         "dense-grid": {
           type: "cell_grid",
@@ -128,12 +140,12 @@ function componentImprovementsPage(
         "small-grid": pageStack(
           "small-grid-title",
           "small-grid-copy",
-          "small-square-grid",
+          "small-square-grid"
         ),
         "small-grid-title": heading("Small centered grid"),
         "small-grid-copy": caption(
           "maxWidth: sm caps this board, centers it, and keeps every cell square.",
-          2,
+          2
         ),
         "small-square-grid": {
           type: "cell_grid",
@@ -149,12 +161,12 @@ function componentImprovementsPage(
         "medium-grid": pageStack(
           "medium-grid-title",
           "medium-grid-copy",
-          "medium-square-grid",
+          "medium-square-grid"
         ),
         "medium-grid-title": heading("Medium centered grid"),
         "medium-grid-copy": caption(
           "maxWidth: md is wider than sm but still centers itself; lg/default remains full-width.",
-          2,
+          2
         ),
         "medium-square-grid": {
           type: "cell_grid",
@@ -170,12 +182,12 @@ function componentImprovementsPage(
         "custom-nav": pageStack(
           "custom-nav-title",
           "custom-nav-copy",
-          "custom-nav-row",
+          "custom-nav-row"
         ),
         "custom-nav-title": heading("Custom local controls"),
         "custom-nav-copy": caption(
           "Buttons can move the snap's one paginator locally without POSTing.",
-          2,
+          2
         ),
         "custom-nav-row": {
           type: "stack",
@@ -189,7 +201,7 @@ function componentImprovementsPage(
         "image-card-image": {
           type: "image",
           props: {
-            url: "https://placehold.co/1200x300/115e59/ffffff.png?text=4%3A1+Overlay",
+            url: SNAP_IMAGE_URL,
             aspect: "4:1",
             alt: "4:1 card with overlay text",
             title: "Image props, not hero",
@@ -200,13 +212,13 @@ function componentImprovementsPage(
         "many-pages-title": heading("More than six pages"),
         "many-pages-copy": caption(
           "Paginator pages can exceed the normal per-container child count while the global element cap still applies.",
-          2,
+          2
         ),
         limits: pageStack("limits-title", "limits-copy", "limits-back"),
         "limits-title": heading("Validation stays strict"),
         "limits-copy": caption(
           "The local page index never becomes a POST input, and snap-level limits still protect the whole tree.",
-          2,
+          2
         ),
         "limits-back": paginatorButton("Go to first", "paginator_go_to", {
           page: 0,
@@ -215,7 +227,7 @@ function componentImprovementsPage(
         "finish-title": heading("Compact actions"),
         "finish-copy": caption(
           "The shorter button height and restored gaps should feel compact without crowding the layout.",
-          2,
+          2
         ),
         actions: {
           type: "stack",
@@ -286,7 +298,7 @@ function caption(content: string, maxLines?: number): SnapElementInput {
 function paginatorButton(
   label: string,
   action: "paginator_next" | "paginator_prev" | "paginator_go_to",
-  params: Record<string, unknown> = {},
+  params: Record<string, unknown> = {}
 ): SnapElementInput {
   return {
     type: "button",
