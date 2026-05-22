@@ -1,5 +1,15 @@
 # @farcaster/snap
 
+## 2.6.2
+
+### Patch Changes
+
+- [#195](https://github.com/farcasterxyz/snap/pull/195) [`6fc351d`](https://github.com/farcasterxyz/snap/commit/6fc351d56c8ab5d09be64b58f601ea7fff9b0cf7) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Polish Snap renderer spacing and image overlay readability.
+  - Improve React Native image title/subtitle overlays without adding a native gradient dependency: lighter text plate, tighter bottom-left placement, and crisper text shadow.
+  - Improve web image overlay readability for busy backgrounds.
+  - Reduce the largest normal-flow Snap text by 1px on web and React Native, including item titles, while leaving image overlay title/subtitle sizing unchanged.
+  - Make plain item groups with no border and no separator default to zero item gap. Explicit `gap` props continue to take precedence.
+
 ## 2.6.1
 
 ### Patch Changes
