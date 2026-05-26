@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 2.6.4
+
+### Patch Changes
+
+- [#200](https://github.com/farcasterxyz/snap/pull/200) [`39467c7`](https://github.com/farcasterxyz/snap/commit/39467c7aa507669f333b521e39a5cf15589d2e29) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Reduce React Native Snap card body padding so snaps have more usable space in narrow mobile containers.
+
 ## 2.6.3
 
 ### Patch Changes
