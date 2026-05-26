@@ -289,7 +289,7 @@ function SnapCardV2Inner({
                     : nextHeight,
               );
             }}
-            style={{ paddingHorizontal: 16, paddingVertical: 16 }}
+            style={cardStyles.body}
           >
             {content}
           </View>
@@ -421,7 +421,7 @@ export function SnapCardV2({
 const cardStyles = StyleSheet.create({
   frameRing: { alignSelf: "stretch" },
   card: { borderWidth: 1, minHeight: 120, overflow: "hidden" },
-  body: { paddingHorizontal: 16, paddingVertical: 16 },
+  body: { paddingHorizontal: 8, paddingVertical: 8 },
   actionError: { paddingHorizontal: 12, paddingVertical: 8, fontSize: 13 },
   expandFloat: {
     position: "absolute",

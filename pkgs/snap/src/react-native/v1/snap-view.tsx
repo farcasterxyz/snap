@@ -263,7 +263,7 @@ export function SnapCardV1({
 const cardStyles = StyleSheet.create({
   frameRing: { alignSelf: "stretch" },
   card: { overflow: "hidden", borderWidth: 1, minHeight: 120 },
-  body: { paddingHorizontal: 16, paddingVertical: 16 },
+  body: { paddingHorizontal: 8, paddingVertical: 8 },
   expandFloat: {
     position: "absolute",
     left: 0,
