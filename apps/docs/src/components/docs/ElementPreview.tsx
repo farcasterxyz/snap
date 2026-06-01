@@ -449,15 +449,29 @@ function ImagePreview({ aspect = "16:9" }: { aspect?: string }) {
           left: 0,
           right: 0,
           bottom: 0,
-          padding: "28px 12px 10px",
+          padding: "0 12px 10px",
           color: "#fff",
-          background: "linear-gradient(to top, rgba(0,0,0,0.72), rgba(0,0,0,0))",
         }}
       >
-        <div style={{ fontSize: 13, lineHeight: "18px", fontWeight: 700 }}>
+        <div
+          style={{
+            fontSize: 13,
+            lineHeight: "18px",
+            fontWeight: 700,
+            textShadow: "0 1px 2px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,0.9)",
+            WebkitTextStroke: "0.25px rgba(0,0,0,0.75)",
+          }}
+        >
           Trending now
         </div>
-        <div style={{ fontSize: 12, lineHeight: "16px", opacity: 0.85 }}>
+        <div
+          style={{
+            fontSize: 12,
+            lineHeight: "16px",
+            opacity: 0.85,
+            textShadow: "0 1px 2px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,0.9)",
+          }}
+        >
           Compact image overlay
         </div>
       </div>

@@ -39,7 +39,7 @@ export function SnapImage({
         className="absolute inset-0 size-full object-cover"
       />
       {hasOverlay && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/35 to-transparent p-3 pt-10 text-white">
+        <div className="absolute inset-x-0 bottom-0 p-3 text-white">
           {title && (
             <div
               className="truncate text-sm font-semibold leading-5"
