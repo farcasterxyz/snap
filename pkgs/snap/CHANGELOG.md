@@ -1,5 +1,13 @@
 # @farcaster/snap
 
+## 2.7.0
+
+### Minor Changes
+
+- [#204](https://github.com/farcasterxyz/snap/pull/204) [`0403fde`](https://github.com/farcasterxyz/snap/commit/0403fde24a71abbcf670667e4231ef5ebbcdd890) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add restorable Snap render state for React and React Native renderers.
+
+  `SnapCard` now accepts `initialRenderState` and `onRenderStateChange` so hosts can remount a Snap without losing JSON-render local state such as inputs, toggles, sliders, cell selections, and paginator page. Remounts also remember which one-shot Snap effects have already been presented, preventing confetti or fireworks from replaying when a host moves the same Snap between inline, focused, or lifted surfaces.
+
 ## 2.6.4
 
 ### Patch Changes
