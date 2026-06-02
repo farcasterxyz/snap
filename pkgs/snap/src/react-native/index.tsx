@@ -2,7 +2,12 @@ import type { ReactNode } from "react";
 import type { ValidationResult } from "@farcaster/snap";
 import { SPEC_VERSION_2 } from "@farcaster/snap";
 import type { SnapNativeColors } from "./theme";
-import type { JsonValue, SnapPage, SnapActionHandlers } from "./types";
+import type {
+  JsonValue,
+  SnapActionHandlers,
+  SnapPage,
+  SnapRenderState,
+} from "./types";
 import { useSnapTheme } from "./theme";
 import { hexToRgba } from "./use-snap-palette";
 import { SnapCardV1 } from "./v1/snap-view";
@@ -10,7 +15,12 @@ import { SnapCardV2 } from "./v2/snap-view";
 
 // ─── Public types ──────────────────────────────────────
 
-export type { JsonValue, SnapPage, SnapActionHandlers } from "./types";
+export type {
+  JsonValue,
+  SnapActionHandlers,
+  SnapPage,
+  SnapRenderState,
+} from "./types";
 
 // ─── Re-exports ───────────────────────────────────────
 
@@ -35,6 +45,8 @@ export function SnapCard({
   forceExpanded,
   expandButtonLabel,
   onExpandPress,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -61,6 +73,10 @@ export function SnapCard({
   expandButtonLabel?: string;
   /** Called from the collapsed expand button instead of toggling internal state. */
   onExpandPress?: () => void;
+  /** JSON-render local state used to seed this presenter mount. */
+  initialRenderState?: SnapRenderState;
+  /** Called with the full JSON-render local state after state changes. */
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   if (snap.version === SPEC_VERSION_2) {
     return (
@@ -80,6 +96,8 @@ export function SnapCard({
         forceExpanded={forceExpanded}
         expandButtonLabel={expandButtonLabel}
         onExpandPress={onExpandPress}
+        initialRenderState={initialRenderState}
+        onRenderStateChange={onRenderStateChange}
       />
     );
   }
@@ -98,6 +116,8 @@ export function SnapCard({
       forceExpanded={forceExpanded}
       expandButtonLabel={expandButtonLabel}
       onExpandPress={onExpandPress}
+      initialRenderState={initialRenderState}
+      onRenderStateChange={onRenderStateChange}
     />
   );
 }

@@ -11,7 +11,7 @@ import {
   validateSnapResponse,
   type ValidationResult,
 } from "@farcaster/snap";
-import type { SnapPage, SnapActionHandlers } from "../types";
+import type { SnapActionHandlers, SnapPage, SnapRenderState } from "../types";
 import { getSnapExpansionState, SNAP_MAX_HEIGHT } from "../expand-state";
 
 // ─── Constants ───────────────────────────────────────
@@ -53,6 +53,8 @@ export function SnapViewV2Inner({
   onValidationError,
   validationErrorFallback,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -60,6 +62,8 @@ export function SnapViewV2Inner({
   onValidationError?: (result: ValidationResult) => void;
   validationErrorFallback?: ReactNode;
   loadingOverlay?: ReactNode;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   const validation = useMemo(() => validateSnapResponse(snap), [snap]);
   const valid = validation.valid;
@@ -89,6 +93,8 @@ export function SnapViewV2Inner({
       handlers={handlers}
       loading={loading}
       loadingOverlay={loadingOverlay}
+      initialRenderState={initialRenderState}
+      onRenderStateChange={onRenderStateChange}
     />
   );
 }
@@ -102,6 +108,8 @@ export function SnapViewV2({
   onValidationError,
   validationErrorFallback,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -112,6 +120,8 @@ export function SnapViewV2({
   validationErrorFallback?: ReactNode;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -122,6 +132,8 @@ export function SnapViewV2({
         onValidationError={onValidationError}
         validationErrorFallback={validationErrorFallback}
         loadingOverlay={loadingOverlay}
+        initialRenderState={initialRenderState}
+        onRenderStateChange={onRenderStateChange}
       />
     </SnapThemeProvider>
   );
@@ -144,6 +156,8 @@ function SnapCardV2Inner({
   forceExpanded,
   expandButtonLabel,
   onExpandPress,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -159,6 +173,8 @@ function SnapCardV2Inner({
   forceExpanded?: boolean;
   expandButtonLabel?: string;
   onExpandPress?: () => void;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   const { colors, mode } = useSnapTheme();
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
@@ -188,6 +204,8 @@ function SnapCardV2Inner({
       onValidationError={onValidationError}
       validationErrorFallback={validationErrorFallback}
       loadingOverlay={null}
+      initialRenderState={initialRenderState}
+      onRenderStateChange={onRenderStateChange}
     />
   );
 
@@ -375,6 +393,8 @@ export function SnapCardV2({
   forceExpanded,
   expandButtonLabel,
   onExpandPress,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -395,6 +415,10 @@ export function SnapCardV2({
   expandButtonLabel?: string;
   /** Called from the collapsed expand button instead of toggling internal state. */
   onExpandPress?: () => void;
+  /** JSON-render local state used to seed this presenter mount. */
+  initialRenderState?: SnapRenderState;
+  /** Called with the full JSON-render local state after state changes. */
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -413,6 +437,8 @@ export function SnapCardV2({
         forceExpanded={forceExpanded}
         expandButtonLabel={expandButtonLabel}
         onExpandPress={onExpandPress}
+        initialRenderState={initialRenderState}
+        onRenderStateChange={onRenderStateChange}
       />
     </SnapThemeProvider>
   );

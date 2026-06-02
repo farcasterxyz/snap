@@ -47,3 +47,4 @@ export {
   type SnapGetPayload,
 } from "./schemas";
 export { validateSnapResponse, type ValidationResult } from "./validator";
+export type { SnapRenderState } from "./render-state";
