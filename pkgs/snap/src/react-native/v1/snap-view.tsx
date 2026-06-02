@@ -6,7 +6,7 @@ import {
   SnapViewCoreInner,
   resolveAccentHex,
 } from "../snap-view-core";
-import type { SnapPage, SnapActionHandlers } from "../types";
+import type { SnapActionHandlers, SnapPage, SnapRenderState } from "../types";
 import { getSnapExpansionState } from "../expand-state";
 
 // ─── SnapViewV1 (no validation) ──────────────────────
@@ -16,11 +16,15 @@ export function SnapViewV1Inner({
   handlers,
   loading = false,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
   loading?: boolean;
   loadingOverlay?: ReactNode;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   return (
     <SnapViewCoreInner
@@ -28,6 +32,8 @@ export function SnapViewV1Inner({
       handlers={handlers}
       loading={loading}
       loadingOverlay={loadingOverlay}
+      initialRenderState={initialRenderState}
+      onRenderStateChange={onRenderStateChange}
     />
   );
 }
@@ -39,6 +45,8 @@ export function SnapViewV1({
   appearance = "dark",
   colors,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -47,6 +55,8 @@ export function SnapViewV1({
   colors?: Partial<SnapNativeColors>;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -55,6 +65,8 @@ export function SnapViewV1({
         handlers={handlers}
         loading={loading}
         loadingOverlay={loadingOverlay}
+        initialRenderState={initialRenderState}
+        onRenderStateChange={onRenderStateChange}
       />
     </SnapThemeProvider>
   );
@@ -74,6 +86,8 @@ function SnapCardV1Inner({
   forceExpanded,
   expandButtonLabel,
   onExpandPress,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -86,6 +100,8 @@ function SnapCardV1Inner({
   forceExpanded?: boolean;
   expandButtonLabel?: string;
   onExpandPress?: () => void;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   const { colors, mode } = useSnapTheme();
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
@@ -148,6 +164,8 @@ function SnapCardV1Inner({
                 handlers={handlers}
                 loading={loading}
                 loadingOverlay={null}
+                initialRenderState={initialRenderState}
+                onRenderStateChange={onRenderStateChange}
               />
             </View>
           </View>
@@ -223,6 +241,8 @@ export function SnapCardV1({
   forceExpanded,
   expandButtonLabel,
   onExpandPress,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -240,6 +260,10 @@ export function SnapCardV1({
   expandButtonLabel?: string;
   /** Called from the collapsed expand button instead of toggling internal state. */
   onExpandPress?: () => void;
+  /** JSON-render local state used to seed this presenter mount. */
+  initialRenderState?: SnapRenderState;
+  /** Called with the full JSON-render local state after state changes. */
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   return (
     <SnapThemeProvider appearance={appearance} colors={colors}>
@@ -255,6 +279,8 @@ export function SnapCardV1({
         forceExpanded={forceExpanded}
         expandButtonLabel={expandButtonLabel}
         onExpandPress={onExpandPress}
+        initialRenderState={initialRenderState}
+        onRenderStateChange={onRenderStateChange}
       />
     </SnapThemeProvider>
   );

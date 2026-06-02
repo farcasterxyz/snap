@@ -20,48 +20,15 @@ import {
   PALETTE_DARK_HEX,
   type PaletteColor,
 } from "@farcaster/snap";
+import {
+  applyStatePaths,
+  buildInitialRenderState,
+  cloneSnapRenderState,
+  getUnpresentedSnapEffects,
+  markSnapEffectsPresented,
+  type SnapRenderState,
+} from "../render-state";
 import type { SnapPage, SnapActionHandlers, JsonValue } from "./types";
-
-// ─── Shared helpers ──────────────────────────────────
-
-export function applyStatePaths(
-  model: Record<string, unknown>,
-  changes:
-    | { path: string; value: unknown }[]
-    | Record<string, unknown>
-    | null
-    | undefined,
-): void {
-  if (!changes) return;
-  const entries = Array.isArray(changes)
-    ? changes.map((c) => [c.path, c.value] as const)
-    : Object.entries(changes);
-  for (const [path, value] of entries) {
-    const trimmed = path.startsWith("/") ? path : `/${path}`;
-    const parts = trimmed.split("/").filter(Boolean);
-    if (parts.length < 2) continue;
-    const [top, ...rest] = parts;
-    if (top === "inputs") {
-      if (typeof model.inputs !== "object" || model.inputs === null) {
-        model.inputs = {};
-      }
-      const inputs = model.inputs as Record<string, unknown>;
-      if (rest.length === 1) {
-        inputs[rest[0]!] = value;
-      }
-      continue;
-    }
-    if (top === "theme") {
-      if (typeof model.theme !== "object" || model.theme === null) {
-        model.theme = {};
-      }
-      const theme = model.theme as Record<string, unknown>;
-      if (rest.length === 1) {
-        theme[rest[0]!] = value;
-      }
-    }
-  }
-}
 
 function withDefaultElementProps(spec: Spec): Spec {
   if (!spec || typeof spec !== "object" || !("elements" in spec)) return spec;
@@ -106,6 +73,8 @@ export function SnapViewCoreInner({
   handlers,
   loading = false,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -115,6 +84,8 @@ export function SnapViewCoreInner({
    * the built-in ActivityIndicator overlay is used. Pass `null` to render nothing.
    */
   loadingOverlay?: ReactNode;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   const { mode } = useSnapTheme();
   const spec = useMemo(
@@ -124,28 +95,19 @@ export function SnapViewCoreInner({
   const accentHex = resolveAccentHex(snap.theme?.accent, mode);
 
   const initialState = useMemo(
-    () => ({
-      ...(spec.state ?? {}),
-      inputs: { ...((spec.state?.inputs ?? {}) as Record<string, unknown>) },
-      theme: {
-        ...((spec.state?.theme ?? {}) as Record<string, unknown>),
-        ...(snap.theme ? { accent: snap.theme.accent } : {}),
-      },
-    }),
-    [spec, snap.theme],
+    () =>
+      buildInitialRenderState({
+        specState: spec.state,
+        initialRenderState,
+        themeAccent: snap.theme?.accent,
+      }),
+    [initialRenderState, spec.state, snap.theme?.accent],
   );
 
   const stateRef = useRef<Record<string, unknown>>(initialState);
 
   useEffect(() => {
-    stateRef.current = {
-      inputs: {
-        ...((initialState.inputs ?? {}) as Record<string, unknown>),
-      },
-      theme: {
-        ...((initialState.theme ?? {}) as Record<string, unknown>),
-      },
-    };
+    stateRef.current = cloneSnapRenderState(initialState);
   }, [initialState]);
 
   useEffect(() => {
@@ -161,14 +123,58 @@ export function SnapViewCoreInner({
     setPageKey((k) => k + 1);
   }, [spec]);
 
-  const showConfetti = snap.effects?.includes("confetti") ?? false;
-  const showFireworks = snap.effects?.includes("fireworks") ?? false;
-  const [confettiKey, setConfettiKey] = useState(0);
-  const [fireworksKey, setFireworksKey] = useState(0);
+  const effectSignature = snap.effects?.join("\u0000") ?? "";
+  const snapEffects = useMemo(
+    () => (effectSignature ? effectSignature.split("\u0000") : []),
+    [effectSignature],
+  );
+  const showConfetti = snapEffects.includes("confetti");
+  const showFireworks = snapEffects.includes("fireworks");
+  const [effectRunKeys, setEffectRunKeys] = useState({
+    confetti: 0,
+    fireworks: 0,
+  });
+  const onRenderStateChangeRef = useRef(onRenderStateChange);
   useEffect(() => {
-    if (showConfetti) setConfettiKey((k) => k + 1);
-    if (showFireworks) setFireworksKey((k) => k + 1);
-  }, [showConfetti, showFireworks, snap]);
+    onRenderStateChangeRef.current = onRenderStateChange;
+  }, [onRenderStateChange]);
+  useEffect(() => {
+    const effectsToPresent = getUnpresentedSnapEffects(
+      stateRef.current,
+      snapEffects,
+    );
+
+    if (effectsToPresent.length === 0) {
+      setEffectRunKeys((current) => {
+        const next = {
+          confetti: showConfetti ? current.confetti : 0,
+          fireworks: showFireworks ? current.fireworks : 0,
+        };
+        return next.confetti === current.confetti &&
+          next.fireworks === current.fireworks
+          ? current
+          : next;
+      });
+      return;
+    }
+
+    if (markSnapEffectsPresented(stateRef.current, effectsToPresent)) {
+      onRenderStateChangeRef.current?.(cloneSnapRenderState(stateRef.current));
+    }
+
+    setEffectRunKeys((current) => ({
+      confetti: effectsToPresent.includes("confetti")
+        ? current.confetti + 1
+        : showConfetti
+          ? current.confetti
+          : 0,
+      fireworks: effectsToPresent.includes("fireworks")
+        ? current.fireworks + 1
+        : showFireworks
+          ? current.fireworks
+          : 0,
+    }));
+  }, [initialState, showConfetti, showFireworks, snapEffects]);
 
   const handlersRef = useRef(handlers);
   handlersRef.current = handlers;
@@ -229,16 +235,13 @@ export function SnapViewCoreInner({
 
   return (
     <View style={styles.container}>
-      {loading
-        ? loadingOverlay === undefined
-          ? (
-            <SnapLoadingOverlay
-              appearance={mode}
-              accentHex={accentHex}
-            />
-          )
-          : loadingOverlay
-        : null}
+      {loading ? (
+        loadingOverlay === undefined ? (
+          <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
+        ) : (
+          loadingOverlay
+        )
+      ) : null}
       <SnapVersionProvider value={snap.version === "2.0" ? "2.0" : "1.0"}>
         <SnapCatalogView
           key={pageKey}
@@ -247,12 +250,17 @@ export function SnapViewCoreInner({
           loading={false}
           onStateChange={(changes) => {
             applyStatePaths(stateRef.current, changes);
+            onRenderStateChange?.(cloneSnapRenderState(stateRef.current));
           }}
           onAction={handleAction}
         />
       </SnapVersionProvider>
-      {showConfetti && <ConfettiOverlay key={confettiKey} />}
-      {showFireworks && <FireworksOverlay key={fireworksKey} />}
+      {showConfetti && effectRunKeys.confetti > 0 && (
+        <ConfettiOverlay key={effectRunKeys.confetti} />
+      )}
+      {showFireworks && effectRunKeys.fireworks > 0 && (
+        <FireworksOverlay key={effectRunKeys.fireworks} />
+      )}
     </View>
   );
 }
@@ -270,9 +278,7 @@ export function SnapLoadingOverlay({
         styles.overlay,
         {
           backgroundColor:
-            appearance === "dark"
-              ? "rgba(0,0,0,0.1)"
-              : "rgba(255,255,255,0.2)",
+            appearance === "dark" ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)",
         },
       ]}
     >

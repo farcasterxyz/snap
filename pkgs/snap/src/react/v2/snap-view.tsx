@@ -5,7 +5,7 @@ import { validateSnapResponse } from "../../validator.js";
 import type { ValidationResult } from "../../validator.js";
 import { SnapViewCore, SnapLoadingOverlay } from "../snap-view-core";
 import { resolveSnapPaletteHex } from "../lib/resolve-palette-hex";
-import type { SnapPage, SnapActionHandlers } from "../index";
+import type { SnapActionHandlers, SnapPage, SnapRenderState } from "../index";
 
 const SNAP_MAX_HEIGHT = 500;
 const SNAP_WARNING_HEIGHT = 700;
@@ -48,6 +48,8 @@ export function SnapViewV2({
   onValidationError,
   validationErrorFallback,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -57,6 +59,8 @@ export function SnapViewV2({
   validationErrorFallback?: ReactNode;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   const validation = useMemo(() => validateSnapResponse(snap), [snap]);
   const valid = validation.valid;
@@ -85,6 +89,8 @@ export function SnapViewV2({
       loading={loading}
       appearance={appearance}
       loadingOverlay={loadingOverlay}
+      initialRenderState={initialRenderState}
+      onRenderStateChange={onRenderStateChange}
     />
   );
 }
@@ -103,6 +109,8 @@ export function SnapCardV2({
   actionError,
   plain = false,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -116,6 +124,10 @@ export function SnapCardV2({
   plain?: boolean;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  /** JSON-render local state used to seed this presenter mount. */
+  initialRenderState?: SnapRenderState;
+  /** Called with the full JSON-render local state after state changes. */
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   const isDark = appearance === "dark";
   const bg = isDark ? "rgba(0,0,0,0.85)" : "rgba(255,255,255,0.9)";
@@ -208,6 +220,8 @@ export function SnapCardV2({
               onValidationError={onValidationError}
               validationErrorFallback={validationErrorFallback}
               loadingOverlay={null}
+              initialRenderState={initialRenderState}
+              onRenderStateChange={onRenderStateChange}
             />
           </div>
         </div>

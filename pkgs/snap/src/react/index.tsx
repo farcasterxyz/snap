@@ -4,6 +4,7 @@ import type { Spec } from "@json-render/core";
 import type { ReactNode } from "react";
 import type { ValidationResult } from "../validator.js";
 import { SPEC_VERSION_2 } from "../constants";
+import type { SnapRenderState } from "../render-state";
 import { SnapCardV1 } from "./v1/snap-view";
 import { SnapCardV2 } from "./v2/snap-view";
 
@@ -46,6 +47,8 @@ export type SnapActionHandlers = {
   swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
 };
 
+export type { SnapRenderState };
+
 // ─── SnapCard ────────────────────────────────────────
 
 export function SnapCard({
@@ -60,6 +63,8 @@ export function SnapCard({
   actionError,
   plain = false,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -76,6 +81,10 @@ export function SnapCard({
   plain?: boolean;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  /** JSON-render local state used to seed this presenter mount. */
+  initialRenderState?: SnapRenderState;
+  /** Called with the full JSON-render local state after state changes. */
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   if (snap.version === SPEC_VERSION_2) {
     return (
@@ -91,6 +100,8 @@ export function SnapCard({
         actionError={actionError}
         plain={plain}
         loadingOverlay={loadingOverlay}
+        initialRenderState={initialRenderState}
+        onRenderStateChange={onRenderStateChange}
       />
     );
   }
@@ -105,6 +116,8 @@ export function SnapCard({
       actionError={actionError}
       plain={plain}
       loadingOverlay={loadingOverlay}
+      initialRenderState={initialRenderState}
+      onRenderStateChange={onRenderStateChange}
     />
   );
 }

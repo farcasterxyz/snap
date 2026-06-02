@@ -3,7 +3,7 @@
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { SnapViewCore, SnapLoadingOverlay } from "../snap-view-core";
 import { resolveSnapPaletteHex } from "../lib/resolve-palette-hex";
-import type { SnapPage, SnapActionHandlers } from "../index";
+import type { SnapActionHandlers, SnapPage, SnapRenderState } from "../index";
 
 const SNAP_MAX_HEIGHT = 500;
 
@@ -13,6 +13,8 @@ export function SnapViewV1({
   loading = false,
   appearance = "dark",
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -20,6 +22,8 @@ export function SnapViewV1({
   appearance?: "light" | "dark";
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  initialRenderState?: SnapRenderState;
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   return (
     <SnapViewCore
@@ -28,6 +32,8 @@ export function SnapViewV1({
       loading={loading}
       appearance={appearance}
       loadingOverlay={loadingOverlay}
+      initialRenderState={initialRenderState}
+      onRenderStateChange={onRenderStateChange}
     />
   );
 }
@@ -41,6 +47,8 @@ export function SnapCardV1({
   actionError,
   plain = false,
   loadingOverlay,
+  initialRenderState,
+  onRenderStateChange,
 }: {
   snap: SnapPage;
   handlers: SnapActionHandlers;
@@ -51,6 +59,10 @@ export function SnapCardV1({
   plain?: boolean;
   /** Custom content rendered while `loading` is true. Pass `null` to render nothing. */
   loadingOverlay?: ReactNode;
+  /** JSON-render local state used to seed this presenter mount. */
+  initialRenderState?: SnapRenderState;
+  /** Called with the full JSON-render local state after state changes. */
+  onRenderStateChange?: (state: SnapRenderState) => void;
 }) {
   const isDark = appearance === "dark";
   const borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
@@ -135,6 +147,8 @@ export function SnapCardV1({
               loading={loading}
               appearance={appearance}
               loadingOverlay={null}
+              initialRenderState={initialRenderState}
+              onRenderStateChange={onRenderStateChange}
             />
           </div>
         </div>

@@ -1,4 +1,7 @@
 import type { Spec } from "@json-render/core";
+import type { SnapRenderState } from "../render-state";
+
+export type { SnapRenderState };
 
 export type JsonValue =
   | string
