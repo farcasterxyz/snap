@@ -30,6 +30,8 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
     expect([...snapJsonRenderCatalog.actionNames].sort()).toEqual(
       [
         "compose_cast",
+        "send_calls",
+        "send_transaction",
         "send_token",
         "open_url",
         "open_snap",

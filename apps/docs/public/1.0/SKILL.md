@@ -88,9 +88,9 @@ Design guidance:
 - `item` is not interactive. Badges, buttons, and icons are all fine in the actions
   slot, but avoid navigation-style icons (`chevron-right`, `arrow-right`,
   `external-link`) — they imply the row itself navigates, and it doesn't.
-- 9 action types: `submit` (server round-trip), `open_url` (browser), `open_mini_app`
+- 11 action types: `submit` (server round-trip), `open_url` (browser), `open_mini_app`
   (in-app), and client actions: `view_cast`, `view_profile`, `compose_cast`,
-  `view_token`, `send_token`, `swap_token`.
+  `view_token`, `send_token`, `swap_token`, `send_transaction`, `send_calls`.
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `select: "single"` or `"multiple"` to let users tap cells.
