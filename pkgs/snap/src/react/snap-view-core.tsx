@@ -26,6 +26,16 @@ import {
 } from "react";
 import type { JsonValue, SnapActionHandlers, SnapPage } from "./index";
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function optionalString(value: unknown): string | undefined {
+  return value ? String(value) : undefined;
+}
+
 function withDefaultElementProps(spec: Spec): Spec {
   if (!spec || typeof spec !== "object" || !("elements" in spec)) return spec;
   const elements = spec.elements as unknown as Record<
@@ -491,6 +501,39 @@ export function SnapViewCore({
           handlers.swap_token({
             sellToken: p.sellToken ? String(p.sellToken) : undefined,
             buyToken: p.buyToken ? String(p.buyToken) : undefined,
+          });
+          break;
+        case "send_transaction":
+          handlers.send_transaction?.({
+            chainId: String(p.chainId ?? ""),
+            to: String(p.to ?? ""),
+            data: optionalString(p.data),
+            value: optionalString(p.value),
+            gas: optionalString(p.gas),
+            gasPrice: optionalString(p.gasPrice),
+            maxFeePerGas: optionalString(p.maxFeePerGas),
+            maxPriorityFeePerGas: optionalString(p.maxPriorityFeePerGas),
+          });
+          break;
+        case "send_calls":
+          handlers.send_calls?.({
+            version: p.version === "1.0" ? "1.0" : undefined,
+            chainId: String(p.chainId ?? ""),
+            atomicRequired:
+              typeof p.atomicRequired === "boolean"
+                ? p.atomicRequired
+                : undefined,
+            id: optionalString(p.id),
+            calls: Array.isArray(p.calls)
+              ? p.calls.map((call) => {
+                  const c = asRecord(call);
+                  return {
+                    to: optionalString(c.to),
+                    data: optionalString(c.data),
+                    value: optionalString(c.value),
+                  };
+                })
+              : [],
           });
           break;
         default:

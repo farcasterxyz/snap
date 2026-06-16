@@ -18,6 +18,29 @@ export type SnapPage = {
   ui: Spec;
 };
 
+export type SnapSendTransactionParams = {
+  chainId: string;
+  to: string;
+  data?: string;
+  value?: string;
+  gas?: string;
+  gasPrice?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+};
+
+export type SnapSendCallsParams = {
+  version?: "1.0";
+  chainId: string;
+  atomicRequired?: boolean;
+  id?: string;
+  calls: Array<{
+    to?: string;
+    data?: string;
+    value?: string;
+  }>;
+};
+
 export type SnapActionHandlers = {
   submit: (target: string, inputs: Record<string, JsonValue>) => void;
   open_url: (target: string) => void;
@@ -38,4 +61,6 @@ export type SnapActionHandlers = {
     recipientAddress?: string;
   }) => void;
   swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
+  send_transaction?: (params: SnapSendTransactionParams) => void;
+  send_calls?: (params: SnapSendCallsParams) => void;
 };
