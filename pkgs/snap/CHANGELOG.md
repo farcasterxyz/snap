@@ -1,5 +1,15 @@
 # @farcaster/snap
 
+## 2.7.1
+
+### Patch Changes
+
+- [#208](https://github.com/farcasterxyz/snap/pull/208) [`e546b56`](https://github.com/farcasterxyz/snap/commit/e546b56075d1b49ac88658c45e24abf68b2ea260) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add Snap client actions for EVM transaction requests.
+
+  Snaps can now bind `send_transaction` for single `eth_sendTransaction` requests
+  and `send_calls` for EIP-5792-style `wallet_sendCalls` batches. Both handlers
+  are optional for hosts.
+
 ## 2.7.0
 
 ### Minor Changes
