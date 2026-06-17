@@ -212,6 +212,9 @@ export function SnapViewCoreInner({
       case "view_profile":
         h.view_profile({ fid: Number(p.fid ?? 0) });
         break;
+      case "view_channel":
+        h.view_channel({ channelKey: String(p.channelKey ?? "") });
+        break;
       case "compose_cast":
         h.compose_cast({
           text: p.text ? String(p.text) : undefined,

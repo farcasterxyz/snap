@@ -475,6 +475,9 @@ export function SnapViewCore({
         case "view_profile":
           handlers.view_profile({ fid: Number(p.fid ?? 0) });
           break;
+        case "view_channel":
+          handlers.view_channel({ channelKey: String(p.channelKey ?? "") });
+          break;
         case "compose_cast":
           handlers.compose_cast({
             text: p.text ? String(p.text) : undefined,

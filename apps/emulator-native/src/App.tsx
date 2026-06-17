@@ -528,6 +528,12 @@ function AppContent() {
                           `view_profile\nfid: ${fid || "(none)"}`,
                         );
                       },
+                      view_channel: ({ channelKey }) => {
+                        Alert.alert(
+                          "Client Action",
+                          `view_channel\nchannelKey: ${channelKey || "(none)"}`,
+                        );
+                      },
                       compose_cast: ({ text }) => {
                         Alert.alert(
                           "Client Action",

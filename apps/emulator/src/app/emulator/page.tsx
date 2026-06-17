@@ -505,6 +505,11 @@ export default function EmulatorPage() {
                       `view_profile\n\n${JSON.stringify(params, null, 2)}`,
                     );
                   },
+                  view_channel: (params) => {
+                    window.alert(
+                      `view_channel\n\n${JSON.stringify(params, null, 2)}`,
+                    );
+                  },
                   compose_cast: (params) => {
                     window.alert(
                       `compose_cast\n\n${JSON.stringify(params, null, 2)}`,

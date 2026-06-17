@@ -24,6 +24,7 @@ action when tapped.
 | [open_mini_app](#open_mini_app) | Launch mini app               |
 | [view_cast](#view_cast)         | Navigate to a cast            |
 | [view_profile](#view_profile)   | Navigate to a profile         |
+| [view_channel](#view_channel)   | Navigate to a channel         |
 | [compose_cast](#compose_cast)   | Open cast composer            |
 | [view_token](#view_token)       | View token in wallet          |
 | [send_token](#send_token)       | Open send token flow          |
@@ -171,6 +172,29 @@ Navigate to a Farcaster user's profile.
     "press": {
       "action": "view_profile",
       "params": { "fid": 3 }
+    }
+  }
+}
+```
+
+---
+
+## view_channel
+
+Navigate to a Farcaster channel.
+
+| Param        | Type   | Required | Description                           |
+| ------------ | ------ | -------- | ------------------------------------- |
+| `channelKey` | string | Yes      | Channel key, without a leading slash |
+
+```json
+{
+  "type": "button",
+  "props": { "label": "View Channel" },
+  "on": {
+    "press": {
+      "action": "view_channel",
+      "params": { "channelKey": "fc-devs" }
     }
   }
 }

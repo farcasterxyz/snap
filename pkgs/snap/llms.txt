@@ -172,7 +172,7 @@ Field values are sent in POST `inputs[name]` when a `submit` action fires.
 - `label` (string, optional, max 60)
 - POST value: string (single) or string[] (multiple)
 
-## Actions (10 types)
+## Actions (11 types)
 
 Bound to buttons via `on.press`:
 
@@ -184,6 +184,7 @@ Bound to buttons via `on.press`:
 | `open_mini_app` | `target` (URL) | Open as Farcaster mini app |
 | `view_cast` | `hash` (string) | Navigate to a cast |
 | `view_profile` | `fid` (number) | Navigate to a profile |
+| `view_channel` | `channelKey` (string) | Navigate to a channel |
 | `compose_cast` | `text?`, `channelKey?`, `embeds?` | Open cast composer. Put URLs in `embeds`, not `text` |
 | `view_token` | `token` (CAIP-19) | View token in wallet |
 | `send_token` | `token`, `amount?`, `recipientFid?`, `recipientAddress?` | Send token flow |

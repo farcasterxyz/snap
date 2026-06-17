@@ -92,6 +92,7 @@ action type maps to a handler function that the client must implement.
 | `open_mini_app` | `(target: string)`                                       | Open a URL as a Farcaster mini app (in-app webview).                                                                                                 |
 | `view_cast`     | `({ hash: string })`                                     | Navigate to a cast by its hash.                                                                                                                      |
 | `view_profile`  | `({ fid: number })`                                      | Navigate to a user profile by Farcaster ID.                                                                                                          |
+| `view_channel`  | `({ channelKey: string })`                               | Navigate to a Farcaster channel by channel key.                                                                                                      |
 | `compose_cast`  | `({ text?, channelKey?, embeds? })`                      | Open the cast composer with optional pre-filled text, channel, and embeds.                                                                           |
 | `view_token`    | `({ token: string })`                                    | View a token in the wallet. Token is a [CAIP-19](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-19.md) identifier.                      |
 | `send_token`    | `({ token, amount?, recipientFid?, recipientAddress? })` | Open the send flow for a token (CAIP-19). Optional pre-filled amount and recipient.                                                                  |
@@ -197,6 +198,7 @@ function SnapRenderer({
     open_mini_app: (target) => openMiniApp(target),
     view_cast: ({ hash }) => navigateToCast(hash),
     view_profile: ({ fid }) => navigateToProfile(fid),
+    view_channel: ({ channelKey }) => navigateToChannel(channelKey),
     compose_cast: (params) => openComposer(params),
     view_token: ({ token }) => openTokenView(token),
     send_token: (params) => openSendFlow(params),
