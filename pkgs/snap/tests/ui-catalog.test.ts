@@ -42,6 +42,7 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
         "submit",
         "swap_token",
         "view_cast",
+        "view_channel",
         "view_profile",
         "view_token",
       ].sort(),

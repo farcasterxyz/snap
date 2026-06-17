@@ -55,6 +55,7 @@ export type SnapActionHandlers = {
   open_mini_app: (target: string) => void;
   view_cast: (params: { hash: string }) => void;
   view_profile: (params: { fid: number }) => void;
+  view_channel: (params: { channelKey: string }) => void;
   compose_cast: (params: {
     text?: string;
     channelKey?: string;

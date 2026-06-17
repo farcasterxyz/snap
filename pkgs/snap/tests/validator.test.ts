@@ -616,6 +616,29 @@ describe("URL validation", () => {
       },
     });
   });
+
+  it("validates view_channel action params", () => {
+    expectValid({
+      version: "2.0",
+      ui: {
+        root: "page",
+        elements: {
+          page: { type: "stack", children: ["btn"] },
+          btn: {
+            type: "button",
+            props: { label: "View" },
+            on: {
+              press: {
+                action: "view_channel",
+                params: { channelKey: "fc-devs" },
+              },
+            },
+          },
+        },
+      },
+    });
+
+  });
 });
 
 // ─── Structural constraints (v2 only) ────────────────

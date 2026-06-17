@@ -12,6 +12,7 @@ const USDC_BASE = "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
 const CBETH_BASE = "eip155:8453/erc20:0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEC22";
 const CAST_HASH = "0x6cbdadf3f5cac3adfbce034145e4f035a37b7600";
 const PROFILE_FID = 194;
+const CHANNEL_KEY = "fc-devs";
 const MINI_APP_URL = "https://ai.neynar.com";
 const SEND_RECIPIENT_FID = 191;
 
@@ -154,7 +155,7 @@ function castPage(base: string): SnapHandlerResult {
         title: { type: "text", props: { content: "Cast Actions", size: "md", weight: "bold" } },
         desc: {
           type: "text",
-          props: { content: "View a specific cast, or compose a new one with pre-filled text.", size: "sm" },
+          props: { content: "View a cast or channel, or compose a new cast with pre-filled text.", size: "sm" },
         },
         hash_badge: {
           type: "badge",
@@ -164,12 +165,17 @@ function castPage(base: string): SnapHandlerResult {
         btn_row: {
           type: "stack",
           props: { direction: "horizontal", gap: "sm" },
-          children: ["view_cast_btn", "compose_btn"],
+          children: ["view_cast_btn", "view_channel_btn", "compose_btn"],
         },
         view_cast_btn: {
           type: "button",
           props: { label: "View Cast", variant: "primary", icon: "message-circle" },
           on: { press: { action: "view_cast", params: { hash: CAST_HASH } } },
+        },
+        view_channel_btn: {
+          type: "button",
+          props: { label: "View Channel", icon: "users" },
+          on: { press: { action: "view_channel", params: { channelKey: CHANNEL_KEY } } },
         },
         compose_btn: {
           type: "button",

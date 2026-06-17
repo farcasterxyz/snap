@@ -144,6 +144,10 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       description: "Navigate to a user profile by FID.",
       params: z.object({ fid: z.number() }),
     },
+    view_channel: {
+      description: "Navigate to a Farcaster channel by channel key.",
+      params: z.object({ channelKey: z.string() }),
+    },
     compose_cast: {
       description: "Open the cast composer with optional pre-filled content.",
       params: z.object({

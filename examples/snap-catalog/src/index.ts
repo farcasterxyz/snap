@@ -1546,7 +1546,7 @@ function actionsSocialPage(base: string): SnapHandlerResult {
         "social-actions": {
           type: "item_group",
           props: { separator: true, gap: "sm" },
-          children: ["a-profile", "a-cast", "a-compose"],
+          children: ["a-profile", "a-channel", "a-cast", "a-compose"],
         },
         "a-profile": {
           type: "item",
@@ -1557,6 +1557,16 @@ function actionsSocialPage(base: string): SnapHandlerResult {
           type: "button",
           props: { label: "View", icon: "user" },
           on: { press: { action: "view_profile", params: { fid: 3 } } },
+        },
+        "a-channel": {
+          type: "item",
+          props: { title: "View Channel", description: "Open /fc-devs" },
+          children: ["a-channel-btn"],
+        },
+        "a-channel-btn": {
+          type: "button",
+          props: { label: "View", icon: "users" },
+          on: { press: { action: "view_channel", params: { channelKey: "fc-devs" } } },
         },
         "a-cast": {
           type: "item",
