@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 2.8.0
+
+### Minor Changes
+
+- [#211](https://github.com/farcasterxyz/snap/pull/211) [`fe34ef2`](https://github.com/farcasterxyz/snap/commit/fe34ef24512189ce48c834e5bc6341c34fb41cc6) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add `view_channel` client action for navigating to a Farcaster channel by `channelKey`.
+
 ## 2.7.1
 
 ### Patch Changes
