@@ -1,5 +1,12 @@
 # @farcaster/snap-emulator-native
 
+## 1.0.47
+
+### Patch Changes
+
+- Updated dependencies [[`4c1637e`](https://github.com/farcasterxyz/snap/commit/4c1637e5d19b4a142c289ec59807528545f3f108)]:
+  - @farcaster/snap@2.9.0
+
 ## 1.0.46
 
 ### Patch Changes
