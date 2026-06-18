@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 3.0.0
+
+### Major Changes
+
+- [#214](https://github.com/farcasterxyz/snap/pull/214) [`4c1637e`](https://github.com/farcasterxyz/snap/commit/4c1637e5d19b4a142c289ec59807528545f3f108) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Remove batch EVM transaction actions from the Snap action surface. Snaps should use `send_transaction` for single EVM transaction requests.
+
 ## 2.8.0
 
 ### Minor Changes
