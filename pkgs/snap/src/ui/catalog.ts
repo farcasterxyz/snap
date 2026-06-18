@@ -190,23 +190,6 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
         maxPriorityFeePerGas: z.string().optional(),
       }),
     },
-    send_calls: {
-      description:
-        "Request one or more EVM calls through the host wallet using wallet_sendCalls.",
-      params: z.object({
-        version: z.literal("1.0").optional(),
-        chainId: z.string(),
-        atomicRequired: z.boolean().optional(),
-        id: z.string().optional(),
-        calls: z.array(
-          z.object({
-            to: z.string().optional(),
-            data: z.string().optional(),
-            value: z.string().optional(),
-          }),
-        ),
-      }),
-    },
     paginator_next: {
       description:
         "Move the snap's paginator to the next page locally. Does not POST and is ignored when no paginator is rendered.",
