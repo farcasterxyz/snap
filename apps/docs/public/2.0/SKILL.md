@@ -114,10 +114,10 @@ Design guidance:
   in the actions slot, but avoid navigation-style icons (`chevron-right`, `arrow-right`,
   `external-link`) — they imply the row itself navigates, and it doesn't. Image media
   supports optional `round: true` for avatar-style circles.
-- 13 action types: `submit` (server round-trip), `open_url` (external browser),
+- 12 action types: `submit` (server round-trip), `open_url` (external browser),
   `open_snap` (open snap inline), `open_mini_app` (in-app), and client actions:
   `view_cast`, `view_profile`, `view_channel`, `compose_cast`, `view_token`,
-  `send_token`, `swap_token`, `send_transaction`, `send_calls`.
+  `send_token`, `swap_token`, `send_transaction`.
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `cellAspectRatio: "square"` when board cells must stay square across variable snap

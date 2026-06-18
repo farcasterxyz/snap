@@ -518,27 +518,6 @@ export function SnapViewCore({
             maxPriorityFeePerGas: optionalString(p.maxPriorityFeePerGas),
           });
           break;
-        case "send_calls":
-          handlers.send_calls?.({
-            version: p.version === "1.0" ? "1.0" : undefined,
-            chainId: String(p.chainId ?? ""),
-            atomicRequired:
-              typeof p.atomicRequired === "boolean"
-                ? p.atomicRequired
-                : undefined,
-            id: optionalString(p.id),
-            calls: Array.isArray(p.calls)
-              ? p.calls.map((call) => {
-                  const c = asRecord(call);
-                  return {
-                    to: optionalString(c.to),
-                    data: optionalString(c.data),
-                    value: optionalString(c.value),
-                  };
-                })
-              : [],
-          });
-          break;
         default:
           break;
       }
