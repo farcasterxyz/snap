@@ -1,12 +1,15 @@
 import { z } from "zod";
 import {
+  ACTION_TYPE_TRANSACTION_RESULT,
   ACTION_TYPE_GET,
   ACTION_TYPE_POST,
   getPayloadSchema,
   payloadSchema,
+  transactionResultPayloadSchema,
   type SnapAction,
   type SnapPayload,
   type SnapGetPayload,
+  type SnapTransactionResultPayload,
 } from "../schemas";
 import { decodePayload, parseJfs, verifyJFS } from "./verify";
 import { SNAP_PAYLOAD_HEADER } from "../constants";
@@ -121,9 +124,14 @@ async function parsePostRequest(
   request: Request,
   options: ParseRequestOptions,
 ): Promise<ParseRequestResult> {
-  const result = await validateJfsPayload({
+  const result = await validateJfsPayload<
+    SnapPayload | SnapTransactionResultPayload
+  >({
     jfsText: await request.text(),
-    schema: payloadSchema,
+    schema: (decodedPayload) =>
+      isTransactionResultPayload(decodedPayload)
+        ? transactionResultPayloadSchema
+        : payloadSchema,
     request,
     options,
   });
@@ -142,10 +150,28 @@ async function parsePostRequest(
     };
   }
 
+  if (isTransactionResultPayload(payload)) {
+    return {
+      success: true,
+      action: payload,
+    };
+  }
+
   return {
     success: true,
     action: { type: ACTION_TYPE_POST, ...payload },
   };
+}
+
+function isTransactionResultPayload(
+  payload: unknown,
+): payload is { type: typeof ACTION_TYPE_TRANSACTION_RESULT } {
+  return (
+    payload !== null &&
+    typeof payload === "object" &&
+    "type" in payload &&
+    payload.type === ACTION_TYPE_TRANSACTION_RESULT
+  );
 }
 
 /**
@@ -156,7 +182,9 @@ async function parsePostRequest(
  *
  * Both GET (payload header) and POST (request body) feed into this.
  */
-async function validateJfsPayload<T extends SnapPayload | SnapGetPayload>({
+async function validateJfsPayload<
+  T extends SnapPayload | SnapGetPayload | SnapTransactionResultPayload,
+>({
   jfsText,
   schema,
   request,
@@ -164,7 +192,7 @@ async function validateJfsPayload<T extends SnapPayload | SnapGetPayload>({
   invalidJsonMessage,
 }: {
   jfsText: string;
-  schema: z.ZodType<T>;
+  schema: z.ZodType | ((decodedPayload: unknown) => z.ZodType);
   request: Request;
   options: ParseRequestOptions;
   invalidJsonMessage?: string;
@@ -183,14 +211,17 @@ async function validateJfsPayload<T extends SnapPayload | SnapGetPayload>({
   }
   const jfs = parsed.jfs;
 
-  const payloadParsed = schema.safeParse(decodePayload(jfs.payload));
+  const decodedPayload = decodePayload(jfs.payload);
+  const selectedSchema =
+    typeof schema === "function" ? schema(decodedPayload) : schema;
+  const payloadParsed = selectedSchema.safeParse(decodedPayload);
   if (!payloadParsed.success) {
     return {
       ok: false,
       error: { type: "validation", issues: payloadParsed.error.issues },
     };
   }
-  const payload = payloadParsed.data;
+  const payload = payloadParsed.data as T;
 
   if (!options.skipJFSVerification) {
     const verified = await verifyJFS(jfs);

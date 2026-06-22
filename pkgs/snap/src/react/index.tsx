@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import type { ValidationResult } from "../validator.js";
 import { SPEC_VERSION_2 } from "../constants";
 import type { SnapRenderState } from "../render-state";
+import type { SnapTransactionResult } from "../schemas";
 import { SnapCardV1 } from "./v1/snap-view";
 import { SnapCardV2 } from "./v2/snap-view";
 
@@ -57,7 +58,9 @@ export type SnapActionHandlers = {
     recipientAddress?: string;
   }) => void;
   swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
-  send_transaction?: (params: SnapSendTransactionParams) => void;
+  send_transaction?: (
+    params: SnapSendTransactionParams,
+  ) => void | Promise<void | SnapTransactionResult>;
 };
 
 export type { SnapRenderState };

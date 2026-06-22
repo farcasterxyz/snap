@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { registerSnapHandler } from "@farcaster/snap-hono";
-import type { SnapHandlerResult } from "@farcaster/snap";
+import type { SnapAction, SnapHandlerResult } from "@farcaster/snap";
 
 const MENU_NAME = "action_type" as const;
 const OPT_CAST = "Cast";
 const OPT_PROFILE = "Profile";
 const OPT_TOKEN = "Token";
 const OPT_SEND = "Send/Swap";
+const OPT_TRANSACTION = "Transaction";
 
 const USDC_BASE = "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const CBETH_BASE = "eip155:8453/erc20:0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEC22";
@@ -85,6 +86,7 @@ registerSnapHandler(app, async (ctx) => {
     if (selected === OPT_PROFILE) return profilePage(base);
     if (selected === OPT_TOKEN) return tokenPage(base);
     if (selected === OPT_SEND) return sendSwapPage(base);
+    if (selected === OPT_TRANSACTION) return transactionPage(base);
   }
   return homePage(base);
 }, { path: "/" });
@@ -93,6 +95,7 @@ registerSnapHandler(app, async (ctx) => castPage(snapBaseUrl(ctx.request)), { pa
 registerSnapHandler(app, async (ctx) => profilePage(snapBaseUrl(ctx.request)), { path: "/profile" });
 registerSnapHandler(app, async (ctx) => tokenPage(snapBaseUrl(ctx.request)), { path: "/token" });
 registerSnapHandler(app, async (ctx) => sendSwapPage(snapBaseUrl(ctx.request)), { path: "/send-swap" });
+registerSnapHandler(app, async (ctx) => transactionPage(snapBaseUrl(ctx.request), ctx.action), { path: "/transaction" });
 
 export default app;
 
@@ -118,7 +121,7 @@ function homePage(base: string): SnapHandlerResult {
           props: {
             name: MENU_NAME,
             label: "Category",
-            options: [OPT_CAST, OPT_PROFILE, OPT_TOKEN, OPT_SEND],
+            options: [OPT_CAST, OPT_PROFILE, OPT_TOKEN, OPT_SEND, OPT_TRANSACTION],
           },
         },
         sep: { type: "separator", props: {} },
@@ -137,6 +140,79 @@ function homePage(base: string): SnapHandlerResult {
           props: { label: "Open Mini App", icon: "arrow-right" },
           on: { press: { action: "open_mini_app", params: { target: MINI_APP_URL } } },
         },
+      },
+    },
+  };
+}
+
+function transactionPage(
+  base: string,
+  action?: SnapAction,
+): SnapHandlerResult {
+  id = 0;
+  const { id: navId, elements: navEls } = navRow(base);
+  const isTransactionResult = action?.type === "transaction_result";
+  const result = isTransactionResult ? action.transaction.result : undefined;
+  const statusText = result
+    ? result.success
+      ? `Transaction callback received: ${result.transactionHash}`
+      : `Transaction failed: ${result.reason}${result.message ? ` (${result.message})` : ""}`
+    : "Click the button in the local emulator to see pending state and a fake transaction result callback.";
+
+  return {
+    version: "2.0",
+    theme: { accent: "teal" },
+    ui: {
+      root: "page",
+      state: {
+        actions: {
+          mint: {
+            pending: false,
+          },
+        },
+      },
+      elements: {
+        page: {
+          type: "stack",
+          props: {},
+          children: ["title", "desc", "status", "sep", "mint_btn", navId],
+        },
+        title: { type: "text", props: { content: "Transaction Activity", size: "md", weight: "bold" } },
+        desc: {
+          type: "text",
+          props: {
+            content:
+              "This button binds disabled to /actions/mint/pending and uses activityKey: mint.",
+            size: "sm",
+          },
+        },
+        status: {
+          type: "text",
+          props: { content: statusText, size: "sm" },
+        },
+        sep: { type: "separator", props: {} },
+        mint_btn: {
+          type: "button",
+          props: {
+            label: "Mint Test",
+            variant: "primary",
+            icon: "wallet",
+            disabled: { $bindState: "/actions/mint/pending" },
+          },
+          on: {
+            press: {
+              action: "send_transaction",
+              params: {
+                activityKey: "mint",
+                chainId: "8453",
+                to: "0x0000000000000000000000000000000000000001",
+                data: "0x",
+                value: "0x0",
+              },
+            },
+          },
+        },
+        ...navEls,
       },
     },
   };

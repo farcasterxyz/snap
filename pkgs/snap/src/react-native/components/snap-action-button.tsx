@@ -34,6 +34,7 @@ export function SnapActionButton({
   const label = String(props.label ?? "Action");
   const variant = String(props.variant ?? "secondary");
   const isPrimary = variant === "primary";
+  const disabled = props.disabled === true;
   const iconName = props.icon ? String(props.icon) : undefined;
 
   const textColor = isPrimary ? "#fff" : colors.text;
@@ -53,10 +54,13 @@ export function SnapActionButton({
           isPrimary ? styles.btnDefault : styles.btnOther,
           isPrimary
             ? { backgroundColor: pressed ? accentHex + "DD" : accentHex }
-            : { backgroundColor: pressed ? colors.mutedHover : colors.muted },
+              : { backgroundColor: pressed ? colors.mutedHover : colors.muted },
           pressed && styles.pressed,
+          disabled && styles.disabled,
         ]}
+        disabled={disabled}
         onPress={() => {
+          if (disabled) return;
           if (runPaginatorAction(stateStore, paginatorAction)) return;
           void (async () => {
             try {
@@ -114,4 +118,5 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   pressed: { opacity: 0.88 },
+  disabled: { opacity: 0.62 },
 });

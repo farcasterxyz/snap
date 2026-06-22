@@ -193,6 +193,7 @@ export function SnapCardV2({
       }}
     >
       <div
+        data-snap-card-surface
         style={{
           position: "relative",
           maxHeight: containerMaxHeight,

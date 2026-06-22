@@ -7,6 +7,7 @@ export type SnapRenderStateChanges =
   | undefined;
 
 const SNAP_RENDER_STATE_META_KEY = "__snapRender";
+const ACTION_ACTIVITY_KEY_MAX_LENGTH = 64;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -119,6 +120,51 @@ export function applyStatePaths(
     if (parts.length === 0) continue;
     setStateValue(model, parts, value);
   }
+}
+
+function sanitizeActionActivityKey(value: string): string {
+  const sanitized = value
+    .trim()
+    .slice(0, ACTION_ACTIVITY_KEY_MAX_LENGTH)
+    .replace(/[^A-Za-z0-9_.-]/g, "_");
+  return sanitized || "action";
+}
+
+function getActionActivityKey(
+  actionName: unknown,
+  params: Record<string, unknown>,
+): string {
+  const explicitKey = params.activityKey;
+  return sanitizeActionActivityKey(
+    typeof explicitKey === "string" && explicitKey.trim()
+      ? explicitKey
+      : String(actionName || "action"),
+  );
+}
+
+export function buildActionActivityStateChanges({
+  actionName,
+  params,
+  pending,
+}: {
+  actionName: unknown;
+  params: Record<string, unknown>;
+  pending: boolean;
+}): { path: string; value: unknown }[] {
+  const key = getActionActivityKey(actionName, params);
+  return [
+    { path: `/actions/${key}/name`, value: String(actionName || "action") },
+    { path: `/actions/${key}/pending`, value: pending },
+  ];
+}
+
+export function hasPendingSnapAction(model: SnapRenderState): boolean {
+  const actions = model.actions;
+  if (!isRecord(actions)) return false;
+
+  return Object.values(actions).some(
+    (action) => isRecord(action) && action.pending === true,
+  );
 }
 
 export function getUnpresentedSnapEffects(

@@ -120,6 +120,7 @@ export function SnapCardV1({
       }}
     >
       <div
+        data-snap-card-surface
         style={{
           position: "relative",
           overflow: "hidden",

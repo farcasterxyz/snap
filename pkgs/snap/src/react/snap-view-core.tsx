@@ -1,6 +1,7 @@
 "use client";
 
 import type { Spec } from "@json-render/core";
+import { createStateStore } from "@json-render/react";
 import { snapJsonRenderCatalog } from "../ui/index.js";
 import { SnapCatalogView } from "./catalog-renderer";
 import { SnapPreviewAccentProvider } from "./accent-context";
@@ -8,10 +9,11 @@ import { SnapVersionProvider } from "./snap-version-context";
 import { resolveSnapPaletteHex } from "./lib/resolve-palette-hex";
 import { snapPreviewPrimaryCssProperties } from "./lib/preview-primary-css";
 import {
-  applyStatePaths,
+  buildActionActivityStateChanges,
   buildInitialRenderState,
   cloneSnapRenderState,
   getUnpresentedSnapEffects,
+  hasPendingSnapAction,
   markSnapEffectsPresented,
   type SnapRenderState,
 } from "../render-state";
@@ -34,6 +36,12 @@ function asRecord(value: unknown): Record<string, unknown> {
 
 function optionalString(value: unknown): string | undefined {
   return value ? String(value) : undefined;
+}
+
+function recordValue(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
 
 function withDefaultElementProps(spec: Spec): Spec {
@@ -266,6 +274,8 @@ export function SnapLoadingOverlay({
 
   return (
     <div
+      data-snap-loading-overlay
+      data-snap-loading-active={active ? "true" : "false"}
       style={{
         position: "absolute",
         inset: 0,
@@ -299,6 +309,20 @@ export function SnapLoadingOverlay({
         }}
       />
       <style>{`
+        [data-snap-view-root]:has([data-snap-action-pending-active="true"])
+          [data-snap-loading-overlay] {
+          opacity: 1 !important;
+          pointer-events: auto !important;
+          backdrop-filter: blur(10px) saturate(1.05) !important;
+          -webkit-backdrop-filter: blur(10px) saturate(1.05) !important;
+        }
+        [data-snap-card-surface]:has([data-snap-action-pending-active="true"])
+          > [data-snap-loading-overlay] {
+          opacity: 1 !important;
+          pointer-events: auto !important;
+          backdrop-filter: blur(10px) saturate(1.05) !important;
+          -webkit-backdrop-filter: blur(10px) saturate(1.05) !important;
+        }
         @keyframes snapViewSpin {
           to { transform: rotate(360deg); }
         }
@@ -311,6 +335,22 @@ export function SnapLoadingOverlay({
         }
       `}</style>
     </div>
+  );
+}
+
+function SnapPendingActionOverlay({
+  appearance,
+  accentHex,
+}: {
+  appearance: "light" | "dark";
+  accentHex: string;
+}) {
+  return (
+    <SnapLoadingOverlay
+      appearance={appearance}
+      accentHex={accentHex}
+      active={false}
+    />
   );
 }
 
@@ -360,11 +400,30 @@ export function SnapViewCore({
     [initialRenderState, spec.state, snap.theme?.accent],
   );
 
+  const stateStore = useMemo(() => createStateStore(initialState), [
+    initialState,
+  ]);
   const stateRef = useRef<Record<string, unknown>>(initialState);
+  const onRenderStateChangeRef = useRef(onRenderStateChange);
+  const pendingActionCountRef = useRef(0);
 
   useEffect(() => {
     stateRef.current = cloneSnapRenderState(initialState);
   }, [initialState]);
+
+  useEffect(() => {
+    onRenderStateChangeRef.current = onRenderStateChange;
+  }, [onRenderStateChange]);
+
+  useEffect(
+    () =>
+      stateStore.subscribe(() => {
+        const snapshot = cloneSnapRenderState(stateStore.getSnapshot());
+        stateRef.current = snapshot;
+        onRenderStateChangeRef.current?.(snapshot);
+      }),
+    [stateStore],
+  );
 
   useEffect(() => {
     const catalogResult = snapJsonRenderCatalog.validate(spec);
@@ -390,10 +449,6 @@ export function SnapViewCore({
     confetti: 0,
     fireworks: 0,
   });
-  const onRenderStateChangeRef = useRef(onRenderStateChange);
-  useEffect(() => {
-    onRenderStateChangeRef.current = onRenderStateChange;
-  }, [onRenderStateChange]);
   useEffect(() => {
     const effectsToPresent = getUnpresentedSnapEffects(
       stateRef.current,
@@ -415,7 +470,10 @@ export function SnapViewCore({
     }
 
     if (markSnapEffectsPresented(stateRef.current, effectsToPresent)) {
-      onRenderStateChangeRef.current?.(cloneSnapRenderState(stateRef.current));
+      const meta = recordValue(stateRef.current.__snapRender);
+      stateStore.update({
+        "/__snapRender/presentedEffects": meta?.presentedEffects ?? [],
+      });
     }
 
     setEffectRunKeys((current) => ({
@@ -430,7 +488,7 @@ export function SnapViewCore({
           ? current.fireworks
           : 0,
     }));
-  }, [initialState, showConfetti, showFireworks, snapEffects]);
+  }, [initialState, showConfetti, showFireworks, snapEffects, stateStore]);
 
   const accentName = snap.theme?.accent ?? "purple";
 
@@ -449,6 +507,40 @@ export function SnapViewCore({
     } as CSSProperties;
   }, [accentName, appearance]);
 
+  const applyActionActivityState = useCallback(
+    (name: unknown, params: Record<string, unknown>, pending: boolean) => {
+      stateStore.update(
+        Object.fromEntries(
+          buildActionActivityStateChanges({
+            actionName: name,
+            params,
+            pending,
+          }).map(({ path, value }) => [path, value]),
+        ),
+      );
+    },
+    [stateStore],
+  );
+
+  const setActionPending = useCallback(
+    (name: unknown, params: Record<string, unknown>) => {
+      pendingActionCountRef.current += 1;
+      applyActionActivityState(name, params, true);
+    },
+    [applyActionActivityState],
+  );
+
+  const setActionSettled = useCallback(
+    (name: unknown, params: Record<string, unknown>) => {
+      pendingActionCountRef.current = Math.max(
+        0,
+        pendingActionCountRef.current - 1,
+      );
+      applyActionActivityState(name, params, false);
+    },
+    [applyActionActivityState],
+  );
+
   const handleAction = useCallback(
     (name: unknown, params: unknown) => {
       const inputs = (stateRef.current.inputs ?? {}) as Record<
@@ -456,30 +548,35 @@ export function SnapViewCore({
         JsonValue
       >;
       const p = (params ?? {}) as Record<string, unknown>;
+      let result: unknown;
+      setActionPending(name, p);
+
       switch (name) {
         case "submit":
-          handlers.submit(String(p.target ?? ""), inputs);
+          result = handlers.submit(String(p.target ?? ""), inputs);
           break;
         case "open_url":
-          handlers.open_url(String(p.target ?? ""));
+          result = handlers.open_url(String(p.target ?? ""));
           break;
         case "open_snap":
-          handlers.open_snap(String(p.target ?? ""));
+          result = handlers.open_snap(String(p.target ?? ""));
           break;
         case "open_mini_app":
-          handlers.open_mini_app(String(p.target ?? ""));
+          result = handlers.open_mini_app(String(p.target ?? ""));
           break;
         case "view_cast":
-          handlers.view_cast({ hash: String(p.hash ?? "") });
+          result = handlers.view_cast({ hash: String(p.hash ?? "") });
           break;
         case "view_profile":
-          handlers.view_profile({ fid: Number(p.fid ?? 0) });
+          result = handlers.view_profile({ fid: Number(p.fid ?? 0) });
           break;
         case "view_channel":
-          handlers.view_channel({ channelKey: String(p.channelKey ?? "") });
+          result = handlers.view_channel({
+            channelKey: String(p.channelKey ?? ""),
+          });
           break;
         case "compose_cast":
-          handlers.compose_cast({
+          result = handlers.compose_cast({
             text: p.text ? String(p.text) : undefined,
             channelKey: p.channelKey ? String(p.channelKey) : undefined,
             embeds: Array.isArray(p.embeds)
@@ -488,10 +585,10 @@ export function SnapViewCore({
           });
           break;
         case "view_token":
-          handlers.view_token({ token: String(p.token ?? "") });
+          result = handlers.view_token({ token: String(p.token ?? "") });
           break;
         case "send_token":
-          handlers.send_token({
+          result = handlers.send_token({
             token: String(p.token ?? ""),
             amount: p.amount ? String(p.amount) : undefined,
             recipientFid: p.recipientFid ? Number(p.recipientFid) : undefined,
@@ -501,13 +598,13 @@ export function SnapViewCore({
           });
           break;
         case "swap_token":
-          handlers.swap_token({
+          result = handlers.swap_token({
             sellToken: p.sellToken ? String(p.sellToken) : undefined,
             buyToken: p.buyToken ? String(p.buyToken) : undefined,
           });
           break;
         case "send_transaction":
-          handlers.send_transaction?.({
+          result = handlers.send_transaction?.({
             chainId: String(p.chainId ?? ""),
             to: String(p.to ?? ""),
             data: optionalString(p.data),
@@ -521,12 +618,29 @@ export function SnapViewCore({
         default:
           break;
       }
+
+      if (result instanceof Promise) {
+        void result.finally(() => {
+          setActionSettled(name, p);
+        }).catch(() => {});
+      } else {
+        setActionSettled(name, p);
+      }
+      return result;
     },
-    [handlers],
+    [handlers, setActionPending, setActionSettled],
   );
 
   return (
-    <div style={{ position: "relative", width: "100%" }}>
+    <div
+      data-snap-view-root
+      style={{ position: "relative", width: "100%" }}
+      onClickCapture={(event) => {
+        if (!hasPendingSnapAction(stateRef.current)) return;
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+    >
       {showConfetti && effectRunKeys.confetti > 0 && (
         <ConfettiOverlay key={effectRunKeys.confetti} />
       )}
@@ -552,14 +666,17 @@ export function SnapViewCore({
             <SnapCatalogView
               key={pageKey}
               spec={spec}
-              state={initialState}
+              store={stateStore}
               loading={false}
-              onStateChange={(changes) => {
-                applyStatePaths(stateRef.current, changes);
-                onRenderStateChange?.(cloneSnapRenderState(stateRef.current));
-              }}
               onAction={handleAction}
-            />
+            >
+              {loadingOverlay === undefined ? (
+                <SnapPendingActionOverlay
+                  appearance={appearance}
+                  accentHex={accentHex}
+                />
+              ) : null}
+            </SnapCatalogView>
           </SnapVersionProvider>
         </SnapPreviewAccentProvider>
       </div>
