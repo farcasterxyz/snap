@@ -23,6 +23,10 @@ const snapClientParams = z.object({
   client_action: z.record(z.string(), z.unknown()),
 });
 
+const activityParams = {
+  activityKey: z.string().min(1).max(64).optional(),
+};
+
 /**
  * json-render catalog for snap elements.
  *
@@ -121,32 +125,32 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     submit: {
       description:
         "POST to snap server with signed body (fid, inputs, timestamp, signature); response is next snap page.",
-      params: z.object({ target: z.string() }),
+      params: z.object({ target: z.string(), ...activityParams }),
     },
     open_url: {
       description: "Open external URL in browser.",
-      params: z.object({ target: z.string() }),
+      params: z.object({ target: z.string(), ...activityParams }),
     },
     open_snap: {
       description:
         "Open a snap URL inline. The client renders the target as a snap rather than opening a browser.",
-      params: z.object({ target: z.string() }),
+      params: z.object({ target: z.string(), ...activityParams }),
     },
     open_mini_app: {
       description: "Open target URL as a Farcaster mini app.",
-      params: z.object({ target: z.string() }),
+      params: z.object({ target: z.string(), ...activityParams }),
     },
     view_cast: {
       description: "Navigate to a cast by hash.",
-      params: z.object({ hash: z.string() }),
+      params: z.object({ hash: z.string(), ...activityParams }),
     },
     view_profile: {
       description: "Navigate to a user profile by FID.",
-      params: z.object({ fid: z.number() }),
+      params: z.object({ fid: z.number(), ...activityParams }),
     },
     view_channel: {
       description: "Navigate to a Farcaster channel by channel key.",
-      params: z.object({ channelKey: z.string() }),
+      params: z.object({ channelKey: z.string(), ...activityParams }),
     },
     compose_cast: {
       description: "Open the cast composer with optional pre-filled content.",
@@ -154,11 +158,12 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
         text: z.string().optional(),
         channelKey: z.string().optional(),
         embeds: z.array(z.string()).optional(),
+        ...activityParams,
       }),
     },
     view_token: {
       description: "View a token in the wallet. Token is a CAIP-19 identifier.",
-      params: z.object({ token: z.string() }),
+      params: z.object({ token: z.string(), ...activityParams }),
     },
     send_token: {
       description: "Open send flow for a token. Token is CAIP-19.",
@@ -167,6 +172,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
         amount: z.string().optional(),
         recipientFid: z.number().optional(),
         recipientAddress: z.string().optional(),
+        ...activityParams,
       }),
     },
     swap_token: {
@@ -174,6 +180,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       params: z.object({
         sellToken: z.string().optional(),
         buyToken: z.string().optional(),
+        ...activityParams,
       }),
     },
     send_transaction: {
@@ -188,6 +195,7 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
         gasPrice: z.string().optional(),
         maxFeePerGas: z.string().optional(),
         maxPriorityFeePerGas: z.string().optional(),
+        ...activityParams,
       }),
     },
     paginator_next: {

@@ -8,6 +8,7 @@ export const buttonProps = z.object({
   label: z.string().min(1).max(BUTTON_MAX_LABEL_CHARS),
   variant: z.enum(BUTTON_VARIANTS).optional(),
   icon: z.enum(ICON_NAMES).optional(),
+  disabled: z.boolean().optional(),
 });
 
 export type ButtonProps = z.infer<typeof buttonProps>;

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useStateStore } from "@json-render/react";
+import { useMemo, useState } from "react";
+import { useStateStore, useStateValue } from "@json-render/react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@neynar/ui/button";
 import { cn } from "@neynar/ui/utils";
@@ -10,6 +10,7 @@ import {
   getPaginatorAction,
   runPaginatorAction,
 } from "../../ui/paginator-state";
+import { buildActionActivityStateChanges } from "../../render-state";
 import { useSnapStackDirection } from "../stack-direction-context";
 import { ICON_MAP } from "./icon";
 
@@ -22,6 +23,22 @@ function isExternalLinkAction(
     | undefined;
   if (!press) return false;
   return press.action === "open_url";
+}
+
+function getActionPendingPath(on: Record<string, unknown> | undefined) {
+  const press = on?.press as
+    | { action?: unknown; params?: Record<string, unknown> }
+    | undefined;
+  if (!press?.action) return "/__snap/action/pending";
+
+  return (
+    buildActionActivityStateChanges({
+      actionName: press.action,
+      params: press.params ?? {},
+      pending: true,
+    }).find((change) => change.path.endsWith("/pending"))?.path ??
+    "/__snap/action/pending"
+  );
 }
 
 export function SnapActionButton({
@@ -38,18 +55,25 @@ export function SnapActionButton({
   const label = String(props.label ?? "Action");
   const variant = String(props.variant ?? "secondary");
   const isPrimary = variant === "primary";
+  const disabled = props.disabled === true;
   const iconName = props.icon ? String(props.icon) : undefined;
   const colors = useSnapColors();
   const [hovered, setHovered] = useState(false);
   const stateStore = useStateStore();
   const paginatorAction = getPaginatorAction(element.on);
+  const actionPendingPath = useMemo(
+    () => getActionPendingPath(element.on),
+    [element.on],
+  );
+  const actionPending = useStateValue(actionPendingPath) === true;
 
   const Icon = iconName ? ICON_MAP[iconName] : undefined;
   const showExternalIcon = isExternalLinkAction(element.on);
   const inHorizontalStack = useSnapStackDirection() === "horizontal";
 
   const style = {
-    cursor: "pointer" as const,
+    cursor: disabled ? ("not-allowed" as const) : ("pointer" as const),
+    opacity: disabled ? 0.62 : 1,
     ...(isPrimary
       ? {
           backgroundColor: hovered ? colors.accentHover : colors.accent,
@@ -83,8 +107,10 @@ export function SnapActionButton({
         type="button"
         variant={isPrimary ? "default" : "secondary"}
         className={cn("h-8 w-full gap-2 px-3 text-sm")}
+        disabled={disabled}
         style={style}
         onClick={() => {
+          if (disabled) return;
           if (!runPaginatorAction(stateStore, paginatorAction)) {
             emit("press");
           }
@@ -94,6 +120,9 @@ export function SnapActionButton({
       >
         {Icon && <Icon size={16} />}
         {label}
+        {actionPending && (
+          <span data-snap-action-pending-active="true" hidden />
+        )}
         {showExternalIcon && (
           <ExternalLink size={14} style={{ opacity: 0.6 }} />
         )}

@@ -107,14 +107,65 @@ const surfaceSchema = z.discriminatedUnion("type", [
 const fidSchema = z.number().int().nonnegative();
 const userSchema = z.object({ fid: fidSchema });
 
-export const payloadSchema = z
+const basePayloadSchema = z
   .object({
     fid: fidSchema.optional(), // deprecated in favor of user.fid
-    inputs: z.record(z.string(), postInputValueSchema).default({}),
     timestamp: z.number().int(),
     audience: z.string(),
     user: userSchema,
     surface: surfaceSchema,
+  })
+  .strip();
+
+const snapSendTransactionParamsSchema = z
+  .object({
+    chainId: z.string(),
+    to: z.string(),
+    data: z.string().optional(),
+    value: z.string().optional(),
+    gas: z.string().optional(),
+    gasPrice: z.string().optional(),
+    maxFeePerGas: z.string().optional(),
+    maxPriorityFeePerGas: z.string().optional(),
+  })
+  .strict();
+
+export type SnapSendTransactionParams = z.infer<
+  typeof snapSendTransactionParamsSchema
+>;
+
+const snapTransactionSuccessSchema = z
+  .object({
+    success: z.literal(true),
+    transactionHash: z.string(),
+  })
+  .strict();
+
+const snapTransactionFailureSchema = z
+  .object({
+    success: z.literal(false),
+    reason: z
+      .enum(["rejected_by_user", "failed", "unknown"])
+      .optional()
+      .default("unknown"),
+    message: z.string().optional(),
+    code: z.union([z.string(), z.number()]).optional(),
+    transactionHash: z.string().optional(),
+  })
+  .strict();
+
+export const snapTransactionResultSchema = z.discriminatedUnion("success", [
+  snapTransactionSuccessSchema,
+  snapTransactionFailureSchema,
+]);
+
+export type SnapTransactionResult = z.infer<
+  typeof snapTransactionResultSchema
+>;
+
+export const payloadSchema = basePayloadSchema
+  .extend({
+    inputs: z.record(z.string(), postInputValueSchema).default({}),
   })
   .strip();
 
@@ -127,6 +178,7 @@ export type SnapGetPayload = z.infer<typeof getPayloadSchema>;
 
 export const ACTION_TYPE_GET = "get" as const;
 export const ACTION_TYPE_POST = "post" as const;
+export const ACTION_TYPE_TRANSACTION_RESULT = "transaction_result" as const;
 
 const snapGetActionSchema = z.object({
   type: z.literal(ACTION_TYPE_GET),
@@ -144,9 +196,28 @@ const snapPostActionSchema = payloadSchema.extend({
 
 export type SnapPostAction = z.infer<typeof snapPostActionSchema>;
 
+export const transactionResultPayloadSchema = basePayloadSchema
+  .extend({
+    type: z.literal(ACTION_TYPE_TRANSACTION_RESULT),
+    transaction: z
+      .object({
+        request: snapSendTransactionParamsSchema,
+        result: snapTransactionResultSchema,
+      })
+      .strict(),
+  })
+  .strip();
+
+export type SnapTransactionResultPayload = z.infer<
+  typeof transactionResultPayloadSchema
+>;
+
+export type SnapTransactionResultAction = SnapTransactionResultPayload;
+
 export const snapActionSchema = z.discriminatedUnion("type", [
   snapGetActionSchema,
   snapPostActionSchema,
+  transactionResultPayloadSchema,
 ]);
 
 export type SnapAction = z.infer<typeof snapActionSchema>;

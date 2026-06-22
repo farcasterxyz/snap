@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   applyStatePaths,
+  buildActionActivityStateChanges,
   buildInitialRenderState,
   cloneSnapRenderState,
   getUnpresentedSnapEffects,
+  hasPendingSnapAction,
   markSnapEffectsPresented,
   type SnapRenderState,
 } from "../src/render-state";
@@ -69,6 +71,46 @@ describe("snap render state", () => {
       },
       loading: false,
     });
+  });
+
+  it("builds action activity state changes from action names and explicit keys", () => {
+    expect(
+      buildActionActivityStateChanges({
+        actionName: "send_transaction",
+        params: {},
+        pending: true,
+      }),
+    ).toEqual([
+      { path: "/actions/send_transaction/name", value: "send_transaction" },
+      { path: "/actions/send_transaction/pending", value: true },
+    ]);
+
+    expect(
+      buildActionActivityStateChanges({
+        actionName: "send_transaction",
+        params: { activityKey: "mint token/primary" },
+        pending: false,
+      }),
+    ).toEqual([
+      { path: "/actions/mint_token_primary/name", value: "send_transaction" },
+      { path: "/actions/mint_token_primary/pending", value: false },
+    ]);
+  });
+
+  it("detects whether any snap action is pending", () => {
+    expect(hasPendingSnapAction({})).toBe(false);
+    expect(
+      hasPendingSnapAction({
+        actions: {
+          mint: {
+            pending: false,
+          },
+          swap: {
+            pending: true,
+          },
+        },
+      }),
+    ).toBe(true);
   });
 
   it("restores saved state over authored state and keeps page theme current", () => {

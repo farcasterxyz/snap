@@ -1,5 +1,6 @@
 import type { Spec } from "@json-render/core";
 import type { SnapRenderState } from "../render-state";
+import type { SnapTransactionResult } from "../schemas";
 
 export type { SnapRenderState };
 
@@ -50,5 +51,7 @@ export type SnapActionHandlers = {
     recipientAddress?: string;
   }) => void;
   swap_token: (params: { sellToken?: string; buyToken?: string }) => void;
-  send_transaction?: (params: SnapSendTransactionParams) => void;
+  send_transaction?: (
+    params: SnapSendTransactionParams,
+  ) => void | Promise<void | SnapTransactionResult>;
 };

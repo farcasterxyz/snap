@@ -47,4 +47,41 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
       ].sort(),
     );
   });
+
+  it("accepts bindable action activity state on transaction buttons", () => {
+    const result = snapJsonRenderCatalog.validate({
+      root: "root",
+      state: {
+        actions: {
+          mint: {
+            pending: false,
+          },
+        },
+      },
+      elements: {
+        root: {
+          type: "button",
+          props: {
+            label: "Mint",
+            variant: "primary",
+            disabled: { $bindState: "/actions/mint/pending" },
+          },
+          on: {
+            press: {
+              action: "send_transaction",
+              params: {
+                activityKey: "mint",
+                chainId: "8453",
+                to: "0x0000000000000000000000000000000000000001",
+                data: "0x",
+                value: "0x0",
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
 });

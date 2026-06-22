@@ -32,11 +32,15 @@ export {
 export {
   ACTION_TYPE_GET,
   ACTION_TYPE_POST,
+  ACTION_TYPE_TRANSACTION_RESULT,
   snapResponseSchema,
   payloadSchema,
   getPayloadSchema,
+  transactionResultPayloadSchema,
+  snapTransactionResultSchema,
   type SnapAction,
   type SnapGetAction,
+  type SnapTransactionResultAction,
   type SnapContext,
   type SnapResponse,
   type SnapHandlerResult,
@@ -45,6 +49,9 @@ export {
   type SnapFunction,
   type SnapPayload,
   type SnapGetPayload,
+  type SnapSendTransactionParams,
+  type SnapTransactionResult,
+  type SnapTransactionResultPayload,
 } from "./schemas";
 export { validateSnapResponse, type ValidationResult } from "./validator";
 export type { SnapRenderState } from "./render-state";

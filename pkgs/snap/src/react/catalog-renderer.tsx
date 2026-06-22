@@ -1,6 +1,12 @@
 "use client";
 
-import { createRenderer } from "@json-render/react";
+import {
+  JSONUIProvider,
+  Renderer,
+  type ComponentRegistry,
+  type CreateRendererProps,
+} from "@json-render/react";
+import { useMemo, type ReactNode } from "react";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapActionButton } from "./components/action-button";
 import { SnapBadge } from "./components/badge";
@@ -24,7 +30,7 @@ import { SnapCellGrid } from "./components/cell-grid";
  * Maps snap json-render catalog types to React components.
  * Keys match the snap wire-format `type` strings exactly.
  */
-export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
+const snapCatalogRegistry = {
   badge: SnapBadge,
   button: SnapActionButton,
   icon: SnapIcon,
@@ -42,4 +48,52 @@ export const SnapCatalogView = createRenderer(snapJsonRenderCatalog, {
   toggle_group: SnapToggleGroup,
   bar_chart: SnapBarChart,
   cell_grid: SnapCellGrid,
-});
+} satisfies ComponentRegistry;
+
+export function SnapCatalogView({
+  spec,
+  store,
+  state,
+  onAction,
+  onStateChange,
+  functions,
+  loading,
+  fallback,
+  children,
+}: CreateRendererProps & { children?: ReactNode }) {
+  const actionHandlers = useMemo(
+    () =>
+      onAction
+        ? new Proxy<Record<string, (params: Record<string, unknown>) => unknown>>(
+            {},
+            {
+              get: (_target, prop) => {
+                return (params: Record<string, unknown>) =>
+                  onAction(String(prop), params);
+              },
+              has: () => true,
+            },
+          )
+        : undefined,
+    [onAction],
+  );
+
+  return (
+    <JSONUIProvider
+      registry={snapCatalogRegistry}
+      store={store}
+      initialState={state}
+      handlers={actionHandlers}
+      functions={functions}
+      onStateChange={onStateChange}
+    >
+      <Renderer
+        spec={spec}
+        registry={snapCatalogRegistry}
+        loading={loading}
+        fallback={fallback}
+      />
+      {children}
+    </JSONUIProvider>
+  );
+}

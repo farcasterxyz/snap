@@ -1,4 +1,5 @@
 import type { Spec } from "@json-render/core";
+import { createStateStore } from "@json-render/react-native";
 import { snapJsonRenderCatalog } from "@farcaster/snap/ui";
 import { SnapCatalogView } from "./catalog-renderer";
 import { ConfettiOverlay } from "./confetti-overlay";
@@ -21,10 +22,11 @@ import {
   type PaletteColor,
 } from "@farcaster/snap";
 import {
-  applyStatePaths,
+  buildActionActivityStateChanges,
   buildInitialRenderState,
   cloneSnapRenderState,
   getUnpresentedSnapEffects,
+  hasPendingSnapAction,
   markSnapEffectsPresented,
   type SnapRenderState,
 } from "../render-state";
@@ -38,6 +40,12 @@ function asRecord(value: unknown): Record<string, unknown> {
 
 function optionalString(value: unknown): string | undefined {
   return value ? String(value) : undefined;
+}
+
+function recordValue(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
 
 function withDefaultElementProps(spec: Spec): Spec {
@@ -114,11 +122,33 @@ export function SnapViewCoreInner({
     [initialRenderState, spec.state, snap.theme?.accent],
   );
 
+  const stateStore = useMemo(() => createStateStore(initialState), [
+    initialState,
+  ]);
   const stateRef = useRef<Record<string, unknown>>(initialState);
+  const onRenderStateChangeRef = useRef(onRenderStateChange);
+  const pendingActionCountRef = useRef(0);
+  const [hasPendingAction, setHasPendingAction] = useState(false);
+  const [actionActivityVersion, setActionActivityVersion] = useState(0);
 
   useEffect(() => {
     stateRef.current = cloneSnapRenderState(initialState);
   }, [initialState]);
+
+  useEffect(() => {
+    onRenderStateChangeRef.current = onRenderStateChange;
+  }, [onRenderStateChange]);
+
+  useEffect(
+    () =>
+      stateStore.subscribe(() => {
+        const snapshot = cloneSnapRenderState(stateStore.getSnapshot());
+        stateRef.current = snapshot;
+        setHasPendingAction(hasPendingSnapAction(snapshot));
+        onRenderStateChangeRef.current?.(snapshot);
+      }),
+    [stateStore],
+  );
 
   useEffect(() => {
     const catalogResult = snapJsonRenderCatalog.validate(spec);
@@ -144,10 +174,6 @@ export function SnapViewCoreInner({
     confetti: 0,
     fireworks: 0,
   });
-  const onRenderStateChangeRef = useRef(onRenderStateChange);
-  useEffect(() => {
-    onRenderStateChangeRef.current = onRenderStateChange;
-  }, [onRenderStateChange]);
   useEffect(() => {
     const effectsToPresent = getUnpresentedSnapEffects(
       stateRef.current,
@@ -169,7 +195,10 @@ export function SnapViewCoreInner({
     }
 
     if (markSnapEffectsPresented(stateRef.current, effectsToPresent)) {
-      onRenderStateChangeRef.current?.(cloneSnapRenderState(stateRef.current));
+      const meta = recordValue(stateRef.current.__snapRender);
+      stateStore.update({
+        "/__snapRender/presentedEffects": meta?.presentedEffects ?? [],
+      });
     }
 
     setEffectRunKeys((current) => ({
@@ -184,49 +213,92 @@ export function SnapViewCoreInner({
           ? current.fireworks
           : 0,
     }));
-  }, [initialState, showConfetti, showFireworks, snapEffects]);
+  }, [initialState, showConfetti, showFireworks, snapEffects, stateStore]);
 
   const handlersRef = useRef(handlers);
   handlersRef.current = handlers;
+
+  const applyActionActivityState = useCallback(
+    (name: unknown, params: Record<string, unknown>, pending: boolean) => {
+      stateStore.update(
+        Object.fromEntries(
+          buildActionActivityStateChanges({
+            actionName: name,
+            params,
+            pending,
+          }).map(({ path, value }) => [path, value]),
+        ),
+      );
+    },
+    [stateStore],
+  );
+
+  const setActionPending = useCallback(
+    (name: unknown, params: Record<string, unknown>) => {
+      pendingActionCountRef.current += 1;
+      setHasPendingAction(true);
+      setActionActivityVersion((version) => version + 1);
+      applyActionActivityState(name, params, true);
+    },
+    [applyActionActivityState],
+  );
+
+  const setActionSettled = useCallback(
+    (name: unknown, params: Record<string, unknown>) => {
+      pendingActionCountRef.current = Math.max(
+        0,
+        pendingActionCountRef.current - 1,
+      );
+      applyActionActivityState(name, params, false);
+      if (pendingActionCountRef.current === 0) {
+        setHasPendingAction(false);
+      }
+      setActionActivityVersion((version) => version + 1);
+    },
+    [applyActionActivityState],
+  );
 
   const handleAction = useCallback((name: unknown, params: unknown) => {
     const inputs = (stateRef.current.inputs ?? {}) as Record<string, JsonValue>;
     const p = (params ?? {}) as Record<string, unknown>;
     const h = handlersRef.current;
+    let result: unknown;
+    setActionPending(name, p);
+
     switch (name) {
       case "submit":
-        h.submit(String(p.target ?? ""), inputs);
+        result = h.submit(String(p.target ?? ""), inputs);
         break;
       case "open_url":
-        h.open_url(String(p.target ?? ""));
+        result = h.open_url(String(p.target ?? ""));
         break;
       case "open_snap":
-        h.open_snap(String(p.target ?? ""));
+        result = h.open_snap(String(p.target ?? ""));
         break;
       case "open_mini_app":
-        h.open_mini_app(String(p.target ?? ""));
+        result = h.open_mini_app(String(p.target ?? ""));
         break;
       case "view_cast":
-        h.view_cast({ hash: String(p.hash ?? "") });
+        result = h.view_cast({ hash: String(p.hash ?? "") });
         break;
       case "view_profile":
-        h.view_profile({ fid: Number(p.fid ?? 0) });
+        result = h.view_profile({ fid: Number(p.fid ?? 0) });
         break;
       case "view_channel":
-        h.view_channel({ channelKey: String(p.channelKey ?? "") });
+        result = h.view_channel({ channelKey: String(p.channelKey ?? "") });
         break;
       case "compose_cast":
-        h.compose_cast({
+        result = h.compose_cast({
           text: p.text ? String(p.text) : undefined,
           channelKey: p.channelKey ? String(p.channelKey) : undefined,
           embeds: Array.isArray(p.embeds) ? (p.embeds as string[]) : undefined,
         });
         break;
       case "view_token":
-        h.view_token({ token: String(p.token ?? "") });
+        result = h.view_token({ token: String(p.token ?? "") });
         break;
       case "send_token":
-        h.send_token({
+        result = h.send_token({
           token: String(p.token ?? ""),
           amount: p.amount ? String(p.amount) : undefined,
           recipientFid: p.recipientFid ? Number(p.recipientFid) : undefined,
@@ -236,13 +308,13 @@ export function SnapViewCoreInner({
         });
         break;
       case "swap_token":
-        h.swap_token({
+        result = h.swap_token({
           sellToken: p.sellToken ? String(p.sellToken) : undefined,
           buyToken: p.buyToken ? String(p.buyToken) : undefined,
         });
         break;
       case "send_transaction":
-        h.send_transaction?.({
+        result = h.send_transaction?.({
           chainId: String(p.chainId ?? ""),
           to: String(p.to ?? ""),
           data: optionalString(p.data),
@@ -256,11 +328,30 @@ export function SnapViewCoreInner({
       default:
         break;
     }
-  }, []);
+
+    if (result instanceof Promise) {
+      void result.finally(() => {
+        setActionSettled(name, p);
+      }).catch(() => {});
+    } else {
+      setActionSettled(name, p);
+    }
+    return result;
+  }, [setActionPending, setActionSettled]);
+
+  const showLoadingOverlay =
+    loading ||
+    hasPendingAction ||
+    (actionActivityVersion >= 0 && pendingActionCountRef.current > 0);
 
   return (
-    <View style={styles.container}>
-      {loading ? (
+    <View
+      style={styles.container}
+      onStartShouldSetResponderCapture={() =>
+        hasPendingSnapAction(stateRef.current)
+      }
+    >
+      {showLoadingOverlay ? (
         loadingOverlay === undefined ? (
           <SnapLoadingOverlay appearance={mode} accentHex={accentHex} />
         ) : (
@@ -271,12 +362,8 @@ export function SnapViewCoreInner({
         <SnapCatalogView
           key={pageKey}
           spec={spec}
-          state={initialState}
+          store={stateStore}
           loading={false}
-          onStateChange={(changes) => {
-            applyStatePaths(stateRef.current, changes);
-            onRenderStateChange?.(cloneSnapRenderState(stateRef.current));
-          }}
           onAction={handleAction}
         />
       </SnapVersionProvider>

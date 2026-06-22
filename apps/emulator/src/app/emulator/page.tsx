@@ -530,6 +530,14 @@ export default function EmulatorPage() {
                       `swap_token\n\n${JSON.stringify(params, null, 2)}`,
                     );
                   },
+                  send_transaction: async (params) => {
+                    console.log("send_transaction", params);
+                    await new Promise((resolve) => setTimeout(resolve, 1500));
+                    return {
+                      success: true,
+                      transactionHash: `0x${"12".repeat(32)}`,
+                    };
+                  },
                 }}
                 loading={loading}
               />

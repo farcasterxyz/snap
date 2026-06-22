@@ -6,7 +6,11 @@ import {
   encodePayload as jfsEncodePayload,
   encodeSignature,
 } from "@farcaster/jfs";
-import { type SnapPayload } from "../src/schemas";
+import {
+  ACTION_TYPE_TRANSACTION_RESULT,
+  type SnapPayload,
+  type SnapTransactionResultPayload,
+} from "../src/schemas";
 import { SNAP_PAYLOAD_HEADER } from "../src/constants";
 
 describe("parseRequest", () => {
@@ -20,6 +24,36 @@ describe("parseRequest", () => {
       audience: "https://example.com",
       user: { fid: 42 },
       surface: surfaceStandalone,
+      ...overrides,
+    };
+    return {
+      header: "dev",
+      payload: encodePayload(payload),
+      signature: "dev",
+    };
+  }
+
+  function transactionResultBody(
+    overrides: Partial<SnapTransactionResultPayload> = {},
+  ) {
+    const payload: SnapTransactionResultPayload = {
+      type: ACTION_TYPE_TRANSACTION_RESULT,
+      timestamp: Math.floor(Date.now() / 1000),
+      audience: "https://example.com",
+      user: { fid: 42 },
+      surface: surfaceStandalone,
+      transaction: {
+        request: {
+          chainId: "8453",
+          to: "0x0000000000000000000000000000000000000001",
+          data: "0x",
+          value: "0x0",
+        },
+        result: {
+          success: true,
+          transactionHash: `0x${"12".repeat(32)}`,
+        },
+      },
       ...overrides,
     };
     return {
@@ -147,6 +181,47 @@ describe("parseRequest", () => {
         surface: surfaceStandalone,
       },
     });
+  });
+
+  it("accepts transaction result callback payloads", async () => {
+    const body = transactionResultBody();
+    const payload = decodePayload<SnapTransactionResultPayload>(body.payload);
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res).toEqual({
+      success: true,
+      action: payload,
+    });
+  });
+
+  it("rejects malformed transaction result callback payloads", async () => {
+    const body = transactionResultBody({
+      transaction: {
+        request: {
+          chainId: "8453",
+          to: "0x0000000000000000000000000000000000000001",
+        },
+        result: {
+          success: true,
+        },
+      } as SnapTransactionResultPayload["transaction"],
+    });
+    const res = await parseRequest(
+      new Request("https://example.com/snap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+      { skipJFSVerification: true },
+    );
+    expect(res.success).toBe(false);
+    if (!res.success) expect(res.error.type).toBe("validation");
   });
 
   it("does not accept bare JSON POST payload even when skipJFSVerification is true", async () => {
