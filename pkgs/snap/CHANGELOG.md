@@ -1,5 +1,17 @@
 # @farcaster/snap
 
+## 2.10.0
+
+### Minor Changes
+
+- [#217](https://github.com/farcasterxyz/snap/pull/217) [`1c9ce96`](https://github.com/farcasterxyz/snap/commit/1c9ce9644a0b527ab6e782e93f59e83418da30a3) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add wallet transaction feedback support for Snaps.
+
+  This release adds a typed `transaction_result` callback payload so hosts can report wallet transaction success or failure back to Snap servers after a `send_transaction` action. `parseRequest` now recognizes the callback shape and exposes the original transaction request plus either a success transaction hash or structured failure details.
+
+  It also adds bindable action activity state for async Snap actions. React and React Native presenters write pending state to `/actions/<activityKey>/pending`, with `activityKey` coming from action params when provided, so Snap authors can bind UI such as `button.props.disabled` to in-flight wallet actions.
+
+  While an async action is pending, the renderers block the Snap interaction surface. On web, Snap cards also show the loading overlay over the whole card instead of only disabling the pressed button.
+
 ## 2.9.0
 
 ### Minor Changes
