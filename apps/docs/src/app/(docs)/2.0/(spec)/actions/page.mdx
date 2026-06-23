@@ -16,19 +16,20 @@ action when tapped.
 }
 ```
 
-| Action                          | Description                   |
-| ------------------------------- | ----------------------------- |
-| [submit](#submit)               | POST to server, get next page |
-| [open_url](#open_url)           | Open external URL in browser  |
-| [open_snap](#open_snap)         | Open a snap URL inline        |
-| [open_mini_app](#open_mini_app) | Launch mini app               |
-| [view_cast](#view_cast)         | Navigate to a cast            |
-| [view_profile](#view_profile)   | Navigate to a profile         |
-| [view_channel](#view_channel)   | Navigate to a channel         |
-| [compose_cast](#compose_cast)   | Open cast composer            |
-| [view_token](#view_token)       | View token in wallet          |
-| [send_token](#send_token)       | Open send token flow          |
-| [swap_token](#swap_token)       | Open swap token flow          |
+| Action                                | Description                       |
+| ------------------------------------- | --------------------------------- |
+| [submit](#submit)                     | POST to server, get next page     |
+| [open_url](#open_url)                 | Open external URL in browser      |
+| [open_snap](#open_snap)               | Open a snap URL inline            |
+| [open_mini_app](#open_mini_app)       | Launch mini app                   |
+| [view_cast](#view_cast)               | Navigate to a cast                |
+| [view_profile](#view_profile)         | Navigate to a profile             |
+| [view_channel](#view_channel)         | Navigate to a channel             |
+| [compose_cast](#compose_cast)         | Open cast composer                |
+| [view_token](#view_token)             | View token in wallet              |
+| [send_token](#send_token)             | Open send token flow              |
+| [swap_token](#swap_token)             | Open swap token flow              |
+| [send_transaction](#send_transaction) | Request an EVM wallet transaction |
 
 ---
 
@@ -183,8 +184,8 @@ Navigate to a Farcaster user's profile.
 
 Navigate to a Farcaster channel.
 
-| Param        | Type   | Required | Description                           |
-| ------------ | ------ | -------- | ------------------------------------- |
+| Param        | Type   | Required | Description                          |
+| ------------ | ------ | -------- | ------------------------------------ |
 | `channelKey` | string | Yes      | Channel key, without a leading slash |
 
 ```json
@@ -313,3 +314,89 @@ Open the swap flow between two tokens.
   }
 }
 ```
+
+---
+
+## send_transaction
+
+Request a single EVM transaction through the host wallet using `eth_sendTransaction`.
+This action does not submit directly from the snap server and does not call a local
+`submit` handler. The host opens the wallet flow, waits for it to settle, and may POST a
+signed `transaction_result` callback back to the current snap URL.
+
+Use `activityKey` when you want the React or React Native presenter to expose stable
+pending state while the wallet flow is in progress. During the async handler, presenters
+write:
+
+- `/actions/<activityKey>/name`
+- `/actions/<activityKey>/pending`
+
+Buttons can bind `props.disabled` to that pending path so the CTA stays disabled while
+the transaction is in flight.
+
+| Param                  | Type   | Required | Description                                     |
+| ---------------------- | ------ | -------- | ----------------------------------------------- |
+| `chainId`              | string | Yes      | EVM chain ID as a string                        |
+| `to`                   | string | Yes      | Recipient or contract address                   |
+| `data`                 | string | No       | Hex calldata                                    |
+| `value`                | string | No       | Hex value                                       |
+| `gas`                  | string | No       | Hex gas limit                                   |
+| `gasPrice`             | string | No       | Legacy hex gas price                            |
+| `maxFeePerGas`         | string | No       | EIP-1559 max fee per gas                        |
+| `maxPriorityFeePerGas` | string | No       | EIP-1559 max priority fee per gas               |
+| `activityKey`          | string | No       | Stable render-state key for pending UI bindings |
+
+```json
+{
+  "type": "button",
+  "props": {
+    "label": "Mint",
+    "variant": "primary",
+    "disabled": { "$bindState": "/actions/mint/pending" }
+  },
+  "on": {
+    "press": {
+      "action": "send_transaction",
+      "params": {
+        "activityKey": "mint",
+        "chainId": "8453",
+        "to": "0x0000000000000000000000000000000000000001",
+        "data": "0x",
+        "value": "0x0"
+      }
+    }
+  }
+}
+```
+
+### Transaction result callback
+
+Hosts that support transaction feedback POST a signed callback payload to the snap URL
+after the wallet request succeeds or fails. `parseRequest` returns this as
+`ctx.action.type === "transaction_result"`.
+
+The callback includes the wallet request under `ctx.action.transaction.request` and the
+settlement result under `ctx.action.transaction.result`:
+
+```ts
+if (ctx.action.type === "transaction_result") {
+  const { request, result } = ctx.action.transaction;
+
+  if (result.success) {
+    return renderSuccess({
+      chainId: request.chainId,
+      transactionHash: result.transactionHash,
+    });
+  }
+
+  return renderFailure({
+    reason: result.reason,
+    message: result.message,
+    transactionHash: result.transactionHash,
+  });
+}
+```
+
+Success results include `{ success: true, transactionHash }`. Failure results include
+`{ success: false, reason, message?, code?, transactionHash? }`, where `reason` is
+`"rejected_by_user"`, `"failed"`, or `"unknown"`.

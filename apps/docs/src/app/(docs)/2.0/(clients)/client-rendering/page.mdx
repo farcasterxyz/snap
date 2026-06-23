@@ -44,17 +44,17 @@ host-controlled expansion props for feed surfaces.
 
 ### Shared Props
 
-| Prop                      | Type                 | Default  | Description                             |
-| ------------------------- | -------------------- | -------- | --------------------------------------- |
-| `snap`                    | `SnapPage`           | required | The snap JSON response                  |
-| `handlers`                | `SnapActionHandlers` | required | Action callbacks                        |
-| `loading`                 | `boolean`            | `false`  | Show loading state                      |
-| `appearance`              | `"light" \| "dark"`  | `"dark"` | Color scheme                            |
-| `showOverflowWarning`     | `boolean`            | `false`  | Show overflow indicator at 500px        |
-| `actionError`             | `string \| null`     | -        | Error message to display below the snap |
-| `onValidationError`       | `(result) => void`   | -        | Called when validation fails            |
-| `validationErrorFallback` | `ReactNode`          | -        | Custom fallback for validation errors   |
-| `plain`                   | `boolean`            | `false`  | Render without card frame               |
+| Prop                      | Type                 | Default         | Description                                           |
+| ------------------------- | -------------------- | --------------- | ----------------------------------------------------- |
+| `snap`                    | `SnapPage`           | required        | The snap JSON response                                |
+| `handlers`                | `SnapActionHandlers` | required        | Action callbacks                                      |
+| `loading`                 | `boolean`            | `false`         | Show loading state                                    |
+| `appearance`              | `"light" \| "dark"`  | `"dark"`        | Color scheme                                          |
+| `showOverflowWarning`     | `boolean`            | `false`         | Show overflow indicator at 500px                      |
+| `actionError`             | `string \| null`     | -               | Error message to display below the snap               |
+| `onValidationError`       | `(result) => void`   | -               | Called when validation fails                          |
+| `validationErrorFallback` | `ReactNode`          | -               | Custom fallback for validation errors                 |
+| `plain`                   | `boolean`            | `false`         | Render without card frame                             |
 | `loadingOverlay`          | `ReactNode`          | default overlay | Custom loading overlay. Pass `null` to render nothing |
 
 ### Web-Only Props
@@ -65,13 +65,13 @@ host-controlled expansion props for feed surfaces.
 
 ### React Native-Only Props
 
-| Prop                | Type               | Default       | Description                             |
-| ------------------- | ------------------ | ------------- | --------------------------------------- |
-| `colors`            | `Partial<SnapNativeColors>` | - | Override native renderer colors         |
-| `borderRadius`      | `number`           | `16`          | Card border radius                      |
-| `forceExpanded`     | `boolean`          | `false`       | Render full content height without 500px clipping or expand controls |
-| `expandButtonLabel` | `string`           | `"Show more"` | Custom label for the collapsed expand button |
-| `onExpandPress`     | `() => void`       | -             | Called from the collapsed expand button instead of toggling internal state |
+| Prop                | Type                        | Default       | Description                                                                |
+| ------------------- | --------------------------- | ------------- | -------------------------------------------------------------------------- |
+| `colors`            | `Partial<SnapNativeColors>` | -             | Override native renderer colors                                            |
+| `borderRadius`      | `number`                    | `16`          | Card border radius                                                         |
+| `forceExpanded`     | `boolean`                   | `false`       | Render full content height without 500px clipping or expand controls       |
+| `expandButtonLabel` | `string`                    | `"Show more"` | Custom label for the collapsed expand button                               |
+| `onExpandPress`     | `() => void`                | -             | Called from the collapsed expand button instead of toggling internal state |
 
 React Native hosts that render snaps inside clipped feeds can use `onExpandPress` to
 lift or portal the same `SnapCard` outside the feed layout, then re-render it with
@@ -84,24 +84,30 @@ behavior is unchanged when `onExpandPress` is omitted.
 The `handlers` prop defines how the client responds to user interactions. Every snap
 action type maps to a handler function that the client must implement.
 
-| Handler         | Params                                                   | Description                                                                                                                                          |
-| --------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `submit`        | `(target: string, inputs: Record<string, value>)`        | POST signed payload to `target` with collected input values. Returns the next snap page. This is the only handler that involves a server round-trip. |
-| `open_url`      | `(target: string)`                                       | Open an external URL in the system browser or in-app browser.                                                                                        |
-| `open_snap`     | `(target: string)`                                       | Open a snap URL inline — render the target as a snap rather than opening a browser.                                                                  |
-| `open_mini_app` | `(target: string)`                                       | Open a URL as a Farcaster mini app (in-app webview).                                                                                                 |
-| `view_cast`     | `({ hash: string })`                                     | Navigate to a cast by its hash.                                                                                                                      |
-| `view_profile`  | `({ fid: number })`                                      | Navigate to a user profile by Farcaster ID.                                                                                                          |
-| `view_channel`  | `({ channelKey: string })`                               | Navigate to a Farcaster channel by channel key.                                                                                                      |
-| `compose_cast`  | `({ text?, channelKey?, embeds? })`                      | Open the cast composer with optional pre-filled text, channel, and embeds.                                                                           |
-| `view_token`    | `({ token: string })`                                    | View a token in the wallet. Token is a [CAIP-19](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-19.md) identifier.                      |
-| `send_token`    | `({ token, amount?, recipientFid?, recipientAddress? })` | Open the send flow for a token (CAIP-19). Optional pre-filled amount and recipient.                                                                  |
-| `swap_token`    | `({ sellToken?, buyToken? })`                            | Open the swap flow between two tokens (CAIP-19).                                                                                                     |
+| Handler            | Params                                                                                    | Description                                                                                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `submit`           | `(target: string, inputs: Record<string, value>)`                                         | POST signed payload to `target` with collected input values. Returns the next snap page. This is the only handler that involves a server round-trip. |
+| `open_url`         | `(target: string)`                                                                        | Open an external URL in the system browser or in-app browser.                                                                                        |
+| `open_snap`        | `(target: string)`                                                                        | Open a snap URL inline — render the target as a snap rather than opening a browser.                                                                  |
+| `open_mini_app`    | `(target: string)`                                                                        | Open a URL as a Farcaster mini app (in-app webview).                                                                                                 |
+| `view_cast`        | `({ hash: string })`                                                                      | Navigate to a cast by its hash.                                                                                                                      |
+| `view_profile`     | `({ fid: number })`                                                                       | Navigate to a user profile by Farcaster ID.                                                                                                          |
+| `view_channel`     | `({ channelKey: string })`                                                                | Navigate to a Farcaster channel by channel key.                                                                                                      |
+| `compose_cast`     | `({ text?, channelKey?, embeds? })`                                                       | Open the cast composer with optional pre-filled text, channel, and embeds.                                                                           |
+| `view_token`       | `({ token: string })`                                                                     | View a token in the wallet. Token is a [CAIP-19](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-19.md) identifier.                      |
+| `send_token`       | `({ token, amount?, recipientFid?, recipientAddress? })`                                  | Open the send flow for a token (CAIP-19). Optional pre-filled amount and recipient.                                                                  |
+| `swap_token`       | `({ sellToken?, buyToken? })`                                                             | Open the swap flow between two tokens (CAIP-19).                                                                                                     |
+| `send_transaction` | `({ chainId, to, data?, value?, gas?, gasPrice?, maxFeePerGas?, maxPriorityFeePerGas? })` | Request an EVM transaction through the host wallet. Return a promise so the presenter can expose pending state until the wallet flow settles.        |
 
 The `submit` handler is the most important — it's how snaps navigate between pages. All
 input values from `input`, `slider`, `switch`, and `toggle_group` elements are
 automatically collected and passed as the `inputs` parameter. See
 [Upgrading from v1.0](/snap/client-upgrade) for the POST payload format.
+
+For `send_transaction`, hosts that support feedback should POST a signed
+`transaction_result` callback to the current snap URL after the wallet flow settles. The
+server can read it with `parseRequest` as `ctx.action.type === "transaction_result"` and
+inspect `ctx.action.transaction.result.transactionHash` on success.
 
 ## Full Example
 
@@ -203,6 +209,7 @@ function SnapRenderer({
     view_token: ({ token }) => openTokenView(token),
     send_token: (params) => openSendFlow(params),
     swap_token: (params) => openSwapFlow(params),
+    send_transaction: (params) => sendTransaction(params),
   };
 
   return (

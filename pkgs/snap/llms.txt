@@ -172,7 +172,7 @@ Field values are sent in POST `inputs[name]` when a `submit` action fires.
 - `label` (string, optional, max 60)
 - POST value: string (single) or string[] (multiple)
 
-## Actions (11 types)
+## Actions (12 types)
 
 Bound to buttons via `on.press`:
 
@@ -189,6 +189,23 @@ Bound to buttons via `on.press`:
 | `view_token` | `token` (CAIP-19) | View token in wallet |
 | `send_token` | `token`, `amount?`, `recipientFid?`, `recipientAddress?` | Send token flow |
 | `swap_token` | `sellToken?`, `buyToken?` | Swap token flow |
+| `send_transaction` | `chainId`, `to`, `data?`, `value?`, `gas?`, `gasPrice?`, `maxFeePerGas?`, `maxPriorityFeePerGas?`, `activityKey?` | Request a single EVM wallet transaction |
+
+For `send_transaction`, set `params.activityKey` when the UI needs stable pending
+state. React and React Native presenters write `/actions/<activityKey>/pending` while
+the async handler is in flight, so buttons can use
+`props.disabled: { "$bindState": "/actions/<activityKey>/pending" }`.
+
+Wallet settlement is reported with a signed `transaction_result` callback to the snap
+URL on supporting hosts. `parseRequest` returns
+`ctx.action.type === "transaction_result"` with
+`ctx.action.transaction.request` (the wallet request) and
+`ctx.action.transaction.result`. Success results are
+`{ success: true, transactionHash }`. Failure results are
+`{ success: false, reason, message?, code?, transactionHash? }`, where `reason` is
+`"rejected_by_user"`, `"failed"`, or `"unknown"`. Do not invent a transaction hash or
+local success state before this callback; branch on the callback and show the real hash
+when present.
 
 ## Authenticated requests
 

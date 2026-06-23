@@ -118,6 +118,12 @@ Design guidance:
   `open_snap` (open snap inline), `open_mini_app` (in-app), and client actions:
   `view_cast`, `view_profile`, `view_channel`, `compose_cast`, `view_token`,
   `send_token`, `swap_token`, `send_transaction`.
+- For `send_transaction`, set `params.activityKey` and bind `button.props.disabled` to
+  `/actions/<activityKey>/pending` when the CTA should be blocked during the wallet
+  flow. Supporting hosts POST a signed `transaction_result` callback after settlement;
+  parse it with `parseRequest`, branch on `ctx.action.type === "transaction_result"`,
+  and read the success hash from `ctx.action.transaction.result.transactionHash`. Do not
+  invent local success or a fake hash before that callback arrives.
 - Use `bar_chart` for ranked/comparative data (horizontal bars, 1-6 items).
 - Use `cell_grid` for game boards, pixel art, or color matrices (2-32 cols, 2-16 rows).
   Set `cellAspectRatio: "square"` when board cells must stay square across variable snap

@@ -23,11 +23,12 @@ A button fires an action when tapped. Actions are bound via the `on.press` field
 
 ## Button Properties
 
-| Prop      | Type     | Required | Default       | Description                                       |
-| --------- | -------- | -------- | ------------- | ------------------------------------------------- |
-| `label`   | string   | Yes      |               | Button text. Max 30 chars                         |
-| `variant` | string   | No       | `"secondary"` | Visual style (see below)                          |
-| `icon`    | IconName | No       |               | Leading icon. See [icon set](/snap/elements#icon) |
+| Prop       | Type                     | Required | Default       | Description                                       |
+| ---------- | ------------------------ | -------- | ------------- | ------------------------------------------------- |
+| `label`    | string                   | Yes      |               | Button text. Max 30 chars                         |
+| `variant`  | string                   | No       | `"secondary"` | Visual style (see below)                          |
+| `icon`     | IconName                 | No       |               | Leading icon. See [icon set](/snap/elements#icon) |
+| `disabled` | boolean \| state binding | No       | `false`       | Disable the button                                |
 
 ### Variants
 
@@ -76,14 +77,42 @@ In these components, button sets over those totals render vertically.
 
 The four most common actions on buttons:
 
-| Action          | Behavior                                                        |
-| --------------- | --------------------------------------------------------------- |
-| `submit`        | POST to the snap server, receive the next page                  |
-| `open_url`      | Open a URL in the browser                                       |
-| `open_mini_app` | Open a URL as a Farcaster mini app                              |
+| Action          | Behavior                                                                        |
+| --------------- | ------------------------------------------------------------------------------- |
+| `submit`        | POST to the snap server, receive the next page                                  |
+| `open_url`      | Open a URL in the browser                                                       |
+| `open_mini_app` | Open a URL as a Farcaster mini app                                              |
 | client actions  | `view_cast`, `view_profile`, `view_channel`, `compose_cast`, `send_token`, etc. |
 
 See [Actions](/snap/actions) for parameters and examples for each type.
+
+## Pending Actions
+
+Async client actions such as `send_transaction` can expose pending state through the
+React and React Native presenters. Add `params.activityKey` to the action, then bind the
+button's `disabled` prop to `/actions/<activityKey>/pending`.
+
+```json
+"mint-button": {
+  "type": "button",
+  "props": {
+    "label": "Mint",
+    "variant": "primary",
+    "disabled": { "$bindState": "/actions/mint/pending" }
+  },
+  "on": {
+    "press": {
+      "action": "send_transaction",
+      "params": {
+        "activityKey": "mint",
+        "chainId": "8453",
+        "to": "0x0000000000000000000000000000000000000001",
+        "data": "0x"
+      }
+    }
+  }
+}
+```
 
 ## Target URLs
 
