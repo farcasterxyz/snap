@@ -15,6 +15,9 @@ import {
   getUnpresentedSnapEffects,
   hasPendingSnapAction,
   markSnapEffectsPresented,
+  optionalSnapStringArray,
+  resolveSnapActionParams,
+  validateSnapActionTargetUrl,
   type SnapRenderState,
 } from "../render-state";
 import {
@@ -36,6 +39,11 @@ function asRecord(value: unknown): Record<string, unknown> {
 
 function optionalString(value: unknown): string | undefined {
   return value ? String(value) : undefined;
+}
+
+function validActionTarget(value: unknown): string | undefined {
+  const target = String(value ?? "");
+  return validateSnapActionTargetUrl(target) ? undefined : target;
 }
 
 function recordValue(value: unknown): Record<string, unknown> | undefined {
@@ -543,11 +551,11 @@ export function SnapViewCore({
 
   const handleAction = useCallback(
     (name: unknown, params: unknown) => {
+      const p = resolveSnapActionParams(params, stateRef.current);
       const inputs = (stateRef.current.inputs ?? {}) as Record<
         string,
         JsonValue
       >;
-      const p = (params ?? {}) as Record<string, unknown>;
       let result: unknown;
       setActionPending(name, p);
 
@@ -555,15 +563,21 @@ export function SnapViewCore({
         case "submit":
           result = handlers.submit(String(p.target ?? ""), inputs);
           break;
-        case "open_url":
-          result = handlers.open_url(String(p.target ?? ""));
+        case "open_url": {
+          const target = validActionTarget(p.target);
+          if (target) result = handlers.open_url(target);
           break;
-        case "open_snap":
-          result = handlers.open_snap(String(p.target ?? ""));
+        }
+        case "open_snap": {
+          const target = validActionTarget(p.target);
+          if (target) result = handlers.open_snap(target);
           break;
-        case "open_mini_app":
-          result = handlers.open_mini_app(String(p.target ?? ""));
+        }
+        case "open_mini_app": {
+          const target = validActionTarget(p.target);
+          if (target) result = handlers.open_mini_app(target);
           break;
+        }
         case "view_cast":
           result = handlers.view_cast({ hash: String(p.hash ?? "") });
           break;
@@ -579,9 +593,7 @@ export function SnapViewCore({
           result = handlers.compose_cast({
             text: p.text ? String(p.text) : undefined,
             channelKey: p.channelKey ? String(p.channelKey) : undefined,
-            embeds: Array.isArray(p.embeds)
-              ? (p.embeds as string[])
-              : undefined,
+            embeds: optionalSnapStringArray(p.embeds),
           });
           break;
         case "view_token":

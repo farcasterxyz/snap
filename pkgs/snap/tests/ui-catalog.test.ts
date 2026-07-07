@@ -84,4 +84,56 @@ describe("snapJsonRenderCatalog (@farcaster/snap/ui)", () => {
 
     expect(result.success).toBe(true);
   });
+
+  it("accepts dynamic action params from local state", () => {
+    const result = snapJsonRenderCatalog.validate({
+      root: "root",
+      elements: {
+        root: {
+          type: "stack",
+          children: ["website", "open", "compose"],
+        },
+        website: {
+          type: "input",
+          props: {
+            name: "website",
+            label: "Website",
+          },
+        },
+        open: {
+          type: "button",
+          props: {
+            label: "Open Audit",
+          },
+          on: {
+            press: {
+              action: "open_url",
+              params: {
+                target: {
+                  $template:
+                    "https://dmeta.qstorage.quilibrium.com/?nsite=${/inputs/website}",
+                },
+              },
+            },
+          },
+        },
+        compose: {
+          type: "button",
+          props: {
+            label: "Compose",
+          },
+          on: {
+            press: {
+              action: "compose_cast",
+              params: {
+                text: { $state: "/inputs/website" },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
 });

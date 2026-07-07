@@ -103,6 +103,12 @@ input values from `input`, `slider`, `switch`, and `toggle_group` elements are
 automatically collected and passed as the `inputs` parameter. See
 [Upgrading from v1.0](/snap/client-upgrade) for the POST payload format.
 
+Client action params are resolved from the current local render state before the
+handler is called. For example, an `open_url` button can use
+`target: { "$template": "https://example.com/?q=${/inputs/query}" }`; the handler
+still receives a plain string target after resolution. Clients must validate resolved
+URL targets before opening them.
+
 ## Full Example
 
 This example shows the complete flow: rendering a snap, handling submit with a signed

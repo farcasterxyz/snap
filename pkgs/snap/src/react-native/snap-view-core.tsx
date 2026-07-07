@@ -28,6 +28,9 @@ import {
   getUnpresentedSnapEffects,
   hasPendingSnapAction,
   markSnapEffectsPresented,
+  optionalSnapStringArray,
+  resolveSnapActionParams,
+  validateSnapActionTargetUrl,
   type SnapRenderState,
 } from "../render-state";
 import type { SnapPage, SnapActionHandlers, JsonValue } from "./types";
@@ -40,6 +43,11 @@ function asRecord(value: unknown): Record<string, unknown> {
 
 function optionalString(value: unknown): string | undefined {
   return value ? String(value) : undefined;
+}
+
+function validActionTarget(value: unknown): string | undefined {
+  const target = String(value ?? "");
+  return validateSnapActionTargetUrl(target) ? undefined : target;
 }
 
 function recordValue(value: unknown): Record<string, unknown> | undefined {
@@ -259,8 +267,8 @@ export function SnapViewCoreInner({
   );
 
   const handleAction = useCallback((name: unknown, params: unknown) => {
+    const p = resolveSnapActionParams(params, stateRef.current);
     const inputs = (stateRef.current.inputs ?? {}) as Record<string, JsonValue>;
-    const p = (params ?? {}) as Record<string, unknown>;
     const h = handlersRef.current;
     let result: unknown;
     setActionPending(name, p);
@@ -269,15 +277,21 @@ export function SnapViewCoreInner({
       case "submit":
         result = h.submit(String(p.target ?? ""), inputs);
         break;
-      case "open_url":
-        result = h.open_url(String(p.target ?? ""));
+      case "open_url": {
+        const target = validActionTarget(p.target);
+        if (target) result = h.open_url(target);
         break;
-      case "open_snap":
-        result = h.open_snap(String(p.target ?? ""));
+      }
+      case "open_snap": {
+        const target = validActionTarget(p.target);
+        if (target) result = h.open_snap(target);
         break;
-      case "open_mini_app":
-        result = h.open_mini_app(String(p.target ?? ""));
+      }
+      case "open_mini_app": {
+        const target = validActionTarget(p.target);
+        if (target) result = h.open_mini_app(target);
         break;
+      }
       case "view_cast":
         result = h.view_cast({ hash: String(p.hash ?? "") });
         break;
@@ -291,7 +305,7 @@ export function SnapViewCoreInner({
         result = h.compose_cast({
           text: p.text ? String(p.text) : undefined,
           channelKey: p.channelKey ? String(p.channelKey) : undefined,
-          embeds: Array.isArray(p.embeds) ? (p.embeds as string[]) : undefined,
+          embeds: optionalSnapStringArray(p.embeds),
         });
         break;
       case "view_token":

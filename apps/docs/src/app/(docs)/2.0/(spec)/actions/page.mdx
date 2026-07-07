@@ -65,11 +65,14 @@ field (`standalone` vs `cast`).
 
 ## open_url
 
-Open a URL in the system browser. No server round-trip. No input collection.
+Open a URL in the system browser. No server round-trip. No POST payload.
 
-| Param    | Type   | Required | Description |
-| -------- | ------ | -------- | ----------- |
-| `target` | string | Yes      | URL to open |
+`params.target` may be a literal URL or a dynamic string resolved from local render
+state at tap time. Field values are available under `/inputs/<name>`.
+
+| Param    | Type                    | Required | Description |
+| -------- | ----------------------- | -------- | ----------- |
+| `target` | string \| dynamic string | Yes      | URL to open |
 
 ```json
 {
@@ -83,6 +86,27 @@ Open a URL in the system browser. No server round-trip. No input collection.
   }
 }
 ```
+
+```json
+{
+  "type": "button",
+  "props": { "label": "Start Audit", "icon": "external-link" },
+  "on": {
+    "press": {
+      "action": "open_url",
+      "params": {
+        "target": {
+          "$template": "https://example.com/audit?nsite=${/inputs/website}"
+        }
+      }
+    }
+  }
+}
+```
+
+Dynamic targets are resolved by the client before opening. The resolved URL must still
+pass the normal URL rules: HTTPS in production, loopback HTTP for local development,
+and no `javascript:` URLs.
 
 ---
 
@@ -206,11 +230,15 @@ Navigate to a Farcaster channel.
 
 Open the cast composer with optional pre-filled content.
 
-| Param        | Type     | Required | Description               |
-| ------------ | -------- | -------- | ------------------------- |
-| `text`       | string   | No       | Pre-filled cast text      |
-| `channelKey` | string   | No       | Target channel key        |
-| `embeds`     | string[] | No       | URLs to embed in the cast |
+Text-like params may be dynamic strings resolved from local render state. For example,
+`text: { "$state": "/inputs/castText" }` opens the composer with the current input
+value.
+
+| Param        | Type                    | Required | Description               |
+| ------------ | ----------------------- | -------- | ------------------------- |
+| `text`       | string \| dynamic string | No       | Pre-filled cast text      |
+| `channelKey` | string \| dynamic string | No       | Target channel key        |
+| `embeds`     | string[]                | No       | URLs to embed in the cast |
 
 > Put URLs in `embeds`, not in `text`.
 
