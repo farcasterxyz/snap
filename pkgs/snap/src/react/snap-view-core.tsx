@@ -16,7 +16,7 @@ import {
   hasPendingSnapAction,
   markSnapEffectsPresented,
   optionalSnapStringArray,
-  resolveSnapActionParams,
+  resolveSnapActionParamsForAction,
   validateSnapActionTargetUrl,
   type SnapRenderState,
 } from "../render-state";
@@ -44,6 +44,10 @@ function optionalString(value: unknown): string | undefined {
 function validActionTarget(value: unknown): string | undefined {
   const target = String(value ?? "");
   return validateSnapActionTargetUrl(target) ? undefined : target;
+}
+
+function literalStringParam(value: unknown): string {
+  return typeof value === "string" ? value : "";
 }
 
 function recordValue(value: unknown): Record<string, unknown> | undefined {
@@ -551,7 +555,11 @@ export function SnapViewCore({
 
   const handleAction = useCallback(
     (name: unknown, params: unknown) => {
-      const p = resolveSnapActionParams(params, stateRef.current);
+      const p = resolveSnapActionParamsForAction(
+        name,
+        params,
+        stateRef.current,
+      );
       const inputs = (stateRef.current.inputs ?? {}) as Record<
         string,
         JsonValue
@@ -561,7 +569,7 @@ export function SnapViewCore({
 
       switch (name) {
         case "submit":
-          result = handlers.submit(String(p.target ?? ""), inputs);
+          result = handlers.submit(literalStringParam(p.target), inputs);
           break;
         case "open_url": {
           const target = validActionTarget(p.target);

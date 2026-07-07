@@ -9,6 +9,7 @@ import {
   markSnapEffectsPresented,
   optionalSnapStringArray,
   resolveSnapActionParams,
+  resolveSnapActionParamsForAction,
   type SnapRenderState,
   validateSnapActionTargetUrl,
 } from "../src/render-state";
@@ -139,6 +140,26 @@ describe("snap render state", () => {
     ).toEqual({
       target: "https://example.com",
       embeds: ["https://example.com/cast"],
+    });
+  });
+
+  it("keeps submit targets literal while resolving client action params", () => {
+    const params = {
+      target: { $state: "/inputs/target" },
+    };
+    const state: SnapRenderState = {
+      inputs: {
+        target: "https://example.com/submit",
+      },
+    };
+
+    expect(resolveSnapActionParamsForAction("submit", params, state)).toEqual({
+      target: { $state: "/inputs/target" },
+    });
+    expect(
+      resolveSnapActionParamsForAction("open_url", params, state),
+    ).toEqual({
+      target: "https://example.com/submit",
     });
   });
 

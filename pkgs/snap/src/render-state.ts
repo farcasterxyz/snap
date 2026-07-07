@@ -189,13 +189,27 @@ export function resolveSnapActionParams(
   params: unknown,
   state: SnapRenderState,
 ): Record<string, unknown> {
-  if (!isRecord(params)) return {};
+  const actionParams = getSnapActionParams(params);
 
   const resolved: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(params)) {
+  for (const [key, value] of Object.entries(actionParams)) {
     resolved[key] = resolveActionParam(value, { stateModel: state });
   }
   return resolved;
+}
+
+export function getSnapActionParams(params: unknown): Record<string, unknown> {
+  if (!isRecord(params)) return {};
+  return cloneSnapRenderState(params);
+}
+
+export function resolveSnapActionParamsForAction(
+  actionName: unknown,
+  params: unknown,
+  state: SnapRenderState,
+): Record<string, unknown> {
+  if (actionName === "submit") return getSnapActionParams(params);
+  return resolveSnapActionParams(params, state);
 }
 
 export function optionalSnapStringArray(value: unknown): string[] | undefined {
