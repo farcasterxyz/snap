@@ -1,5 +1,11 @@
 # @farcaster/snap
 
+## 2.11.0
+
+### Minor Changes
+
+- [#220](https://github.com/farcasterxyz/snap/pull/220) [`706f190`](https://github.com/farcasterxyz/snap/commit/706f1905501360728b05af5e4f1205357f50bc02) Thanks [@bob-obringer](https://github.com/bob-obringer)! - Add dynamic client action params
+
 ## 2.10.0
 
 ### Minor Changes
