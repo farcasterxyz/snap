@@ -8,6 +8,7 @@ import {
   SPEC_VERSION_1,
 } from "./constants";
 import { snapJsonRenderCatalog } from "./ui/catalog.js";
+import { validateSnapActionTargetUrl } from "./render-state.js";
 
 export type ValidationResult = {
   valid: boolean;
@@ -23,38 +24,6 @@ const URL_TARGET_ACTIONS = new Set([
   "open_snap",
   "open_mini_app",
 ]);
-
-/**
- * Returns true if the URL is a loopback address (localhost dev exception).
- */
-function isLoopback(url: URL): boolean {
-  const host = url.hostname;
-  return (
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host === "::1" ||
-    host === "[::1]"
-  );
-}
-
-/**
- * Validate a URL string: must be HTTPS (or HTTP on loopback for dev).
- * Returns an error message or null if valid.
- */
-function validateUrl(raw: string): string | null {
-  let url: URL;
-  try {
-    url = new URL(raw);
-  } catch {
-    return `Invalid URL: "${raw}"`;
-  }
-
-  if (url.protocol === "https:") return null;
-  if (url.protocol === "http:" && isLoopback(url)) return null;
-  if (url.protocol === "javascript:") return `javascript: URIs are not allowed`;
-
-  return `URL must use HTTPS (got ${url.protocol.replace(":", "")}): "${raw}"`;
-}
 
 // ─── Depth measurement ────────────────────────────────
 
@@ -185,7 +154,7 @@ function validateUrls(elements: Record<string, unknown>): z.core.$ZodIssue[] {
   for (const [id, el] of Object.entries(els)) {
     // Validate image URLs
     if (el.type === "image" && typeof el.props?.url === "string") {
-      const error = validateUrl(el.props.url);
+      const error = validateSnapActionTargetUrl(el.props.url);
       if (error) {
         issues.push({
           code: "custom",
@@ -202,7 +171,7 @@ function validateUrls(elements: Record<string, unknown>): z.core.$ZodIssue[] {
     ) {
       const media = el.props.media as ItemMediaShape;
       if (media.variant === "image" && typeof media.url === "string") {
-        const error = validateUrl(media.url);
+        const error = validateSnapActionTargetUrl(media.url);
         if (error) {
           issues.push({
             code: "custom",
@@ -221,7 +190,7 @@ function validateUrls(elements: Record<string, unknown>): z.core.$ZodIssue[] {
           URL_TARGET_ACTIONS.has(binding.action ?? "") &&
           typeof binding.params?.target === "string"
         ) {
-          const error = validateUrl(binding.params.target);
+          const error = validateSnapActionTargetUrl(binding.params.target);
           if (error) {
             issues.push({
               code: "custom",

@@ -27,6 +27,19 @@ const activityParams = {
   activityKey: z.string().min(1).max(64).optional(),
 };
 
+const dynamicString = z.union([
+  z.string(),
+  z.object({ $state: z.string() }),
+  z.object({ $template: z.string() }),
+]);
+
+const dynamicNumber = z.union([z.number(), z.object({ $state: z.string() })]);
+
+const dynamicStringArray = z.union([
+  z.array(dynamicString),
+  z.object({ $state: z.string() }),
+]);
+
 /**
  * json-render catalog for snap elements.
  *
@@ -129,57 +142,57 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
     },
     open_url: {
       description: "Open external URL in browser.",
-      params: z.object({ target: z.string(), ...activityParams }),
+      params: z.object({ target: dynamicString, ...activityParams }),
     },
     open_snap: {
       description:
         "Open a snap URL inline. The client renders the target as a snap rather than opening a browser.",
-      params: z.object({ target: z.string(), ...activityParams }),
+      params: z.object({ target: dynamicString, ...activityParams }),
     },
     open_mini_app: {
       description: "Open target URL as a Farcaster mini app.",
-      params: z.object({ target: z.string(), ...activityParams }),
+      params: z.object({ target: dynamicString, ...activityParams }),
     },
     view_cast: {
       description: "Navigate to a cast by hash.",
-      params: z.object({ hash: z.string(), ...activityParams }),
+      params: z.object({ hash: dynamicString, ...activityParams }),
     },
     view_profile: {
       description: "Navigate to a user profile by FID.",
-      params: z.object({ fid: z.number(), ...activityParams }),
+      params: z.object({ fid: dynamicNumber, ...activityParams }),
     },
     view_channel: {
       description: "Navigate to a Farcaster channel by channel key.",
-      params: z.object({ channelKey: z.string(), ...activityParams }),
+      params: z.object({ channelKey: dynamicString, ...activityParams }),
     },
     compose_cast: {
       description: "Open the cast composer with optional pre-filled content.",
       params: z.object({
-        text: z.string().optional(),
-        channelKey: z.string().optional(),
-        embeds: z.array(z.string()).optional(),
+        text: dynamicString.optional(),
+        channelKey: dynamicString.optional(),
+        embeds: dynamicStringArray.optional(),
         ...activityParams,
       }),
     },
     view_token: {
       description: "View a token in the wallet. Token is a CAIP-19 identifier.",
-      params: z.object({ token: z.string(), ...activityParams }),
+      params: z.object({ token: dynamicString, ...activityParams }),
     },
     send_token: {
       description: "Open send flow for a token. Token is CAIP-19.",
       params: z.object({
-        token: z.string(),
-        amount: z.string().optional(),
-        recipientFid: z.number().optional(),
-        recipientAddress: z.string().optional(),
+        token: dynamicString,
+        amount: dynamicString.optional(),
+        recipientFid: dynamicNumber.optional(),
+        recipientAddress: dynamicString.optional(),
         ...activityParams,
       }),
     },
     swap_token: {
       description: "Open swap flow between two tokens. Tokens are CAIP-19.",
       params: z.object({
-        sellToken: z.string().optional(),
-        buyToken: z.string().optional(),
+        sellToken: dynamicString.optional(),
+        buyToken: dynamicString.optional(),
         ...activityParams,
       }),
     },
@@ -187,14 +200,14 @@ export const snapJsonRenderCatalog = defineCatalog(snapJsonRenderSchema, {
       description:
         "Request an EVM transaction through the host wallet using eth_sendTransaction.",
       params: z.object({
-        chainId: z.string(),
-        to: z.string(),
-        data: z.string().optional(),
-        value: z.string().optional(),
-        gas: z.string().optional(),
-        gasPrice: z.string().optional(),
-        maxFeePerGas: z.string().optional(),
-        maxPriorityFeePerGas: z.string().optional(),
+        chainId: dynamicString,
+        to: dynamicString,
+        data: dynamicString.optional(),
+        value: dynamicString.optional(),
+        gas: dynamicString.optional(),
+        gasPrice: dynamicString.optional(),
+        maxFeePerGas: dynamicString.optional(),
+        maxPriorityFeePerGas: dynamicString.optional(),
         ...activityParams,
       }),
     },

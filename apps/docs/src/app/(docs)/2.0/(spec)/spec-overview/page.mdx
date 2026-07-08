@@ -19,10 +19,13 @@ Example interaction:
 3. The client renders the `ui` tree using the component catalog
 4. The user interacts with field components (`input`, `slider`, `switch`,
    `toggle_group`) — values are stored locally
-5. The user taps a `button` element whose `on.press` is bound to a `submit` action
-6. The client collects all field values and POSTs a signed payload to the `target` URL
-7. The server returns a new SnapResponse — the client renders it as the next page
-8. Repeat
+5. The user taps a `button` element whose `on.press` is bound to an action
+6. For a `submit` action, the client collects all field values and POSTs a signed
+   payload to the `target` URL
+7. For a client action, the client may resolve params from local state and perform the
+   action without a POST
+8. If the action returns a new SnapResponse, the client renders it as the next page
+9. Repeat
 
 ## Content Negotiation
 

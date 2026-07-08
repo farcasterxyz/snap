@@ -7,7 +7,11 @@ import {
   getUnpresentedSnapEffects,
   hasPendingSnapAction,
   markSnapEffectsPresented,
+  optionalSnapStringArray,
+  resolveSnapActionParams,
+  resolveSnapActionParamsForAction,
   type SnapRenderState,
+  validateSnapActionTargetUrl,
 } from "../src/render-state";
 
 describe("snap render state", () => {
@@ -95,6 +99,114 @@ describe("snap render state", () => {
       { path: "/actions/mint_token_primary/name", value: "send_transaction" },
       { path: "/actions/mint_token_primary/pending", value: false },
     ]);
+  });
+
+  it("resolves action params from current local state", () => {
+    const state: SnapRenderState = {
+      inputs: {
+        website: "example.com",
+        castText: "hello from a snap",
+      },
+    };
+
+    expect(
+      resolveSnapActionParams(
+        {
+          target: {
+            $template:
+              "https://dmeta.qstorage.quilibrium.com/?nsite=${/inputs/website}",
+          },
+          text: { $state: "/inputs/castText" },
+          literal: "kept",
+        },
+        state,
+      ),
+    ).toEqual({
+      target: "https://dmeta.qstorage.quilibrium.com/?nsite=example.com",
+      text: "hello from a snap",
+      literal: "kept",
+    });
+  });
+
+  it("keeps literal action params unchanged", () => {
+    expect(
+      resolveSnapActionParams(
+        {
+          target: "https://example.com",
+          embeds: ["https://example.com/cast"],
+        },
+        {},
+      ),
+    ).toEqual({
+      target: "https://example.com",
+      embeds: ["https://example.com/cast"],
+    });
+  });
+
+  it("keeps submit targets literal while resolving client action params", () => {
+    const params = {
+      target: { $state: "/inputs/target" },
+    };
+    const state: SnapRenderState = {
+      inputs: {
+        target: "https://example.com/submit",
+      },
+    };
+
+    expect(resolveSnapActionParamsForAction("submit", params, state)).toEqual({
+      target: { $state: "/inputs/target" },
+    });
+    expect(
+      resolveSnapActionParamsForAction("open_url", params, state),
+    ).toEqual({
+      target: "https://example.com/submit",
+    });
+  });
+
+  it("normalizes dynamic compose_cast embeds that resolve to one string", () => {
+    const resolved = resolveSnapActionParams(
+      {
+        embeds: { $state: "/inputs/embedUrl" },
+      },
+      {
+        inputs: {
+          embedUrl: "https://example.com/cast",
+        },
+      },
+    );
+
+    expect(optionalSnapStringArray(resolved.embeds)).toEqual([
+      "https://example.com/cast",
+    ]);
+    expect(
+      optionalSnapStringArray([
+        "https://example.com/one",
+        "https://example.com/two",
+      ]),
+    ).toEqual(["https://example.com/one", "https://example.com/two"]);
+  });
+
+  it("validates resolved client action URLs before opening", () => {
+    const state: SnapRenderState = {
+      inputs: {
+        safe: "https://example.com",
+        unsafe: "javascript:alert(1)",
+      },
+    };
+
+    const safe = resolveSnapActionParams(
+      { target: { $state: "/inputs/safe" } },
+      state,
+    );
+    const unsafe = resolveSnapActionParams(
+      { target: { $state: "/inputs/unsafe" } },
+      state,
+    );
+
+    expect(validateSnapActionTargetUrl(String(safe.target))).toBeNull();
+    expect(validateSnapActionTargetUrl(String(unsafe.target))).toContain(
+      "javascript",
+    );
   });
 
   it("detects whether any snap action is pending", () => {

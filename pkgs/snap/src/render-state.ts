@@ -1,3 +1,5 @@
+import { resolveActionParam } from "@json-render/core";
+
 export type SnapRenderState = Record<string, unknown>;
 
 export type SnapRenderStateChanges =
@@ -11,6 +13,31 @@ const ACTION_ACTIVITY_KEY_MAX_LENGTH = 64;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isLoopback(url: URL): boolean {
+  const host = url.hostname;
+  return (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "::1" ||
+    host === "[::1]"
+  );
+}
+
+export function validateSnapActionTargetUrl(raw: string): string | null {
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    return `Invalid URL: "${raw}"`;
+  }
+
+  if (url.protocol === "https:") return null;
+  if (url.protocol === "http:" && isLoopback(url)) return null;
+  if (url.protocol === "javascript:") return `javascript: URIs are not allowed`;
+
+  return `URL must use HTTPS (got ${url.protocol.replace(":", "")}): "${raw}"`;
 }
 
 function normalizeEffects(effects: readonly string[] | undefined): string[] {
@@ -156,6 +183,38 @@ export function buildActionActivityStateChanges({
     { path: `/actions/${key}/name`, value: String(actionName || "action") },
     { path: `/actions/${key}/pending`, value: pending },
   ];
+}
+
+export function resolveSnapActionParams(
+  params: unknown,
+  state: SnapRenderState,
+): Record<string, unknown> {
+  const actionParams = getSnapActionParams(params);
+
+  const resolved: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(actionParams)) {
+    resolved[key] = resolveActionParam(value, { stateModel: state });
+  }
+  return resolved;
+}
+
+export function getSnapActionParams(params: unknown): Record<string, unknown> {
+  if (!isRecord(params)) return {};
+  return cloneSnapRenderState(params);
+}
+
+export function resolveSnapActionParamsForAction(
+  actionName: unknown,
+  params: unknown,
+  state: SnapRenderState,
+): Record<string, unknown> {
+  if (actionName === "submit") return getSnapActionParams(params);
+  return resolveSnapActionParams(params, state);
+}
+
+export function optionalSnapStringArray(value: unknown): string[] | undefined {
+  if (Array.isArray(value)) return value.map((item) => String(item));
+  return value ? [String(value)] : undefined;
 }
 
 export function hasPendingSnapAction(model: SnapRenderState): boolean {

@@ -552,6 +552,37 @@ describe("URL validation", () => {
     expect(result.issues[0].message).toContain("HTTPS");
   });
 
+  it("accepts dynamic open_url action targets", () => {
+    expectValid({
+      version: "2.0",
+      ui: {
+        root: "page",
+        elements: {
+          page: { type: "stack", children: ["input", "btn"] },
+          input: {
+            type: "input",
+            props: { name: "website", label: "Website" },
+          },
+          btn: {
+            type: "button",
+            props: { label: "Go" },
+            on: {
+              press: {
+                action: "open_url",
+                params: {
+                  target: {
+                    $template:
+                      "https://example.com/audit?nsite=${/inputs/website}",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
   it("validates open_mini_app action targets", () => {
     const result = expectInvalid({
       version: "2.0",

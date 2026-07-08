@@ -93,6 +93,11 @@ production.
 For local development, `http://` is valid only when the host is loopback: `localhost`,
 `127.0.0.1`, or IPv6 loopback (`[::1]` / `::1`).
 
+For client actions such as `open_url`, `open_mini_app`, and `compose_cast`, action
+params may be dynamic strings resolved from local render state when the button is
+tapped. Field values are available under `/inputs/<name>`, so a button can open a URL
+that includes the current value of an input without sending a POST request.
+
 ## Input Data in POST Requests
 
 When a `submit` action fires, the client collects values from all field components on
