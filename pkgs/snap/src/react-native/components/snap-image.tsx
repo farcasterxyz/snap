@@ -48,18 +48,16 @@ export function SnapImage({
       />
       {hasOverlay ? (
         <View style={styles.overlay} pointerEvents="none">
-          <View style={styles.overlayContent}>
-            {title ? (
-              <Text numberOfLines={1} style={styles.title}>
-                {title}
-              </Text>
-            ) : null}
-            {subtitle ? (
-              <Text numberOfLines={1} style={styles.subtitle}>
-                {subtitle}
-              </Text>
-            ) : null}
-          </View>
+          {title ? (
+            <Text numberOfLines={1} style={styles.title}>
+              {title}
+            </Text>
+          ) : null}
+          {subtitle ? (
+            <Text numberOfLines={1} style={styles.subtitle}>
+              {subtitle}
+            </Text>
+          ) : null}
         </View>
       ) : null}
     </View>
@@ -84,16 +82,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    paddingHorizontal: 3,
-    paddingBottom: 3,
-  },
-  overlayContent: {
-    alignSelf: "flex-start",
-    maxWidth: "100%",
-    borderRadius: 5,
-    paddingHorizontal: 5,
-    paddingVertical: 3,
-    backgroundColor: "rgba(0, 0, 0, 0.22)",
+    paddingHorizontal: 8,
+    paddingBottom: 6,
   },
   title: {
     color: "#fff",
