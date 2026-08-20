@@ -133,7 +133,12 @@ export function registerSnapHandler(
         if (adapter) {
           await adapter
             .set(key, { png, etag }, ogOptions.cdnMaxAge ?? 86400)
-            .catch(() => undefined);
+            .catch((error) => {
+              console.error("Failed to populate Snap Open Graph cache", {
+                path: key,
+                error,
+              });
+            });
         }
 
         return new Response(png as BodyInit, {
@@ -146,12 +151,17 @@ export function registerSnapHandler(
             ...ogCacheHeaders(ogOptions),
           },
         });
-      } catch {
+      } catch (error) {
+        console.error("Failed to render Snap Open Graph image", {
+          path: imgPath,
+          error,
+        });
         return new Response(null, {
           status: 500,
           headers: { "Cache-Control": "no-store" },
         });
       }
+
     });
   }
 
@@ -314,7 +324,11 @@ async function getFallbackHtml(
       siteName,
       openGraph,
     });
-  } catch {
+  } catch (error) {
+    console.error("Snap HTML fallback rendering failed", {
+      resourcePath,
+      error,
+    });
     return brandedFallbackHtml(origin, {
       ogImageUrl,
       resourcePath,
@@ -323,6 +337,7 @@ async function getFallbackHtml(
       description: openGraph?.description,
     });
   }
+
 }
 
 function snapOriginFromRequest(request: Request): string {
