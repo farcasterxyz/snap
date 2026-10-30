@@ -118,7 +118,7 @@
   "scripts": {
     "build": "tsc && (tsc -p tsconfig.react-native.json || true) && tsc-alias --resolve-full-paths --resolve-full-extension .js",
     "clean": "rm -rf dist",
-    "test": "vitest run",
+    "test": "vitest run --exclude 'dist/**'",
     "typecheck": "tsc --noEmit"
   },
   "license": "MIT",
@@ -155,7 +155,7 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^1.6.0",
+    "vitest": "4.1.12",
     "zod": "^4.0.0"
   }
 }
