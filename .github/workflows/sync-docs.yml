@@ -16,15 +16,15 @@ jobs:
     concurrency:
       group: sync-docs-main
       cancel-in-progress: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout source repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: snap
 
       - name: Checkout docs repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: farcasterxyz/docs
           token: ${{ secrets.DOCS_SYNC_TOKEN }}
