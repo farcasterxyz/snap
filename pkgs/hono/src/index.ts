@@ -258,7 +258,9 @@ export function registerSnapHandler(
 // ─── Helpers ──────────────────────────────────────────────
 
 function ogImagePath(snapPath: string): string {
-  const p = snapPath.replace(/\/+$/, "") || "/";
+  let end = snapPath.length;
+  while (end > 0 && snapPath[end - 1] === "/") end--;
+  const p = snapPath.slice(0, end) || "/";
   return p === "/" ? "/~/og-image" : `${p}/~/og-image`;
 }
 

@@ -12,7 +12,7 @@
     "@farcaster/snap": "^2.0.1",
     "@farcaster/snap-hono": "^2.0.1",
     "@farcaster/snap-turso": "^2.0.1",
-    "@hono/node-server": "^1.19.13",
+    "@hono/node-server": "^2.1.5",
     "@noble/curves": "^2.0.0",
     "hono": "^4.0.0",
     "zod": "^4.0.0"

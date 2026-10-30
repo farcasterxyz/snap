@@ -11,6 +11,9 @@ on:
   #     - "apps/docs/src/app/SKILL.md/**"
   #     - "apps/docs/snap-sidebar.json"
 
+permissions:
+  contents: read
+
 jobs:
   sync-docs:
     concurrency:

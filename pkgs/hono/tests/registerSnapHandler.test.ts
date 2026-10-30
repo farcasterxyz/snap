@@ -435,4 +435,31 @@ describe("OG image PNG route", () => {
     expect(r2.status).toBe(200);
     // Both succeed regardless of dedup behaviour
   }, 30_000);
+
+  it("strips trailing slashes from path when registering the route", async () => {
+    const app = new Hono();
+    registerSnapHandler(app, minimalSnapFn, {
+      path: "/my-snap//",
+      skipJFSVerification: true,
+      og: { fonts: ogFonts },
+    });
+
+    const res = await app.request("http://localhost/my-snap/~/og-image", {
+      method: "GET",
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("image/png");
+  }, 30_000);
+
+  it("registers in linear time when path contains a long run of slashes", () => {
+    const start = performance.now();
+    registerSnapHandler(new Hono(), minimalSnapFn, {
+      path: `${"/".repeat(100_000)}x`,
+      skipJFSVerification: true,
+      og: { fonts: ogFonts },
+    });
+
+    expect(performance.now() - start).toBeLessThan(1_000);
+  });
 });

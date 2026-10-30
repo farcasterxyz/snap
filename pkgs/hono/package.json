@@ -34,7 +34,7 @@
   "dependencies": {
     "@farcaster/snap": "workspace:*",
     "@resvg/resvg-wasm": "^2.6.2",
-    "satori": "^0.10.0"
+    "satori": "^0.33.5"
   },
   "peerDependencies": {
     "hono": ">=4.0.0"
@@ -45,6 +45,6 @@
     "hono": "^4.0.0",
     "tsc-alias": "^1.8.16",
     "typescript": "^5.4.0",
-    "vitest": "^1.6.0"
+    "vitest": "4.1.12"
   }
 }
