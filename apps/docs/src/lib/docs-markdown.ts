@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { join } from "path";
+import { resolve, sep } from "path";
 import {
   DOC_SECTIONS,
   docPathnameToMdxFile,
@@ -8,7 +8,7 @@ import {
 } from "@/lib/docs-pages";
 import { DEFAULT_VERSION } from "@/lib/version-config";
 
-const DOCS_DIR = join(process.cwd(), "src/app/(docs)");
+const DOCS_DIR = resolve(process.cwd(), "src/app/(docs)");
 const INTERACTIVE_PREVIEW_PLACEHOLDER = "[Interactive preview on docs site]";
 
 function sanitizeDocMarkdown(content: string): string {
@@ -51,7 +51,11 @@ function sanitizeDocMarkdown(content: string): string {
 }
 
 export function readDocMarkdown(file: string): string {
-  const content = readFileSync(join(DOCS_DIR, file), "utf-8");
+  const filePath = resolve(DOCS_DIR, file);
+  if (!filePath.startsWith(DOCS_DIR + sep)) {
+    throw new Error(`Doc file is outside the docs directory: ${file}`);
+  }
+  const content = readFileSync(filePath, "utf-8");
 
   return sanitizeDocMarkdown(content);
 }
